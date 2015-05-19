@@ -1,0 +1,44 @@
+{
+  "name": "ominto-taskbox",
+  "version": "0.0.1",
+  "description": "DubLi TaskBox Server",
+  "main": "app.js",
+  "scripts": {
+    "start": "npm install && node --harmony src/server.js | bunyan",
+    "test": "npm install && node --harmony node_modules/.bin/_mocha --timeout 10000 test/*/*.js",
+    "coverage": "npm install && node --harmony node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- --timeout 10000 test/*/*.js",
+    "debug": "npm install && node --debug --harmony src/server.js | bunyan"
+  },
+  "engines": {
+    "node": "0.12.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dubli/taskbox.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dubli/issues/issues"
+  },
+  "homepage": "http://dubli.com",
+  "dependencies": {
+    "aws-sdk": "*",
+    "bunyan": "*",
+    "co": "*",
+    "denodeify": "^1.2.1",
+    "ftp": "^0.3.10",
+    "joi": "*",
+    "lodash": "*",
+    "node-schedule": "^0.2.6",
+    "node-uuid": "*"
+  },
+  "devDependencies": {
+    "chai": "^2.2.0",
+    "istanbul-harmony": "*",
+    "mocha": "^2.2.4",
+    "nock": "^2.0.1",
+    "request": "^2.55.0",
+    "sinon": "^1.14.1"
+  }
+}

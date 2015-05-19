@@ -1,0 +1,16 @@
+machine:
+  node:
+    version: 0.12.0
+dependencies:
+  pre:
+    - npm install -g jsdoc
+  post:
+    - cp -f /home/ubuntu/taskbox/configs.test.json /home/ubuntu/taskbox/configs.json
+test:
+  post:
+    - npm run coverage
+    - jsdoc -c test/conf.json
+general:
+  artifacts:
+    - "./docs"
+    - "./coverage"

@@ -1,0 +1,27 @@
+//These configs are intended to be used by jsdocs for more information on their
+//use see here: http://usejsdoc.org/about-configuring-jsdoc.html
+{
+  "tags": {
+    "allowUnknownTags": true
+  },
+  "source": {
+    "include": [
+      "src",
+      "package.json"
+    ],
+    "includePattern": ".+\\.js(doc)?$",
+    "excludePattern": "(^|\\/|\\\\)_"
+  },
+  "plugins": [],
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false,
+    "default": {
+      "outputSourceFiles": true
+    }
+  },
+  "opts": {
+    "recurse": true,
+    "destination": "./docs/"
+  }
+}

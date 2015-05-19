@@ -1,0 +1,27 @@
+version: 0.0
+os: linux
+files:
+  - source: /src
+    destination: /var/www/src
+  - source: /package.json
+    destination: /var/www
+permissions:
+  - object: /var/www
+    pattern: "**"
+    owner: root
+    group: root
+    type:
+      - directory
+hooks:
+  ApplicationStop:
+    - location: scripts/applicationStop.sh
+      timeout: 180
+  ApplicationStart:
+    - location: scripts/applicationStart.sh
+      timeout: 180
+  AfterInstall:
+    - location: scripts/afterInstall.sh
+      timeout: 180
+  BeforeInstall:
+    - location: scripts/beforeInstall.sh
+      timeout: 180
