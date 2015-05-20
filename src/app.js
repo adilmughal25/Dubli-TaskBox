@@ -11,6 +11,7 @@
   var getImpactRadiusProducts = require("./scripts/impactRadiusProductFtp");
   var clickJunctionApi = require("./scripts/clickJunctionApi");
   var impactRadiusApi = require("./scripts/impactRadiusApi");
+  var linkShareApi = require("./scripts/linkShareApi");
 
   function init(id) {
     process.on('message', function(msg) {
@@ -41,18 +42,24 @@
     schedules.clickJunctionApiMerchants = schedule.scheduleJob({minute: 5}, function(){
       clickJunctionApi.getMerchants();
     });
-
     schedules.impactRadiusApiMerchants = schedule.scheduleJob({minute: 5}, function(){
       impactRadiusApi.getMerchants();
+    });
+    schedules.linkShareApiMerchants = schedule.scheduleJob({minute: 5}, function(){
+      linkShareApi.getMerchants();
     });
 
     schedules.clickJunctionApiCommissions = schedule.scheduleJob({minute: [0,10,20,30,40,50]}, function(){
       clickJunctionApi.getCommissionDetails();
     });
-
     schedules.impactRadiusApiCommisions = schedule.scheduleJob({minute: [0,10,20,30,40,50]}, function(){
       impactRadiusApi.getCommissionDetails();
     });
+    schedules.linkShareApiCommisions = schedule.scheduleJob({minute: [0,10,20,30,40,50]}, function(){
+      linkShareApi.getCommissionDetails();
+    });
+
+
 
     //impactRadiusApi.getCommissionDetails();
     

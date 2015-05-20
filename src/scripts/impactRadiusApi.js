@@ -53,9 +53,17 @@
   var commissionsRunning = false;
   function getCommissionDetails(nextUri) {
     var perPage = 1000;
+    var tempEnd = new Date();
+    var tempStart = new Date();
+    
+    tempEnd.setDate(tempEnd.getDate() + 1);
+    tempStart.setDate(tempStart.getDate() - 1);
+
+    tempEnd = tempEnd.toISOString().substr(0,19) + "-00:00";
+    tempStart = tempStart.toISOString().substr(0,19) + "-00:00"
     
     if(!commissionsRunning || nextUri != null) {
-      nextUri = nextUri || "Mediapartners/IRDHLqHpQY79155520ngJ28D9dMGTVZJA1/Actions.json?PageSize="+perPage+"&Page=1";
+      nextUri = nextUri || "Mediapartners/IRDHLqHpQY79155520ngJ28D9dMGTVZJA1/Actions.json?PageSize="+perPage+"&Page=1&StartDate="+tempStart+"&EndDate="+tempEnd;
       
       commissionsRunning = true;
       client.get({

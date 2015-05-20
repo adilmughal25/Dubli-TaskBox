@@ -60,8 +60,7 @@
     var tempStart = new Date();
     
     tempEnd.setDate(tempEnd.getDate() + 1);
-    tempStart.setMonth(tempStart.getMonth() - 1)
-    tempStart.setDate(tempStart.getDate() + 1);
+    tempStart.setDate(tempStart.getDate() - 1);
 
     tempEnd = tempEnd.getFullYear() + "-" + (tempEnd.getMonth() + 1) + "-" + tempEnd.getDate();
     tempStart = tempStart.getFullYear() + "-" + (tempStart.getMonth() + 1) + "-" + tempStart.getDate();
