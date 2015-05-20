@@ -34,9 +34,10 @@
           //might as well give it all a retry... on the lambdas we can more safely access redis via
           //data lib, and as such can store a file md5 type hash there and avoid the actually expensive
           //processing.
-          if(!impactRadiusFilesLastProcessed[item.name]) {
+          var itemDate = new Date(item.date);
+          if(!impactRadiusFilesLastProcessed[item.name] || impactRadiusFilesLastProcessed[item.name] < itemDate) {
             impactRadiusFilesToGet.push(path + "/" + item.name);
-            impactRadiusFilesLastProcessed[item.name] = new Date(item.date);
+            impactRadiusFilesLastProcessed[item.name] = itemDate;
           }
         }
       });

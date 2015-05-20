@@ -9,7 +9,8 @@
   var schedule = require('node-schedule');
 
   var getImpactRadiusProducts = require("./scripts/impactRadiusProductFtp");
-  var clickJunctionApiMerchants = require("./scripts/clickJunctionApi");
+  var clickJunctionApi = require("./scripts/clickJunctionApi");
+  var impactRadiusApi = require("./scripts/impactRadiusApi");
 
   function init(id) {
     process.on('message', function(msg) {
@@ -31,14 +32,29 @@
       serializers: bunyan.stdSerializers
     });
 
-    var impactRadiusProductFtpSchedule = schedule.scheduleJob({minute: 1}, function(){
+    var schedules = {};
+
+    schedules.impactRadiusProductFtp = schedule.scheduleJob({minute: 1}, function(){
       getImpactRadiusProducts();
     });
 
-    var clickJunctionApiMerchantsSchedule = schedule.scheduleJob({minute: 5}, function(){
-      clickJunctionApiMerchants();
+    schedules.clickJunctionApiMerchants = schedule.scheduleJob({minute: 5}, function(){
+      clickJunctionApi.getMerchants();
     });
 
+    schedules.impactRadiusApiMerchants = schedule.scheduleJob({minute: 5}, function(){
+      impactRadiusApi.getMerchants();
+    });
+
+    schedules.clickJunctionApiCommissions = schedule.scheduleJob({minute: [0,10,20,30,40,50]}, function(){
+      clickJunctionApi.getCommissionDetails();
+    });
+
+    schedules.impactRadiusApiCommisions = schedule.scheduleJob({minute: [0,10,20,30,40,50]}, function(){
+      impactRadiusApi.getCommissionDetails();
+    });
+
+    //impactRadiusApi.getCommissionDetails();
     
   }
 
