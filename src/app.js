@@ -9,7 +9,7 @@
   var schedule = require('node-schedule');
 
   var getImpactRadiusProducts = require("./scripts/impactRadiusProductFtp");
-  
+  var clickJunctionApiMerchants = require("./scripts/clickJunctionApi");
 
   function init(id) {
     process.on('message', function(msg) {
@@ -31,9 +31,14 @@
       serializers: bunyan.stdSerializers
     });
 
-    var impactRadiusProductFtp = schedule.scheduleJob({minute: 30}, function(){
+    var impactRadiusProductFtpSchedule = schedule.scheduleJob({minute: 1}, function(){
       getImpactRadiusProducts();
     });
+
+    var clickJunctionApiMerchantsSchedule = schedule.scheduleJob({minute: 5}, function(){
+      clickJunctionApiMerchants();
+    });
+
     
   }
 
