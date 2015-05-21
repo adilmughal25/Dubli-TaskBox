@@ -35,10 +35,13 @@
 
     var schedules = {};
 
+    //ONCE AN HOUR PRODUCT FEED TRANSFER
     schedules.impactRadiusProductFtp = schedule.scheduleJob({minute: 1}, function(){
       getImpactRadiusProducts();
     });
 
+
+    //ONCE AN HOUR MERCHANT BASE LIST GET
     schedules.clickJunctionApiMerchants = schedule.scheduleJob({minute: 5}, function(){
       clickJunctionApi.getMerchants();
     });
@@ -49,6 +52,7 @@
       linkShareApi.getMerchants();
     });
 
+    //EVERY TEN MINUTES CONVERSIONS/COMMISSIONS GET
     schedules.clickJunctionApiCommissions = schedule.scheduleJob({minute: [0,10,20,30,40,50]}, function(){
       clickJunctionApi.getCommissionDetails();
     });
@@ -58,8 +62,6 @@
     schedules.linkShareApiCommisions = schedule.scheduleJob({minute: [0,10,20,30,40,50]}, function(){
       linkShareApi.getCommissionDetails();
     });
-
-
 
     //impactRadiusApi.getCommissionDetails();
     

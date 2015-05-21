@@ -93,18 +93,12 @@
 
   function sendMerchantsToEventHub(merchants) {
     console.log(merchants);
-    //The lambda on this kinesis is gonna be in charge of getting all of the links and products
-    //in bulk calls to the links/products API's... still a bit annoying cuz they rate-limit
-    //those API's to 25 per minutes... so if all the merchants in a given "set" have huge Product 
-    //listings
+    
   }
 
   function sendCommissionsToEventHub(commissions) {
     console.log(commissions);
-    //The lambda on this kinesis is gonna be in charge of getting all of the links and products
-    //in bulk calls to the links/products API's... still a bit annoying cuz they rate-limit
-    //those API's to 25 per minutes... so if all the merchants in a given "set" have huge Product 
-    //listings
+    
   }
 
   module.exports = {
