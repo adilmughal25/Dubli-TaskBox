@@ -1,75 +1,91 @@
-(function() {
-  "use strict";
+"use strict";
 
-  var cluster = require('cluster');
-  var configs = require('../configs.json');
-  var uuid = require('node-uuid');
-  var bunyan = require('bunyan');
-  var co = require('co');
-  var schedule = require('node-schedule');
+var configs = require('../configs.json');
+var uuid = require('node-uuid');
+var bunyan = require('bunyan');
+var co = require('co');
+var schedule = require('node-schedule');
 
-  var getImpactRadiusProducts = require("./scripts/impactRadiusProductFtp");
-  var clickJunctionApi = require("./scripts/clickJunctionApi");
-  var impactRadiusApi = require("./scripts/impactRadiusApi");
-  var linkShareApi = require("./scripts/linkShareApi");
+var getImpactRadiusProducts = require("./scripts/impactRadiusProductFtp");
+var clickJunctionApi = require("./scripts/clickJunctionApi");
+var impactRadiusApi = require("./scripts/impactRadiusApi");
+var linkShareApi = require("./scripts/linkShareApi");
 
-  function init(id) {
-    process.on('message', function(msg) {
-      console.log("MSG", msg);
-      //TODO - if its a "stop" command, then stop listening and kill yourself the cluster way
-    });
-    process.once('SIGTERM', function() {
-      //TODO - stop listening of course, and kill yourself the cluster way
-      process.exit(0);
-    });
-    process.once('SIGINT', function() {
-      //TODO - stop listening of course, and kill yourself the cluster way
-      process.exit(0);
-    });
+function init(id) {
+  process.on('message', function(msg) {
+    console.log("MSG", msg);
+    //TODO - if its a "stop" command, then stop listening and kill yourself the cluster way
+  });
+  process.once('SIGTERM', function() {
+    //TODO - stop listening of course, and kill yourself the cluster way
+    process.exit(0);
+  });
+  process.once('SIGINT', function() {
+    //TODO - stop listening of course, and kill yourself the cluster way
+    process.exit(0);
+  });
 
-    var name = id + ":data:api";
-    var log = bunyan.createLogger({
-      name: name,
-      serializers: bunyan.stdSerializers
-    });
+  var name = id + ":taskbox";
+  var log = bunyan.createLogger({
+    name: name,
+    serializers: bunyan.stdSerializers
+  });
 
-    var schedules = {};
+  var schedules = {};
 
-    //ONCE AN HOUR PRODUCT FEED TRANSFER
-    schedules.impactRadiusProductFtp = schedule.scheduleJob({minute: 1}, function(){
-      getImpactRadiusProducts();
-    });
+  // already been refactored
+  createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, {minute: 5});
+  createTask("ImpactRadius Commissions", impactRadiusApi.getCommissionDetails, {minute: [0,10,20,30,40,50]});
+  createTask("LinkShare Merchants", linkShareApi.getMerchants, {minute: 5});
+  createTask("LinkShare Commissions", linkShareApi.getCommissionDetails, {minute: [0,10,20,30,40,50]});
+
+/* STILL NEED TO BE REFACTORED:
+
+  //ONCE AN HOUR PRODUCT FEED TRANSFER
+  schedules.impactRadiusProductFtp = schedule.scheduleJob({minute: 1}, function(){
+    getImpactRadiusProducts();
+  });
 
 
-    //ONCE AN HOUR MERCHANT BASE LIST GET
-    schedules.clickJunctionApiMerchants = schedule.scheduleJob({minute: 5}, function(){
-      clickJunctionApi.getMerchants();
-    });
-    schedules.impactRadiusApiMerchants = schedule.scheduleJob({minute: 5}, function(){
-      impactRadiusApi.getMerchants();
-    });
-    schedules.linkShareApiMerchants = schedule.scheduleJob({minute: 5}, function(){
-      linkShareApi.getMerchants();
-    });
+  //ONCE AN HOUR MERCHANT BASE LIST GET
+  schedules.clickJunctionApiMerchants = schedule.scheduleJob({minute: 5}, function(){
+    co(clickJunctionApi.getMerchants).then(reportSuccess, reportError);
+  });
 
-    //EVERY TEN MINUTES CONVERSIONS/COMMISSIONS GET
-    schedules.clickJunctionApiCommissions = schedule.scheduleJob({minute: [0,10,20,30,40,50]}, function(){
-      clickJunctionApi.getCommissionDetails();
-    });
-    schedules.impactRadiusApiCommisions = schedule.scheduleJob({minute: [0,10,20,30,40,50]}, function(){
-      impactRadiusApi.getCommissionDetails();
-    });
-    schedules.linkShareApiCommisions = schedule.scheduleJob({minute: [0,10,20,30,40,50]}, function(){
-      linkShareApi.getCommissionDetails();
-    });
+  //EVERY TEN MINUTES CONVERSIONS/COMMISSIONS GET
+  schedules.clickJunctionApiCommissions = schedule.scheduleJob({minute: [0,10,20,30,40,50]}, function(){
+    clickJunctionApi.getCommissionDetails();
+  });
+*/
 
-    //impactRadiusApi.getCommissionDetails();
-    
+
+
+  function taskRunner(name, task) {
+    return function() {
+      co(task).then(function() {
+        log.info(name + " successfully completed!");
+      }).catch(function(error) {
+        if (error === "already-running") {
+          log.info(name + " is currently already running. Waiting until next run-time");
+          return;
+        }
+        log.error(name + " ERROR OCCURED: " + ('stack' in error) ? error.stack : error);
+      });
+    };
   }
 
-  module.exports = {
-    init: init
-  };
+  function createTask(name, task, spec) {
+    var id = name.replace(/(?:\W+|^)(\w)/, (m,letter) => letter.toUpperCase());
+    log.info("Creating task: "+name+" ("+id+") with spec: "+JSON.stringify(spec)+"");
+    schedules[id] = schedule.scheduleJob(spec, taskRunner(name, task));
 
-  return module.exports;
-})();
+    if ((process.env.NODE_ENV||"").indexOf('dev') === 0) {
+      log.info("Dev Mode: Starting task `"+name+"` immediately");
+      taskRunner('Development Autostart: '+name, task)();
+    }
+  }
+}
+
+module.exports = {
+  init: init
+};

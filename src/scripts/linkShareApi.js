@@ -1,54 +1,113 @@
-(function() {
-  "use strict";
-  var parser = require('xml2json');
-  var request = require("request-promise");
-  require('promise.prototype.finally');
+"use strict";
 
-  function getDataClient(baseUrl) {
-    var dataClient = request.defaults({
-      baseUrl: baseUrl,
-      json: true,
-      simple: false,
-      resolveWithFullResponse: true
-    });
-    return dataClient;
+var _ = require('lodash');
+var parser = require('xml2json');
+var request = require("request-promise");
+var co = require('co');
+var wait = require('co-wait');
+var moment = require('moment');
+var debug = require('debug')('linkshare:api');
+
+var merchantsRunning = false;
+function* getMerchants() {
+  if (merchantsRunning) { throw "already-running"; }
+  merchantsRunning = true;
+  debug("merchants fetch started");
+  try {
+    var client = yield getFreshClient();
+    var url = "advertisersearch/1.0";
+    debug('merchants fetch: %s', url);
+    var response = yield client.get(url);
+    var json = parser.toJson(response.body, {object:true});
+    var merchants = json.result.midlist.merchant;
+    if (merchants) { sendMerchantsToEventHub(merchants || []); }
+  } finally {
+    merchantsRunning = false;
   }
-  var client = getDataClient("https://api.rakutenmarketing.com");
+  debug("merchants fetch complete");
+}
 
-  var bearerToken;
-  var refreshToken;
+var commissionsRunning = false;
+function* getCommissionDetails() {
+  if (commissionsRunning) { throw "already-running"; }
+  commissionsRunning = true;
 
-  function getCode(done) {
-    if(bearerToken) {
-      done();
-    } else {
-      client.post({
-        uri: "token",
-        headers: {
-          Authorization: "Basic YkxnOXFicVRzZWdDQ0VPTE5NN2dieHV0eWFvYTpKRWZTcEVPMldyZWhnRlB0MHJCMXd2MHU1REVh"
-        },
-        form: {
-          grant_type: 'password',
-          username: 'Ominto',
-          password: 'Minty678',
-          scope: '3239617'
-        }
-      }, function(error, response, body) {
-        bearerToken = body.access_token;
-        refreshToken = body.refresh_token;
-        setTimeout(function() {
-          refreshCode();
-        }, body.expires_in * 1000 - 10000);
+  var currentPage = 1;
+  var startTime = moment().subtract('1 day').startOf('day').toISOString().replace(/\..+$/, '-00:00');
+  var endTime = moment().add('1 day').startOf('day').toISOString().replace(/\..+$/, '-00:00');
 
-        done();
-      });
+  var url;
+  debug("commissions fetch started");
+  try {
+    var client = yield getFreshClient();
+    while (true) {
+      url = "/events/1.0/transactions?limit=1000&page="+currentPage;
+      debug('commisions fetch: %s', url);
+      var response = yield client.get(url);
+      var commissions = response.body;
+      if (!commissions) { break; }
+      sendCommissionsToEventHub(commissions || []);
+      if (commissions.length < 1000) { break; }
+      currentPage += 1;
     }
+  } finally {
+    commissionsRunning = false;
   }
+  debug("commissions fetch complete");
 
-  function refreshCode() {
-    client.post({
+}
+
+function sendMerchantsToEventHub(merchants) {
+  debug("found %d merchants to process", merchants.length);
+}
+
+function sendCommissionsToEventHub(commissions) {
+  debug("found %d commisions to process", commissions.length);
+}
+
+var currentClient;
+var authed = false;
+var bearerToken;
+var refreshToken;
+function getFreshClient() {
+  if (!currentClient) {
+    currentClient = getClient();
+  }
+  return co(function*() {
+    if (authed) {
+      return currentClient;
+    }
+
+    debug('starting client auth');
+    var response = yield currentClient.post({
       uri: "token",
       headers: {
+        Authorization: "Basic YkxnOXFicVRzZWdDQ0VPTE5NN2dieHV0eWFvYTpKRWZTcEVPMldyZWhnRlB0MHJCMXd2MHU1REVh"
+      },
+      form: {
+        grant_type: 'password',
+        username: 'Ominto',
+        password: 'Minty678',
+        scope: '3239617'
+      }
+    });
+
+    bearerToken = response.body.access_token;
+    refreshToken = response.body.refresh_token;
+    currentClient = getClient({
+      headers: { Authorization: "Bearer " + bearerToken }
+    });
+    setTimeout(refreshCode, response.body.expires_in * 1000 - 60000);
+    return currentClient;
+  });
+}
+
+function refreshCode() {
+  co(function*() {
+      var response = yield currentClient.post({
+      uri: "token",
+      headers: {
+        // will override authorization field from current thing
         Authorization: "Basic YkxnOXFicVRzZWdDQ0VPTE5NN2dieHV0eWFvYTpKRWZTcEVPMldyZWhnRlB0MHJCMXd2MHU1REVh"
       },
       form: {
@@ -56,107 +115,35 @@
         refresh_token: refreshToken,
         scope: 'Production'
       }
-    }, function(error, response, body) {
-      bearerToken = body.access_token;
-      refreshToken = body.refresh_token;
-      setTimeout(function() {
-        refreshCode(body);
-      }, body.expires_in * 1000 - 60000);
     });
-  }
-  
-  var merchantsRunning = false;
-  function getMerchants(nextUri) {
-    getCode(function () {
-      nextUri = nextUri || "advertisersearch/1.0";
-      merchantsRunning = true;
-
-      client.get({
-        uri: nextUri,
-        headers: {
-          Authorization: "Bearer " + bearerToken,
-          accept: "application/xml"
-        }
-      }, function(error, response, body) {
-        var ret = parser.toJson(body, {
-          object: true,
-        });
-
-        var merchants = ret.result.midlist.merchant;
-        if(merchants) {
-          sendMerchantsToEventHub(merchants);
-        }
-        merchantsRunning = false;
-      });
+    bearerToken = response.body.access_token;
+    refreshToken = response.body.refresh_token;
+    currentClient = getClient({
+      headers: { Authorization: "Bearer " + bearerToken }
     });
-  }
+    setTimeout(refreshCode, response.body.expires_in * 1000 - 60000);
+    return currentClient;
+  }).then(function() {
+    debug("authorization code has been refreshed");
+  }).catch(function(error) {
+    console.error("error in linkshare api token refresh: "+error);
+  });
+}
 
-  var commissionsRunning = false;
-  function getCommissionDetails(page, startDate, endDate) {
-    getCode(function () {
-      page = page || 1;
+function getClient(fields) {
+  var dataClient = request.defaults(_.extend({
+    baseUrl: "https://api.rakutenmarketing.com",
+    json: true,
+    simple: false,
+    resolveWithFullResponse: true,
+    headers: {
+      accept: "application/xml"
+    }
+  }, fields));
+  return dataClient;
+}
 
-      if(!startDate) {
-        var tempStart = new Date();
-        tempStart.setDate(tempStart.getDate() - 1);
-        tempStart = tempStart.toISOString().substr(0,19).replace("T", " ")
-      } else {
-        tempStart = startDate;
-      }
-
-      if(!endDate) {
-        var tempEnd = new Date();
-        tempEnd.setDate(tempEnd.getDate() + 1);
-        tempEnd = tempEnd.toISOString().substr(0,19).replace("T", " ")
-      } else {
-        tempEnd = endDate;
-      }
-
-      if(!commissionsRunning || page != 1) {
-        var uri = "/events/1.0/transactions?limit=1000&page="+page;
-        client.get({
-          uri: uri,
-          headers: {
-            Authorization: "Bearer " + bearerToken,
-            accept: "application/json"
-          }
-        }, function(error, response, body) {
-          var commissions = body;
-          if(commissions) {
-            sendCommissionsToEventHub(commissions);
-
-            if(commissions.length == 1000) {
-              getCommissionDetails(page+1, tempStart, tempEnd);
-            } else {
-              commissionsRunning = false;
-            }
-          } else {
-            commissionsRunning = false;
-          }
-        });
-      }
-    });
-  }
-
-  function sendMerchantsToEventHub(merchants) {
-    console.log(merchants);
-    //The lambda on this kinesis is gonna be in charge of getting all of the links and products
-    //in bulk calls to the links/products API's... still a bit annoying cuz they rate-limit
-    //those API's to 25 per minutes... so if all the merchants in a given "set" have huge Product 
-    //listings
-  }
-
-  function sendCommissionsToEventHub(commissions) {
-    console.log(commissions);
-    //The lambda on this kinesis is gonna be in charge of getting all of the links and products
-    //in bulk calls to the links/products API's... still a bit annoying cuz they rate-limit
-    //those API's to 25 per minutes... so if all the merchants in a given "set" have huge Product 
-    //listings
-  }
-
-  module.exports = {
-    getMerchants: getMerchants,
-    getCommissionDetails: getCommissionDetails,
-    getCode: getCode
-  }
-})();
+module.exports = {
+  getCommissionDetails: getCommissionDetails,
+  getMerchants: getMerchants
+};
