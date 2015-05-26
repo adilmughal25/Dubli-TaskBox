@@ -4,7 +4,6 @@ var _ = require('lodash');
 var parser = require('xml2json');
 var request = require("request-promise");
 var co = require('co');
-var wait = require('co-wait');
 var moment = require('moment');
 var debug = require('debug')('linkshare:api');
 

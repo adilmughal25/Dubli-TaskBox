@@ -3,7 +3,7 @@
 var parser = require('xml2json');
 var request = require("request-promise");
 var co = require('co');
-var wait = require('co-wait');
+var wait = require('co-waiter');
 var moment = require('moment');
 var debug = require('debug')('impactradius:api');
 
@@ -26,7 +26,7 @@ function* getMerchants() {
       }
       sendMerchantsToEventHub(response.body.Campaigns || []);
       url = response.body['@nextpageuri'];
-      if (url) { yield wait(moment.duration(1, 'minute')); }
+      if (url) { yield wait.minutes(1); }
     }
   } finally {
     merchantsRunning = false;
@@ -57,7 +57,7 @@ function* getCommissionDetails() {
       }
       sendCommissionsToEventHub(response.body.Actions || []);
       url = response.body['@nextpageuri'];
-      if (url) { yield wait(moment.duration(1, 'minute')); }
+      if (url) { yield wait.minutes(1); }
     }
   } finally {
     commissionsRunning = false;
