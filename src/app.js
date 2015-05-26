@@ -75,7 +75,7 @@ function init(id) {
   }
 
   function createTask(name, task, spec) {
-    var id = name.replace(/(?:\W+|^)(\w)/, (m,letter) => letter.toUpperCase());
+    var id = name.replace(/(?:\W+|^)(\w)/g, (m,letter) => letter.toUpperCase());
     log.info("Creating task: "+name+" ("+id+") with spec: "+JSON.stringify(spec)+"");
     schedules[id] = schedule.scheduleJob(spec, taskRunner(name, task));
 
