@@ -133,7 +133,7 @@ function getClient(fields) {
   var dataClient = request.defaults(_.extend({
     baseUrl: "https://api.rakutenmarketing.com",
     json: true,
-    simple: false,
+    simple: true,
     resolveWithFullResponse: true,
     headers: {
       accept: "application/xml"

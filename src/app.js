@@ -38,6 +38,8 @@ function init(id) {
   createTask("ImpactRadius Commissions", impactRadiusApi.getCommissionDetails, {minute: [0,10,20,30,40,50]});
   createTask("LinkShare Merchants", linkShareApi.getMerchants, {minute: 5});
   createTask("LinkShare Commissions", linkShareApi.getCommissionDetails, {minute: [0,10,20,30,40,50]});
+  createTask("ClickJunction Merchants", clickJunctionApi.getMerchants, {minute: 5})
+  createTask("ClickJunction Commissions", clickJunctionApi.getCommissionDetails, {minute: [0,10,20,30,40,50]})
 
 /* STILL NEED TO BE REFACTORED:
 
@@ -46,19 +48,7 @@ function init(id) {
     getImpactRadiusProducts();
   });
 
-
-  //ONCE AN HOUR MERCHANT BASE LIST GET
-  schedules.clickJunctionApiMerchants = schedule.scheduleJob({minute: 5}, function(){
-    co(clickJunctionApi.getMerchants).then(reportSuccess, reportError);
-  });
-
-  //EVERY TEN MINUTES CONVERSIONS/COMMISSIONS GET
-  schedules.clickJunctionApiCommissions = schedule.scheduleJob({minute: [0,10,20,30,40,50]}, function(){
-    clickJunctionApi.getCommissionDetails();
-  });
 */
-
-
 
   function taskRunner(name, task) {
     return function() {

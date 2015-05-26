@@ -1,122 +1,114 @@
-(function() {
-  "use strict";
-  var parser = require('xml2json');
-  var request = require("request-promise");
-  require('promise.prototype.finally');
+"use strict";
 
-  function getDataClient(baseUrl) {
-    var dataClient = request.defaults({
-      baseUrl: baseUrl,
-      json: true,
-      simple: false,
-      resolveWithFullResponse: true
+var debug = require('debug')('clickjunction:api');
+var parser = require('xml2json');
+var moment = require('moment');
+var request = require("request-promise");
+var wait = require('co-waiter');
+
+var advertiserClient = getClient("https://advertiser-lookup.api.cj.com");
+var commissionClient = getClient("https://commission-detail.api.cj.com/v3");
+
+var merchantsRunning = false;
+function* getMerchants() {
+  if (merchantsRunning) { throw 'already-running'; }
+  merchantsRunning = true;
+
+  var perPage = 25;
+  var page = 1;
+  var client = getClient("https://advertiser-lookup.api.cj.com/v3");
+  var url = advertiserUrl(page, perPage);
+
+  debug("merchants fetch started");
+  try {
+    while (url) {
+      debug("merchants fetch: %s", url);
+      var response = yield client.get(url);
+      var ret = parser.toJson(response.body, {
+        object: true,
+      });
+      var info = ret['cj-api'].advertisers;
+      var merchants = info.advertiser;
+      if (merchants) { sendMerchantsToEventHub(merchants); }
+
+      url = (info['total-matched'] >= perPage * info['page-number']) ?
+        advertiserUrl(++page, perPage) : null;
+      if (url) { yield wait.minutes(1); }
+    }
+  } finally {
+    merchantsRunning = false;
+  }
+  debug("merchants fetch complete");
+}
+
+
+var commissionsRunning = false;
+function* getCommissionDetails() {
+  if (commissionsRunning) { throw 'already-running'; }
+  commissionsRunning = true;
+
+  var startTime = moment().subtract('1 day').startOf('day').format('YYYY-MM-DD');
+  var endTime = moment().add('1 day').startOf('day').format('YYYY-MM-DD');
+
+  var client = getClient("https://commission-detail.api.cj.com/v3");
+  var url = commissionsUrl(startTime, endTime);
+
+  // according to http://cjsupport.custhelp.com/app/answers/detail/a_id/1553,
+  // this one doesn't seem to paginate, so we apparently don't need a fancy
+  // async while loop here
+  debug("commissions fetch start");
+  try {
+    debug("merchants fetch: %s", url);
+    var response = yield client.get(url);
+    var ret = parser.toJson(response.body, {
+      object: true,
     });
-    return dataClient;
-  }
-  var advertiserClient = getDataClient("https://advertiser-lookup.api.cj.com");
-  var commissionClient = getDataClient("https://commission-detail.api.cj.com");
-  
-  var merchantsRunning = false;
-  function getMerchants(page) {
-    page = page || 1;
-    var perPage = 25;
-    
-    //either if its not already running (if the scheduler hits it again on the hour)
-    //or if its internally called by itself for the next page
-    if(!merchantsRunning || page != 1) {
-      merchantsRunning = true;
-      advertiserClient.get({
-        uri: "/v3/advertiser-lookup?advertiser-ids=joined&records-per-page="+perPage+"&page-number="+page,
-        headers: {
-          authorization: "009c8796168d78c027c9b4f1d8ed3902172eefa59512b9f9647482240bcd99d00a70c6358dd2b855f30afeafe055e1c8d99e632a626b1fa073a4092f4dd915e26d/36d998315cefa43e0d0377fff0d89a2fef85907b556d8fc3b0c3edc7a90b2e07fc8455369f721cc69524653234978c36fd12c67646205bf969bfa34f8242de8d",
-          accept: "application/xml"
-        }
-      }, function(error, response, body) {
-        var ret = parser.toJson(body, {
-          object: true,
-        });
-        var info = ret['cj-api']['advertisers'];
-        var merchants = ret['cj-api']['advertisers']['advertiser'];
 
-        if(merchants) {
-          sendMerchantsToEventHub(merchants);
-        }
+    var info = ret['cj-api'].commissions;
+    var commissions = info.commission;
 
-        if(info['total-matched'] >= perPage * info['page-number']) {
-          //wait a minute and grab the next page
-          setTimeout(function() {
-            getMerchants(info['page-number'] + 1);
-          }, 1*60*1000);
-        } else {
-          merchantsRunning = false;
-        }
-      });
+    if(commissions) {
+      sendCommissionsToEventHub(commissions);
     }
+  } finally {
+    commissionsRunning = false;
   }
+  debug("commissions fetch complete");
+}
 
-  var commissionsRunning = false;
-  function getCommissionDetails(page) {
-    var tempEnd = new Date();
-    var tempStart = new Date();
-    
-    tempEnd.setDate(tempEnd.getDate() + 1);
-    tempStart.setDate(tempStart.getDate() - 1);
+function advertiserUrl(page, perPage) {
+  return "/advertiser-lookup?advertiser-ids=joined&records-per-page="+perPage+"&page-number="+page;
+}
 
-    tempEnd = tempEnd.getFullYear() + "-" + (tempEnd.getMonth() + 1) + "-" + tempEnd.getDate();
-    tempStart = tempStart.getFullYear() + "-" + (tempStart.getMonth() + 1) + "-" + tempStart.getDate();
-    
-    if(!commissionsRunning || page != 1) {
-      commissionsRunning = true;
-      commissionClient.get({
-        uri: "v3/commissions?date-type=posting&start-date="+tempStart+"&end-date="+tempEnd,
-        headers: {
-          authorization: "009c8796168d78c027c9b4f1d8ed3902172eefa59512b9f9647482240bcd99d00a70c6358dd2b855f30afeafe055e1c8d99e632a626b1fa073a4092f4dd915e26d/36d998315cefa43e0d0377fff0d89a2fef85907b556d8fc3b0c3edc7a90b2e07fc8455369f721cc69524653234978c36fd12c67646205bf969bfa34f8242de8d",
-          accept: "application/xml"
-        }
-      }, function(error, response, body) {
-        var ret = parser.toJson(body, {
-          object: true,
-        });
+function commissionsUrl(start, end) {
+  return "/commissions?date-type=posting&start-date="+start+"&end-date="+end;
+}
 
-        var info = ret['cj-api']['commissions'];
-        var commissions = ret['cj-api']['commissions']['commission'];
-
-        if(commissions) {
-          sendCommissionsToEventHub(commissions);
-        }
-
-        //DOES THIS BASTARD PAGINATE? STUPID FUCKING DOCS
-        // if(info['total-matched'] >= perPage * info['page-number']) {
-        //   //wait a minute and grab the next page
-        //   setTimeout(function() {
-        //     getCommissionDetails(info['page-number'] + 1);
-        //   }, 1*60*1000);
-        // } else {
-        //   commissionsRunning = false;
-        // }
-        commissionsRunning = false;
-      });
+function getClient(baseUrl) {
+  var dataClient = request.defaults({
+    baseUrl: baseUrl,
+    json: true,
+    simple: true,
+    resolveWithFullResponse: true,
+    headers: {
+      authorization: "009c8796168d78c027c9b4f1d8ed3902172eefa59512b9f9647482240bcd99d00a70c6358dd2b855f30afeafe055e1c8d99e632a626b1fa073a4092f4dd915e26d/36d998315cefa43e0d0377fff0d89a2fef85907b556d8fc3b0c3edc7a90b2e07fc8455369f721cc69524653234978c36fd12c67646205bf969bfa34f8242de8d",
+      accept: "application/xml"
     }
-  }
+  });
+  return dataClient;
+}
 
-  function sendMerchantsToEventHub(merchants) {
-    console.log(merchants);
-    //The lambda on this kinesis is gonna be in charge of getting all of the links and products
-    //in bulk calls to the links/products API's... still a bit annoying cuz they rate-limit
-    //those API's to 25 per minutes... so if all the merchants in a given "set" have huge Product 
-    //listings
-  }
+function sendMerchantsToEventHub(merchants) {
+  if (! merchants) { merchants = []; }
+  debug("found %d merchants to process", merchants.length);
+}
 
-  function sendCommissionsToEventHub(commissions) {
-    console.log(commissions);
-    //The lambda on this kinesis is gonna be in charge of getting all of the links and products
-    //in bulk calls to the links/products API's... still a bit annoying cuz they rate-limit
-    //those API's to 25 per minutes... so if all the merchants in a given "set" have huge Product 
-    //listings
-  }
+function sendCommissionsToEventHub(commissions) {
+  if (! commissions) { commissions = []; }
+  debug("found %d commisions to process", commissions.length);
+}
 
-  module.exports = {
-    getMerchants: getMerchants,
-    getCommissionDetails: getCommissionDetails
-  }
-})();
+module.exports = {
+  getCommissionDetails: getCommissionDetails,
+  getMerchants: getMerchants
+};
