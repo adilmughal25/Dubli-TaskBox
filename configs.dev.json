@@ -1,4 +1,7 @@
 {
   "env": "dev",
-  "logLevel": "dev"
+  "logLevel": "dev",
+  "data_api": {
+    "url": "http://localhost:8090/"
+  }
 }
