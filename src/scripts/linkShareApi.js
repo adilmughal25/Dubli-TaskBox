@@ -66,17 +66,30 @@ function sendCommissionsToEventHub(commissions) {
 
 var currentClient;
 var authed = false;
+var currentlyAuthing = false;
+var authQueue = [];
 var bearerToken;
 var refreshToken;
 function getFreshClient() {
   if (!currentClient) {
     currentClient = getClient();
   }
+  if (authed) {
+    return Promise.resolve(currentClient);
+  }
+  if (currentlyAuthing) {
+    debug("Auth in progress. piggybacking!");
+    var promise = new Promise(function(resolve, reject) {
+      var resolve2 = function(val){
+        debug("Piggyback success!");
+        resolve(val);
+      };
+      authQueue.push({resolve: resolve2, reject: reject});
+    });
+    return promise;
+  }
   return co(function*() {
-    if (authed) {
-      return currentClient;
-    }
-
+    currentlyAuthing = true;
     debug('starting client auth');
     var response = yield currentClient.post({
       uri: "token",
@@ -96,12 +109,27 @@ function getFreshClient() {
     currentClient = getClient({
       headers: { Authorization: "Bearer " + bearerToken }
     });
+    debug("expire time: %d", response.body.expires_in);
     setTimeout(refreshCode, response.body.expires_in * 1000 - 60000);
+    // setTimeout(refreshCode, 30 * 1000); // using this during testing the auth issues
+    authed = true;
+    currentlyAuthing = false;
+    if (authQueue.length) {
+      authQueue.forEach(q => q.resolve(currentClient));
+      authQueue = [];
+    }
     return currentClient;
+  }).catch(function(error) {
+    if (authQueue.length) {
+      authQueue.forEach(q => q.reject(error));
+      authQueue = [];
+    }
+    throw error;
   });
 }
 
 function refreshCode() {
+  debug("Refreshing Auth Token");
   co(function*() {
       var response = yield currentClient.post({
       uri: "token",
@@ -111,6 +139,8 @@ function refreshCode() {
       },
       form: {
         grant_type: 'password',
+        username: 'Ominto',
+        password: 'Minty678',
         refresh_token: refreshToken,
         scope: 'Production'
       }
@@ -120,12 +150,19 @@ function refreshCode() {
     currentClient = getClient({
       headers: { Authorization: "Bearer " + bearerToken }
     });
+    debug("refreshed expire time: %d", response.body.expires_in);
     setTimeout(refreshCode, response.body.expires_in * 1000 - 60000);
     return currentClient;
   }).then(function() {
     debug("authorization code has been refreshed");
   }).catch(function(error) {
-    console.error("error in linkshare api token refresh: "+error);
+    if (error.statusCode && error.error) {
+      console.error("error in linkshare api token refresh: ", error.error);
+    } else {
+      console.error("error in linkshare api token refresh: ", error);
+    }
+    authed = false;
+    currentClient = null;
   });
 }
 

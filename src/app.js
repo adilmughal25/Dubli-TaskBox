@@ -5,6 +5,8 @@ var uuid = require('node-uuid');
 var bunyan = require('bunyan');
 var co = require('co');
 var schedule = require('node-schedule');
+var debug = require('debug')('taskbox:tasks');
+var _ = require('lodash');
 
 var impactRadiusProductFtp = require("./scripts/impactRadiusProductFtp");
 var clickJunctionApi = require("./scripts/clickJunctionApi");
@@ -34,6 +36,7 @@ function init(id) {
   var schedules = {};
 
   // already been refactored
+
   createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
   createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, {minute: 5});
   createTask("ImpactRadius Commissions", impactRadiusApi.getCommissionDetails, {minute: [0,10,20,30,40,50]});
@@ -44,11 +47,12 @@ function init(id) {
 
   function taskRunner(name, task) {
     return function() {
+      log.info(name +" started");
       co(task).then(function() {
         log.info(name + " successfully completed!");
       }).catch(function(error) {
         if (error === "already-running") {
-          log.info(name + " is currently already running. Waiting until next run-time");
+          debug(name + " is currently already running. Waiting until next run-time");
           return;
         }
         log.error(name + " ERROR OCCURED: " + ('stack' in error) ? error.stack : error);
@@ -58,12 +62,14 @@ function init(id) {
 
   function createTask(name, task, spec) {
     var id = name.replace(/(?:\W+|^)(\w)/g, (m,letter) => letter.toUpperCase());
-    log.info("Creating task: "+name+" ("+id+") with spec: "+JSON.stringify(spec)+"");
+    debug("Creating task: "+name+" ("+id+") with spec: "+JSON.stringify(spec)+"");
+    var rule = new schedule.RecurrenceRule();
+    _.extend(rule, spec);
     schedules[id] = schedule.scheduleJob(spec, taskRunner(name, task));
 
-    if ((process.env.NODE_ENV||"").indexOf('dev') === 0) {
-      log.info("Dev Mode: Starting task `"+name+"` immediately");
-      taskRunner('Development Autostart: '+name, task)();
+    if ((process.env.NODE_ENV || "").indexOf('dev') === 0) {
+      debug("Dev Mode: Starting task `%s` immediately", id);
+      taskRunner('(dev-autostart) '+name, task)();
     }
   }
 }

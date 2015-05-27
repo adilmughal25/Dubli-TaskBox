@@ -12,7 +12,6 @@ require('promise.prototype.finally');
 AWS.config.region = 'us-east-1';
 
 cofy.class(FtpClient);
-// cofy.class(AWS.S3);
 
 var connectionCreds = {
   host: "products.impactradius.com",
@@ -22,8 +21,6 @@ var connectionCreds = {
 var s3_bucket = 'automation-352228731405';
 var filePattern = /_IR\.csv\.gz$/;
 var lastProcessed = {};
-var s3client = new AWS.S3();
-cofy.object(s3client);
 
 var productFetchRunning = false;
 function* getProducts() {
@@ -81,13 +78,37 @@ function processFiles(list) {
   return co(function*(){
     for (var i = 0; i<list.length; i++) {
       var entry = list[i];
-      var data = yield getFile(list[i].path);
-      var response = yield s3client.$putObject({
-        Bucket: s3_bucket,
-        Key: 'impactradius/productftp' + entry.path,
-        Body: data
-      });
+      var stream = yield getFile(entry.path);
+      var response = yield sendToS3(entry, stream);
+      debug("%s (%d bytes) uploaded to %s", entry.path, response.bytesSent, response.Location);
     }
+  });
+}
+
+function sendToS3(entry, dataStream) {
+  return new Promise(function(resolve, reject) {
+    debug("streaming %s to s3", entry.path);
+    var s3obj = new AWS.S3({
+      params: {
+        Bucket: s3_bucket,
+        Key: 'impactradius/productftp' + entry.path
+      }
+    });
+    var sent = 0;
+    s3obj
+      .upload({Body: dataStream})
+      .on('httpUploadProgress', function(evt) {
+        // debug("%s sent %d bytes", entry.path, evt.loaded);
+        sent = evt.loaded;
+      })
+      .send(function(error, response) {
+        if (error) {
+          debug("S3 send error %s", error);
+          return reject(error);
+        }
+        response.bytesSent = sent;
+        resolve(response);
+      });
   });
 }
 
@@ -95,21 +116,25 @@ function getFile(filePath) {
   return co(function*() {
     var ftp = yield getFtp();
     debug("fetching file %s", filePath);
-    var data = yield ftp.$get(filePath, true);
-    return data;
+    var stream = yield ftp.$get(filePath, true);
+    stream.on('end', ftp.end);
+    return stream;
   });
 }
 
+var connCount = 0;
 function getFtp() {
+  connCount++;
+  var cur = connCount;
   return new Promise(function(resolve, reject) {
     var ftp = new FtpClient();
     ftp.on('ready', resolve.bind(null, ftp));
     ftp.on('error', reject);
-    debug("ftp connection started");
+    debug("ftp connection #%d started", cur);
     var _end = ftp.end;
     ftp.end = function() {
-      debug("ftp connection closed");
-      _end.apply(this, arguments);
+      debug("ftp connection #%d closed", cur);
+      _end.apply(ftp, arguments);
     };
     ftp.connect(connectionCreds);
   });

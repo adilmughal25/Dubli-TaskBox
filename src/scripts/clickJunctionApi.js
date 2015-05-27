@@ -14,7 +14,7 @@ function* getMerchants() {
   if (merchantsRunning) { throw 'already-running'; }
   merchantsRunning = true;
 
-  var perPage = 25;
+  var perPage = 100;
   var page = 1;
   var client = getClient("https://advertiser-lookup.api.cj.com/v3");
   var url = advertiserUrl(page, perPage);
@@ -33,7 +33,10 @@ function* getMerchants() {
 
       url = (info['total-matched'] >= perPage * info['page-number']) ?
         advertiserUrl(++page, perPage) : null;
-      if (url) { yield wait.minutes(1); }
+      if (url) {
+        debug("waiting one minute to load %s", url);
+        yield wait.minutes(1);
+      }
     }
   } finally {
     merchantsRunning = false;
@@ -58,7 +61,7 @@ function* getCommissionDetails() {
   // async while loop here
   debug("commissions fetch start");
   try {
-    debug("merchants fetch: %s", url);
+    debug("commissions fetch: %s", url);
     var response = yield client.get(url);
     var ret = parser.toJson(response.body, {
       object: true,
