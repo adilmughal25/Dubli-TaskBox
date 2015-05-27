@@ -40,8 +40,8 @@ function* getCommissionDetails() {
   commissionsRunning = true;
 
   var perPage = 1000;
-  var startTime = moment().subtract('1 day').startOf('day').toISOString().replace(/\..+$/, '-00:00');
-  var endTime = moment().add('1 day').startOf('day').toISOString().replace(/\..+$/, '-00:00');
+  var startTime = moment().subtract(1, 'days').startOf('day').toISOString().replace(/\..+$/, '-00:00');
+  var endTime = moment().add(1, 'days').startOf('day').toISOString().replace(/\..+$/, '-00:00');
 
   var client = getClient();
   var url = "Mediapartners/IRDHLqHpQY79155520ngJ28D9dMGTVZJA1/Actions.json?PageSize=" +

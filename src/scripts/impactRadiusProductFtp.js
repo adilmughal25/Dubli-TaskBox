@@ -1,113 +1,120 @@
-(function() {
-  "use strict";
+"use strict";
 
-  var FtpClient = require('ftp');
-  var AWS = require('aws-sdk');
-    AWS.config.region = 'us-east-1';
+var _ = require('lodash');
+var AWS = require('aws-sdk');
+var co = require('co');
+var cofy = require('cofy');
+var debug = require('debug')('impactradius:ftp');
+var FtpClient = require('ftp');
+var path = require('path');
+require('promise.prototype.finally');
 
-  var impactRadiusFilesToGet = [];
-  var impactRadiusFilesLastProcessed = {};
-  var dirsProcessed = 0;
+AWS.config.region = 'us-east-1';
 
-  var connectionCreds = {
-    host: "products.impactradius.com",
-    user: "ps-ftp_155520",
-    password: "EtQQMmRVjb"
-  };
-  
-  function getImpactRadiusFtp() {
-    var ftp = new FtpClient();
-    ftp.on("ready", function() {
-      getFilesList("/", ftp);
-    });
-    ftp.connect(connectionCreds);
+cofy.class(FtpClient);
+// cofy.class(AWS.S3);
+
+var connectionCreds = {
+  host: "products.impactradius.com",
+  user: "ps-ftp_155520",
+  password: "EtQQMmRVjb"
+};
+var s3_bucket = 'automation-352228731405';
+var filePattern = /_IR\.csv\.gz$/;
+var lastProcessed = {};
+var s3client = new AWS.S3();
+cofy.object(s3client);
+
+var productFetchRunning = false;
+function* getProducts() {
+  if (productFetchRunning) { throw "already-running"; }
+  productFetchRunning = true;
+  try {
+    var fileList = yield allFiles();
+    yield processFiles(fileList);
+  } finally {
+    productFetchRunning = false;
   }
+}
 
-  function getFilesList(path, ftp) {
-    dirsProcessed++;
-    ftp.list(path, true, function(err, list) {
-      list.forEach(function(item) {
-        if(item.type == 'd') {
-          getFilesList(path + item.name, ftp);
-        } else if (item.type == '-' && item.name.indexOf("_IR.csv.gz") != -1) {
-          //OPTION - store this shit in redis as a hash...  but honestly, if the task box crashed
-          //might as well give it all a retry... on the lambdas we can more safely access redis via
-          //data lib, and as such can store a file md5 type hash there and avoid the actually expensive
-          //processing.
-          var itemDate = new Date(item.date);
-          if(!impactRadiusFilesLastProcessed[item.name] || impactRadiusFilesLastProcessed[item.name] < itemDate) {
-            impactRadiusFilesToGet.push(path + "/" + item.name);
-            impactRadiusFilesLastProcessed[item.name] = itemDate;
-          }
+function allFiles() {
+  return co(function*() {
+    var ftp = yield getFtp();
+    var list = yield _fetch(ftp, '/');
+    ftp.end();
+    return list;
+  });
+
+  function _fetch(ftp, dir) {
+    return co(function*() {
+      var results = [];
+      debug("get file list for dir %s", dir);
+      var list = yield ftp.$list(dir, true);
+      list.forEach(x => x.path = path.join(dir, x.name));
+      var item, i;
+      for (i = 0; i < list.length; i++) {
+        item = list[i];
+        if (item.type === 'd') {
+          results = results.concat(yield _fetch(ftp, item.path));
+        } else if (_fresh(item)) {
+          debug("found item %s", item.path);
+          results.push(_.pick(item, 'path', 'date'));
         }
-      });
-      dirsProcessed--;
-      if(dirsProcessed <= 0) {
-        ftp.end();
-        getImpactRadiusIndivFiles();
       }
+      return _.sortBy(results, 'path');
     });
   }
 
-  
-  function getImpactRadiusIndivFiles() {
-    console.log("Starting Impact Radius Indiv Files", impactRadiusFilesToGet)
-    var iter = makeIterator(impactRadiusFilesToGet);
-    doIteration(iter);
+  function _fresh(item) {
+    if (item.type !== '-') return false;
+    if (!filePattern.test(item.name)) return false;
+
+    var entry = lastProcessed[item.path];
+    if (!entry) return true;
+    if (entry < item.date) return true;
+
+    return false;
   }
+}
 
-  //This is hideously needlessly complex... but since the damn FTP lib crashed if I just queued them all up
-  //and also the stupid thing can't have to many connections open at a time... lame ass server
-  //so need to do them one by one kinda synchronously.
-  function makeIterator(array){
-    var nextIndex = 0;
-    return {
-      next: function(){
-        return nextIndex < array.length ?
-          {value: array[nextIndex++], done: false} :
-          {done: true};
-      }
-    }
-  }
-
-  function doIteration(iter) {
-    var next = iter.next();
-    var path = next.value;
-
-    console.log("PATH", path)
-    if(path) {
-      getImpactRadiusIndivFile(path, function() {
-        doIteration(iter);
+function processFiles(list) {
+  return co(function*(){
+    for (var i = 0; i<list.length; i++) {
+      var entry = list[i];
+      var data = yield getFile(list[i].path);
+      var response = yield s3client.$putObject({
+        Bucket: s3_bucket,
+        Key: 'impactradius/productftp' + entry.path,
+        Body: data
       });
-    } else {
-      console.log("Finished Impact Radius Indiv Files", impactRadiusFilesToGet);
-      impactRadiusFilesToGet = [];
     }
-  }
+  });
+}
 
-  function getImpactRadiusIndivFile(path, next) {
+function getFile(filePath) {
+  return co(function*() {
+    var ftp = yield getFtp();
+    debug("fetching file %s", filePath);
+    var data = yield ftp.$get(filePath, true);
+    return data;
+  });
+}
+
+function getFtp() {
+  return new Promise(function(resolve, reject) {
     var ftp = new FtpClient();
-    ftp.on("ready", function() {
-      getIndivFile(path, ftp, next);
-    });
+    ftp.on('ready', resolve.bind(null, ftp));
+    ftp.on('error', reject);
+    debug("ftp connection started");
+    var _end = ftp.end;
+    ftp.end = function() {
+      debug("ftp connection closed");
+      _end.apply(this, arguments);
+    };
     ftp.connect(connectionCreds);
-  }
+  });
+}
 
-  function getIndivFile(path, ftp, next) {
-    ftp.get(path, true, function(err, data) {
-      if (err) throw err;
-      data.once('close', function() {
-        ftp.end();
-      });
-      var s3obj = new AWS.S3({params: {Bucket: 'automation-352228731405', Key: 'impactradius/productftp' + path}});
-      s3obj.upload({Body: data}).on('httpUploadProgress', function(evt) {
-
-      }).send(function(err, data) { 
-        next();
-      });
-    });   
-  }
-
-  module.exports = getImpactRadiusFtp;
-
-})();
+module.exports = {
+  getProducts: getProducts
+};

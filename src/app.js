@@ -6,7 +6,7 @@ var bunyan = require('bunyan');
 var co = require('co');
 var schedule = require('node-schedule');
 
-var getImpactRadiusProducts = require("./scripts/impactRadiusProductFtp");
+var impactRadiusProductFtp = require("./scripts/impactRadiusProductFtp");
 var clickJunctionApi = require("./scripts/clickJunctionApi");
 var impactRadiusApi = require("./scripts/impactRadiusApi");
 var linkShareApi = require("./scripts/linkShareApi");
@@ -34,21 +34,13 @@ function init(id) {
   var schedules = {};
 
   // already been refactored
+  createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
   createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, {minute: 5});
   createTask("ImpactRadius Commissions", impactRadiusApi.getCommissionDetails, {minute: [0,10,20,30,40,50]});
   createTask("LinkShare Merchants", linkShareApi.getMerchants, {minute: 5});
   createTask("LinkShare Commissions", linkShareApi.getCommissionDetails, {minute: [0,10,20,30,40,50]});
-  createTask("ClickJunction Merchants", clickJunctionApi.getMerchants, {minute: 5})
-  createTask("ClickJunction Commissions", clickJunctionApi.getCommissionDetails, {minute: [0,10,20,30,40,50]})
-
-/* STILL NEED TO BE REFACTORED:
-
-  //ONCE AN HOUR PRODUCT FEED TRANSFER
-  schedules.impactRadiusProductFtp = schedule.scheduleJob({minute: 1}, function(){
-    getImpactRadiusProducts();
-  });
-
-*/
+  createTask("ClickJunction Merchants", clickJunctionApi.getMerchants, {minute: 5});
+  createTask("ClickJunction Commissions", clickJunctionApi.getCommissionDetails, {minute: [0,10,20,30,40,50]});
 
   function taskRunner(name, task) {
     return function() {

@@ -47,8 +47,8 @@ function* getCommissionDetails() {
   if (commissionsRunning) { throw 'already-running'; }
   commissionsRunning = true;
 
-  var startTime = moment().subtract('1 day').startOf('day').format('YYYY-MM-DD');
-  var endTime = moment().add('1 day').startOf('day').format('YYYY-MM-DD');
+  var startTime = moment().subtract(1, 'days').startOf('day').format('YYYY-MM-DD');
+  var endTime = moment().add(1, 'days').startOf('day').format('YYYY-MM-DD');
 
   var client = getClient("https://commission-detail.api.cj.com/v3");
   var url = commissionsUrl(startTime, endTime);

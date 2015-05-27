@@ -32,8 +32,8 @@ function* getCommissionDetails() {
   commissionsRunning = true;
 
   var currentPage = 1;
-  var startTime = moment().subtract('1 day').startOf('day').toISOString().replace(/\..+$/, '-00:00');
-  var endTime = moment().add('1 day').startOf('day').toISOString().replace(/\..+$/, '-00:00');
+  var startTime = moment().subtract(1, 'days').startOf('day').toISOString().replace(/\..+$/, '-00:00');
+  var endTime = moment().add(1, 'days').startOf('day').toISOString().replace(/\..+$/, '-00:00');
 
   var url;
   debug("commissions fetch started");
