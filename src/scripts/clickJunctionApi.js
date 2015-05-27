@@ -5,6 +5,7 @@ var parser = require('xml2json');
 var moment = require('moment');
 var request = require("request-promise");
 var wait = require('co-waiter');
+var sendEvents = require('./send-events');
 
 var advertiserClient = getClient("https://advertiser-lookup.api.cj.com");
 var commissionClient = getClient("https://commission-detail.api.cj.com/v3");
@@ -29,7 +30,7 @@ function* getMerchants() {
       });
       var info = ret['cj-api'].advertisers;
       var merchants = info.advertiser;
-      if (merchants) { sendMerchantsToEventHub(merchants); }
+      if (merchants) { yield sendMerchantsToEventHub(merchants); }
 
       url = (info['total-matched'] >= perPage * info['page-number']) ?
         advertiserUrl(++page, perPage) : null;
@@ -71,7 +72,7 @@ function* getCommissionDetails() {
     var commissions = info.commission;
 
     if(commissions) {
-      sendCommissionsToEventHub(commissions);
+      yield sendCommissionsToEventHub(commissions);
     }
   } finally {
     commissionsRunning = false;
@@ -104,11 +105,13 @@ function getClient(baseUrl) {
 function sendMerchantsToEventHub(merchants) {
   if (! merchants) { merchants = []; }
   debug("found %d merchants to process", merchants.length);
+  return sendEvents.sendMerchants('clickjunction', merchants);
 }
 
 function sendCommissionsToEventHub(commissions) {
   if (! commissions) { commissions = []; }
   debug("found %d commisions to process", commissions.length);
+  return sendEvents.sendCommissions('clickjunction', commissions);
 }
 
 module.exports = {

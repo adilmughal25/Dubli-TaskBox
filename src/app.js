@@ -13,6 +13,8 @@ var clickJunctionApi = require("./scripts/clickJunctionApi");
 var impactRadiusApi = require("./scripts/impactRadiusApi");
 var linkShareApi = require("./scripts/linkShareApi");
 
+
+
 function init(id) {
   process.on('message', function(msg) {
     console.log("MSG", msg);
@@ -32,6 +34,8 @@ function init(id) {
     name: name,
     serializers: bunyan.stdSerializers
   });
+  var isDev = /^dev/.test(process.env.NODE_ENV);
+  var runOnStart = !!process.env.RUN_ON_START;
 
   var schedules = {};
 
@@ -62,12 +66,12 @@ function init(id) {
 
   function createTask(name, task, spec) {
     var id = name.replace(/(?:\W+|^)(\w)/g, (m,letter) => letter.toUpperCase());
-    debug("Creating task: "+name+" ("+id+") with spec: "+JSON.stringify(spec)+"");
+    log.info("Schedule task: "+name+" ("+id+") with spec: "+JSON.stringify(spec)+"");
     var rule = new schedule.RecurrenceRule();
     _.extend(rule, spec);
     schedules[id] = schedule.scheduleJob(spec, taskRunner(name, task));
 
-    if ((process.env.NODE_ENV || "").indexOf('dev') === 0) {
+    if (isDev && runOnStart) {
       debug("Dev Mode: Starting task `%s` immediately", id);
       taskRunner('(dev-autostart) '+name, task)();
     }

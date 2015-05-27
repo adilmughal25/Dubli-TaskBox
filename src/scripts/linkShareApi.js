@@ -6,6 +6,7 @@ var request = require("request-promise");
 var co = require('co');
 var moment = require('moment');
 var debug = require('debug')('linkshare:api');
+var sendEvents = require('./send-events');
 
 var merchantsRunning = false;
 function* getMerchants() {
@@ -19,7 +20,9 @@ function* getMerchants() {
     var response = yield client.get(url);
     var json = parser.toJson(response.body, {object:true});
     var merchants = json.result.midlist.merchant;
-    if (merchants) { sendMerchantsToEventHub(merchants || []); }
+    if (merchants) {
+      yield sendMerchantsToEventHub(merchants || [])
+    }
   } finally {
     merchantsRunning = false;
   }
@@ -45,7 +48,7 @@ function* getCommissionDetails() {
       var response = yield client.get(url);
       var commissions = response.body;
       if (!commissions) { break; }
-      sendCommissionsToEventHub(commissions || []);
+      yield sendCommissionsToEventHub(commissions || []);
       if (commissions.length < 1000) { break; }
       currentPage += 1;
     }
@@ -53,15 +56,16 @@ function* getCommissionDetails() {
     commissionsRunning = false;
   }
   debug("commissions fetch complete");
-
 }
 
 function sendMerchantsToEventHub(merchants) {
   debug("found %d merchants to process", merchants.length);
+  return sendEvents.sendMerchants('linkshare', merchants);
 }
 
 function sendCommissionsToEventHub(commissions) {
   debug("found %d commisions to process", commissions.length);
+  return sendEvents.sendCommissions('linkshare', commissions);
 }
 
 var currentClient;

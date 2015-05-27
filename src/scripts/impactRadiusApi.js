@@ -6,6 +6,9 @@ var co = require('co');
 var wait = require('co-waiter');
 var moment = require('moment');
 var debug = require('debug')('impactradius:api');
+var sendEvents = require('./send-events');
+
+var dataService = require('ominto-utils').getDataClient(require('../../configs').data_api.url);
 
 var merchantsRunning = false;
 function* getMerchants() {
@@ -24,7 +27,7 @@ function* getMerchants() {
       if (response.statusCode !== 200) {
         throw apiError(response);
       }
-      sendMerchantsToEventHub(response.body.Campaigns || []);
+      yield sendMerchantsToEventHub(response.body.Campaigns || []);
       url = response.body['@nextpageuri'];
       if (url) { yield wait.minutes(1); }
     }
@@ -55,7 +58,7 @@ function* getCommissionDetails() {
       if (response.statusCode !== 200) {
         throw apiError(response);
       }
-      sendCommissionsToEventHub(response.body.Actions || []);
+      yield sendCommissionsToEventHub(response.body.Actions || []);
       url = response.body['@nextpageuri'];
       if (url) { yield wait.minutes(1); }
     }
@@ -94,11 +97,13 @@ function apiError(response) {
 function sendMerchantsToEventHub(merchants) {
   if (! merchants) { merchants = []; }
   debug("found %d merchants to process", merchants.length);
+  return sendEvents.sendMerchants('impactradius', merchants);
 }
 
 function sendCommissionsToEventHub(commissions) {
   if (! commissions) { commissions = []; }
   debug("found %d commisions to process", commissions.length);
+  return sendEvents.sendCommissions('impactradius', commissions);
 }
 
 module.exports = {
