@@ -1,5 +1,6 @@
 cp -R /var/www/node_modules/xml2json /tmp/xml2json
 rm -rf /var/www/node_modules 2> /dev/null
+mkdir /var/www/node_modules
 cp -R /tmp/xml2json /var/www/node_modules/xml2json 
 
 rm -rf /var/www/src 2> /dev/null
