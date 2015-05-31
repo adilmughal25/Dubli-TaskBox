@@ -41,13 +41,13 @@ function init(id) {
 
   // already been refactored
 
-  createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
+  //createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
   createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, {minute: 5});
-  createTask("ImpactRadius Commissions", impactRadiusApi.getCommissionDetails, {minute: [0,10,20,30,40,50]});
-  createTask("LinkShare Merchants", linkShareApi.getMerchants, {minute: 5});
-  createTask("LinkShare Commissions", linkShareApi.getCommissionDetails, {minute: [0,10,20,30,40,50]});
-  createTask("ClickJunction Merchants", clickJunctionApi.getMerchants, {minute: 5});
-  createTask("ClickJunction Commissions", clickJunctionApi.getCommissionDetails, {minute: [0,10,20,30,40,50]});
+  //createTask("ImpactRadius Commissions", impactRadiusApi.getCommissionDetails, {minute: [0,10,20,30,40,50]});
+  //createTask("LinkShare Merchants", linkShareApi.getMerchants, {minute: 5});
+  //createTask("LinkShare Commissions", linkShareApi.getCommissionDetails, {minute: [0,10,20,30,40,50]});
+  //createTask("ClickJunction Merchants", clickJunctionApi.getMerchants, {minute: 5});
+  //createTask("ClickJunction Commissions", clickJunctionApi.getCommissionDetails, {minute: [0,10,20,30,40,50]});
 
   function taskRunner(name, task) {
     return function() {
