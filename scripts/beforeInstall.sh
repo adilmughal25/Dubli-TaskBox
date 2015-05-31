@@ -1,5 +1,8 @@
+rm -rf /var/www/node_modules 2> /dev/null
 rm -rf /var/www/src 2> /dev/null
 rm /var/www/package.json 2> /dev/null
+rm /var/www/logs/app.log 2> /dev/null
+touch /var/www/logs/app.log
 
 NODE_ENV=stage
 APP_NAME=taskbox
