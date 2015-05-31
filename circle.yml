@@ -14,3 +14,14 @@ general:
   artifacts:
     - "./docs"
     - "./coverage"
+deployment:
+  staging:
+    branch: master
+    codedeploy:
+      taskbox:
+        deployment_group: stage-taskbox
+  production:
+    branch: prod
+    codedeploy:
+      taskbox:
+        deployment_group: prod-taskbox
