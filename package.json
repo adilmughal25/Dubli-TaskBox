@@ -39,7 +39,6 @@
     "ominto-utils": "git+ssh://git@github.com:dubli/utils.git#HEAD",
     "promise.prototype.finally": "^1.0.1",
     "request-promise": "^0.4.2",
-    "xml2js": "^0.4.8",
     "xml2json": "^0.6.2"
   },
   "devDependencies": {
