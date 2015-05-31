@@ -61,7 +61,7 @@ pre-start script
     logrotate-stream /var/www/logs/app.log --keep 3 --size 50m < applogpipe &
 end script
 script
-    exec node /var/www/src/server.js ${NODE_ENV} >> applogpipe 2>&1
+    exec node --harmony /var/www/src/server.js ${NODE_ENV} >> applogpipe 2>&1
 end script
 post-stop script
     rm applogpipe
