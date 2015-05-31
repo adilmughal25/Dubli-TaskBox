@@ -1,4 +1,4 @@
-cd /var/www && npm install --production --unsafe-perm true
+cd /var/www && npm install --production --unsafe-perm --user root --group root
 chown -R root:root /var/www/node_modules
 
 . /var/scripts/env.prop
