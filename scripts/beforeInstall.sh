@@ -1,4 +1,7 @@
+cp -R /var/www/node_modules/xml2json /tmp/xml2json
 rm -rf /var/www/node_modules 2> /dev/null
+cp -R /tmp/xml2json /var/www/node_modules/xml2json 
+
 rm -rf /var/www/src 2> /dev/null
 rm /var/www/package.json 2> /dev/null
 rm /var/www/logs/app.log 2> /dev/null
