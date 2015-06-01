@@ -42,7 +42,7 @@ function init(id) {
   // already been refactored
 
   //createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
-  createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, {minute: 5});
+  createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, [0,10,20,30,40,50]);
   //createTask("ImpactRadius Commissions", impactRadiusApi.getCommissionDetails, {minute: [0,10,20,30,40,50]});
   //createTask("LinkShare Merchants", linkShareApi.getMerchants, {minute: 5});
   //createTask("LinkShare Commissions", linkShareApi.getCommissionDetails, {minute: [0,10,20,30,40,50]});
