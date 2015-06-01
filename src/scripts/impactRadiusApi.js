@@ -75,6 +75,7 @@ function reformatRequestError(error) {
   errString += " (" + o.method + " " + fullUrl + ")";
   var newError = new Error(errString);
   _.extend(newError, _.pick(error, 'cause', 'options', 'error'));
+  newError.stack = [newError.stack, "---", error.stack].join("\n"); // keep old stack
   return newError;
 }
 
