@@ -1,5 +1,6 @@
 "use strict";
 
+var _ = require('lodash');
 var parser = require('xml2json');
 var request = require("request-promise");
 var co = require('co');
@@ -7,8 +8,9 @@ var wait = require('co-waiter');
 var moment = require('moment');
 var debug = require('debug')('impactradius:api');
 var sendEvents = require('./send-events');
-
-var dataService = require('ominto-utils').getDataClient(require('../../configs').data_api.url);
+var utils = require('ominto-utils');
+var dataService = utils.getDataClient(require('../../configs').data_api.url);
+var irClient = utils.remoteApis.impactRadiusClient();
 
 var merchantsRunning = false;
 function* getMerchants() {
@@ -16,21 +18,16 @@ function* getMerchants() {
   merchantsRunning = true;
 
   var perPage = 1000;
-  var client = getClient();
   var url = "Mediapartners/IRDHLqHpQY79155520ngJ28D9dMGTVZJA1/Campaigns.json?PageSize="+perPage+"&Page=1";
 
+  var merchants;
   debug("merchants fetch started");
   try {
-    while (url) {
-      debug("merchants fetch: %s", url);
-      var response = yield client.get(url);
-      if (response.statusCode !== 200) {
-        throw apiError(response);
-      }
-      yield sendMerchantsToEventHub(response.body.Campaigns || []);
-      url = response.body['@nextpageuri'];
-      if (url) { yield wait.minutes(1); }
-    }
+    merchants = yield irClient.getPaginated(url, 'Campaigns', 60);
+    yield sendMerchantsToEventHub(merchants);
+  } catch(e) {
+    // clean up the Request error a bit
+    throw reformatRequestError(e);
   } finally {
     merchantsRunning = false;
   }
@@ -51,47 +48,34 @@ function* getCommissionDetails() {
     perPage + "&Page=1&StartDate=" + startTime + "&EndDate=" + endTime;
 
   debug("commissions fetch started");
+  var commissions;
   try {
-    while (url) {
-      debug("commissions fetch: %s", url);
-      var response = yield client.get(url);
-      if (response.statusCode !== 200) {
-        throw apiError(response);
-      }
-      yield sendCommissionsToEventHub(response.body.Actions || []);
-      url = response.body['@nextpageuri'];
-      if (url) { yield wait.minutes(1); }
-    }
+    commissions = yield irClient.getPaginated(url, 'Actions', 60);
+    yield sendMerchantsToEventHub(commissions);
+  } catch(e) {
+    throw reformatRequestError(e);
   } finally {
     commissionsRunning = false;
   }
   debug("commissions fetch complete");
 }
 
-function getClient() {
-  var dataClient = request.defaults({
-    baseUrl: "https://api.impactradius.com",
-    json: true,
-    simple: false,
-    resolveWithFullResponse: true,
-    headers: {
-      Authorization: "Basic SVJESExxSHBRWTc5MTU1NTIwbmdKMjhEOWRNR1RWWkpBMTpFYU1tNUdWZ2p3Q2FaM0ozY2NDcmlBcVJ1THNOc1VLbw==",
-      Accept: "application/json",
-      "Content-Type" : "application/json"
-    }
-  });
-  return dataClient;
-}
-
-function apiError(response) {
-  var contentType = response.headers['content-type'];
-  var isJSON = /application\/json/.test(contentType);
-  var err = "ImpactRadius api call failed: " + response.statusCode + " " + response.statusMessage;
-  if (isJSON) {
-    err += " " + ('Message' in response.body) ?
-      response.body.Message : JSON.stringify(response.body);
+function reformatRequestError(error) {
+  if (!error.options || !_.isObject(error.options) || !('method' in error.options)) {
+    // isn't a request error!
+    return error;
   }
-  return new Error(err);
+
+  var errString = error.message;
+  var o = error.options || {};
+  var url = o.url || o.uri;
+  var base = o.baseUrl || "";
+  var fullUrl = base ? [base.replace(/\/+$/, ''), url.replace(/^\/+/, '')].join('/') : url;
+
+  errString += " (" + o.method + " " + fullUrl + ")";
+  var newError = new Error(errString);
+  _.extend(newError, _.pick(error, 'cause', 'options', 'error'));
+  return newError;
 }
 
 function sendMerchantsToEventHub(merchants) {
