@@ -66,7 +66,7 @@ function reformatRequestError(error) {
     return error;
   }
 
-  var errString = error.message;
+  var errString = error.message.replace(/^Error: /, ''); // otherwise we'll get a duplicate in the msg
   var o = error.options || {};
   var url = o.url || o.uri;
   var base = o.baseUrl || "";
