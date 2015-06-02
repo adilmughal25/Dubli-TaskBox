@@ -10,14 +10,14 @@ permissions:
     pattern: "**"
     owner: node-app-files
     group: node-app
-    mode: 0750
+    mode: 750
     type:
       - directory
   - object: /var/www
     pattern: "**"
     owner: node-app-files
     group: node-app
-    mode: 0640
+    mode: 640
     type:
       - file
 hooks:
