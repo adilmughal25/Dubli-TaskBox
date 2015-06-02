@@ -7,7 +7,7 @@ NODE_ENV=$(aws ec2 describe-tags --filters "Name=resource-id,Values=${INSTANCE_I
 APP_NAME=$(aws ec2 describe-tags --filters "Name=resource-id,Values=${INSTANCE_ID}" "Name=key,Values=app" --region ${REGION} --output text | cut -f5)
 APP_SCOPE=$(aws ec2 describe-tags --filters "Name=resource-id,Values=${INSTANCE_ID}" "Name=key,Values=scope" --region ${REGION} --output text | cut -f5)
 
-rm -rf ${WWW_ROOT}/{src,package.json,logs/app.log,node_modules/*} 2> /dev/null
+rm -rf ${WWW_ROOT}/* 2> /dev/null
 
 #AWS Cloudwatch Logs
 service awslogs stop
