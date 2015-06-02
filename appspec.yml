@@ -8,10 +8,18 @@ files:
 permissions:
   - object: /var/www
     pattern: "**"
-    owner: root
-    group: root
+    owner: node-app-files
+    group: node-app
+    mode: 0750
     type:
       - directory
+  - object: /var/www
+    pattern: "**"
+    owner: node-app-files
+    group: node-app
+    mode: 0640
+    type:
+      - file
 hooks:
   ApplicationStop:
     - location: scripts/applicationStop.sh
@@ -22,6 +30,7 @@ hooks:
   AfterInstall:
     - location: scripts/afterInstall.sh
       timeout: 180
+      runas: node-app-files
   BeforeInstall:
     - location: scripts/beforeInstall.sh
       timeout: 180

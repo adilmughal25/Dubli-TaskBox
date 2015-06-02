@@ -1,6 +1,8 @@
-cd /var/www && npm install --production --unsafe-perm --user root --group root
-chown -R root:root /var/www/node_modules
+#!/bin/bash
+source /var/scripts/env.prop
 
-. /var/scripts/env.prop
-aws s3 cp s3://configs-and-scripts/${APP_NAME}/configs.${NODE_ENV}.json /var/www/configs.json
-exit 0
+(cd $WWW_ROOT && \
+  touch ${WWW_ROOT}/logs/app.log && \
+  npm install --production && \
+  aws s3 cp s3://configs-and-scripts/${APP_NAME}/configs.${NODE_ENV}.json ./configs.json && \
+  exit 0) || exit 1
