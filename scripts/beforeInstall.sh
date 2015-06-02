@@ -8,6 +8,8 @@ APP_NAME=$(aws ec2 describe-tags --filters "Name=resource-id,Values=${INSTANCE_I
 APP_SCOPE=$(aws ec2 describe-tags --filters "Name=resource-id,Values=${INSTANCE_ID}" "Name=key,Values=scope" --region ${REGION} --output text | cut -f5)
 
 rm -rf ${WWW_ROOT}/* 2> /dev/null
+chown node-app-files:node-app ${WWW_ROOT}
+chmod 750 ${WWW_ROOT}
 
 #AWS Cloudwatch Logs
 service awslogs stop
