@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 source /var/scripts/env.prop
 
 (cd $WWW_ROOT && \

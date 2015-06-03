@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 WWW_ROOT=/var/www
 INSTANCE_ID=$(ec2-metadata -i | cut -d' ' -f2)
