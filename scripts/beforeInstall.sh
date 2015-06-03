@@ -4,7 +4,7 @@
 WWW_ROOT=/var/www
 AWS_INSTANCE_ID=$(ec2metadata --instance-id | cut -d' ' -f2)
 AWS_REGION=$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | grep region | cut -d'"' -f4)
-AWS_AUTOSCALE_GROUP=$(aws --region ${AWS_REGION} autoscaling describe-auto-scaling-instances --instance-ids ${AWS_INSTANCE_ID} --query AutoScalingInstances[0].AutoScalingGroupName | sed 's/"//g"')
+AWS_AUTOSCALE_GROUP=$(aws --region ${AWS_REGION} autoscaling describe-auto-scaling-instances --instance-ids ${AWS_INSTANCE_ID} --query AutoScalingInstances[0].AutoScalingGroupName | cut -d'"' -f2)
 AWS_AUTOSCALE_TAGDEFS=$(aws --region ${AWS_REGION} autoscaling describe-auto-scaling-groups --auto-scaling-group-names ${AWS_AUTOSCALE_GROUP} --query AutoScalingGroups[0].Tags --output text)
 NODE_ENV=$(echo ${AWS_AUTOSCALE_TAGDEFS} | grep "^env\t" | cut -f5)
 APP_NAME=$(echo ${AWS_AUTOSCALE_TAGDEFS} | grep "^app\t" | cut -f5)
