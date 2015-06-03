@@ -2,7 +2,7 @@
 if ( service awslogs status | grep running ); then
   service awslogs stop
 fi
-if ( status awslogs-upstart | grep start ); then
+if ( status awslogs-upstart | grep running ); then
   stop awslogs-upstart
 fi
 if ( status nodeApp | grep start ); then
