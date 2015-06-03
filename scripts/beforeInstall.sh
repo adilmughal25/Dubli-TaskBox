@@ -5,21 +5,10 @@ WWW_ROOT=/var/www
 AWS_INSTANCE_ID=$(ec2metadata --instance-id | cut -d' ' -f2)
 AWS_REGION=$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | grep region | cut -d'"' -f4)
 AWS_AUTOSCALE_GROUP=$(aws --region ${AWS_REGION} autoscaling describe-auto-scaling-instances --instance-ids ${AWS_INSTANCE_ID} --query AutoScalingInstances[0].AutoScalingGroupName | cut -d'"' -f2)
-AWS_AUTOSCALE_TAGDEFS=$(aws --region ${AWS_REGION} autoscaling describe-auto-scaling-groups --auto-scaling-group-names ${AWS_AUTOSCALE_GROUP} --query AutoScalingGroups[0].Tags --output text)
-NODE_ENV=$(echo ${AWS_AUTOSCALE_TAGDEFS} | grep "^env\t" | cut -f5)
-APP_NAME=$(echo ${AWS_AUTOSCALE_TAGDEFS} | grep "^app\t" | cut -f5)
-APP_SCOPE=$(echo ${AWS_AUTOSCALE_TAGDEFS} | grep "^scope\t" | cut -f5)
-
-# NODE_ENV=$(aws ec2 describe-tags --filters "Name=resource-id,Values=${AWS_INSTANCE_ID}" "Name=key,Values=env" --region ${AWS_REGION} --output text | cut -f5)
-# APP_NAME=$(aws ec2 describe-tags --filters "Name=resource-id,Values=${AWS_INSTANCE_ID}" "Name=key,Values=app" --region ${AWS_REGION} --output text | cut -f5)
-# APP_SCOPE=$(aws ec2 describe-tags --filters "Name=resource-id,Values=${AWS_INSTANCE_ID}" "Name=key,Values=scope" --region ${AWS_REGION} --output text | cut -f5)
-
-# need to set up defaults here-- this is a problem, but apparently tags don't
-# get set on the instances until after the initial code deploy. i'm not sure
-# how to fix this, googling got me precisely nowhere.
-#NODE_ENV=${NODE_ENV:-stage}
-#APP_NAME=${APP_NAME:-taskbox}
-#APP_SCOPE=${APP_SCOPE:-private}
+fetch_tags_cmd="aws --region ${AWS_REGION} autoscaling describe-auto-scaling-groups --auto-scaling-group-names ${AWS_AUTOSCALE_GROUP} --query AutoScalingGroups[0].Tags --output text"
+NODE_ENV=$(${fetch_tags_cmd} | grep "^env\s" | cut -f5)
+APP_NAME=$(${fetch_tags_cmd} | grep "^app\s" | cut -f5)
+APP_SCOPE=$(${fetch_tags_cmd} | grep "^scope\s" | cut -f5)
 
 # clean up www-root
 rm -rf ${WWW_ROOT}/* 2> /dev/null
