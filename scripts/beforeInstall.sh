@@ -1,7 +1,7 @@
 #!/bin/bash -x
 
 WWW_ROOT=/var/www
-AWS_INSTANCE_ID=$(/opt/aws/bin/ec2-metadata -i | cut -d' ' -f2)
+AWS_INSTANCE_ID=$(ec2metadata --instance-id | cut -d' ' -f2)
 AWS_REGION=$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | grep region | cut -d'"' -f4)
 NODE_ENV=$(aws ec2 describe-tags --filters "Name=resource-id,Values=${AWS_INSTANCE_ID}" "Name=key,Values=env" --region ${AWS_REGION} --output text | cut -f5)
 APP_NAME=$(aws ec2 describe-tags --filters "Name=resource-id,Values=${AWS_INSTANCE_ID}" "Name=key,Values=app" --region ${AWS_REGION} --output text | cut -f5)
@@ -9,8 +9,9 @@ APP_SCOPE=$(aws ec2 describe-tags --filters "Name=resource-id,Values=${AWS_INSTA
 
 rm -rf ${WWW_ROOT}/* 2> /dev/null
 chown node-app-files:node-app ${WWW_ROOT}
-mkdir -p ${WWW_ROOT}/logs
+mkdir -p ${WWW_ROOT}/logs ${WWW_ROOT}/var
 chown node-app-run:node-app ${WWW_ROOT}/logs
+chown node-app-run:node-app ${WWW_ROOT}/var
 chmod 750 ${WWW_ROOT}
 
 #AWS Cloudwatch Logs
@@ -39,7 +40,7 @@ cat > /var/scripts/env.json <<EOF
 EOF
 
 
-cat > /etc/awslogs/awslogs.conf <<EOF
+cat > /var/awslogs/etc/awslogs.conf <<EOF
 [general]
 state_file = /var/lib/awslogs/agent-state
 
@@ -68,17 +69,20 @@ setuid node-app-run
 setgid node-app
 respawn
 respawn limit 10 5
+env NODE_ENV="${NODE_ENV}"
 
 pre-start script
-    mkfifo ${WWW_ROOT}/logs/applogpipe
-    chmod 0666 ${WWW_ROOT}/logs/applogpipe
-    logrotate-stream ${WWW_ROOT}/logs/app.log --keep 3 --size 50m < ${WWW_ROOT}/logs/applogpipe &
+    mkfifo ${WWW_ROOT}/var/applogpipe
+    chmod 0666 ${WWW_ROOT}/var/applogpipe
+    logrotate-stream ${WWW_ROOT}/logs/app.log --keep 3 --size 50m < ${WWW_ROOT}/var/applogpipe &
 end script
+
 script
-    exec node --harmony ${WWW_ROOT}/src/server.js ${NODE_ENV} >> ${WWW_ROOT}/logs/applogpipe 2>&1
+    exec node --harmony ${WWW_ROOT}/src/server.js >> ${WWW_ROOT}/var/applogpipe 2>&1
 end script
+
 post-stop script
-    rm applogpipe
+    rm ${WWW_ROOT}/var/applogpipe
 end script
 EOF
 
