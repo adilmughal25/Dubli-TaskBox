@@ -8,8 +8,7 @@ APP_NAME=$(aws ec2 describe-tags --filters "Name=resource-id,Values=${AWS_INSTAN
 APP_SCOPE=$(aws ec2 describe-tags --filters "Name=resource-id,Values=${AWS_INSTANCE_ID}" "Name=key,Values=scope" --region ${AWS_REGION} --output text | cut -f5)
 
 (cd $WWW_ROOT && \
-  mkdir ./node_modules logs && \
-  touch ./logs/app.log && \
-  npm install --production && \
   aws s3 cp s3://configs-and-scripts/${APP_NAME}/configs.${NODE_ENV}.json ./configs.json && \
+  mkdir node_modules && \
+  npm install --production && \
   exit 0) || exit 1
