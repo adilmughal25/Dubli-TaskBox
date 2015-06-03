@@ -1,5 +1,6 @@
 #!/bin/bash -x
 
+# set up initial vars
 WWW_ROOT=/var/www
 AWS_INSTANCE_ID=$(ec2metadata --instance-id | cut -d' ' -f2)
 AWS_REGION=$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | grep region | cut -d'"' -f4)
@@ -7,6 +8,7 @@ NODE_ENV=$(aws ec2 describe-tags --filters "Name=resource-id,Values=${AWS_INSTAN
 APP_NAME=$(aws ec2 describe-tags --filters "Name=resource-id,Values=${AWS_INSTANCE_ID}" "Name=key,Values=app" --region ${AWS_REGION} --output text | cut -f5)
 APP_SCOPE=$(aws ec2 describe-tags --filters "Name=resource-id,Values=${AWS_INSTANCE_ID}" "Name=key,Values=scope" --region ${AWS_REGION} --output text | cut -f5)
 
+# clean up www-root
 rm -rf ${WWW_ROOT}/* 2> /dev/null
 chown node-app-files:node-app ${WWW_ROOT}
 mkdir -p ${WWW_ROOT}/logs ${WWW_ROOT}/var
