@@ -75,7 +75,7 @@ pre-start script
     logrotate-stream ${WWW_ROOT}/logs/app.log --keep 3 --size 50m < ${WWW_ROOT}/logs/applogpipe &
 end script
 script
-    exec node --harmony ${WWW_ROOT}/src/server.js ${NODE_ENV} >> applogpipe 2>&1
+    exec node --harmony ${WWW_ROOT}/src/server.js ${NODE_ENV} >> ${WWW_ROOT}/logs/applogpipe 2>&1
 end script
 post-stop script
     rm applogpipe
