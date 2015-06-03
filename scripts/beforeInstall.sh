@@ -18,7 +18,7 @@ chown node-app-run:node-app ${WWW_ROOT}/logs
 chown node-app-run:node-app ${WWW_ROOT}/var
 chmod 750 ${WWW_ROOT}
 
-#AWS Cloudwatch Logs
+#AWS Cloudwatch Logs -- this is the "default" that doesn't run under upstart
 service awslogs stop
 
 #save userdata properties
@@ -48,11 +48,11 @@ EOF
 
 cat > /var/awslogs/etc/awslogs.conf <<EOF
 [general]
-state_file = /var/lib/awslogs/agent-state
+state_file = /var/awslogs/state/agent-state
 
-[/var/log/messages]
+[/var/log/syslog]
 datetime_format = %b %d %H:%M:%S
-file = /var/log/messages
+file = /var/log/syslog
 buffer_duration = 5000
 log_stream_name = {instance_id}
 initial_position = start_of_file
@@ -89,6 +89,21 @@ end script
 
 post-stop script
     rm ${WWW_ROOT}/var/applogpipe
+end script
+EOF
+
+cat > /etc/init/awslogs-upstart.conf <<EOF
+description "Upstart conf for AWS logs"
+author "Rando Christensen"
+start on (runlevel [345] and started network)
+stop on (runlevel [!345] or stopping network)
+respawn
+respawn limit 10 5
+env AWS_CONFIG_FILE="/var/awslogs/etc/aws.conf"
+env HOME="/home/ubuntu"
+
+script
+  exec /usr/bin/nice -n 4 /var/awslogs/bin/aws logs push --config-file /var/awslogs/etc/awslogs.conf >> /var/log/awslogs.log 2>&1
 end script
 EOF
 
