@@ -8,6 +8,13 @@ NODE_ENV=$(aws ec2 describe-tags --filters "Name=resource-id,Values=${AWS_INSTAN
 APP_NAME=$(aws ec2 describe-tags --filters "Name=resource-id,Values=${AWS_INSTANCE_ID}" "Name=key,Values=app" --region ${AWS_REGION} --output text | cut -f5)
 APP_SCOPE=$(aws ec2 describe-tags --filters "Name=resource-id,Values=${AWS_INSTANCE_ID}" "Name=key,Values=scope" --region ${AWS_REGION} --output text | cut -f5)
 
+# need to set up defaults here-- this is a problem, but apparently tags don't
+# get set on the instances until after the initial code deploy. i'm not sure
+# how to fix this, googling got me precisely nowhere.
+NODE_ENV=${NODE_ENV:-stage}
+APP_NAME=${APP_NAME:-taskbox}
+APP_SCOPE=${APP_SCOPE:-private}
+
 # clean up www-root
 rm -rf ${WWW_ROOT}/* 2> /dev/null
 chown node-app-files:node-app ${WWW_ROOT}
