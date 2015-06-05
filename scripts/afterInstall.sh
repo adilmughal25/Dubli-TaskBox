@@ -1,4 +1,6 @@
 #!/bin/bash -x
+PATH=$PATH:/usr/local/bin
+
 source /var/scripts/env.prop
 
 (cd $WWW_ROOT && \

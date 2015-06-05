@@ -1,4 +1,5 @@
 #!/bin/bash -x
+PATH=$PATH:/usr/local/bin
 
 # set up initial vars
 WWW_ROOT=/var/www
