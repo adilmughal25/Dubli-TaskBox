@@ -2,6 +2,10 @@
   "env": "dev",
   "logLevel": "dev",
   "data_api": {
-    "url": "http://localhost:8090/"
+    "url": "http://localhost:8090/",
+    "auth": {
+      "user": "PlaceGenericNameHere",
+      "pass": "PasswordOfDEVASTATION123!@#"
+    }
   }
 }
