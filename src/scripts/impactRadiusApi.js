@@ -9,7 +9,7 @@ var moment = require('moment');
 var debug = require('debug')('impactradius:api');
 var sendEvents = require('./send-events');
 var utils = require('ominto-utils');
-var dataService = utils.getDataClient(require('../../configs').data_api.url);
+var dataService = utils.getDataClient(require('../../configs').data_api.url, require('../../configs').data_api.auth);
 var irClient = utils.remoteApis.impactRadiusClient();
 
 var merchantsRunning = false;

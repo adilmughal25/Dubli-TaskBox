@@ -1,6 +1,6 @@
 "use strict";
 var uuid = require('node-uuid');
-var dataService = require('ominto-utils').getDataClient(require('../../configs').data_api.url);
+var dataService = require('ominto-utils').getDataClient(require('../../configs').data_api.url, require('../../configs').data_api.auth);
 var debug = require('debug')('send-events');
 
 function send(s_streamName, s_streamType, s_taskName, items) {
