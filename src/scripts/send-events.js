@@ -4,28 +4,23 @@ var utils = require('ominto-utils');
 var o_configs = require('../../configs');
 var debug = require('debug')('send-events');
 var _check = utils.checkApiResponse;
+var createEnvelope = utils.createEnvelope;
 var dataService = utils.getDataClient(o_configs.data_api.url, o_configs.data_api.auth);
 
 function send(s_streamName, s_streamType, s_taskName, items) {
   var s_url = '/event/' + s_streamName;
+  var o_trigger = {
+    task: s_taskName,
+    timestamp: new Date()
+  };
   var promises = [];
   items.forEach(function(item) {
-    var params = {
-      url: s_url,
-      body: {
-        id: uuid.v4(),
-        timestamp: new Date(),
-        type: s_streamType,
-        data: item,
-        trigger: [{
-          task: s_taskName,
-          timestamp: new Date()
-        }]
-      }
-    };
+    var envelope = createEnvelope(s_streamType, null, item, null, [o_trigger]);
+    var params = { url: s_url, body: envelope };
+    var checker = _check(200, 'could not save kinesis stream event: '+JSON.stringify(envelope));
     debug("sending to kinesis stream `%s` with type `%s` and data %s", s_url, s_streamType, JSON.stringify(item));
-    var checker = _check(200, 'could not save kinesis stream event: '+JSON.stringify(params.body));
-    promises.push(dataService.put(params).then(checker));
+    var promise = dataService.put(params).then(checker);
+    promises.push(promise);
   });
   return Promise.all(promises);
 }
