@@ -1,7 +1,10 @@
 "use strict";
 var uuid = require('node-uuid');
-var dataService = require('ominto-utils').getDataClient(require('../../configs').data_api.url, require('../../configs').data_api.auth);
+var utils = require('ominto-utils');
+var o_configs = require('../../configs');
 var debug = require('debug')('send-events');
+var _check = utils.checkApiResponse;
+var dataService = utils.getDataClient(o_configs.data_api.url, o_configs.data_api.auth);
 
 function send(s_streamName, s_streamType, s_taskName, items) {
   var s_url = '/event/' + s_streamName;
@@ -21,7 +24,8 @@ function send(s_streamName, s_streamType, s_taskName, items) {
       }
     };
     debug("sending to kinesis stream `%s` with type `%s` and data %s", s_url, s_streamType, JSON.stringify(item));
-    promises.push(dataService.put(params));
+    var checker = _check(200, 'could not save kinesis stream event: '+JSON.stringify(params.body));
+    promises.push(dataService.put(params).then(checker));
   });
   return Promise.all(promises);
 }
