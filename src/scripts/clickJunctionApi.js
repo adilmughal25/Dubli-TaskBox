@@ -6,9 +6,7 @@ var moment = require('moment');
 var request = require("request-promise");
 var wait = require('co-waiter');
 var sendEvents = require('./send-events');
-
-var advertiserClient = getClient("https://advertiser-lookup.api.cj.com");
-var commissionClient = getClient("https://commission-detail.api.cj.com/v3");
+var cjClient = require('ominto-utils').remoteApis.clickJunctionClient;
 
 var merchantsRunning = false;
 function* getMerchants() {
@@ -17,7 +15,7 @@ function* getMerchants() {
 
   var perPage = 100;
   var page = 1;
-  var client = getClient("https://advertiser-lookup.api.cj.com/v3");
+  var client = cjClient("advertisers");
   var url = advertiserUrl(page, perPage);
 
   debug("merchants fetch started");
@@ -34,17 +32,12 @@ function* getMerchants() {
 
       url = (info['total-matched'] >= perPage * info['page-number']) ?
         advertiserUrl(++page, perPage) : null;
-      if (url) {
-        debug("waiting one minute to load %s", url);
-        yield wait.minutes(1);
-      }
     }
   } finally {
     merchantsRunning = false;
   }
   debug("merchants fetch complete");
 }
-
 
 var commissionsRunning = false;
 function* getCommissionDetails() {
@@ -54,7 +47,7 @@ function* getCommissionDetails() {
   var startTime = moment().subtract(1, 'days').startOf('day').format('YYYY-MM-DD');
   var endTime = moment().add(1, 'days').startOf('day').format('YYYY-MM-DD');
 
-  var client = getClient("https://commission-detail.api.cj.com/v3");
+  var client = cjClient("commissions");
   var url = commissionsUrl(startTime, endTime);
 
   // according to http://cjsupport.custhelp.com/app/answers/detail/a_id/1553,
@@ -86,20 +79,6 @@ function advertiserUrl(page, perPage) {
 
 function commissionsUrl(start, end) {
   return "/commissions?date-type=posting&start-date="+start+"&end-date="+end;
-}
-
-function getClient(baseUrl) {
-  var dataClient = request.defaults({
-    baseUrl: baseUrl,
-    json: true,
-    simple: true,
-    resolveWithFullResponse: true,
-    headers: {
-      authorization: "009c8796168d78c027c9b4f1d8ed3902172eefa59512b9f9647482240bcd99d00a70c6358dd2b855f30afeafe055e1c8d99e632a626b1fa073a4092f4dd915e26d/36d998315cefa43e0d0377fff0d89a2fef85907b556d8fc3b0c3edc7a90b2e07fc8455369f721cc69524653234978c36fd12c67646205bf969bfa34f8242de8d",
-      accept: "application/xml"
-    }
-  });
-  return dataClient;
 }
 
 function sendMerchantsToEventHub(merchants) {
