@@ -1,7 +1,6 @@
 "use strict";
 
 var _ = require('lodash');
-var parser = require('xml2json');
 var request = require("request-promise");
 var co = require('co');
 var moment = require('moment');
@@ -9,6 +8,8 @@ var debug = require('debug')('linkshare:api');
 var sendEvents = require('./send-events');
 var utils = require('ominto-utils');
 var linkShare = utils.remoteApis.linkShareClient();
+var _check = utils.checkApiResponse;
+var jsonify = utils.jsonifyXmlBody;
 
 var merchantsRunning = false;
 function* getMerchants() {
@@ -19,8 +20,9 @@ function* getMerchants() {
     var client = yield linkShare.getFreshClient();
     var url = "advertisersearch/1.0";
     debug('merchants fetch: %s', url);
-    var response = yield client.get(url);
-    var json = parser.toJson(response.body, {object:true});
+    var json = yield client.get(url)
+      .then(_check('merchant fetch error'))
+      .then(jsonify);
     var merchants = json.result.midlist.merchant;
     if (merchants) {
       yield sendMerchantsToEventHub(merchants || []);
@@ -48,7 +50,7 @@ function* getCommissionDetails() {
     while (true) {
       url = "/events/1.0/transactions?limit=1000&page="+currentPage;
       debug('commisions fetch: %s', url);
-      var response = yield client.get(url);
+      var response = yield client.get(url).then(_check('commissions fetch error'));
       var commissions = response.body;
       if (!commissions) { break; }
       yield sendCommissionsToEventHub(commissions || []);
