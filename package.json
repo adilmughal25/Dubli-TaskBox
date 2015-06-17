@@ -38,8 +38,7 @@
     "node-uuid": "^1.4.3",
     "ominto-utils": "git+ssh://git@github.com:dubli/utils.git#HEAD",
     "promise.prototype.finally": "^1.0.1",
-    "request-promise": "^0.4.2",
-    "xml2json": "^0.6.2"
+    "request-promise": "^0.4.2"
   },
   "devDependencies": {
     "chai": "^2.2.0",

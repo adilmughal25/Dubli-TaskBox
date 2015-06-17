@@ -1,43 +1,95 @@
 "use strict";
 
+var _ = require('lodash');
 var debug = require('debug')('clickjunction:api');
-var parser = require('xml2json');
 var moment = require('moment');
 var request = require("request-promise");
 var wait = require('co-waiter');
 var sendEvents = require('./send-events');
-var cjClient = require('ominto-utils').remoteApis.clickJunctionClient;
+var utils = require('ominto-utils');
+var co = require('co');
+var cjClient = utils.remoteApis.clickJunctionClient;
+var jsonify = utils.jsonifyXmlBody;
 
 var merchantsRunning = false;
 function* getMerchants() {
   if (merchantsRunning) { throw 'already-running'; }
   merchantsRunning = true;
 
+  var merchants = {};
+
+  var results = yield {
+    merchants: doApiMerchants(),
+    links: doApiLinks()
+  };
+
+  results.merchants.forEach(function(item) {
+    var id = item['advertiser-id'];
+    merchants[id] = {
+      merchant: item,
+      links: []
+    };
+  });
+  delete results.merchants; // be nice to gc
+  results.links.forEach(function(item) {
+    var id = item['advertiser-id'];
+    if (merchants[id]) {
+      merchants[id].links.push(item);
+    }
+  });
+  delete results.links; // be nice to gc
+  results = null;
+
+  merchants = _.values(merchants);
+
+  sendMerchantsToEventHub(merchants||[]);
+  // used during testing to give me a file full of example data
+  // require('fs').writeFileSync("output-all.json", JSON.stringify(merchants,null,2));
+
+  merchantsRunning = false;
+}
+
+var doApiLinks = co.wrap(function* () {
+  var client = cjClient("links");
   var perPage = 100;
   var page = 1;
+  var url = linksUrl(page, perPage);
+  var links = [];
+
+  debug("links fetch started");
+  while (url) {
+    debug("links fetch: %s", url);
+    var ret = yield client.get(url).then(jsonify);
+    var info = _.get(ret, 'cj-api.links'); // ret['cj-api'].advertisers;
+    var meta = info.$;
+    links = links.concat(info.link || []);
+    url = (meta['total-matched'] >= perPage * meta['page-number']) ?
+      linksUrl(++page, perPage) : null;
+  }
+  debug("links fetch complete");
+  return links;
+});
+
+var doApiMerchants = co.wrap(function* () {
   var client = cjClient("advertisers");
+  var perPage = 100;
+  var page = 1;
   var url = advertiserUrl(page, perPage);
+  var merchants = [];
 
   debug("merchants fetch started");
-  try {
-    while (url) {
-      debug("merchants fetch: %s", url);
-      var response = yield client.get(url);
-      var ret = parser.toJson(response.body, {
-        object: true,
-      });
-      var info = ret['cj-api'].advertisers;
-      var merchants = info.advertiser;
-      if (merchants) { yield sendMerchantsToEventHub(merchants); }
-
-      url = (info['total-matched'] >= perPage * info['page-number']) ?
-        advertiserUrl(++page, perPage) : null;
-    }
-  } finally {
-    merchantsRunning = false;
+  while (url) {
+    debug("merchants fetch: %s", url);
+    var ret = yield client.get(url).then(jsonify);
+    var info = _.get(ret, 'cj-api.advertisers'); // ret['cj-api'].advertisers;
+    var meta = info.$;
+    merchants = merchants.concat(info.advertiser || []);
+    url = (meta['total-matched'] >= perPage * meta['page-number']) ?
+      advertiserUrl(++page, perPage) : null;
   }
   debug("merchants fetch complete");
-}
+  return merchants;
+});
 
 var commissionsRunning = false;
 function* getCommissionDetails() {
@@ -56,11 +108,7 @@ function* getCommissionDetails() {
   debug("commissions fetch start");
   try {
     debug("commissions fetch: %s", url);
-    var response = yield client.get(url);
-    var ret = parser.toJson(response.body, {
-      object: true,
-    });
-
+    var ret = yield client.get(url).then(jsonify);
     var info = ret['cj-api'].commissions;
     var commissions = info.commission;
 
@@ -73,6 +121,12 @@ function* getCommissionDetails() {
   debug("commissions fetch complete");
 }
 
+function linksUrl(page, perPage) {
+  return "/link-search?website-id=7811975&advertiser-ids=joined" +
+         "&link-type=Text Link&records-per-page=" + perPage +
+         "&page-number="+page;
+}
+
 function advertiserUrl(page, perPage) {
   return "/advertiser-lookup?advertiser-ids=joined&records-per-page="+perPage+"&page-number="+page;
 }
@@ -81,6 +135,7 @@ function commissionsUrl(start, end) {
   return "/commissions?date-type=posting&start-date="+start+"&end-date="+end;
 }
 
+var ct = 0;
 function sendMerchantsToEventHub(merchants) {
   if (! merchants) { merchants = []; }
   debug("found %d merchants to process", merchants.length);
