@@ -118,12 +118,4 @@ script
 end script
 EOF
 
-
-DEPLOYMENT_GROUP_ID=$(aws deploy get-deployment-group --region ${AWS_REGION} --application-name $APPLICATION_NAME --deployment-group-name $DEPLOYMENT_GROUP_NAME --output text | grep DEPLOYMENTGROUPINFO | awk '{print $4}')
-DEP_ROOT="/opt/codedeploy-agent/deployment-root"
-PREVIOUS_DEPLOYMENT_DIR=$(cat ${DEP_ROOT}/deployment-instructions/${DEPLOYMENT_GROUP_ID}_last_successful_install 2>/dev/null)
-
-echo "DURING beforeInstall.sh, PREVIOUS was ${PREVIOUS_DEPLOYMENT_DIR}"
-
-
 exit 0

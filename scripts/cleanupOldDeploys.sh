@@ -41,6 +41,7 @@ for DIR in $DEPLOYMENTS_LIST; do
     "${REAL_PATH}" != "${PREVIOUS_DEPLOYMENT_DIR}" -a \
     "${REAL_PATH:0:${#CURRENT_GROUP_ROOT}}" == $CURRENT_GROUP_ROOT \
   ]; then
-    echo "TEST: RM-DASH-R-F ${REAL_PATH}"
+    echo "Deleting previous deployment ${REAL_PATH}"
+    rm -rf $REAL_PATH
   fi
 done
