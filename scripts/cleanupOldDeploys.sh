@@ -35,7 +35,7 @@ for DIR in $DEPLOYMENTS_LIST; do
     ! -z "${REAL_PATH}" -a \
     "${REAL_PATH}" != "${CURRENT_DEPLOYMENT_DIR}" -a \
     "${REAL_PATH}" != "${PREVIOUS_DEPLOYMENT_DIR}" -a \
-    "${REAL_PATH:0:${#CURRENT_GROUP_ROOT}}" == $CURRENT_GROUP_ROOT
+    "${REAL_PATH:0:${#CURRENT_GROUP_ROOT}}" == $CURRENT_GROUP_ROOT \
   ]; then
     echo "TEST: RM-DASH-R-F ${REAL_PATH}"
   fi
