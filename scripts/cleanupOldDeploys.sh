@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 PATH=$PATH:/usr/local/bin
 source /var/scripts/env.prop
 
@@ -28,6 +28,8 @@ fi
 PREVIOUS_DEPLOYMENT_DIR=$(get_real_dir $(cat ${DEP_ROOT}/deployment-instructions/${DEPLOYMENT_GROUP_ID}_last_successful_install 2>/dev/null))
 DEPLOYMENTS_LIST=$(find ${CURRENT_GROUP_ROOT} -type d -mindepth 1 -maxdepth 1)
 
+echo "CURRENT DEPLOYMENT: ${CURRENT_DEPLOYMENT_DIR}"
+echo "PREVIOUS DPELOYMENT: ${PREVIOUS_DEPLOYMENT_DIR}"
 
 for DIR in $DEPLOYMENTS_LIST; do
   REAL_PATH=$(get_real_dir $DIR)
