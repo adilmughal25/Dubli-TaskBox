@@ -25,7 +25,9 @@ if [ ! -d "$CURRENT_DEPLOYMENT_DIR" ]; then
   echo "Can't find required dir CURRENT_DEPLOYMENT_DIR:$CURRENT_DEPLOYMENT_DIR"
   exit
 fi
-PREVIOUS_DEPLOYMENT_DIR=$(get_real_dir $(cat ${DEP_ROOT}/deployment-instructions/${DEPLOYMENT_GROUP_ID}_last_successful_install 2>/dev/null))
+
+# previous deployment dir is set by beforeInstall.sh -- by the time this script runs, the file on disk is already updated to the current deploy
+PREVIOUS_DEPLOYMENT_DIR=$(get_real_dir ${PREVIOUS_DEPLOYMENT_DIR})
 DEPLOYMENTS_LIST=$(find ${CURRENT_GROUP_ROOT} -type d -mindepth 1 -maxdepth 1)
 
 echo "CURRENT DEPLOYMENT: ${CURRENT_DEPLOYMENT_DIR}"

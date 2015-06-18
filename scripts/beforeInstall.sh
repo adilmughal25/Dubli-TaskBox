@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 PATH=$PATH:/usr/local/bin
 
 # set up initial vars
@@ -10,6 +10,15 @@ fetch_tags_cmd="aws --region ${AWS_REGION} autoscaling describe-auto-scaling-gro
 NODE_ENV=$(${fetch_tags_cmd} | grep "^env\s" | cut -f5)
 APP_NAME=$(${fetch_tags_cmd} | grep "^app\s" | cut -f5)
 APP_SCOPE=$(${fetch_tags_cmd} | grep "^scope\s" | cut -f5)
+
+# need this during the afterInstall cleanupOldDeploys -- by the time that runs the file in deployment-instructions has changed
+DEPLOYMENT_GROUP_ID=$(aws deploy get-deployment-group --region ${AWS_REGION} --application-name $APPLICATION_NAME --deployment-group-name $DEPLOYMENT_GROUP_NAME --output text | grep DEPLOYMENTGROUPINFO | awk '{print $4}')
+DEP_ROOT="/opt/codedeploy-agent/deployment-root"
+if [ -f "${DEP_ROOT}/deployment-instructions/${DEPLOYMENT_GROUP_ID}_last_successful_install" ]; then
+  PREVIOUS_DEPLOYMENT_DIR=$(cat ${DEP_ROOT}/deployment-instructions/${DEPLOYMENT_GROUP_ID}_last_successful_install 2>/dev/null)
+else
+  PREVIOUS_DEPLOYMENT_DIR='/tmp/NO-PREVIOUS-DEPLOYMENT-DIR'
+fi
 
 # clean up www-root
 rm -rf ${WWW_ROOT}/* 2> /dev/null
@@ -31,6 +40,7 @@ AWS_AUTOSCALE_GROUP=${AWS_AUTOSCALE_GROUP}
 NODE_ENV=${NODE_ENV}
 APP_NAME=${APP_NAME}
 APP_SCOPE=${APP_SCOPE}
+PREVIOUS_DEPLOYMENT_DIR=${PREVIOUS_DEPLOYMENT_DIR}
 EOF
 
 #save userdata json

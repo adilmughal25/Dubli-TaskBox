@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 PATH=$PATH:/usr/local/bin
 
 source /var/scripts/env.prop
