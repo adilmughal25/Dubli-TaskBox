@@ -31,6 +31,8 @@ hooks:
     - location: scripts/afterInstall.sh
       timeout: 180
       runas: node-app-files
+    - location: scripts/cleanupOldDeploys.sh
+      timeout: 180
   BeforeInstall:
     - location: scripts/beforeInstall.sh
       timeout: 180
