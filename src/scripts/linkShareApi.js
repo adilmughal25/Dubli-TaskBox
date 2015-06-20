@@ -174,7 +174,7 @@ function mergeResults(o_obj) {
   o_obj.merchants.forEach(m => set(m.mid, 'merchant', m));
   o_obj.textLinks.forEach(l => add(l.mid, 'links', l));
   o_obj.coupons.forEach(c => add(c.advertiserid, 'coupons', c));
-  return _.values(res);
+  return _.values(res).filter(x => 'merchant' in x);
 }
 
 module.exports = {
