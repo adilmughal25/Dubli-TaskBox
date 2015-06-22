@@ -6,9 +6,13 @@ var uuid = require('node-uuid');
 var utils = require('ominto-utils');
 var o_configs = require('../../configs');
 var debug = require('debug')('send-events');
+var denodeify = require('denodeify');
+var gzip = denodeify(require('zlib').gzip);
 var _check = utils.checkApiResponse;
 var createEnvelope = utils.createEnvelope;
 var dataService = utils.getDataClient(o_configs.data_api.url, o_configs.data_api.auth);
+
+const MAX_UNGZIPPED_SIZE = 64 * 1024; // if it's over 64kb, gzip it
 
 var send = co.wrap(function* (s_streamName, s_streamType, s_taskName, items) {
   var s_url = '/event/' + s_streamName;
@@ -18,17 +22,37 @@ var send = co.wrap(function* (s_streamName, s_streamType, s_taskName, items) {
   }];
   var errors = [];
 
+  var allCount = 0;
+  var compressedCount = 0;
+  var compressionTime = 0;
+  debug("got %d events to process!", items.length);
   for (var i = 0; i < items.length; i++) {
     try {
       var item = items[i];
-      var envelope = createEnvelope(s_streamType, {}, item, {}, a_trigger);
+      var o_flags = {};
+      var s_item = JSON.stringify(item);
+      if (s_item.length > MAX_UNGZIPPED_SIZE) {
+        debug("item size is %d, max un-gzipped size is %d, compressing!", s_item.length, MAX_UNGZIPPED_SIZE);
+        var start = Date.now();
+        item = yield gzip(s_item);
+        compressionTime += (Date.now() - start);
+        o_flags.gzipped_data = true;
+      }
+
+      var envelope = createEnvelope(s_streamType, {}, item, o_flags, a_trigger);
       var params = { url: s_url, body: envelope };
       var checker = _check(202, 'could not save kinesis stream event: '+JSON.stringify(envelope));
       yield dataService.put(params).then(checker);
+      allCount++;
+      if (o_flags.gzipped_data) { compressedCount++; }
     } catch (e) {
       errors.push(e);
     }
   }
+  var uncompressedCount = allCount - compressedCount;
+
+  debug("processed: %d, uncompressed: %d, compressed: %d, errors: %d, time spent compressing: %dms",
+    allCount, uncompressedCount, compressedCount, errors.length, compressionTime);
 
   if (errors.length) {
     var msg = ["Received "+errors.length+" errors while sending "+items.length+" kinesis events:"]
