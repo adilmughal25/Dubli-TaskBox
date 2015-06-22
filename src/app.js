@@ -12,8 +12,7 @@ var impactRadiusProductFtp = require("./scripts/impactRadiusProductFtp");
 var clickJunctionApi = require("./scripts/clickJunctionApi");
 var impactRadiusApi = require("./scripts/impactRadiusApi");
 var linkShareApi = require("./scripts/linkShareApi");
-
-
+var performanceHorizonApi = require('./scripts/performanceHorizonApi');
 
 function init(id) {
   process.on('message', function(msg) {
@@ -39,15 +38,17 @@ function init(id) {
 
   var schedules = {};
 
-  // already been refactored
-
-  //createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
   createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, {minute: 5});
-  //createTask("ImpactRadius Commissions", impactRadiusApi.getCommissionDetails, {minute: [0,10,20,30,40,50]});
   createTask("LinkShare Merchants", linkShareApi.getMerchants, {minute: 20});
-  //createTask("LinkShare Commissions", linkShareApi.getCommissionDetails, {minute: [0,10,20,30,40,50]});
   createTask("ClickJunction Merchants", clickJunctionApi.getMerchants, {minute: 35});
+  createTask("PerformanceHorizon Merchants", performanceHorizonApi.getMerchants, {minute: 50});
+
+  // disabled for now:
+  //createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
+  //createTask("ImpactRadius Commissions", impactRadiusApi.getCommissionDetails, {minute: [0,10,20,30,40,50]});
+  //createTask("LinkShare Commissions", linkShareApi.getCommissionDetails, {minute: [0,10,20,30,40,50]});
   //createTask("ClickJunction Commissions", clickJunctionApi.getCommissionDetails, {minute: [0,10,20,30,40,50]});
+
 
   function taskRunner(name, task) {
     return function() {
