@@ -25,7 +25,7 @@ var send = co.wrap(function* (s_streamName, s_streamType, s_taskName, items) {
   var allCount = 0;
   var compressedCount = 0;
   var compressionTime = 0;
-  debug("got %d events to process!", items.length);
+  debug("got %d events from %s to process!", items.length, s_taskName);
   for (var i = 0; i < items.length; i++) {
     try {
       var item = items[i];
