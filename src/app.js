@@ -13,6 +13,7 @@ var clickJunctionApi = require("./scripts/clickJunctionApi");
 var impactRadiusApi = require("./scripts/impactRadiusApi");
 var linkShareApi = require("./scripts/linkShareApi");
 var performanceHorizonApi = require('./scripts/performanceHorizonApi');
+var zanoxApi = require('./scripts/zanoxApi');
 
 function init(id) {
   process.on('message', function(msg) {
@@ -38,10 +39,11 @@ function init(id) {
 
   var schedules = {};
 
-  createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, {minute: 5});
-  createTask("LinkShare Merchants", linkShareApi.getMerchants, {minute: 20});
-  createTask("ClickJunction Merchants", clickJunctionApi.getMerchants, {minute: 35});
-  createTask("PerformanceHorizon Merchants", performanceHorizonApi.getMerchants, {minute: 50});
+  // createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, {minute: 5});
+  // createTask("LinkShare Merchants", linkShareApi.getMerchants, {minute: 15});
+  // createTask("ClickJunction Merchants", clickJunctionApi.getMerchants, {minute: 25});
+  // createTask("PerformanceHorizon Merchants", performanceHorizonApi.getMerchants, {minute: 35});
+  createTask("Zanox Merchants", zanoxApi.getMerchants, {minute: 45});
 
   // disabled for now:
   //createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
