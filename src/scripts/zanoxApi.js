@@ -14,9 +14,9 @@ function* getMerchants() {
 
   var results = yield {
     merchants: pagedApiCall('$getPrograms', 'programItems.programItem'),
-    admedia: pagedApiCall('$getAdmedia', 'admediumItems.admediumItem'),
-    incentives: apiCall('$getIncentives', 'incentiveItems.incentiveItem'),
-    exclusiveIncentives: apiCall('$getExclusiveIncentives', 'incentiveItems.incentiveItem'),
+    admedia: pagedApiCall('$getAdmedia', 'admediumItems.admediumItem', {'admediumtype':'text'}),
+    incentives: apiCall('$getIncentives', 'incentiveItems.incentiveItem', {'incentiveType':'coupons'}),
+    exclusiveIncentives: apiCall('$getExclusiveIncentives', 'incentiveItems.incentiveItem', {'incentiveType':'coupons'}),
   };
 
   // require('fs').writeFileSync('zanox.test.json', JSON.stringify(results), 'utf8');
@@ -61,7 +61,7 @@ function merge(o_obj) {
   return _.values(results);
 }
 
-var pagedApiCall = co.wrap(function* (method, bodyKey) {
+var pagedApiCall = co.wrap(function* (method, bodyKey, params) {
   var results = [];
   var perPage = 50;
   var page = 0;
@@ -69,8 +69,9 @@ var pagedApiCall = co.wrap(function* (method, bodyKey) {
 
   var start = Date.now();
   while(true) {
-    debug("%s : page %d of %s", method, page, Math.floor(total/perPage) || 'unknown');
-    var response = yield client[method]({page:page, items:perPage});
+    var arg = _.extend({}, params, {page:page, items:perPage});
+    debug("%s : page %d of %s (%s)", method, page, Math.floor(total/perPage) || 'unknown', JSON.stringify(arg));
+    var response = yield client[method](arg);
     var items = _.get(response, bodyKey) || [];
     results = results.concat(items);
     total = response.total;
@@ -83,10 +84,11 @@ var pagedApiCall = co.wrap(function* (method, bodyKey) {
   return results;
 });
 
-var apiCall = co.wrap(function* (method, bodyKey) {
+var apiCall = co.wrap(function* (method, bodyKey, params) {
   var start = Date.now();
-  debug("%s", method);
-  var response = yield client[method]({});
+  var arg = _.extend({}, params);
+  debug("%s (%s)", method, JSON.stringify(arg));
+  var response = yield client[method](arg);
   var items = _.get(response, bodyKey) || [];
   var end = Date.now();
   debug("%s finished: %d items (%dms)", method, items.length, end-start);
