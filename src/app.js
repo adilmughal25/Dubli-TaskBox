@@ -39,10 +39,10 @@ function init(id) {
 
   var schedules = {};
 
-  // createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, {minute: 5});
-  // createTask("LinkShare Merchants", linkShareApi.getMerchants, {minute: 15});
-  // createTask("ClickJunction Merchants", clickJunctionApi.getMerchants, {minute: 25});
-  // createTask("PerformanceHorizon Merchants", performanceHorizonApi.getMerchants, {minute: 35});
+  createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, {minute: 5});
+  createTask("LinkShare Merchants", linkShareApi.getMerchants, {minute: 15});
+  createTask("ClickJunction Merchants", clickJunctionApi.getMerchants, {minute: 25});
+  createTask("PerformanceHorizon Merchants", performanceHorizonApi.getMerchants, {minute: 35});
   createTask("Zanox Merchants", zanoxApi.getMerchants, {minute: 45});
 
   // disabled for now:
