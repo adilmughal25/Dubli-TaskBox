@@ -7,6 +7,7 @@ var co = require('co');
 var schedule = require('node-schedule');
 var debug = require('debug')('taskbox:tasks');
 var _ = require('lodash');
+var prettyMs = require('pretty-ms');
 
 var impactRadiusProductFtp = require("./scripts/impactRadiusProductFtp");
 var clickJunctionApi = require("./scripts/clickJunctionApi");
@@ -14,6 +15,7 @@ var impactRadiusApi = require("./scripts/impactRadiusApi");
 var linkShareApi = require("./scripts/linkShareApi");
 var performanceHorizonApi = require('./scripts/performanceHorizonApi');
 var zanoxApi = require('./scripts/zanoxApi');
+var pepperjamApi = require('./scripts/pepperjamApi');
 
 function init(id) {
   process.on('message', function(msg) {
@@ -44,6 +46,7 @@ function init(id) {
   createTask("ClickJunction Merchants", clickJunctionApi.getMerchants, {minute: 25});
   createTask("PerformanceHorizon Merchants", performanceHorizonApi.getMerchants, {minute: 35});
   createTask("Zanox Merchants", zanoxApi.getMerchants, {minute: 45});
+  createTask("PepperJam Merchants", pepperjamApi.getMerchants, {minute: 55});
 
   // disabled for now:
   //createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
@@ -54,9 +57,12 @@ function init(id) {
 
   function taskRunner(name, task) {
     return function() {
+      var start = Date.now();
       log.info(name +" started");
       co(task).then(function() {
-        log.info(name + " successfully completed!");
+        var end = Date.now();
+        var elapsed = prettyMs(end-start, {verbose:true})
+        log.info(name + " successfully completed in "+ elapsed);
       }).catch(function(error) {
         if (error === "already-running") {
           debug(name + " is currently already running. Waiting until next run-time");
@@ -68,6 +74,9 @@ function init(id) {
   }
 
   function createTask(name, task, spec) {
+    // using task_t so i can pretend i'm a C programmer for a line of code
+    var task_t = typeof task, isTask = task_t === 'function';
+    if (!isTask) throw new Error("can't create task for "+name+": passed task is not a function! (is:"+task_t+")");
     var id = name.replace(/(?:\W+|^)(\w)/g, (m,letter) => letter.toUpperCase());
     log.info("Schedule task: "+name+" ("+id+") with spec: "+JSON.stringify(spec)+"");
     var rule = new schedule.RecurrenceRule();

@@ -4,6 +4,7 @@ var co = require('co');
 var wait = require('co-waiter');
 var uuid = require('node-uuid');
 var utils = require('ominto-utils');
+var prettyMs = require('pretty-ms');
 var o_configs = require('../../configs');
 var debug = require('debug')('send-events');
 var denodeify = require('denodeify');
@@ -21,7 +22,7 @@ var send = co.wrap(function* (s_streamName, s_streamType, s_taskName, items) {
     timestamp: new Date()
   }];
   var errors = [];
-
+  var allStart = Date.now();
   var allCount = 0;
   var compressedCount = 0;
   var compressionTime = 0;
@@ -49,10 +50,16 @@ var send = co.wrap(function* (s_streamName, s_streamType, s_taskName, items) {
       errors.push(e);
     }
   }
+  var allEnd = Date.now();
+  var allElapsed = allEnd - allStart;
+
   var uncompressedCount = allCount - compressedCount;
 
-  debug("processed: %d, uncompressed: %d, compressed: %d, errors: %d, time spent compressing: %dms",
-    allCount, uncompressedCount, compressedCount, errors.length, compressionTime);
+  debug("processed: %d, uncompressed: %d, compressed: %d, errors: %d, time spent compressing: %s, total save time: %s",
+    allCount, uncompressedCount, compressedCount, errors.length,
+    prettyMs(compressionTime, {verbose: true}),
+    prettyMs(allElapsed, {verbose: true})
+  );
 
   if (errors.length) {
     var msg = ["Received "+errors.length+" errors while sending "+items.length+" kinesis events:"]
