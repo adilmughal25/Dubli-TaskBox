@@ -14,7 +14,7 @@ function* getMerchants() {
   merchantsRunning = true;
 
   var results = yield {
-    merchants: client.getPaginated('/publisher/advertiser'),
+    merchants: client.getPaginated('/publisher/advertiser', {status:'joined'}),
     coupons: client.getPaginated('/publisher/creative/coupon'),
     links: client.getPaginated('/publisher/creative/text'),
     generic: client.getPaginated('/publisher/creative/generic')

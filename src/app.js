@@ -61,7 +61,7 @@ function init(id) {
       log.info(name +" started");
       co(task).then(function() {
         var end = Date.now();
-        var elapsed = prettyMs(end-start, {verbose:true})
+        var elapsed = prettyMs(end-start, {verbose:true});
         log.info(name + " successfully completed in "+ elapsed);
       }).catch(function(error) {
         if (error === "already-running") {
