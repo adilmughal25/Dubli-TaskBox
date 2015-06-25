@@ -13,22 +13,21 @@ function* getMerchants() {
   if (merchantsRunning) { throw 'already-running'; }
   merchantsRunning = true;
 
-  var results = yield {
-    merchants: client.getPaginated('/publisher/advertiser', {status:'joined'}),
-    coupons: client.getPaginated('/publisher/creative/coupon'),
-    links: client.getPaginated('/publisher/creative/text'),
-    generic: client.getPaginated('/publisher/creative/generic')
-  };
+  try {
+    var results = yield {
+      merchants: client.getPaginated('/publisher/advertiser', {status:'joined'}),
+      coupons: client.getPaginated('/publisher/creative/coupon'),
+      links: client.getPaginated('/publisher/creative/text'),
+      generic: client.getPaginated('/publisher/creative/generic')
+    };
 
-  var merchants = merge(results);
+    var merchants = merge(results);
 
-  yield sendMerchantsToEventHub(merchants);
-
-  merchantsRunning = false;
+    yield sendMerchantsToEventHub(merchants);
+  } finally {
+    merchantsRunning = false;
+  }
 }
-
-
-
 
 function merge(o_obj) {
   var results = {};

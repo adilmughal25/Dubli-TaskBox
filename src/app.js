@@ -16,6 +16,7 @@ var linkShareApi = require("./scripts/linkShareApi");
 var performanceHorizonApi = require('./scripts/performanceHorizonApi');
 var zanoxApi = require('./scripts/zanoxApi');
 var pepperjamApi = require('./scripts/pepperjamApi');
+var vcommissionApi = require('./scripts/vcommissionApi');
 
 function init(id) {
   process.on('message', function(msg) {
@@ -41,12 +42,13 @@ function init(id) {
 
   var schedules = {};
 
-  createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, {minute: 5});
-  createTask("LinkShare Merchants", linkShareApi.getMerchants, {minute: 15});
-  createTask("ClickJunction Merchants", clickJunctionApi.getMerchants, {minute: 25});
-  createTask("PerformanceHorizon Merchants", performanceHorizonApi.getMerchants, {minute: 35});
-  createTask("Zanox Merchants", zanoxApi.getMerchants, {minute: 45});
-  createTask("PepperJam Merchants", pepperjamApi.getMerchants, {minute: 55});
+  // createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, {minute: 5});
+  // createTask("LinkShare Merchants", linkShareApi.getMerchants, {minute: 15});
+  // createTask("ClickJunction Merchants", clickJunctionApi.getMerchants, {minute: 25});
+  // createTask("PerformanceHorizon Merchants", performanceHorizonApi.getMerchants, {minute: 35});
+  // createTask("Zanox Merchants", zanoxApi.getMerchants, {minute: 45});
+  // createTask("PepperJam Merchants", pepperjamApi.getMerchants, {minute: 55});
+  createTask("VCommission Merchants", vcommissionApi.getMerchants, {minute:0});
 
   // disabled for now:
   //createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
