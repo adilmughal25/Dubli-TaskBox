@@ -42,13 +42,14 @@ function init(id) {
 
   var schedules = {};
 
-  // createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, {minute: 5});
-  // createTask("LinkShare Merchants", linkShareApi.getMerchants, {minute: 15});
-  // createTask("ClickJunction Merchants", clickJunctionApi.getMerchants, {minute: 25});
-  // createTask("PerformanceHorizon Merchants", performanceHorizonApi.getMerchants, {minute: 35});
-  // createTask("Zanox Merchants", zanoxApi.getMerchants, {minute: 45});
-  // createTask("PepperJam Merchants", pepperjamApi.getMerchants, {minute: 55});
-  createTask("VCommission Merchants", vcommissionApi.getMerchants, {minute:0});
+  createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, {minute: 5});
+  createTask("LinkShare Merchants", linkShareApi.getMerchants, {minute: 10});
+  createTask("ClickJunction Merchants (USA)", clickJunctionApi.getMerchantsUSA, {minute: 15});
+  createTask("PerformanceHorizon Merchants", performanceHorizonApi.getMerchants, {minute: 20});
+  createTask("Zanox Merchants", zanoxApi.getMerchants, {minute: 25});
+  createTask("PepperJam Merchants", pepperjamApi.getMerchants, {minute: 30});
+  createTask("VCommission Merchants", vcommissionApi.getMerchants, {minute:35});
+  createTask("ClickJunction Merchants (Euro)", clickJunctionApi.getMerchantsEuro, {minute: 40});
 
   // disabled for now:
   //createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
