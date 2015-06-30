@@ -29,3 +29,6 @@ node_modules
 configs.json
 mydb
 docs
+
+# what happens if you run with SAVE_MERCHANTS=1
+/merchant-output-*.json

@@ -17,6 +17,7 @@ var performanceHorizonApi = require('./scripts/performanceHorizonApi');
 var zanoxApi = require('./scripts/zanoxApi');
 var pepperjamApi = require('./scripts/pepperjamApi');
 var vcommissionApi = require('./scripts/vcommissionApi');
+var commissionfactoryApi = require('./scripts/commissionfactoryApi');
 
 function init(id) {
   process.on('message', function(msg) {
@@ -50,6 +51,7 @@ function init(id) {
   createTask("PepperJam Merchants", pepperjamApi.getMerchants, {minute: 30});
   createTask("VCommission Merchants", vcommissionApi.getMerchants, {minute:35});
   createTask("ClickJunction Merchants (Euro)", clickJunctionApi.getMerchantsEuro, {minute: 40});
+  createTask("CommissionFactory Merchants", commissionfactoryApi.getMerchants, {minute:45});
 
   // disabled for now:
   //createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
