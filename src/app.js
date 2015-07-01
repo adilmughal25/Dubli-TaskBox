@@ -19,6 +19,7 @@ var pepperjamApi = require('./scripts/pepperjamApi');
 var vcommissionApi = require('./scripts/vcommissionApi');
 var commissionfactoryApi = require('./scripts/commissionfactoryApi');
 var affiliatewindowApi = require('./scripts/affiliatewindowApi');
+var avantlinkApi = require('./scripts/avantlinkApi');
 
 function init(id) {
   process.on('message', function(msg) {
@@ -44,16 +45,17 @@ function init(id) {
 
   var schedules = {};
 
-  // createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, {minute: 5});
-  // createTask("LinkShare Merchants", linkShareApi.getMerchants, {minute: 10});
-  // createTask("ClickJunction Merchants (USA)", clickJunctionApi.getMerchantsUSA, {minute: 15});
-  // createTask("PerformanceHorizon Merchants", performanceHorizonApi.getMerchants, {minute: 20});
-  // createTask("Zanox Merchants", zanoxApi.getMerchants, {minute: 25});
-  // createTask("PepperJam Merchants", pepperjamApi.getMerchants, {minute: 30});
-  // createTask("VCommission Merchants", vcommissionApi.getMerchants, {minute:35});
-  // createTask("ClickJunction Merchants (Euro)", clickJunctionApi.getMerchantsEuro, {minute: 40});
-  // createTask("CommissionFactory Merchants", commissionfactoryApi.getMerchants, {minute:45});
+  createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, {minute: 5});
+  createTask("LinkShare Merchants", linkShareApi.getMerchants, {minute: 10});
+  createTask("ClickJunction Merchants (USA)", clickJunctionApi.getMerchantsUSA, {minute: 15});
+  createTask("PerformanceHorizon Merchants", performanceHorizonApi.getMerchants, {minute: 20});
+  createTask("Zanox Merchants", zanoxApi.getMerchants, {minute: 25});
+  createTask("PepperJam Merchants", pepperjamApi.getMerchants, {minute: 30});
+  createTask("VCommission Merchants", vcommissionApi.getMerchants, {minute:35});
+  createTask("ClickJunction Merchants (Euro)", clickJunctionApi.getMerchantsEuro, {minute: 40});
+  createTask("CommissionFactory Merchants", commissionfactoryApi.getMerchants, {minute:45});
   createTask("AffiliateWindow Merchants", affiliatewindowApi.getMerchants, {minute:50});
+  createTask("Avantlink Merchants", avantlinkApi.getMerchants, {minute:55});
 
   // disabled for now:
   //createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
