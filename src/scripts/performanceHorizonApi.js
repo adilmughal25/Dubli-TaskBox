@@ -3,7 +3,7 @@
 var _ = require('lodash');
 var debug = require('debug')('performancehorizon:api');
 var utils = require('ominto-utils');
-var sendEvents = require('./send-events');
+var sendEvents = require('./support/send-events');
 
 var client = utils.remoteApis.performanceHorizonClient();
 

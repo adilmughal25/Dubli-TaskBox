@@ -4,7 +4,7 @@ var _ = require('lodash');
 var debug = require('debug')('vcommission:api');
 var utils = require('ominto-utils');
 var co = require('co');
-var sendEvents = require('./send-events');
+var sendEvents = require('./support/send-events');
 
 var client = utils.remoteApis.vcommissionClient();
 
