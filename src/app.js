@@ -9,17 +9,18 @@ var debug = require('debug')('taskbox:tasks');
 var _ = require('lodash');
 var prettyMs = require('pretty-ms');
 
-var impactRadiusProductFtp = require("./scripts/impactRadiusProductFtp");
-var clickJunctionApi = require("./scripts/clickJunctionApi");
-var impactRadiusApi = require("./scripts/impactRadiusApi");
-var linkShareApi = require("./scripts/linkShareApi");
-var performanceHorizonApi = require('./scripts/performanceHorizonApi');
-var zanoxApi = require('./scripts/zanoxApi');
-var pepperjamApi = require('./scripts/pepperjamApi');
-var vcommissionApi = require('./scripts/vcommissionApi');
-var commissionfactoryApi = require('./scripts/commissionfactoryApi');
 var affiliatewindowApi = require('./scripts/affiliatewindowApi');
 var avantlinkApi = require('./scripts/avantlinkApi');
+var clickJunctionApi = require("./scripts/clickJunctionApi");
+var commissionfactoryApi = require('./scripts/commissionfactoryApi');
+var impactRadiusApi = require("./scripts/impactRadiusApi");
+var impactRadiusProductFtp = require("./scripts/impactRadiusProductFtp");
+var linkShareApi = require("./scripts/linkShareApi");
+var pepperjamApi = require('./scripts/pepperjamApi');
+var performanceHorizonApi = require('./scripts/performanceHorizonApi');
+var tradetrackerApi = require('./scripts/tradetrackerApi');
+var vcommissionApi = require('./scripts/vcommissionApi');
+var zanoxApi = require('./scripts/zanoxApi');
 
 function init(id) {
   process.on('message', function(msg) {
@@ -56,6 +57,7 @@ function init(id) {
   createTask("CommissionFactory Merchants", commissionfactoryApi.getMerchants, {minute:45});
   createTask("AffiliateWindow Merchants", affiliatewindowApi.getMerchants, {minute:50});
   createTask("Avantlink Merchants", avantlinkApi.getMerchants, {minute:55});
+  createTask("TradeTracker Merchants", tradetrackerApi.getMerchants, {minute:0});
 
   // disabled for now:
   //createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
