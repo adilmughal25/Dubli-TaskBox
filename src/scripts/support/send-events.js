@@ -5,7 +5,7 @@ var wait = require('co-waiter');
 var uuid = require('node-uuid');
 var utils = require('ominto-utils');
 var prettyMs = require('pretty-ms');
-var o_configs = require('../../configs');
+var o_configs = require('../../../configs');
 var debug = require('debug')('send-events');
 var denodeify = require('denodeify');
 var gzip = denodeify(require('zlib').gzip);
@@ -68,7 +68,6 @@ var send = co.wrap(function* (s_streamName, s_streamType, s_taskName, items) {
     throw new Error(msg);
   }
 
-
   return;
 });
 
@@ -77,7 +76,7 @@ function devSaveMerchants(s_which, a_items) {
   if (!DEV_SAVE_MERCHANTS) return;
   var resolve = require('path').resolve;
   var write = require('fs').writeFile;
-  var f = resolve(__dirname, '../../merchant-output-'+s_which+'.json');
+  var f = resolve(__dirname, '../../../merchant-output-'+s_which+'.json');
   write(f, JSON.stringify(a_items), 'utf-8', function (e) {
     if (e) return console.error('error saving file', e.stack);
     console.log("  -> SAVED "+f);

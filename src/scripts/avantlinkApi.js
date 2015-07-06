@@ -5,7 +5,9 @@ var co = require('co');
 var debug = require('debug')('avantlink:api');
 var utils = require('ominto-utils');
 var sendEvents = require('./support/send-events');
-
+var merge = require('./support/easy-merge')('lngMerchantId', {
+  links: 'Merchant_Id'
+});
 var client = utils.remoteApis.avantlinkClient();
 
 
@@ -26,21 +28,6 @@ function* getMerchants() {
 
 function hasPercentage(merchants) {
   return merchants.filter(m => m.strActionCommissionType === 'percent');
-}
-
-function merge(o_obj) {
-  var empty = x => ({merchant:x, links:[]});
-  var results = o_obj.merchants
-    .reduce( (m,x) => _.set(m, x.lngMerchantId, empty(x)), {});
-  delete o_obj.merchants;
-
-  o_obj.links.forEach(function(o_link) {
-    if (!results[o_link.Merchant_Id]) return;
-    results[o_link.Merchant_Id].links.push(o_link);
-  });
-  delete o_obj.links;
-
-  return _.values(results);
 }
 
 module.exports = {

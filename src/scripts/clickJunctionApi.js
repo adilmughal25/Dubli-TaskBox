@@ -10,6 +10,10 @@ var co = require('co');
 var cjClient = utils.remoteApis.clickJunctionClient;
 var jsonify = utils.jsonifyXmlBody;
 
+var merge = require('./support/easy-merge')('advertiser-id', {
+  links: 'advertiser-id'
+});
+
 var _debug = require('debug');
 var debug = {
   usa: _debug('clickjunction:usa:api'),
@@ -40,32 +44,12 @@ function* getMerchantsEuro() {
 
 
 var getMerchants = co.wrap(function* getMerchants(s_regionId) {
-
-  var merchants = {};
-
   var results = yield {
     merchants: doApiMerchants(s_regionId),
     links: doApiLinks(s_regionId)
   };
 
-  results.merchants.forEach(function(item) {
-    var id = item['advertiser-id'];
-    merchants[id] = {
-      merchant: item,
-      links: []
-    };
-  });
-  delete results.merchants; // be nice to gc
-  results.links.forEach(function(item) {
-    var id = item['advertiser-id'];
-    if (merchants[id]) {
-      merchants[id].links.push(item);
-    }
-  });
-  delete results.links; // be nice to gc
-  results = null;
-
-  merchants = _.values(merchants);
+  var merchants = merge(results);
 
   sendMerchantsToEventHub(merchants||[], s_regionId);
   // used during testing to give me a file full of example data

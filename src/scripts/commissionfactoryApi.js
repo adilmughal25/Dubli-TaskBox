@@ -6,6 +6,11 @@ var debug = require('debug')('commissionfactory:api');
 var utils = require('ominto-utils');
 var sendEvents = require('./support/send-events');
 
+var merge = require('./support/easy-merge')('id', {
+  coupons: 'merchantId',
+  links: 'merchantId'
+});
+
 var client = utils.remoteApis.commissionfactoryClient();
 
 const MERCHANT_URL = '/Merchants?status=Joined&commissionType=Percent per Sale';
@@ -32,34 +37,6 @@ function* getMerchants() {
     merchantsRunning = false;
   }
 }
-
-function merge(o_obj) {
-  var results = {};
-
-  o_obj.merchants.forEach(function(merchant) {
-    results[merchant.Id] = {
-      merchant: merchant,
-      coupons: [],
-      links: []
-    };
-  });
-  delete o_obj.merchants;
-
-  o_obj.coupons.forEach(function(coupon) {
-    if (!results[coupon.merchantId]) return;
-    results[coupon.merchantId].coupons.push(coupon);
-  });
-  delete o_obj.coupons;
-
-  o_obj.links.forEach(function(link) {
-    if (!results[link.merchantId]) return;
-    results[link.merchantId].links.push(link);
-  });
-  delete o_obj.links;
-
-  return _.values(results);
-}
-
 
 function sendMerchantsToEventHub(merchants) {
   if (! merchants) { merchants = []; }

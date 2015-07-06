@@ -5,6 +5,9 @@ var debug = require('debug')('vcommission:api');
 var utils = require('ominto-utils');
 var co = require('co');
 var sendEvents = require('./support/send-events');
+var merge = require('./support/easy-merge')('id', {
+  images: 'offer_id',
+});
 
 var client = utils.remoteApis.vcommissionClient();
 
@@ -24,28 +27,6 @@ function* getMerchants() {
   } finally {
     merchantsRunning = false;
   }
-}
-
-function merge(o_obj) {
-  var results = {};
-
-  o_obj.merchants.forEach(function(merchant) {
-    var id = merchant.id;
-    results[id] = {
-      merchant: merchant
-    };
-  });
-  delete o_obj.merchants;
-
-  o_obj.images.forEach(function(item) {
-    var id = _.get(item, 'offer_id');
-    if (!results[id]) return;
-    if (typeof results[id].merchant.logo !== 'undefined') return;
-    results[id].merchant.logo = item.url;
-  });
-  delete o_obj.images;
-
-  return _.values(results);
 }
 
 var doApiGetAllTrackingLinks  = co.wrap(function* (merchants) {

@@ -8,6 +8,12 @@ var sendEvents = require('./support/send-events');
 
 var client = utils.remoteApis.pepperjamClient();
 
+var merge = require('./support/easy-merge')('id', {
+  coupons: 'program_id',
+  links: 'program_id',
+  generic: 'program_id'
+});
+
 var merchantsRunning = false;
 function* getMerchants() {
   if (merchantsRunning) { throw 'already-running'; }
@@ -27,41 +33,6 @@ function* getMerchants() {
   } finally {
     merchantsRunning = false;
   }
-}
-
-function merge(o_obj) {
-  var results = {};
-
-  var _push = function push(key, idField) {
-    return function(item) {
-      var id = _.get(item, idField);
-      if (!results[id]) return;
-      results[id][key].push(item);
-    };
-  };
-
-  o_obj.merchants.forEach(function(merchant) {
-    var id = merchant.id;
-    results[id] = {
-      merchant: merchant,
-      coupons: [],
-      links: [],
-      generic: []
-    };
-  });
-  delete o_obj.merchants;
-
-
-  o_obj.coupons.forEach(_push('coupons', 'program_id'));
-  delete o_obj.coupons;
-
-  o_obj.links.forEach(_push('links', 'program_id'));
-  delete o_obj.links;
-
-  o_obj.generic.forEach(_push('generic', 'program_id'));
-  delete o_obj.generic;
-
-  return _.values(results);
 }
 
 var _fields = 'coupons links generic'.split(' ');
