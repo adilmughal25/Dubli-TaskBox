@@ -6,6 +6,8 @@ var debug = require('debug')('tradetracker:api');
 var utils = require('ominto-utils');
 var sendEvents = require('./support/send-events');
 var client = utils.remoteApis.tradetrackerClient();
+var XmlEntities = require('html-entities').XmlEntities;
+var entities = new XmlEntities();
 
 var merge = require('./support/easy-merge')('ID', {
   links: 'campaign.ID',
@@ -20,7 +22,7 @@ const CAMPAIGN_ARGS = {
 
 const MATERIAL_ARGS = {
   affiliateSiteID: client.siteId,
-  materialOutputType: 'html'
+  materialOutputType: 'rss'
 };
 
 var merchantsRunning = false;
@@ -33,9 +35,9 @@ function* getMerchants() {
 
     var results = yield {
       merchants: doApiMerchants(),
-      links: doApi('getMaterialTextItems', MATERIAL_ARGS, 'materialItems.item'),
-      offers: doApi('getMaterialIncentiveOfferItems', MATERIAL_ARGS, 'materialItems.item'),
-      vouchers: doApi('getMaterialIncentiveVoucherItems', MATERIAL_ARGS, 'materialItems.item')
+      links: doApi('getMaterialTextItems', MATERIAL_ARGS, 'materialItems.item').then(extractUrl),
+      offers: doApi('getMaterialIncentiveOfferItems', MATERIAL_ARGS, 'materialItems.item').then(extractUrl),
+      vouchers: doApi('getMaterialIncentiveVoucherItems', MATERIAL_ARGS, 'materialItems.item').then(extractUrl)
     };
 
     var merchants = merge(results);
@@ -57,6 +59,14 @@ var doApi = co.wrap(function* (method, args, key) {
 
   return results || [];
 });
+
+function extractUrl(a_items) {
+  a_items.forEach(function(item) {
+    var url = item.code.replace(/(\n|\t)+/g, ' ').replace(/^.*<link>(.+)<\/link>.*$/, '$1');
+    item.url = entities.decode(url);
+  });
+  return a_items;
+}
 
 function doApiMerchants() {
   return doApi('getCampaigns', CAMPAIGN_ARGS, 'campaigns.item').then(function(res) {
