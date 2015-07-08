@@ -18,6 +18,7 @@ var impactRadiusProductFtp = require("./scripts/impactRadiusProductFtp");
 var linkShareApi = require("./scripts/linkShareApi");
 var pepperjamApi = require('./scripts/pepperjamApi');
 var performanceHorizonApi = require('./scripts/performanceHorizonApi');
+var publicideasApi = require('./scripts/publicideasApi');
 var tradetrackerApi = require('./scripts/tradetrackerApi');
 var vcommissionApi = require('./scripts/vcommissionApi');
 var zanoxApi = require('./scripts/zanoxApi');
@@ -58,6 +59,7 @@ function init(id) {
   createTask("AffiliateWindow Merchants", affiliatewindowApi.getMerchants, {minute:50});
   createTask("Avantlink Merchants", avantlinkApi.getMerchants, {minute:55});
   createTask("TradeTracker Merchants", tradetrackerApi.getMerchants, {minute:0});
+  createTask("PublicIdeas Merchants", publicideasApi.getMerchants, {minute:5});
 
   // disabled for now:
   //createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
