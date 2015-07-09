@@ -20,6 +20,7 @@ var pepperjamApi = require('./scripts/pepperjamApi');
 var performanceHorizonApi = require('./scripts/performanceHorizonApi');
 var publicideasApi = require('./scripts/publicideasApi');
 var tradetrackerApi = require('./scripts/tradetrackerApi');
+var webgainsApi = require('./scripts/webgainsApi');
 var vcommissionApi = require('./scripts/vcommissionApi');
 var zanoxApi = require('./scripts/zanoxApi');
 
@@ -47,19 +48,26 @@ function init(id) {
 
   var schedules = {};
 
-  createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, {minute: 5});
-  createTask("LinkShare Merchants", linkShareApi.getMerchants, {minute: 10});
-  createTask("ClickJunction Merchants (USA)", clickJunctionApi.getMerchantsUSA, {minute: 15});
-  createTask("PerformanceHorizon Merchants", performanceHorizonApi.getMerchants, {minute: 20});
-  createTask("Zanox Merchants", zanoxApi.getMerchants, {minute: 25});
-  createTask("PepperJam Merchants", pepperjamApi.getMerchants, {minute: 30});
-  createTask("VCommission Merchants", vcommissionApi.getMerchants, {minute:35});
-  createTask("ClickJunction Merchants (Euro)", clickJunctionApi.getMerchantsEuro, {minute: 40});
-  createTask("CommissionFactory Merchants", commissionfactoryApi.getMerchants, {minute:45});
-  createTask("AffiliateWindow Merchants", affiliatewindowApi.getMerchants, {minute:50});
-  createTask("Avantlink Merchants", avantlinkApi.getMerchants, {minute:55});
-  createTask("TradeTracker Merchants", tradetrackerApi.getMerchants, {minute:0});
-  createTask("PublicIdeas Merchants", publicideasApi.getMerchants, {minute:5});
+  createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, {minute: 3});
+  createTask("LinkShare Merchants", linkShareApi.getMerchants, {minute: 6});
+  createTask("ClickJunction Merchants (USA)", clickJunctionApi.getMerchantsUSA, {minute: 9});
+  createTask("PerformanceHorizon Merchants", performanceHorizonApi.getMerchants, {minute: 12});
+  createTask("Zanox Merchants", zanoxApi.getMerchants, {minute: 15});
+  createTask("PepperJam Merchants", pepperjamApi.getMerchants, {minute: 18});
+  createTask("VCommission Merchants", vcommissionApi.getMerchants, {minute:21});
+  createTask("ClickJunction Merchants (Euro)", clickJunctionApi.getMerchantsEuro, {minute: 24});
+  createTask("CommissionFactory Merchants", commissionfactoryApi.getMerchants, {minute:27});
+  createTask("AffiliateWindow Merchants", affiliatewindowApi.getMerchants, {minute:30});
+  createTask("Avantlink Merchants", avantlinkApi.getMerchants, {minute:33});
+  createTask("TradeTracker Merchants", tradetrackerApi.getMerchants, {minute:36});
+  createTask("PublicIdeas Merchants", publicideasApi.getMerchants, {minute:39});
+  createTask("Webgains Merchants", webgainsApi.getMerchants, {minute:42});
+  // createTask("", blah.getMerchants, {minute:45});
+  // createTask("", blah.getMerchants, {minute:48});
+  // createTask("", blah.getMerchants, {minute:51});
+  // createTask("", blah.getMerchants, {minute:54});
+  // createTask("", blah.getMerchants, {minute:57});
+  // createTask("", blah.getMerchants, {minute:0});
 
   // disabled for now:
   //createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
