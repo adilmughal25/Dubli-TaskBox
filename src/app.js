@@ -13,7 +13,7 @@ var affiliatewindowApi = require('./scripts/affiliatewindowApi');
 var avantlinkApi = require('./scripts/avantlinkApi');
 var clickJunctionApi = require("./scripts/clickJunctionApi");
 var commissionfactoryApi = require('./scripts/commissionfactoryApi');
-var impactRadiusApi = require("./scripts/impactRadiusApi");
+var impactRadiusGenericApi = require('./scripts/impactRadiusGenericApi');
 var impactRadiusProductFtp = require("./scripts/impactRadiusProductFtp");
 var linkShareApi = require("./scripts/linkShareApi");
 var pepperjamApi = require('./scripts/pepperjamApi');
@@ -23,6 +23,9 @@ var tradetrackerApi = require('./scripts/tradetrackerApi');
 var webgainsApi = require('./scripts/webgainsApi');
 var vcommissionApi = require('./scripts/vcommissionApi');
 var zanoxApi = require('./scripts/zanoxApi');
+
+var impactRadiusApi = impactRadiusGenericApi('impactradius');
+var apdPerformanceApi = impactRadiusGenericApi('apdperformance');
 
 function init(id) {
   process.on('message', function(msg) {
@@ -62,7 +65,7 @@ function init(id) {
   createTask("TradeTracker Merchants", tradetrackerApi.getMerchants, {minute:36});
   createTask("PublicIdeas Merchants", publicideasApi.getMerchants, {minute:39});
   createTask("Webgains Merchants", webgainsApi.getMerchants, {minute:42});
-  // createTask("", blah.getMerchants, {minute:45});
+  createTask("APD Performance Merchants", apdPerformanceApi.getMerchants, {minute:45});
   // createTask("", blah.getMerchants, {minute:48});
   // createTask("", blah.getMerchants, {minute:51});
   // createTask("", blah.getMerchants, {minute:54});
