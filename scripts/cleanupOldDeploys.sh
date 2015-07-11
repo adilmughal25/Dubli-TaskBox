@@ -45,3 +45,5 @@ for DIR in $DEPLOYMENTS_LIST; do
     rm -rf $REAL_PATH
   fi
 done
+
+find /tmp -mindepth 1 -maxdepth 1 -type d -user node-app-files -name 'npm-*' -ctime +0 -exec rm -rf {} \;
