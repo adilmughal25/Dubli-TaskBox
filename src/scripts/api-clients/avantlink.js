@@ -9,9 +9,7 @@ var _ = require('lodash');
 var denodeify = require('denodeify');
 var querystring = require('querystring');
 var request = require('request-promise');
-var xml2js = require('xml2js');
-
-var parseXml = denodeify(xml2js.parseString.bind(xml2js));
+var jsonify = require('./jsonify-xml-body');
 
 function createClient() {
   var client = request.defaults({});
@@ -41,7 +39,7 @@ function createClient() {
     });
 
     var promise = client.get(url)
-      .then(data => parseXml(data, {explicitArray:false}))
+      .then(jsonify)
       .then(data => data.NewDataSet.Table1);
     return promise;
   };
