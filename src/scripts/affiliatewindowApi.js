@@ -3,29 +3,19 @@
 var _ = require('lodash');
 var co = require('co');
 var debug = require('debug')('affiliatewindow:api');
-var utils = require('ominto-utils');
 var sendEvents = require('./support/send-events');
-
-var client = utils.remoteApis.affiliatewindowClient();
-
+var singleRun = require('./support/single-run');
+var client = require('./api-clients').affiliatewindowClient();
 
 // helper
 var ary = x => _.isArray(x) ? x : [x];
 
-var merchantsRunning = false;
-function* getMerchants() {
-  if (merchantsRunning) { throw 'already-running'; }
-  merchantsRunning = true;
-
-  try {
-    yield client.setup();
-    var merchants = (yield doApiMerchants()).map(m => ({merchant:m}));
-    yield doApiCashback(merchants);
-    yield sendEvents.sendMerchants('affiliatewindow', merchants);
-  } finally {
-    merchantsRunning = false;
-  }
-}
+var getMerchants = singleRun(function*() {
+  yield client.setup();
+  var merchants = (yield doApiMerchants()).map(m => ({merchant:m}));
+  yield doApiCashback(merchants);
+  yield sendEvents.sendMerchants('affiliatewindow', merchants);
+});
 
 var doApiMerchants = co.wrap(function* (){
   var response = yield client.getMerchantList({sRelationship:'joined'});
@@ -41,11 +31,6 @@ var doApiCashback = co.wrap(function* (a_merchants) {
     merchant.commissions = cg;
   }
 });
-
-
-function ary(x) {
-  return _.isArray(x) ? x : [x];
-}
 
 module.exports = {
   getMerchants: getMerchants

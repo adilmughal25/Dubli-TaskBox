@@ -9,30 +9,22 @@ var sendEvents = require('./support/send-events');
 var utils = require('ominto-utils');
 var XmlEntities = require('html-entities').XmlEntities;
 var entities = new XmlEntities();
+var singleRun = require('./support/single-run');
 
-var linkShare = utils.remoteApis.linkShareClient();
+var linkShare = require('./api-clients').linkShareClient();
 var _check = utils.checkApiResponse;
-var jsonify = utils.jsonifyXmlBody;
+var jsonify = require('./api-clients/jsonify-xml-body');
 var limiter = utils.promiseRateLimiter;
 
-var merchantsRunning = false;
-function* getMerchants() {
-  if (merchantsRunning) { throw "already-running"; }
-  merchantsRunning = true;
-
-  try {
-    var results = yield {
-      merchants: doApiMerchants(),
-      coupons: doApiCoupons(),
-      textLinks: doApiTextLinks()
-    };
-    var merchants = mergeResults(results);
-    yield sendMerchantsToEventHub(merchants);
-  } finally {
-    merchantsRunning = false;
-    linkShare.releaseClient();
-  }
-}
+var getMerchants = singleRun(function* (){
+  var results = yield {
+    merchants: doApiMerchants(),
+    coupons: doApiCoupons(),
+    textLinks: doApiTextLinks()
+  };
+  var merchants = mergeResults(results);
+  yield sendMerchantsToEventHub(merchants);
+});
 
 
 var doApiMerchants = co.wrap(function*() {

@@ -5,10 +5,11 @@ var moment = require('moment');
 var request = require("request-promise");
 var wait = require('co-waiter');
 var sendEvents = require('./support/send-events');
+var singleRun = require('./support/single-run');
 var utils = require('ominto-utils');
 var co = require('co');
-var cjClient = utils.remoteApis.clickJunctionClient;
-var jsonify = utils.jsonifyXmlBody;
+var cjClient = require('./api-clients').clickJunctionClient;
+var jsonify = require('./api-clients/jsonify-xml-body');
 
 var merge = require('./support/easy-merge')('advertiser-id', {
   links: 'advertiser-id'
@@ -21,27 +22,13 @@ var debug = {
 };
 
 var merchantsRunningUSA = false;
-function* getMerchantsUSA() {
-  if (merchantsRunningUSA) { throw 'already-running'; }
-  merchantsRunningUSA = true;
-  try {
-    yield getMerchants('usa');
-  } finally {
-    merchantsRunningUSA = true;
-  }
-}
+var getMerchantsUSA = singleRun(function*(){
+  return yield getMerchants('usa');
+});
 
-var merchantsRunningEuro = false;
-function* getMerchantsEuro() {
-  if (merchantsRunningEuro) { throw 'already-running'; }
-  merchantsRunningEuro = true;
-  try {
-    yield getMerchants('euro');
-  } finally {
-    merchantsRunningEuro = true;
-  }
-}
-
+var getMerchantsEuro = singleRun(function*(){
+  return yield getMerchants('euro');
+});
 
 var getMerchants = co.wrap(function* getMerchants(s_regionId) {
   var results = yield {
@@ -98,26 +85,13 @@ var doApiMerchants = co.wrap(function* (s_regionId) {
   return merchants;
 });
 
-var commissionsRunningUSA = false;
-function* getCommissionDetailsUSA() {
-  if (commissionsRunningUSA) { throw 'already-running'; }
-  try {
-    yield getCommissionDetails('usa');
-  } finally {
-    commissionsRunningUSA = false;
-  }
-}
+var getCommissionDetailsUSA = singleRun(function*(){
+  return yield getCommissionDetails('usa');
+});
 
-var commissionsRunningEuro = false;
-function* getCommissionDetailsEuro() {
-  if (commissionsRunningEuro) { throw 'already-running'; }
-  try {
-    yield getCommissionDetails('euro');
-  } finally {
-    commissionsRunningEuro = false;
-  }
-}
-
+var getCommissionDetailsEuro = singleRun(function*(){
+  return yield getCommissionDetails('euro');
+});
 
 var getCommissionDetails = co.wrap(function* getCommissionDetails(s_regionId) {
   var startTime = moment().subtract(1, 'days').startOf('day').format('YYYY-MM-DD');

@@ -5,10 +5,11 @@ var co = require('co');
 var debug = require('debug')('tradetracker:api');
 var utils = require('ominto-utils');
 var sendEvents = require('./support/send-events');
-var client = utils.remoteApis.tradetrackerClient();
+var client = require('./api-clients').tradetrackerClient();
 var XmlEntities = require('html-entities').XmlEntities;
 var entities = new XmlEntities();
 
+var singleRun = require('./support/single-run');
 var merge = require('./support/easy-merge')('ID', {
   links: 'campaign.ID',
   vouchers: 'campaign.ID',
@@ -25,35 +26,23 @@ const MATERIAL_ARGS = {
   materialOutputType: 'rss'
 };
 
-var merchantsRunning = false;
-function* getMerchants() {
-  if (merchantsRunning) { throw 'already-running'; }
-  merchantsRunning = true;
+var getMerchants = singleRun(function*(){
+  yield client.setup(); // this gets soap info and does the auth login
 
-  try {
-    yield client.setup(); // this gets soap info and does the auth login
+  var results = yield {
+    merchants: doApiMerchants(),
+    links: doApi('getMaterialTextItems', MATERIAL_ARGS, 'materialItems.item').then(extractUrl),
+    offers: doApi('getMaterialIncentiveOfferItems', MATERIAL_ARGS, 'materialItems.item').then(extractUrl),
+    vouchers: doApi('getMaterialIncentiveVoucherItems', MATERIAL_ARGS, 'materialItems.item').then(extractUrl)
+  };
 
-    var results = yield {
-      merchants: doApiMerchants(),
-      links: doApi('getMaterialTextItems', MATERIAL_ARGS, 'materialItems.item').then(extractUrl),
-      offers: doApi('getMaterialIncentiveOfferItems', MATERIAL_ARGS, 'materialItems.item').then(extractUrl),
-      vouchers: doApi('getMaterialIncentiveVoucherItems', MATERIAL_ARGS, 'materialItems.item').then(extractUrl)
-    };
+  var merchants = merge(results);
 
-    var merchants = merge(results);
-
-    yield sendEvents.sendMerchants('tradetracker', merchants);
-  } finally {
-    merchantsRunning = false;
-  }
-}
+  yield sendEvents.sendMerchants('tradetracker', merchants);
+});
 
 var doApi = co.wrap(function* (method, args, key) {
   var results = yield client[method](args)
-    // .then(h => {
-    //   console.log(method, JSON.stringify(h, null, 2));
-    //   return h;
-    // })
     .then(extractAry(key))
     .then(resp => rinse(resp));
 

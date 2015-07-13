@@ -5,22 +5,16 @@ var co = require('co');
 var debug = require('debug')('publicideas:api');
 var utils = require('ominto-utils');
 var sendEvents = require('./support/send-events');
+var singleRun = require('./support/single-run');
 
-var client = utils.remoteApis.publicideasClient();
+var client = require('./api-clients').publicideasClient();
 var ary = x => _.isArray(x) ? x : [x];
-var merchantsRunning = false;
-function* getMerchants() {
-  if (merchantsRunning) { throw 'already-running'; }
-  merchantsRunning = true;
 
-  try {
-    var merchants = yield client.getMerchants();
-    merchants = clean(merchants);
-    yield sendEvents.sendMerchants('publicideas', merchants);
-  } finally {
-    merchantsRunning = false;
-  }
-}
+var getMerchants = singleRun(function* (){
+  var merchants = yield client.getMerchants();
+  merchants = clean(merchants);
+  yield sendEvents.sendMerchants('publicideas', merchants);
+});
 
 // massage the input a tiny little bit, mostly for ease-of-use on the lambda side
 function clean(merchants) {

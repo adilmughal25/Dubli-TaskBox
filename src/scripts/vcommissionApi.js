@@ -5,29 +5,22 @@ var debug = require('debug')('vcommission:api');
 var utils = require('ominto-utils');
 var co = require('co');
 var sendEvents = require('./support/send-events');
+var singleRun = require('./support/single-run');
 var merge = require('./support/easy-merge')('id', {
   images: 'offer_id',
 });
 
-var client = utils.remoteApis.vcommissionClient();
+var client = require('./api-clients').vcommissionClient();
 
-var merchantsRunning = false;
-function* getMerchants() {
-  if (merchantsRunning) { throw 'already-running'; }
-  merchantsRunning = true;
-  try {
-    var results = yield {
-      merchants: doApiAffiliateOffers(),
-      images: doApiAffiliateOfferImages()
-    };
-    yield doApiGetAllTrackingLinks(results.merchants);
-    var merged = merge(results);
-    yield sendEvents.sendMerchants('vcommission', merged);
-    // console.log("results", results);
-  } finally {
-    merchantsRunning = false;
-  }
-}
+var getMerchants = singleRun(function* (){
+  var results = yield {
+    merchants: doApiAffiliateOffers(),
+    images: doApiAffiliateOfferImages()
+  };
+  yield doApiGetAllTrackingLinks(results.merchants);
+  var merged = merge(results);
+  yield sendEvents.sendMerchants('vcommission', merged);
+});
 
 var doApiGetAllTrackingLinks  = co.wrap(function* (merchants) {
   for (var i = 0; i < merchants.length; i++) {

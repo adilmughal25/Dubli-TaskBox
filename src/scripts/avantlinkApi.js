@@ -5,26 +5,18 @@ var co = require('co');
 var debug = require('debug')('avantlink:api');
 var utils = require('ominto-utils');
 var sendEvents = require('./support/send-events');
+var singleRun = require('./support/single-run');
 var merge = require('./support/easy-merge')('lngMerchantId', {
   links: 'Merchant_Id'
 });
-var client = utils.remoteApis.avantlinkClient();
+var client = require('./api-clients').avantlinkClient();
 
-
-var merchantsRunning = false;
-function* getMerchants() {
-  if (merchantsRunning) { throw 'already-running'; }
-  merchantsRunning = true;
-
-  try {
-    yield sendEvents.sendMerchants('avantlink', merge(yield {
-      merchants: client.getMerchants().then(hasPercentage),
-      links: client.getTextLinks()
-    }));
-  } finally {
-    merchantsRunning = false;
-  }
-}
+var getMerchants = singleRun(function*(){
+  yield sendEvents.sendMerchants('avantlink', merge(yield {
+    merchants: client.getMerchants().then(hasPercentage),
+    links: client.getTextLinks()
+  }));
+});
 
 function hasPercentage(merchants) {
   return merchants.filter(m => m.strActionCommissionType === 'percent');
