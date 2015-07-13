@@ -10,6 +10,7 @@ var co = require('co');
 var denodeify = require('denodeify');
 var soap = require('soap');
 var request = require('request-promise');
+require('tough-cookie'); // for request's benefit
 
 function TradeTrackerClient() {
   if (!(this instanceof TradeTrackerClient)) return new TradeTrackerClient();
