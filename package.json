@@ -32,7 +32,6 @@
     "denodeify": "^1.2.1",
     "ftp": "^0.3.10",
     "html-entities": "^1.1.2",
-    "joi": "*",
     "lodash": "*",
     "moment": "^2.10.3",
     "node-schedule": "^0.2.7",
