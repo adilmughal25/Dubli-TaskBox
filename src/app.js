@@ -10,6 +10,7 @@ var _ = require('lodash');
 var prettyMs = require('pretty-ms');
 
 var affiliatewindowApi = require('./scripts/affiliatewindowApi');
+var affilnetApi = require('./scripts/affilinetApi');
 var avantlinkApi = require('./scripts/avantlinkApi');
 var clickJunctionApi = require("./scripts/clickJunctionApi");
 var commissionfactoryApi = require('./scripts/commissionfactoryApi');
@@ -66,7 +67,7 @@ function init(id) {
   createTask("PublicIdeas Merchants", publicideasApi.getMerchants, {minute:39});
   createTask("Webgains Merchants", webgainsApi.getMerchants, {minute:42});
   createTask("APD Performance Merchants", apdPerformanceApi.getMerchants, {minute:45});
-  // createTask("", blah.getMerchants, {minute:48});
+  createTask("Affili.Net Merchants", affilnetApi.getMerchants, {minute:48});
   // createTask("", blah.getMerchants, {minute:51});
   // createTask("", blah.getMerchants, {minute:54});
   // createTask("", blah.getMerchants, {minute:57});
