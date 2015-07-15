@@ -99,7 +99,7 @@ AffiliNet.prototype.getCreatives = co.wrap(function* (args) {
 
 AffiliNet.prototype.getVouchers = co.wrap(function* (args) {
   var currentPage = 1;
-  var perPage = 100;
+  var perPage = 1000;
   var results = [];
   var totalPages = 'unknown';
   var callArgs, response, collection, total;

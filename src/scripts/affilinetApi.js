@@ -14,16 +14,17 @@ var client = require('./api-clients').affilinetClient();
 
 var getMerchants = singleRun(function*() {
   yield client.ensureLoggedIn();
-  var merchants = yield client.getPrograms();
-  var ids = _.pluck(merchants, 'ProgramId');
   var results = yield {
-    coupons: client.getVouchers(),
-    links: client.getCreatives({programIds:ids}),
+    merchants: client.getPrograms(),
+    coupons: client.getVouchers()
   };
+  var ids = _.pluck(results.merchants, 'ProgramId');
+  _.extend(results, yield {
+    links: client.getCreatives({programIds:ids}),
+  });
 
-  results.merchants = merchants;
   var merged = merge(results);
-  yield sendEvents.sendMerchants('affilinet', merchants);
+  yield sendEvents.sendMerchants('affilinet', merged);
 });
 
 
