@@ -2,7 +2,7 @@
 
 var _ = require('lodash');
 var co = require('co');
-var debug = require('debug')('utils:remoteapi:impactradius');
+var debug = require('debug')('impactradius:api-client');
 var qs = require('querystring');
 var limiter = require('ominto-utils').promiseRateLimiter;
 var request = require('request-promise');

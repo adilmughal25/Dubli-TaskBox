@@ -17,8 +17,8 @@ var merge = require('./support/easy-merge')('advertiser-id', {
 
 var _debug = require('debug');
 var debug = {
-  usa: _debug('clickjunction:usa:api'),
-  euro: _debug('clickjunction:euro:api')
+  usa: _debug('clickjunction:usa:processor'),
+  euro: _debug('clickjunction:euro:processor')
 };
 
 var merchantsRunningUSA = false;

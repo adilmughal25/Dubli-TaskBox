@@ -4,7 +4,7 @@ var _ = require('lodash');
 var co = require('co');
 var wait = require('co-waiter');
 var request = require('request-promise');
-var debug = require('debug')('utils:remoteapi:linkshare');
+var debug = require('debug')('linkshare:api-client');
 var querystring = require('querystring');
 var limiter = require('ominto-utils').promiseRateLimiter;
 

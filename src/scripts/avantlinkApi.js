@@ -2,7 +2,7 @@
 
 var _ = require('lodash');
 var co = require('co');
-var debug = require('debug')('avantlink:api');
+var debug = require('debug')('avantlink:processor');
 var utils = require('ominto-utils');
 var sendEvents = require('./support/send-events');
 var singleRun = require('./support/single-run');

@@ -1,5 +1,6 @@
 module.exports = {
   affiliatewindowClient: require('./affiliatewindow'),
+  affilinetClient: require('./affilinet'),
   avantlinkClient: require('./avantlink'),
   clickJunctionClient: require('./click-junction'),
   commissionfactoryClient: require('./commissionfactory'),

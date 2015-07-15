@@ -2,7 +2,7 @@
 
 var _ = require('lodash');
 var co = require('co');
-var debug = require('debug')('tradetracker:api');
+var debug = require('debug')('tradetracker:processor');
 var utils = require('ominto-utils');
 var sendEvents = require('./support/send-events');
 var client = require('./api-clients').tradetrackerClient();

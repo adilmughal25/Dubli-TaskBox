@@ -1,7 +1,7 @@
 "use strict";
 
 var _ = require('lodash');
-var debug = require('debug')('vcommission:api');
+var debug = require('debug')('vcommission:processor');
 var utils = require('ominto-utils');
 var co = require('co');
 var sendEvents = require('./support/send-events');

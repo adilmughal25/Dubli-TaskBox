@@ -2,7 +2,7 @@
 
 var _ = require('lodash');
 var co = require('co');
-var debug = require('debug')('pepperjam:api');
+var debug = require('debug')('pepperjam:processor');
 var utils = require('ominto-utils');
 var sendEvents = require('./support/send-events');
 var singleRun = require('./support/single-run');

@@ -1,7 +1,7 @@
 "use strict";
 
 var _ = require('lodash');
-var debug = require('debug')('webgains:api');
+var debug = require('debug')('webgains:processor');
 var utils = require('ominto-utils');
 var sendEvents = require('./support/send-events');
 var singleRun = require('./support/single-run');

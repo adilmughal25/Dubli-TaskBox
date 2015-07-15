@@ -3,7 +3,7 @@
 var _ = require('lodash');
 var request = require('request-promise');
 var qs = require('querystring');
-var debug = require('debug')('utils:remoteapi:vcommission');
+var debug = require('debug')('vcommission:api-client');
 var limiter = require('ominto-utils').promiseRateLimiter;
 
 const API_KEY = '669ba8e6d46a319e67e21f529cd9f78bd27f99322c6c9c40e0f250588d1e2959';

@@ -3,7 +3,7 @@
 var _ = require('lodash');
 var co = require('co');
 var request = require('request-promise');
-var debug = require('debug')('utils:remoteapi:pepperjam');
+var debug = require('debug')('pepperjam:api-client');
 
 const API_URL     = 'https://api.pepperjamnetwork.com/';
 const API_VERSION = '20120402';

@@ -1,7 +1,7 @@
 "use strict";
 
 var request = require('request-promise');
-var debug = require('debug')('utils:remoteapi:commissionfactory');
+var debug = require('debug')('commissionfactory:api-client');
 var limiter = require('ominto-utils').promiseRateLimiter;
 
 

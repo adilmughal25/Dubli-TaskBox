@@ -2,7 +2,7 @@
 
 var _ = require('lodash');
 var co = require('co');
-var debug = require('debug')('affiliatewindow:api');
+var debug = require('debug')('affiliatewindow:processor');
 var sendEvents = require('./support/send-events');
 var singleRun = require('./support/single-run');
 var client = require('./api-clients').affiliatewindowClient();

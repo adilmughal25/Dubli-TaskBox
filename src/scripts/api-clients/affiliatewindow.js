@@ -7,7 +7,7 @@ const ACCOUNT_PASSWORD = 'f03fa2315b493b550dc70a8677e97692382d97cbb754bd80';
 var soap = require('soap');
 var co = require('co');
 var denodeify = require('denodeify');
-var debug = require('debug')('utils:remoteapi:affiliatewindow');
+var debug = require('debug')('affiliatewindow:api-client');
 
 function AWClient() {
   if (!(this instanceof AWClient)) return new AWClient(); // `new` not required

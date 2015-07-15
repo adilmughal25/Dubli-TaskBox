@@ -1,7 +1,7 @@
 "use strict";
 
 var _ = require('lodash');
-var debug = require('debug')('performancehorizon:api');
+var debug = require('debug')('performancehorizon:processor');
 var utils = require('ominto-utils');
 var sendEvents = require('./support/send-events');
 var singleRun = require('./support/single-run');
