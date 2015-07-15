@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope
+  xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+  xmlns:ns1="http://affilinet.framework.webservices/Svc"
+  xmlns:ns2="http://affilinet.framework.webservices/types/PublisherProgram">
+  <SOAP-ENV:Body>
+    <ns1:GetMyProgramsRequest>
+      <ns1:CredentialToken>{{token}}</ns1:CredentialToken>
+      <ns1:GetProgramsRequestMessage>
+        <ns2:Query>{{query}}</ns2:Query>
+      </ns1:GetProgramsRequestMessage>
+    </ns1:GetMyProgramsRequest>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

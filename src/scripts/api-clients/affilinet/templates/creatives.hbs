@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+  xmlns:ns1="http://affilinet.framework.webservices/Svc"
+  xmlns:ns2="http://affilinet.framework.webservices/types/PublisherCreative"
+  xmlns:ns3="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+  <SOAP-ENV:Body>
+    <ns1:SearchCreativesRequest>
+      <ns1:CredentialToken>{{token}}</ns1:CredentialToken>
+      <ns1:DisplaySettings>
+        <ns2:CurrentPage>{{page}}</ns2:CurrentPage>
+        <ns2:PageSize>{{perPage}}</ns2:PageSize>
+      </ns1:DisplaySettings>
+      <ns1:SearchCreativesQuery>
+        <ns2:ProgramIds>
+        {{#programIds}}
+          <ns3:int>{{this}}</ns3:int>
+        {{else}}
+          <ns3:int>0</ns3:int>
+        {{/programIds}}
+        </ns2:ProgramIds>
+        {{#if creativeType}}
+        <ns2:CreativeTypes>
+          <ns2:CreativeTypeEnum>{{creativeType}}</ns2:CreativeTypeEnum>
+        </ns2:CreativeTypes>
+        {{/if}}
+      </ns1:SearchCreativesQuery>
+    </ns1:SearchCreativesRequest>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

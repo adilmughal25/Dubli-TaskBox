@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://affilinet.framework.webservices/Svc" xmlns:ns2="http://affilinet.framework.webservices/types/PublisherInbox">
+  <SOAP-ENV:Body>
+    <ns1:SearchVoucherCodesRequest>
+      <ns1:CredentialToken>{{token}}</ns1:CredentialToken>
+      <ns1:DisplaySettings>
+        <ns2:CurrentPage>{{page}}</ns2:CurrentPage>
+        <ns2:PageSize>{{perPage}}</ns2:PageSize>
+      </ns1:DisplaySettings>
+      <ns1:SearchVoucherCodesRequestMessage>
+        {{#status}}<ns2:ProgramPartnershipStatus>{{this}}</ns2:ProgramPartnershipStatus>{{/status}}
+        {{#startDate}}<ns2:StartDate>{{this}}</ns2:StartDate>{{/startDate}}
+        {{#endDate}}<ns2:EndDate>{{this}}</ns2:EndDate>{{/endDate}}
+        {{#query}}<ns2:Query>{{this}}</ns2:Query>{{/query}}
+      </ns1:SearchVoucherCodesRequestMessage>
+    </ns1:SearchVoucherCodesRequest>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

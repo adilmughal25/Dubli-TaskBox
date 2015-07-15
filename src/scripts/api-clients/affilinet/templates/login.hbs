@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope
+  xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+  xmlns:ns1="http://affilinet.framework.webservices/types"
+  xmlns:ns2="http://affilinet.framework.webservices/Svc">
+  <SOAP-ENV:Body>
+    <ns2:LogonRequestMsg>
+      <ns1:Username>{{username}}</ns1:Username>
+      <ns1:Password>{{password}}</ns1:Password>
+      <ns1:WebServiceType>Publisher</ns1:WebServiceType>
+      {{#devSettings}}
+      <ns1:DeveloperSettings>
+        <ns1:SandboxPublisherID>{{sandboxId}}</ns1:SandboxPublisherID>
+      </ns1:DeveloperSettings>
+      {{/devSettings}}
+      {{#appSettings}}
+      <ns1:ApplicationSettings>
+        <ns1:ApplicationID>{{appId}}</ns1:ApplicationID>
+        <ns1:DeveloperID>{{devId}}</ns1:DeveloperID>
+      </ns1:ApplicationSettings>
+      {{/appSettings}}
+    </ns2:LogonRequestMsg>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
