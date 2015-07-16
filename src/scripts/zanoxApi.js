@@ -13,7 +13,7 @@ var merge = require('./support/easy-merge')('@id', {
   exclusiveIncentives: 'program.@id'
 });
 
-var client = require('./api-clients').zanoxClient();
+var client = require('./api-clients/zanox')();
 
 var getMerchants = singleRun(function*() {
   var results = yield {

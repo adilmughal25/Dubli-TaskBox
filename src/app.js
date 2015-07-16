@@ -14,7 +14,6 @@ var affilnetApi = require('./scripts/affilinetApi');
 var avantlinkApi = require('./scripts/avantlinkApi');
 var clickJunctionApi = require("./scripts/clickJunctionApi");
 var commissionfactoryApi = require('./scripts/commissionfactoryApi');
-var impactRadiusGenericApi = require('./scripts/impactRadiusGenericApi');
 var impactRadiusProductFtp = require("./scripts/impactRadiusProductFtp");
 var linkShareApi = require("./scripts/linkShareApi");
 var pepperjamApi = require('./scripts/pepperjamApi');
@@ -22,11 +21,15 @@ var performanceHorizonApi = require('./scripts/performanceHorizonApi');
 var publicideasApi = require('./scripts/publicideasApi');
 var tradetrackerApi = require('./scripts/tradetrackerApi');
 var webgainsApi = require('./scripts/webgainsApi');
-var vcommissionApi = require('./scripts/vcommissionApi');
 var zanoxApi = require('./scripts/zanoxApi');
 
+var impactRadiusGenericApi = require('./scripts/impactRadiusGenericApi');
 var impactRadiusApi = impactRadiusGenericApi('impactradius');
 var apdPerformanceApi = impactRadiusGenericApi('apdperformance');
+
+var hasoffersGenericApi = require('./scripts/hasoffersGenericApi');
+var snapdealApi = hasoffersGenericApi('snapdeal');
+var vcommissionApi = hasoffersGenericApi('vcommission');
 
 function init(id) {
   process.on('message', function(msg) {
@@ -68,7 +71,7 @@ function init(id) {
   createTask("Webgains Merchants", webgainsApi.getMerchants, {minute:42});
   createTask("APD Performance Merchants", apdPerformanceApi.getMerchants, {minute:45});
   createTask("Affili.Net Merchants", affilnetApi.getMerchants, {minute:48});
-  // createTask("", blah.getMerchants, {minute:51});
+  createTask("SnapDeal Merchants", snapdealApi.getMerchants, {minute:51});
   // createTask("", blah.getMerchants, {minute:54});
   // createTask("", blah.getMerchants, {minute:57});
   // createTask("", blah.getMerchants, {minute:0});

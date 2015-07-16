@@ -6,7 +6,7 @@ var utils = require('ominto-utils');
 var sendEvents = require('./support/send-events');
 var singleRun = require('./support/single-run');
 
-var client = require('./api-clients').performanceHorizonClient();
+var client = require('./api-clients/performance-horizon')();
 
 
 // doesn't seem to have coupons/deals/links in their api, this api just returns

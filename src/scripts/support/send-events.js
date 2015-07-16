@@ -6,7 +6,6 @@ var uuid = require('node-uuid');
 var utils = require('ominto-utils');
 var prettyMs = require('pretty-ms');
 var o_configs = require('../../../configs');
-var debug = require('debug')('send-events');
 var denodeify = require('denodeify');
 var gzip = denodeify(require('zlib').gzip);
 var _check = utils.checkApiResponse;
@@ -15,7 +14,8 @@ var dataService = utils.getDataClient(o_configs.data_api.url, o_configs.data_api
 
 const MAX_UNGZIPPED_SIZE = 64 * 1024; // if it's over 64kb, gzip it
 
-var send = co.wrap(function* (s_streamName, s_streamType, s_taskName, items) {
+var send = co.wrap(function* (s_myName, s_streamName, s_streamType, s_taskName, items) {
+  var debug = _debug(s_myName);
   var s_url = '/event/' + s_streamName;
   var a_trigger = [{
     task: s_taskName,
@@ -79,7 +79,7 @@ function devSaveMerchants(s_which, a_items) {
   var f = resolve(__dirname, '../../../merchant-output-'+s_which+'.json');
   write(f, JSON.stringify(a_items), 'utf-8', function (e) {
     if (e) return console.error('error saving file', e.stack);
-    console.log("  -> SAVED "+f);
+    console.log("\n\n  -> SAVED "+f+'\n');
   });
 }
 
@@ -90,14 +90,21 @@ function sendMerchants(s_myName, merchants) {
   var s_taskName = 'tasks:' + s_myName + ':api';
 
   devSaveMerchants(s_myName, merchants);
-  return send(s_streamName, s_streamType, s_taskName, merchants);
+  return send(s_myName, s_streamName, s_streamType, s_taskName, merchants);
 }
 
 function sendCommissions(s_myName, commissions) {
   var s_streamName = 'merchant';
   var s_streamType = 'merchant:commission:' + s_myName;
   var s_taskName = 'tasks:' + s_myName + ':api';
-  return send(s_streamName, s_streamType, s_taskName, commissions);
+  return send(s_myName, s_streamName, s_streamType, s_taskName, commissions);
+}
+
+var _dbgCache = {};
+function _debug(s_name) {
+  if (!process.env.DEBUG) return () => {};
+  if (!_dbgCache[s_name]) _dbgCache[s_name] = require('debug')('send-events:'+s_name);
+  return _dbgCache[s_name];
 }
 
 module.exports = {

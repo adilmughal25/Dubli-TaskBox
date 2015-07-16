@@ -10,7 +10,7 @@ var merge = require('./support/easy-merge')('ProgramId', {
   links: 'ProgramId',
   coupons: 'ProgramId'
 });
-var client = require('./api-clients').affilinetClient();
+var client = require('./api-clients/affilinet')();
 
 var getMerchants = singleRun(function*() {
   yield client.ensureLoggedIn();

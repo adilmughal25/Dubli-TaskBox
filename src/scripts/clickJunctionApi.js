@@ -8,7 +8,7 @@ var sendEvents = require('./support/send-events');
 var singleRun = require('./support/single-run');
 var utils = require('ominto-utils');
 var co = require('co');
-var cjClient = require('./api-clients').clickJunctionClient;
+var cjClient = require('./api-clients/click-junction');
 var jsonify = require('./api-clients/jsonify-xml-body');
 
 var merge = require('./support/easy-merge')('advertiser-id', {

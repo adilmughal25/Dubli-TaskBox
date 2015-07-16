@@ -7,7 +7,7 @@ var utils = require('ominto-utils');
 var sendEvents = require('./support/send-events');
 var singleRun = require('./support/single-run');
 
-var client = require('./api-clients').publicideasClient();
+var client = require('./api-clients/publicideas')();
 var ary = x => _.isArray(x) ? x : [x];
 
 var getMerchants = singleRun(function* (){

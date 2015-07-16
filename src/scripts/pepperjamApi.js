@@ -7,7 +7,7 @@ var utils = require('ominto-utils');
 var sendEvents = require('./support/send-events');
 var singleRun = require('./support/single-run');
 
-var client = require('./api-clients').pepperjamClient();
+var client = require('./api-clients/pepperjam')();
 
 var merge = require('./support/easy-merge')('id', {
   coupons: 'program_id',

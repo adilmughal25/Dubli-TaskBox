@@ -5,7 +5,7 @@ var co = require('co');
 var debug = require('debug')('affiliatewindow:processor');
 var sendEvents = require('./support/send-events');
 var singleRun = require('./support/single-run');
-var client = require('./api-clients').affiliatewindowClient();
+var client = require('./api-clients/affiliatewindow')();
 
 // helper
 var ary = x => _.isArray(x) ? x : [x];

@@ -10,7 +10,7 @@ var merge = require('./support/easy-merge')('id', {
   coupons: 'programId'
 });
 
-var client = require('./api-clients').webgainsClient();
+var client = require('./api-clients/webgains')();
 
 var getMerchants = singleRun(function*() {
   var results = yield {

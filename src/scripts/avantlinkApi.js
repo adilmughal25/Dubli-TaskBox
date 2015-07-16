@@ -9,7 +9,7 @@ var singleRun = require('./support/single-run');
 var merge = require('./support/easy-merge')('lngMerchantId', {
   links: 'Merchant_Id'
 });
-var client = require('./api-clients').avantlinkClient();
+var client = require('./api-clients/avantlink')();
 
 var getMerchants = singleRun(function*(){
   yield sendEvents.sendMerchants('avantlink', merge(yield {

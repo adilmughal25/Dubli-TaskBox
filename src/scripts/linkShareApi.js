@@ -11,7 +11,7 @@ var XmlEntities = require('html-entities').XmlEntities;
 var entities = new XmlEntities();
 var singleRun = require('./support/single-run');
 
-var linkShare = require('./api-clients').linkShareClient();
+var linkShare = require('./api-clients/linkshare')();
 var _check = utils.checkApiResponse;
 var jsonify = require('./api-clients/jsonify-xml-body');
 var limiter = utils.promiseRateLimiter;

@@ -3,7 +3,7 @@
 var _ = require('lodash');
 var moment = require('moment');
 var utils = require('ominto-utils');
-var getClient = require('./api-clients').impactRadiusClient;
+var getClient = require('./api-clients/impact-radius');
 
 var sendEvents = require('./support/send-events');
 var singleRun = require('./support/single-run');

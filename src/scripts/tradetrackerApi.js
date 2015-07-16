@@ -5,7 +5,7 @@ var co = require('co');
 var debug = require('debug')('tradetracker:processor');
 var utils = require('ominto-utils');
 var sendEvents = require('./support/send-events');
-var client = require('./api-clients').tradetrackerClient();
+var client = require('./api-clients/tradetracker')();
 var XmlEntities = require('html-entities').XmlEntities;
 var entities = new XmlEntities();
 

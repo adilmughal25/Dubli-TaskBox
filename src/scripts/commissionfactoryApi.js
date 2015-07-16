@@ -12,7 +12,7 @@ var merge = require('./support/easy-merge')('id', {
   links: 'merchantId'
 });
 
-var client = require('./api-clients').commissionfactoryClient();
+var client = require('./api-clients/commissionfactory')();
 
 const MERCHANT_URL = '/Merchants?status=Joined&commissionType=Percent per Sale';
 const COUPONS_URL = '/Coupons';
