@@ -14,7 +14,7 @@ var LS_PREAUTH = {
 var LS_AUTH_FORM = {
   grant_type: 'password',
   username: 'Ominto',
-  password: 'Minty678',
+  password: 'Mints098',
   scope: '3239617'
 };
 
@@ -62,6 +62,10 @@ LinkShare.prototype._authRequest = co.wrap(function* (form) {
     headers: LS_PREAUTH,
     form: form
   });
+  if (response.body.error) {
+    throw new Error(response.body.error +" : "+response.body.error_description);
+  }
+  console.log("response.body", response.body);
   this.bearerToken = response.body.access_token;
   this.refreshToken = response.body.refresh_token;
   var refreshTime = (response.body.expires_in - 60) * 1000;

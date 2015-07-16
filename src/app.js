@@ -56,23 +56,23 @@ function init(id) {
 
   var schedules = {};
 
-  createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, {minute: 3});
+  // createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, {minute: 3});
   createTask("LinkShare Merchants", linkShareApi.getMerchants, {minute: 6});
-  createTask("ClickJunction Merchants (USA)", clickJunctionApi.getMerchantsUSA, {minute: 9});
-  createTask("PerformanceHorizon Merchants", performanceHorizonApi.getMerchants, {minute: 12});
-  createTask("Zanox Merchants", zanoxApi.getMerchants, {minute: 15});
-  createTask("PepperJam Merchants", pepperjamApi.getMerchants, {minute: 18});
-  createTask("VCommission Merchants", vcommissionApi.getMerchants, {minute:21});
-  createTask("ClickJunction Merchants (Euro)", clickJunctionApi.getMerchantsEuro, {minute: 24});
-  createTask("CommissionFactory Merchants", commissionfactoryApi.getMerchants, {minute:27});
-  createTask("AffiliateWindow Merchants", affiliatewindowApi.getMerchants, {minute:30});
-  createTask("Avantlink Merchants", avantlinkApi.getMerchants, {minute:33});
-  createTask("TradeTracker Merchants", tradetrackerApi.getMerchants, {minute:36});
-  createTask("PublicIdeas Merchants", publicideasApi.getMerchants, {minute:39});
-  createTask("Webgains Merchants", webgainsApi.getMerchants, {minute:42});
-  createTask("APD Performance Merchants", apdPerformanceApi.getMerchants, {minute:45});
-  createTask("Affili.Net Merchants", affilnetApi.getMerchants, {minute:48});
-  createTask("SnapDeal Merchants", snapdealApi.getMerchants, {minute:51});
+  // createTask("ClickJunction Merchants (USA)", clickJunctionApi.getMerchantsUSA, {minute: 9});
+  // createTask("PerformanceHorizon Merchants", performanceHorizonApi.getMerchants, {minute: 12});
+  // createTask("Zanox Merchants", zanoxApi.getMerchants, {minute: 15});
+  // createTask("PepperJam Merchants", pepperjamApi.getMerchants, {minute: 18});
+  // createTask("VCommission Merchants", vcommissionApi.getMerchants, {minute:21});
+  // createTask("ClickJunction Merchants (Euro)", clickJunctionApi.getMerchantsEuro, {minute: 24});
+  // createTask("CommissionFactory Merchants", commissionfactoryApi.getMerchants, {minute:27});
+  // createTask("AffiliateWindow Merchants", affiliatewindowApi.getMerchants, {minute:30});
+  // createTask("Avantlink Merchants", avantlinkApi.getMerchants, {minute:33});
+  // createTask("TradeTracker Merchants", tradetrackerApi.getMerchants, {minute:36});
+  // createTask("PublicIdeas Merchants", publicideasApi.getMerchants, {minute:39});
+  // createTask("Webgains Merchants", webgainsApi.getMerchants, {minute:42});
+  // createTask("APD Performance Merchants", apdPerformanceApi.getMerchants, {minute:45});
+  // createTask("Affili.Net Merchants", affilnetApi.getMerchants, {minute:48});
+  // createTask("SnapDeal Merchants", snapdealApi.getMerchants, {minute:51});
   // createTask("", blah.getMerchants, {minute:54});
   // createTask("", blah.getMerchants, {minute:57});
   // createTask("", blah.getMerchants, {minute:0});
@@ -111,7 +111,7 @@ function init(id) {
     _.extend(rule, spec);
 
     if (!isDev || !runOnStartOnly) {
-      log.info("Schedule task: "+name+" ("+id+") with spec: "+JSON.stringify(spec)+"");
+      // log.info("Schedule task: "+name+" ("+id+") with spec: "+JSON.stringify(spec)+"");
       schedules[id] = schedule.scheduleJob(spec, taskRunner(name, task));
     }
 
