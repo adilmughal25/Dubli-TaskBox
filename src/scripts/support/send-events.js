@@ -12,7 +12,7 @@ var _check = utils.checkApiResponse;
 var createEnvelope = utils.createEnvelope;
 var dataService = utils.getDataClient(o_configs.data_api.url, o_configs.data_api.auth);
 
-const MAX_UNGZIPPED_SIZE = 64 * 1024; // if it's over 64kb, gzip it
+const MAX_UNGZIPPED_SIZE = 32 * 1024; // if it's over 32kb, gzip it
 
 var send = co.wrap(function* (s_myName, s_streamName, s_streamType, s_taskName, items) {
   var debug = _debug(s_myName);

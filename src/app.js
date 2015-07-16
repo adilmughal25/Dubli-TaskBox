@@ -51,7 +51,8 @@ function init(id) {
     serializers: bunyan.stdSerializers
   });
   var isDev = /^dev/.test(process.env.NODE_ENV);
-  var runOnStart = !!process.env.RUN_ON_START;
+  var runOnStartOnly = !!process.env.RUN_ON_START_ONLY;
+  var runOnStart = runOnStartOnly || !!process.env.RUN_ON_START;
 
   var schedules = {};
 
@@ -106,10 +107,13 @@ function init(id) {
     var task_t = typeof task, isTask = task_t === 'function';
     if (!isTask) throw new Error("can't create task for "+name+": passed task is not a function! (is:"+task_t+")");
     var id = name.replace(/(?:\W+|^)(\w)/g, (m,letter) => letter.toUpperCase());
-    log.info("Schedule task: "+name+" ("+id+") with spec: "+JSON.stringify(spec)+"");
     var rule = new schedule.RecurrenceRule();
     _.extend(rule, spec);
-    schedules[id] = schedule.scheduleJob(spec, taskRunner(name, task));
+
+    if (!isDev || !runOnStartOnly) {
+      log.info("Schedule task: "+name+" ("+id+") with spec: "+JSON.stringify(spec)+"");
+      schedules[id] = schedule.scheduleJob(spec, taskRunner(name, task));
+    }
 
     if (isDev && runOnStart) {
       debug("Dev Mode: Starting task `%s` immediately", id);

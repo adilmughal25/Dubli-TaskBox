@@ -12,7 +12,9 @@ var ary = x => _.isArray(x) ? x : [x];
 // luckily this feed includes all the details we'd normally grab about
 // merchants/links/deals/coupons/etc
 function createClient() {
-  var client = request.defaults({});
+  var client = request.defaults({
+    resolveWithFullResponse: true
+  });
   client.jsonify = jsonify;
   client.getMerchants = function() {
     var promise = this.get(MERCHANTS_URL)

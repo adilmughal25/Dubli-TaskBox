@@ -12,7 +12,9 @@ var request = require('request-promise');
 var jsonify = require('./jsonify-xml-body');
 
 function createClient() {
-  var client = request.defaults({});
+  var client = request.defaults({
+    resolveWithFullResponse: true
+  });
 
   client.getMerchants = function() {
     var url = BASE_URL + '?' + querystring.stringify({
@@ -26,7 +28,7 @@ function createClient() {
     return client.get({
       uri: url,
       json: true
-    });
+    }).then(resp => resp.body);
   };
 
   client.getTextLinks = function() {
