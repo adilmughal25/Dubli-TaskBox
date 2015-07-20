@@ -16,6 +16,9 @@ var merge = require('./support/easy-merge')('@id', {
 var client = require('./api-clients/zanox')();
 
 var getMerchants = singleRun(function*() {
+  var joined = yield pagedApiCall('$getProgramApplications', 'programApplicationItems.programApplicationItem', {'status':'confirmed'});
+  require('fs').writeFileSync('joined.json', JSON.stringify(joined));
+  var validIds = _.pluck(joined, 'program.@id').reduce((m,i) => _.set(m,i,1), {});
   var results = yield {
     merchants: pagedApiCall('$getPrograms', 'programItems.programItem', {'partnership':'DIRECT'}),
     admedia: pagedApiCall('$getAdmedia', 'admediumItems.admediumItem', {'admediumtype':'text','partnership':'direct'}),
@@ -23,6 +26,12 @@ var getMerchants = singleRun(function*() {
     exclusiveIncentives: apiCall('$getExclusiveIncentives', 'incentiveItems.incentiveItem', {'incentiveType':'coupons'}),
   };
   var merchants = merge(results);
+
+  // sadly, zanox doesn't let us clamp any of the above 4 api calls to only
+  // merchants which we have actually applied for. this bit filters the list
+  // down to just those merchants who we are joined to.
+  merchants = onlyValid(merchants, validIds);
+
   sendEvents.sendMerchants('zanox', merchants);
 });
 
@@ -59,6 +68,13 @@ var apiCall = co.wrap(function* (method, bodyKey, params) {
   debug("%s finished: %d items (%dms)", method, items.length, end-start);
   return items;
 });
+
+function onlyValid(a_items, o_validIds) {
+  var fs = require('fs');
+  fs.writeFileSync('pure.json', JSON.stringify(a_items));
+  fs.writeFileSync('valid.json', JSON.stringify(o_validIds));
+  return a_items.filter( x => !! o_validIds[_.get(x,'merchant.@id')] );
+}
 
 module.exports = {
   getMerchants: getMerchants
