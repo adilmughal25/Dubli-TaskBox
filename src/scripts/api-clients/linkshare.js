@@ -65,7 +65,6 @@ LinkShare.prototype._authRequest = co.wrap(function* (form) {
   if (response.body.error) {
     throw new Error(response.body.error +" : "+response.body.error_description);
   }
-  console.log("response.body", response.body);
   this.bearerToken = response.body.access_token;
   this.refreshToken = response.body.refresh_token;
   var refreshTime = (response.body.expires_in - 60) * 1000;
