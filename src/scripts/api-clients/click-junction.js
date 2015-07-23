@@ -3,7 +3,7 @@
 var co = require('co');
 var _ = require('lodash');
 var request = require('request-promise');
-var debug = require('debug')('click:api-client-junction');
+var debug = require('debug')('click-junction:api-client');
 var limiter = require('ominto-utils').promiseRateLimiter;
 
 
