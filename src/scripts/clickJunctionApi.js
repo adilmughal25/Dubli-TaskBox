@@ -133,13 +133,13 @@ var ct = 0;
 function sendMerchantsToEventHub(merchants, s_regionId) {
   if (! merchants) { merchants = []; }
   debug[s_regionId]("found %d merchants to process", merchants.length);
-  return sendEvents.sendMerchants('clickjunction', merchants);
+  return sendEvents.sendMerchants('clickjunction-'+s_regionId, merchants);
 }
 
 function sendCommissionsToEventHub(commissions, s_regionId) {
   if (! commissions) { commissions = []; }
   debug[s_regionId]("found %d commisions to process", commissions.length);
-  return sendEvents.sendCommissions('clickjunction', commissions);
+  return sendEvents.sendCommissions('clickjunction-'+s_regionId, commissions);
 }
 
 module.exports = {
