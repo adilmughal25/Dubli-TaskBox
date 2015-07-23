@@ -10,7 +10,6 @@ var _ = require('lodash');
 var prettyMs = require('pretty-ms');
 
 var affiliatewindowApi = require('./scripts/affiliatewindowApi');
-var affilnetApi = require('./scripts/affilinetApi');
 var avantlinkApi = require('./scripts/avantlinkApi');
 var clickJunctionApi = require("./scripts/clickJunctionApi");
 var commissionfactoryApi = require('./scripts/commissionfactoryApi');
@@ -22,6 +21,15 @@ var publicideasApi = require('./scripts/publicideasApi');
 var tradetrackerApi = require('./scripts/tradetrackerApi');
 var webgainsApi = require('./scripts/webgainsApi');
 var zanoxApi = require('./scripts/zanoxApi');
+
+var affilinetGenericApi = require('./scripts/affilinetGenericApi');
+var affilinetUKApi = affilinetGenericApi('uk');
+// commented out until we receive credentials for all 5 of these offshoot networks
+// var affilinetFranceApi = affilinetGenericApi('fr');
+// var affilinetNetherlandsApi = affilinetGenericApi('nl');
+// var affilinetGermanyApi = affilinetGenericApi('de');
+// var affilinetSpainApi = affilinetGenericApi('es');
+// var affilinetSwitzerlandApi = affilinetGenericApi('ch');
 
 var impactRadiusGenericApi = require('./scripts/impactRadiusGenericApi');
 var impactRadiusApi = impactRadiusGenericApi('impactradius');
@@ -56,26 +64,36 @@ function init(id) {
 
   var schedules = {};
 
-  createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, {minute: 3});
-  createTask("LinkShare Merchants", linkShareApi.getMerchants, {minute: 6});
-  createTask("ClickJunction Merchants (USA)", clickJunctionApi.getMerchantsUSA, {minute: 9});
+  createTask("Affili.Net (UK) Merchants", affilinetUKApi.getMerchants, {minute:0});
+  createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, {minute: 2});
+  createTask("LinkShare Merchants", linkShareApi.getMerchants, {minute: 4});
+  createTask("ClickJunction Merchants (USA)", clickJunctionApi.getMerchantsUSA, {minute: 8});
+  // createTask("Affili.Net (France) Merchants", affilinetFranceApi.getMerchants, {minute:10});
   createTask("PerformanceHorizon Merchants", performanceHorizonApi.getMerchants, {minute: 12});
-  createTask("Zanox Merchants", zanoxApi.getMerchants, {minute: 15});
-  createTask("PepperJam Merchants", pepperjamApi.getMerchants, {minute: 18});
-  createTask("VCommission Merchants", vcommissionApi.getMerchants, {minute:21});
-  createTask("ClickJunction Merchants (Euro)", clickJunctionApi.getMerchantsEuro, {minute: 24});
-  createTask("CommissionFactory Merchants", commissionfactoryApi.getMerchants, {minute:27});
-  createTask("AffiliateWindow Merchants", affiliatewindowApi.getMerchants, {minute:30});
-  createTask("Avantlink Merchants", avantlinkApi.getMerchants, {minute:33});
-  createTask("TradeTracker Merchants", tradetrackerApi.getMerchants, {minute:36});
-  createTask("PublicIdeas Merchants", publicideasApi.getMerchants, {minute:39});
-  createTask("Webgains Merchants", webgainsApi.getMerchants, {minute:42});
-  createTask("APD Performance Merchants", apdPerformanceApi.getMerchants, {minute:45});
-  createTask("Affili.Net Merchants", affilnetApi.getMerchants, {minute:48});
-  createTask("SnapDeal Merchants", snapdealApi.getMerchants, {minute:51});
+  createTask("Zanox Merchants", zanoxApi.getMerchants, {minute: 14});
+  createTask("PepperJam Merchants", pepperjamApi.getMerchants, {minute: 16});
+  // createTask("Affili.Net (Netherlands) Merchants", affilinetNetherlandsApi.getMerchants, {minute:18});
+  createTask("VCommission Merchants", vcommissionApi.getMerchants, {minute:20});
+  createTask("ClickJunction Merchants (Euro)", clickJunctionApi.getMerchantsEuro, {minute: 22});
+  createTask("CommissionFactory Merchants", commissionfactoryApi.getMerchants, {minute:24});
+  // createTask("Affili.Net (Germany) Merchants", affilinetGermanyApi.getMerchants, {minute:26});
+  createTask("AffiliateWindow Merchants", affiliatewindowApi.getMerchants, {minute:28});
+  createTask("Avantlink Merchants", avantlinkApi.getMerchants, {minute:30});
+  createTask("TradeTracker Merchants", tradetrackerApi.getMerchants, {minute:32});
+  // createTask("Affili.Net (Spain) Merchants", affilinetSpainApi.getMerchants, {minute:34});
+  createTask("PublicIdeas Merchants", publicideasApi.getMerchants, {minute:36});
+  createTask("Webgains Merchants", webgainsApi.getMerchants, {minute:38});
+  createTask("APD Performance Merchants", apdPerformanceApi.getMerchants, {minute:40});
+  // createTask("Affili.Net (Switzerland) Merchants", affilinetSwitzerlandApi.getMerchants, {minute:42});
+  createTask("SnapDeal Merchants", snapdealApi.getMerchants, {minute:44});
+
+  // createTask("", blah.getMerchants, {minute:46});
+  // createTask("", blah.getMerchants, {minute:48});
+  // createTask("", blah.getMerchants, {minute:50});
+  // createTask("", blah.getMerchants, {minute:52});
   // createTask("", blah.getMerchants, {minute:54});
-  // createTask("", blah.getMerchants, {minute:57});
-  // createTask("", blah.getMerchants, {minute:0});
+  // createTask("", blah.getMerchants, {minute:56});
+  // createTask("", blah.getMerchants, {minute:58});
 
   // disabled for now:
   //createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
