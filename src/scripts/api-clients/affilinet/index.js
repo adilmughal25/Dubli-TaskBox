@@ -11,8 +11,8 @@ const deepFreeze = require('deep-freeze');
 
 const CREDENTIALS = deepFreeze({
   uk: { username: '733351', password: 'jXMPR3e4tW7KhOB7LfA4' },
-  fr: { username: '740021', password: '' },
-  nl: { username: '740024', password: '' },
+  fr: { username: '740021', password: 'laym18VmGqoNJUuxuS7O' },
+  nl: { username: '740024', password: '18GXF0E10sNWMVcotgB1' },
   de: { username: '', password: '' },
   es: { username: '', password: '' },
   ch: { username: '', password: '' }

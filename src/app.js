@@ -24,9 +24,9 @@ var zanoxApi = require('./scripts/zanoxApi');
 
 var affilinetGenericApi = require('./scripts/affilinetGenericApi');
 var affilinetUKApi = affilinetGenericApi('uk');
+var affilinetFranceApi = affilinetGenericApi('fr');
+var affilinetNetherlandsApi = affilinetGenericApi('nl');
 // commented out until we receive credentials for all 5 of these offshoot networks
-// var affilinetFranceApi = affilinetGenericApi('fr');
-// var affilinetNetherlandsApi = affilinetGenericApi('nl');
 // var affilinetGermanyApi = affilinetGenericApi('de');
 // var affilinetSpainApi = affilinetGenericApi('es');
 // var affilinetSwitzerlandApi = affilinetGenericApi('ch');
@@ -68,11 +68,11 @@ function init(id) {
   createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, {minute: 2});
   createTask("LinkShare Merchants", linkShareApi.getMerchants, {minute: 4});
   createTask("ClickJunction Merchants (USA)", clickJunctionApi.getMerchantsUSA, {minute: 8});
-  // createTask("Affili.Net (France) Merchants", affilinetFranceApi.getMerchants, {minute:10});
+  createTask("Affili.Net (France) Merchants", affilinetFranceApi.getMerchants, {minute:10});
   createTask("PerformanceHorizon Merchants", performanceHorizonApi.getMerchants, {minute: 12});
   createTask("Zanox Merchants", zanoxApi.getMerchants, {minute: 14});
   createTask("PepperJam Merchants", pepperjamApi.getMerchants, {minute: 16});
-  // createTask("Affili.Net (Netherlands) Merchants", affilinetNetherlandsApi.getMerchants, {minute:18});
+  createTask("Affili.Net (Netherlands) Merchants", affilinetNetherlandsApi.getMerchants, {minute:18});
   createTask("VCommission Merchants", vcommissionApi.getMerchants, {minute:20});
   createTask("ClickJunction Merchants (Euro)", clickJunctionApi.getMerchantsEuro, {minute: 22});
   createTask("CommissionFactory Merchants", commissionfactoryApi.getMerchants, {minute:24});
