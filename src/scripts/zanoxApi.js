@@ -17,7 +17,7 @@ var client = require('./api-clients/zanox')();
 
 var getMerchants = singleRun(function*() {
   var joined = yield pagedApiCall('$getProgramApplications', 'programApplicationItems.programApplicationItem', {'status':'confirmed'});
-  require('fs').writeFileSync('joined.json', JSON.stringify(joined));
+
   var validIds = _.pluck(joined, 'program.@id').reduce((m,i) => _.set(m,i,1), {});
   var results = yield {
     merchants: pagedApiCall('$getPrograms', 'programItems.programItem', {'partnership':'DIRECT'}),
@@ -71,8 +71,6 @@ var apiCall = co.wrap(function* (method, bodyKey, params) {
 
 function onlyValid(a_items, o_validIds) {
   var fs = require('fs');
-  fs.writeFileSync('pure.json', JSON.stringify(a_items));
-  fs.writeFileSync('valid.json', JSON.stringify(o_validIds));
   return a_items.filter( x => !! o_validIds[_.get(x,'merchant.@id')] );
 }
 
