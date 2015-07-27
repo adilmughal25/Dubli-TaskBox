@@ -26,9 +26,9 @@ var affilinetGenericApi = require('./scripts/affilinetGenericApi');
 var affilinetUKApi = affilinetGenericApi('uk');
 var affilinetFranceApi = affilinetGenericApi('fr');
 var affilinetNetherlandsApi = affilinetGenericApi('nl');
+var affilinetSpainApi = affilinetGenericApi('es');
 // commented out until we receive credentials for all 5 of these offshoot networks
 // var affilinetGermanyApi = affilinetGenericApi('de');
-// var affilinetSpainApi = affilinetGenericApi('es');
 // var affilinetSwitzerlandApi = affilinetGenericApi('ch');
 
 var impactRadiusGenericApi = require('./scripts/impactRadiusGenericApi');
@@ -80,7 +80,7 @@ function init(id) {
   createTask("AffiliateWindow Merchants", affiliatewindowApi.getMerchants, {minute:28});
   createTask("Avantlink Merchants", avantlinkApi.getMerchants, {minute:30});
   createTask("TradeTracker Merchants", tradetrackerApi.getMerchants, {minute:32});
-  // createTask("Affili.Net (Spain) Merchants", affilinetSpainApi.getMerchants, {minute:34});
+  createTask("Affili.Net (Spain) Merchants", affilinetSpainApi.getMerchants, {minute:34});
   createTask("PublicIdeas Merchants", publicideasApi.getMerchants, {minute:36});
   createTask("Webgains Merchants", webgainsApi.getMerchants, {minute:38});
   createTask("APD Performance Merchants", apdPerformanceApi.getMerchants, {minute:40});

@@ -14,7 +14,7 @@ const CREDENTIALS = deepFreeze({
   fr: { username: '740021', password: 'laym18VmGqoNJUuxuS7O' },
   nl: { username: '740024', password: '18GXF0E10sNWMVcotgB1' },
   de: { username: '', password: '' },
-  es: { username: '', password: '' },
+  es: { username: '740543', password: 'dYiiTTlrus3MMfleXMCz' },
   ch: { username: '', password: '' }
 });
 
