@@ -11,6 +11,7 @@ var prettyMs = require('pretty-ms');
 
 var affiliatewindowApi = require('./scripts/affiliatewindowApi');
 var avantlinkApi = require('./scripts/avantlinkApi');
+var belboonApi = require('./scripts/belboonApi');
 var clickJunctionApi = require("./scripts/clickJunctionApi");
 var commissionfactoryApi = require('./scripts/commissionfactoryApi');
 var impactRadiusProductFtp = require("./scripts/impactRadiusProductFtp");
@@ -86,8 +87,8 @@ function init(id) {
   createTask("APD Performance Merchants", apdPerformanceApi.getMerchants, {minute:40});
   // createTask("Affili.Net (Switzerland) Merchants", affilinetSwitzerlandApi.getMerchants, {minute:42});
   createTask("SnapDeal Merchants", snapdealApi.getMerchants, {minute:44});
-
-  // createTask("", blah.getMerchants, {minute:46});
+  createTask("Belboon Merchants", belboonApi.getMerchants, {minute:46});
+  
   // createTask("", blah.getMerchants, {minute:48});
   // createTask("", blah.getMerchants, {minute:50});
   // createTask("", blah.getMerchants, {minute:52});
