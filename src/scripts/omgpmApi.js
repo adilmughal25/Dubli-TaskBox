@@ -10,7 +10,7 @@ const merge = require('./support/easy-merge')('PID', {
 
 const client = require('./api-clients/omgpm-legacy')();
 
-var getMerchants = singleRun(function* () {
+const getMerchants = singleRun(function* () {
   const results = yield {
     merchants: client.getMerchants(),
     coupons: client.getCoupons()
