@@ -89,7 +89,7 @@ function init(id) {
   createTask("Affili.Net (Switzerland) Merchants", affilinetSwitzerlandApi.getMerchants, {minute:42});
   createTask("SnapDeal Merchants", snapdealApi.getMerchants, {minute:44});
   createTask("Belboon Merchants", belboonApi.getMerchants, {minute:46});
-  // createTask("OMGpm Merchants", omgpmApi.getMerchants, {minute:48});
+  createTask("OMGpm Merchants", omgpmApi.getMerchants, {minute:48});
   createTask("Affili.Net (Austria) Merchants", affilinetAustriaApi.getMerchants, {minute:50});
 
   // createTask("", blah.getMerchants, {minute:50});
