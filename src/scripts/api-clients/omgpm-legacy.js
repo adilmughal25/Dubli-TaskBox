@@ -29,7 +29,7 @@ function createClient() {
       .then(check('2XX', 'Could not load merchants'))
       .then(jsonify)
       .then(resp => ary(_.get(resp, 'Report.table1.Detail_Collection.Detail')))
-      .then(items => items.map(x => x.$).filter(hasPercent));
+      .then(items => items.map(x => x.$).filter(isLive).filter(hasPercent));
   };
 
   client.getCoupons = function() {
@@ -43,6 +43,10 @@ function createClient() {
   };
 
   return client;
+}
+
+function isLive(o_merchant) {
+  return o_merchant.ProgrammeStatus == 'Live';
 }
 
 function hasPercent(o_merchant) {
