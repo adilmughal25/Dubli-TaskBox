@@ -59,6 +59,7 @@ function init(id) {
     name: name,
     serializers: bunyan.stdSerializers
   });
+  log.level(configs.logLevel);
   var isDev = /^dev/.test(process.env.NODE_ENV);
   var runOnStartOnly = !!process.env.RUN_ON_START_ONLY;
   var runOnStart = runOnStartOnly || !!process.env.RUN_ON_START;
