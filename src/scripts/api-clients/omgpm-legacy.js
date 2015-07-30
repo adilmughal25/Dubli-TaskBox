@@ -61,7 +61,6 @@ function extractPid(o_coupon) {
     o_coupon.ProgramId = programId;
     return o_coupon;
   } catch(e) {
-    console.log("whoops", e.stack);
     return o_coupon;
   }
 }
