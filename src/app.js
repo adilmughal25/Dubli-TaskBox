@@ -30,8 +30,8 @@ const affilinetFranceApi = affilinetGenericApi('fr');
 const affilinetNetherlandsApi = affilinetGenericApi('nl');
 const affilinetSpainApi = affilinetGenericApi('es');
 const affilinetGermanyApi = affilinetGenericApi('de');
-// commented out until we receive credentials for the last of these offshoot networks
-// const affilinetSwitzerlandApi = affilinetGenericApi('ch');
+const affilinetSwitzerlandApi = affilinetGenericApi('ch');
+const affilinetAustriaApi = affilinetGenericApi('at');
 
 const impactRadiusGenericApi = require('./scripts/impactRadiusGenericApi');
 const impactRadiusApi = impactRadiusGenericApi('impactradius');
@@ -86,10 +86,11 @@ function init(id) {
   createTask("PublicIdeas Merchants", publicideasApi.getMerchants, {minute:36});
   createTask("Webgains Merchants", webgainsApi.getMerchants, {minute:38});
   createTask("APD Performance Merchants", apdPerformanceApi.getMerchants, {minute:40});
-  // createTask("Affili.Net (Switzerland) Merchants", affilinetSwitzerlandApi.getMerchants, {minute:42});
+  createTask("Affili.Net (Switzerland) Merchants", affilinetSwitzerlandApi.getMerchants, {minute:42});
   createTask("SnapDeal Merchants", snapdealApi.getMerchants, {minute:44});
   createTask("Belboon Merchants", belboonApi.getMerchants, {minute:46});
   // createTask("OMGpm Merchants", omgpmApi.getMerchants, {minute:48});
+  createTask("Affili.Net (Austria) Merchants", affilinetAustriaApi.getMerchants, {minute:50});
 
   // createTask("", blah.getMerchants, {minute:50});
   // createTask("", blah.getMerchants, {minute:52});
