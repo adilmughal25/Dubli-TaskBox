@@ -1,44 +1,45 @@
 "use strict";
 
-var configs = require('../configs.json');
-var uuid = require('node-uuid');
-var bunyan = require('bunyan');
-var co = require('co');
-var schedule = require('node-schedule');
-var debug = require('debug')('taskbox:tasks');
-var _ = require('lodash');
-var prettyMs = require('pretty-ms');
+const configs = require('../configs.json');
+const uuid = require('node-uuid');
+const bunyan = require('bunyan');
+const co = require('co');
+const schedule = require('node-schedule');
+const debug = require('debug')('taskbox:tasks');
+const _ = require('lodash');
+const prettyMs = require('pretty-ms');
 
-var affiliatewindowApi = require('./scripts/affiliatewindowApi');
-var avantlinkApi = require('./scripts/avantlinkApi');
-var belboonApi = require('./scripts/belboonApi');
-var clickJunctionApi = require("./scripts/clickJunctionApi");
-var commissionfactoryApi = require('./scripts/commissionfactoryApi');
-var impactRadiusProductFtp = require("./scripts/impactRadiusProductFtp");
-var linkShareApi = require("./scripts/linkShareApi");
-var pepperjamApi = require('./scripts/pepperjamApi');
-var performanceHorizonApi = require('./scripts/performanceHorizonApi');
-var publicideasApi = require('./scripts/publicideasApi');
-var tradetrackerApi = require('./scripts/tradetrackerApi');
-var webgainsApi = require('./scripts/webgainsApi');
-var zanoxApi = require('./scripts/zanoxApi');
+const affiliatewindowApi = require('./scripts/affiliatewindowApi');
+const avantlinkApi = require('./scripts/avantlinkApi');
+const belboonApi = require('./scripts/belboonApi');
+const clickJunctionApi = require("./scripts/clickJunctionApi");
+const commissionfactoryApi = require('./scripts/commissionfactoryApi');
+const impactRadiusProductFtp = require("./scripts/impactRadiusProductFtp");
+const linkShareApi = require("./scripts/linkShareApi");
+const omgpmApi = require('./scripts/omgpmApi');
+const pepperjamApi = require('./scripts/pepperjamApi');
+const performanceHorizonApi = require('./scripts/performanceHorizonApi');
+const publicideasApi = require('./scripts/publicideasApi');
+const tradetrackerApi = require('./scripts/tradetrackerApi');
+const webgainsApi = require('./scripts/webgainsApi');
+const zanoxApi = require('./scripts/zanoxApi');
 
-var affilinetGenericApi = require('./scripts/affilinetGenericApi');
-var affilinetUKApi = affilinetGenericApi('uk');
-var affilinetFranceApi = affilinetGenericApi('fr');
-var affilinetNetherlandsApi = affilinetGenericApi('nl');
-var affilinetSpainApi = affilinetGenericApi('es');
-var affilinetGermanyApi = affilinetGenericApi('de');
+const affilinetGenericApi = require('./scripts/affilinetGenericApi');
+const affilinetUKApi = affilinetGenericApi('uk');
+const affilinetFranceApi = affilinetGenericApi('fr');
+const affilinetNetherlandsApi = affilinetGenericApi('nl');
+const affilinetSpainApi = affilinetGenericApi('es');
+const affilinetGermanyApi = affilinetGenericApi('de');
 // commented out until we receive credentials for the last of these offshoot networks
-// var affilinetSwitzerlandApi = affilinetGenericApi('ch');
+// const affilinetSwitzerlandApi = affilinetGenericApi('ch');
 
-var impactRadiusGenericApi = require('./scripts/impactRadiusGenericApi');
-var impactRadiusApi = impactRadiusGenericApi('impactradius');
-var apdPerformanceApi = impactRadiusGenericApi('apdperformance');
+const impactRadiusGenericApi = require('./scripts/impactRadiusGenericApi');
+const impactRadiusApi = impactRadiusGenericApi('impactradius');
+const apdPerformanceApi = impactRadiusGenericApi('apdperformance');
 
-var hasoffersGenericApi = require('./scripts/hasoffersGenericApi');
-var snapdealApi = hasoffersGenericApi('snapdeal');
-var vcommissionApi = hasoffersGenericApi('vcommission');
+const hasoffersGenericApi = require('./scripts/hasoffersGenericApi');
+const snapdealApi = hasoffersGenericApi('snapdeal');
+const vcommissionApi = hasoffersGenericApi('vcommission');
 
 function init(id) {
   process.on('message', function(msg) {
@@ -88,8 +89,8 @@ function init(id) {
   // createTask("Affili.Net (Switzerland) Merchants", affilinetSwitzerlandApi.getMerchants, {minute:42});
   createTask("SnapDeal Merchants", snapdealApi.getMerchants, {minute:44});
   createTask("Belboon Merchants", belboonApi.getMerchants, {minute:46});
-  
-  // createTask("", blah.getMerchants, {minute:48});
+  // createTask("OMGpm Merchants", omgpmApi.getMerchants, {minute:48});
+
   // createTask("", blah.getMerchants, {minute:50});
   // createTask("", blah.getMerchants, {minute:52});
   // createTask("", blah.getMerchants, {minute:54});
