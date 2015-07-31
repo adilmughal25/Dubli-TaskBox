@@ -1,20 +1,24 @@
 "use strict";
 
-var _ = require('lodash');
-var request = require("request-promise");
-var co = require('co');
-var moment = require('moment');
-var debug = require('debug')('linkshare:processor');
-var sendEvents = require('./support/send-events');
-var utils = require('ominto-utils');
-var XmlEntities = require('html-entities').XmlEntities;
-var entities = new XmlEntities();
-var singleRun = require('./support/single-run');
+const _ = require('lodash');
+const request = require("request-promise");
+const co = require('co');
+const moment = require('moment');
+const querystring = require('querystring');
+const debug = require('debug')('linkshare:processor');
+const sendEvents = require('./support/send-events');
+const utils = require('ominto-utils');
+const XmlEntities = require('html-entities').XmlEntities;
+const entities = new XmlEntities();
+const singleRun = require('./support/single-run');
+const cutoffDate = require('./support/cutoff-date');
 
-var linkShare = require('./api-clients/linkshare')();
-var _check = utils.checkApiResponse;
-var jsonify = require('./api-clients/jsonify-xml-body');
-var limiter = utils.promiseRateLimiter;
+const linkShare = require('./api-clients/linkshare')();
+const _check = utils.checkApiResponse;
+const jsonify = require('./api-clients/jsonify-xml-body');
+const limiter = utils.promiseRateLimiter;
+
+const CUTOFF_KEY = 'linkshare';
 
 var getMerchants = singleRun(function* (){
   var results = yield {
@@ -23,7 +27,7 @@ var getMerchants = singleRun(function* (){
     textLinks: doApiTextLinks()
   };
   var merchants = mergeResults(results);
-  yield sendMerchantsToEventHub(merchants);
+  return yield sendEvents.sendMerchants('linkshare', merchants);
 });
 
 
@@ -86,34 +90,42 @@ var doApiTextLinks = co.wrap(function* () {
   return results;
 });
 
-var commissionsRunning = false;
-function* getCommissionDetails() {
-  if (commissionsRunning) { throw "already-running"; }
-  commissionsRunning = true;
-
-  var currentPage = 1;
-  var startTime = moment().subtract(1, 'days').startOf('day').toISOString().replace(/\..+$/, '-00:00');
-  var endTime = moment().add(1, 'days').startOf('day').toISOString().replace(/\..+$/, '-00:00');
-
-  var url;
-  debug("commissions fetch started");
-  try {
-    var client = yield linkShare.getFreshClient();
-    while (true) {
-      url = "/events/1.0/transactions?limit=1000&page="+currentPage;
-      debug('commisions fetch: %s', url);
-      var response = yield client.get(url).then(_check('commissions fetch error'));
-      var commissions = response.body;
-      if (!commissions) { break; }
-      yield sendCommissionsToEventHub(commissions || []);
-      if (commissions.length < 1000) { break; }
-      currentPage += 1;
-    }
-  } finally {
-    commissionsRunning = false;
+var getCommissionDetails = singleRun(function*(){
+  let page = 1;
+  let commissions = [];
+  const startTime = yield cutoffDate.get(CUTOFF_KEY);
+  const endTime = new Date(Date.now() - (60 * 1000));
+  while (true) {
+    const client = yield linkShare.getFreshClient();
+    const url = "/events/1.0/transactions?" + querystring.stringify({
+      limit: 1000,
+      page: page,
+      process_date_start: startTime,
+      process_date_end: endTime
+    });
+    const response = yield client.get(url).then(_check('commissions fetch error'));
+    const commissionSet = response.body;
+    commissions = commissions.concat(commissionSet);
+    if (commissionSet.length < 1000) break;
+    page += 1;
   }
-  debug("commissions fetch complete");
+  const events = commissions.map(prepareCommission).filter(x => !!x);
+  yield sendEvents.sendCommissions('linkshare', commissions);
+  yield cutoffDate.set(CUTOFF_KEY, endTime);
   linkShare.releaseClient();
+});
+
+function prepareCommission(o_obj) {
+  const commission = {};
+  const isEvent = o_obj.is_event === "Y";
+  commission.outclick_id = o_obj.u1;
+  commission.transaction_id = o_obj.etransaction_id;
+  commission.purchase_amount = o_obj.sale_amount;
+  commission.commission_amount = o_obj.commissions;
+  commission.currency = o_obj.currency;
+  commission.state = isEvent ? 'initiated' : 'confirmed';
+  commission.effective_date = o_obj.process_date;
+  return commission;
 }
 
 function sendMerchantsToEventHub(merchants) {
