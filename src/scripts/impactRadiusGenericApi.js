@@ -98,49 +98,4 @@ function checkDate(d) {
   return false;
 }
 
-/*
-
-
-{
-  "id": "saddasdasd-c2ec-4313-87b4-c802ed80308b",
-  "type": "transaction:update",
-  "timestamp": 1437074431275,
-  "jwt": {},
-  "data": {
-    "transaction_id": "da6ffcc1-39ca-4d1c-9b75-332224428948",
-    "outclick_id": "2465599e-0d04-4909-9c0e-d535ed78a0de",
-    "currency": "USD",
-    "purchase_amount": 2999,
-    "commission_amount": 299,
-    "state": "confirmed",
-    "effective_date": "Tue Jul 28 2015 09:12:30 GMT-0700 (PDT)"
-  }
-}
-
-*/
-
-
-/* TRANSACTION DATA:
- * Id: transaction_id
- * State -> state:
- *   PENDING   -> 'initiated'
- *   APPROVED  ->
- *      if locked: 'confirmed'
- *      if cleared: 'paid'
- *   REVERSED  ->
- *      if locked: 'cancelled'
- *      otherwise: 'tracked'
- * SubId1 -> outclick_id
- * Currency -> currency
- * Amount -> purchase_amount
- * Payout -> commission_amount
- * (multiple) -> effective_date
- *    if 'tracked' -> ReferringDate
- *    if 'initiated' -> CreationDate
- *    if 'cancelled' -> LockingDate
- *    if 'confirmed' -> LockingDate
- *    if 'paid' -> ClearedDate
- */
-
-
 module.exports = setup;
