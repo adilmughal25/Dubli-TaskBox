@@ -94,9 +94,9 @@ function sendMerchants(s_myName, merchants) {
 }
 
 function sendCommissions(s_myName, commissions) {
-  var s_streamName = 'merchant';
-  var s_streamType = 'merchant:commission:' + s_myName;
-  var s_taskName = 'tasks:' + s_myName + ':api';
+  var s_streamName = 'transaction';
+  var s_streamType = 'transaction:update';
+  var s_taskName = 'tasks:' + s_myName + ':commission-processor';
   return send(s_myName, s_streamName, s_streamType, s_taskName, commissions);
 }
 
