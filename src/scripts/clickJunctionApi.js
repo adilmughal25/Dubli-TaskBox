@@ -1,27 +1,33 @@
 "use strict";
 
-var _ = require('lodash');
-var moment = require('moment');
-var request = require("request-promise");
-var wait = require('co-waiter');
-var sendEvents = require('./support/send-events');
-var singleRun = require('./support/single-run');
-var utils = require('ominto-utils');
-var co = require('co');
-var cjClient = require('./api-clients/click-junction');
-var jsonify = require('./api-clients/jsonify-xml-body');
+const _ = require('lodash');
+const moment = require('moment');
+const request = require("request-promise");
+const wait = require('co-waiter');
+const sendEvents = require('./support/send-events');
+const singleRun = require('./support/single-run');
+const utils = require('ominto-utils');
+const co = require('co');
+const cjClient = require('./api-clients/click-junction');
+const jsonify = require('./api-clients/jsonify-xml-body');
 
-var merge = require('./support/easy-merge')('advertiser-id', {
+const merge = require('./support/easy-merge')('advertiser-id', {
   links: 'advertiser-id'
 });
 
-var _debug = require('debug');
-var debug = {
+const _debug = require('debug');
+const debug = {
   usa: _debug('clickjunction:usa:processor'),
   euro: _debug('clickjunction:euro:processor')
 };
 
-var merchantsRunningUSA = false;
+const ary = item => _.isArray(item) ? item : [item];
+
+const CURRENCY_MAP = {
+  usa: 'USD',
+  euro: 'Euro'
+};
+
 var getMerchantsUSA = singleRun(function*(){
   return yield getMerchants('usa');
 });
@@ -93,26 +99,72 @@ var getCommissionDetailsEuro = singleRun(function*(){
   return yield getCommissionDetails('euro');
 });
 
+function extract(key) {
+  return item => _.get(item, key);
+}
+
 var getCommissionDetails = co.wrap(function* getCommissionDetails(s_regionId) {
-  var startTime = moment().subtract(1, 'days').startOf('day').format('YYYY-MM-DD');
-  var endTime = moment().add(1, 'days').startOf('day').format('YYYY-MM-DD');
-
-  var client = cjClient("commissions", s_regionId);
-  var url = commissionsUrl(startTime, endTime);
-
-  // according to http://cjsupport.custhelp.com/app/answers/detail/a_id/1553,
-  // this one doesn't seem to paginate, so we apparently don't need a fancy
-  // async while loop here
-  debug[s_regionId]("commissions fetch: %s", url);
-  var ret = yield client.get(url).then(jsonify);
-  var info = ret['cj-api'].commissions;
-  var commissions = info.commission;
-
-  if(commissions) {
-    yield sendCommissionsToEventHub(commissions, s_regionId);
+  const client = cjClient("commissions", s_regionId);
+  const currency = CURRENCY_MAP[s_regionId];
+  const periods = commissionPeriods(31, 3); // three 31-day periods
+  let all = [];
+  for (let i = 0; i < periods.length; i++) {
+    const p = periods[i];
+    const url = commissionsUrl(p.start, p.end);
+    const result = yield client.get(url)
+      .then(jsonify)
+      .then(extract('cj-api.commissions'));
+    if (result.commission) {
+      all = all.concat(ary(result.commission));
+    }
   }
-  debug[s_regionId]("commissions fetch complete");
+  const prep = prepareCommission.bind(null, currency);
+  const events = all.map(prep).filter(x => !!x);
+
+  return yield sendCommissionsToEventHub(events, s_regionId);
 });
+
+function prepareCommission(currency, item) {
+  const event = {
+    transaction_id: item['commission-id'],
+    outclick_id: item.sid,
+    currency: currency,
+    purchase_amount: item['sale-amount'],
+    commission_amount: item['commission-amount']
+  };
+
+  switch (item['action-status']) {
+  case 'new':
+  case 'extended':
+    event.state = 'initiated';
+    event.effective_date = new Date(item['posting-date']);
+    break;
+  case 'locked':
+    event.state = 'confirmed';
+    event.effective_date = new Date(item['locking-date']);
+    break;
+  case 'closed':
+    event.state = 'paid';
+    event.effective_date = new Date(item['locking-date']); // they don't give us a better paid date than this :(
+    break;
+  default:
+    return; // skip this.
+  }
+
+  return event;
+}
+
+function commissionPeriods(i_days, i_count) {
+  let current = moment().startOf('day');
+  let vals = [];
+  for (let i = 0; i < i_count; i++) {
+    let now = current.format('YYYY-MM-DD');
+    current = current.subtract(i_days, 'days');
+    let then = current.format('YYYY-MM-DD');
+    vals.push({start:then, end:now});
+  }
+  return vals;
+}
 
 function linksUrl(page, perPage, s_regionId) {
   var websiteId = s_regionId === 'usa' ? '7811975' : '7845446';
