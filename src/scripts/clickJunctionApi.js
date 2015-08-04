@@ -119,7 +119,8 @@ var getCommissionDetails = co.wrap(function* getCommissionDetails(s_regionId) {
     }
   }
   const prep = prepareCommission.bind(null, currency);
-  const events = all.map(prep).filter(x => !!x);
+  const exists = x => !!x;
+  const events = all.map(prep).filter(exists);
 
   return yield sendCommissionsToEventHub(events, s_regionId);
 });
