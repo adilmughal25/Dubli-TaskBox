@@ -93,21 +93,21 @@ function init(id) {
   createTask("OMGpm Merchants", omgpmApi.getMerchants, {minute:48});
   createTask("Affili.Net (Austria) Merchants", affilinetAustriaApi.getMerchants, {minute:50});
 
-  // createTask("", blah.getMerchants, {minute:50});
   // createTask("", blah.getMerchants, {minute:52});
   // createTask("", blah.getMerchants, {minute:54});
   // createTask("", blah.getMerchants, {minute:56});
   // createTask("", blah.getMerchants, {minute:58});
 
-  // disabled for now:
-  //createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
   createTask("ClickJunction (USA) Commissions", clickJunctionApi.getCommissionDetailsUSA, {minute: 0});
   createTask("ImpactRadius Commissions", impactRadiusApi.getCommissionDetails, {minute: 10});
   createTask("ClickJunction (Euro) Commissions", clickJunctionApi.getCommissionDetailsEuro, {minute: 20});
   createTask("APD Performance Commissions", apdPerformanceApi.getCommissionDetails, {minute:30});
   createTask("Zanox Commissions", zanoxApi.getCommissionDetails, {minute:40});
+  createTask("PepperJam Commissions", pepperjamApi.getCommissionDetails, {minute:50});
   //createTask("LinkShare Commissions", linkShareApi.getCommissionDetails, {minute: [0,10,20,30,40,50]});
 
+  // disabled for now:
+  //createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
 
   function taskRunner(name, task) {
     return function() {
