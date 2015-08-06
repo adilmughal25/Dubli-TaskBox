@@ -83,6 +83,17 @@ function devSaveMerchants(s_which, a_items) {
   });
 }
 
+var DEV_SAVE_COMMISSIONS = (process.env.NODE_ENV === 'dev' && process.env.SAVE_COMMISSIONS);
+function devSaveCommissions(s_which, a_items) {
+  if (!DEV_SAVE_COMMISSIONS) return;
+  var resolve = require('path').resolve;
+  var write = require('fs').writeFile;
+  var f = resolve(__dirname, '../../../commissions-output-'+s_which+'.json');
+  write(f, JSON.stringify(a_items), 'utf-8', function (e) {
+    if (e) return console.error('error saving file', e.stack);
+    console.log("\n\n  -> SAVED "+f+'\n');
+  });
+}
 
 function sendMerchants(s_myName, merchants) {
   var s_streamName = 'merchant';
@@ -97,6 +108,8 @@ function sendCommissions(s_myName, commissions) {
   var s_streamName = 'transaction';
   var s_streamType = 'transaction:update';
   var s_taskName = 'tasks:' + s_myName + ':commission-processor';
+
+  devSaveCommissions(s_myName, commissions);
   return send(s_myName, s_streamName, s_streamType, s_taskName, commissions);
 }
 
