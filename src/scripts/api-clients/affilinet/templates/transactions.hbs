@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://affilinet.framework.webservices/Svc" xmlns:ns2="http://affilinet.framework.webservices/types/PublisherStatistics" xmlns:ns3="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+  <SOAP-ENV:Body>
+    <ns1:GetTransactionsRequest>
+      <ns1:CredentialToken>{{token}}</ns1:CredentialToken>
+      <ns1:PageSettings>
+        <ns2:CurrentPage>{{page}}</ns2:CurrentPage>
+        <ns2:PageSize>{{perPage}}</ns2:PageSize>
+      </ns1:PageSettings>
+      <ns1:TransactionQuery>
+        <ns2:EndDate>{{endDate}}</ns2:EndDate>
+        <ns2:StartDate>{{startDate}}</ns2:StartDate>
+        <ns2:ValuationType>{{valuationType}}</ns2:ValuationType>
+        <ns2:TransactionStatus>{{transactionStatus}}</ns2:TransactionStatus>
+      </ns1:TransactionQuery>
+    </ns1:GetTransactionsRequest>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

@@ -99,12 +99,20 @@ function init(id) {
   // createTask("", blah.getMerchants, {minute:58});
 
   createTask("ClickJunction (USA) Commissions", clickJunctionApi.getCommissionDetailsUSA, {minute: 0});
-  createTask("ImpactRadius Commissions", impactRadiusApi.getCommissionDetails, {minute: 10});
-  createTask("ClickJunction (Euro) Commissions", clickJunctionApi.getCommissionDetailsEuro, {minute: 20});
-  createTask("APD Performance Commissions", apdPerformanceApi.getCommissionDetails, {minute:30});
-  createTask("Zanox Commissions", zanoxApi.getCommissionDetails, {minute:40});
-  createTask("PepperJam Commissions", pepperjamApi.getCommissionDetails, {minute:50});
-  //createTask("LinkShare Commissions", linkShareApi.getCommissionDetails, {minute: [0,10,20,30,40,50]});
+  createTask("PepperJam Commissions", pepperjamApi.getCommissionDetails, {minute:2});
+  createTask("ImpactRadius Commissions", impactRadiusApi.getCommissionDetails, {minute: 4});
+  createTask("ClickJunction (Euro) Commissions", clickJunctionApi.getCommissionDetailsEuro, {minute: 6});
+  createTask("APD Performance Commissions", apdPerformanceApi.getCommissionDetails, {minute:8});
+  createTask("Zanox Commissions", zanoxApi.getCommissionDetails, {minute:10});
+  createTask("Affili.Net (UK) Commissions", affilinetUKApi.getCommissionDetails, {minute:12});
+  createTask("Affili.Net (France) Commissions", affilinetFranceApi.getCommissionDetails, {minute:14});
+  createTask("Affili.Net (Netherlands) Commissions", affilinetNetherlandsApi.getCommissionDetails, {minute:16});
+  createTask("Affili.Net (Spain) Commissions", affilinetSpainApi.getCommissionDetails, {minute:18});
+  createTask("Affili.Net (Germany) Commissions", affilinetGermanyApi.getCommissionDetails, {minute:20});
+  createTask("Affili.Net (Switzerland) Commissions", affilinetSwitzerlandApi.getCommissionDetails, {minute:22});
+  createTask("Affili.Net (Austria) Commissions", affilinetAustriaApi.getCommissionDetails, {minute:24});
+
+  //createTask("LinkShare Commissions", linkShareApi.getCommissionDetails, {minute: 0});
 
   // disabled for now:
   //createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});

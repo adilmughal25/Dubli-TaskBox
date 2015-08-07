@@ -1,20 +1,20 @@
 "use strict";
 
-var handlebars = require('handlebars');
-var fs = require('fs-promise');
-var co = require('co');
-var path = require('path');
+const handlebars = require('handlebars');
+const fs = require('fs-promise');
+const co = require('co');
+const path = require('path');
 
-var _endsHbs = /\.hbs$/;
+const _endsHbs = /\.hbs$/;
 
 function loadAll() {
-  var results = {};
-  var files = fs.readdirSync(__dirname).filter(x => _endsHbs.test(x));
-  for (var i = 0; i < files.length; i++) {
-    var filepath = path.resolve(__dirname, files[i]);
-    var filename = files[i].replace(_endsHbs, '');
-    var contents = fs.readFileSync(filepath, 'utf8');
-    var compiled = handlebars.compile(contents);
+  const results = {};
+  const files = fs.readdirSync(__dirname).filter(x => _endsHbs.test(x));
+  for (let i = 0; i < files.length; i++) {
+    const filepath = path.resolve(__dirname, files[i]);
+    const filename = files[i].replace(_endsHbs, '');
+    const contents = fs.readFileSync(filepath, 'utf8');
+    const compiled = handlebars.compile(contents);
     results[filename] = compiled;
   }
   return results;

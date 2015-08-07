@@ -56,6 +56,17 @@ const CALL_DEFS = {
       perPage: 1000,
       status: 'Accepted'
     }
+  },
+  _getTransactions_Page: {
+    url: 'https://api.affili.net/V2.0/PublisherStatistics.svc',
+    action: 'http://affilinet.framework.webservices/Svc/PublisherStatisticsContract/GetTransactions',
+    template: templates.transactions,
+    defaults: {
+      page: 1,
+      perPage: 100,
+      valuationType: 'DateOfRegistration',
+      transactionStatus: 'all'
+    }
   }
 };
 
@@ -125,6 +136,28 @@ AffiliNet.prototype.getVouchers = co.wrap(function* (args) {
     total = _.get(response, 'SearchVoucherCodesResponse.TotalResults') || 0;
     if (totalPages === 'unknown') totalPages = Math.ceil(total/perPage);
     results = results.concat(ary(_.get(collection, 'VoucherCodeItem')));
+    if (total < currentPage * perPage) break;
+    currentPage += 1;
+  }
+  this.debug("got %d results, expected %d results", results.length, total);
+  return results;
+});
+
+AffiliNet.prototype.getTransactions = co.wrap(function* (args) {
+  var currentPage = 1;
+  var perPage = 100;
+  var results = [];
+  var totalPages = 'unknown';
+  var callArgs, response, collection, total;
+  while (true) {
+    callArgs = _.extend({}, args, {page:currentPage, perPage:perPage});
+    this.debug("fetching transactions page %d of %s", currentPage, totalPages);
+    response = yield this._getTransactions_Page(callArgs);
+    console.log("Response is", JSON.stringify(response,null,2));
+    collection = _.get(response, 'GetTransactionsResponse.TransactionCollection');
+    total = _.get(response, 'GetTransactionsResponse.TotalRecords') || 0;
+    if (totalPages === 'unknown') totalPages = Math.ceil(total/perPage);
+    results = results.concat(ary(_.get(collection, 'Transaction') || []));
     if (total < currentPage * perPage) break;
     currentPage += 1;
   }
