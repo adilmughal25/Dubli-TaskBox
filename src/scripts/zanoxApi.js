@@ -16,6 +16,8 @@ const merge = require('./support/easy-merge')('@id', {
 
 const client = require('./api-clients/zanox')();
 
+const ary = x => _.isArray(x) ? x : [x];
+
 var getMerchants = singleRun(function*() {
   var joined = yield pagedApiCall('$getProgramApplications', 'programApplicationItems.programApplicationItem', {'status':'confirmed'});
 
@@ -61,18 +63,23 @@ const STATE_MAP = {
   confirmed: 'paid'
 };
 
+function findSubId(o_obj) {
+  const fields = ary(_.get(o_obj, 'gpps.gpp')).reduce((m,x) => _.set(m, x['@id'], x.$), {});
+  return fields.zpar0;
+}
+
 function prepareCommission(o_obj) {
   const event = {
     transaction_id: _.get(o_obj, '@id'),
-    outclick_id: _.get(o_obj, 'subPublisher.@id'),
+    outclick_id: findSubId(o_obj),
     purchase_amount: o_obj.amount,
     commission_amount: o_obj.commission,
     currency: o_obj.currency,
     state: STATE_MAP[o_obj.reviewState],
-    effective_date: o_obj.reviewState === 'open' ?
-      o_obj.tracking_date : o_obj.modifiedDate
+    effective_date: new Date(o_obj.reviewState === 'open' ?
+      o_obj.trackingDate : o_obj.modifiedDate)
   };
-  return o_obj;
+  return event;
 }
 
 var pagedApiCall = co.wrap(function* (method, bodyKey, params, prefix) {
