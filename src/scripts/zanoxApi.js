@@ -57,7 +57,7 @@ var getCommissionDetails = singleRun(function* () {
 
 // 'confirmed' means payment is approved and will happen soon, so we can count it as 'paid'
 const STATE_MAP = {
-  open: 'tracked',
+  open: 'initiated',
   rejected: 'cancelled',
   approved: 'confirmed',
   confirmed: 'paid'

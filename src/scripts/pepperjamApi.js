@@ -30,7 +30,7 @@ var getMerchants = singleRun(function*(){
 
 const exists = x => !!x;
 var getCommissionDetails = singleRun(function* () {
-  const startDate = moment().subtract(2, 'days').format('YYYY-MM-DD');
+  const startDate = moment().subtract(3, 'days').format('YYYY-MM-DD');
   const endDate = moment().format('YYYY-MM-DD');
   const results = yield client.getPaginated('/publisher/report/transaction-details',
     {startDate:startDate, endDate:endDate});
@@ -43,7 +43,7 @@ const STATE_MAP = {
   pending: 'initiated',
   locked: 'confirmed',
   delayed: 'confirmed',
-  unconfirmed: 'tracked'
+  unconfirmed: 'initiated'
 };
 
 function prepareCommission(o_obj) {
