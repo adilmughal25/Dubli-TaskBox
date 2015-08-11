@@ -24,6 +24,7 @@
   "homepage": "http://dubli.com",
   "dependencies": {
     "aws-sdk": "*",
+    "aws-sdk-promise": "0.0.2",
     "bunyan": "^1.3.5",
     "co": "*",
     "co-waiter": "^1.0.2",

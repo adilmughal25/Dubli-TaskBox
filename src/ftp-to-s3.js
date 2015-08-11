@@ -4,28 +4,18 @@ const ftpd = require('ftpd');
 const AWS = require('aws-sdk');
 const path = require('path');
 const mkdirp = require('mkdirp');
+const request = require('request-promise');
+const co = require('co');
+const fs = require('fs-promise');
+const s3 = new AWS.S3();
 
-//@TODO: move this to configs.json?
-const FTP_CONFIG = {
-  host: '127.0.0.1',
-  port: '2100',
-  pasvPortRangeStart: 4000,
-  pasvPortRangeEnd: 5000,
-  s3path: 'configs-and-scripts/testing',
-  ftp_root: '/tmp/ftp-root',
-  users: {
-    'linkshare-transactions': {
-      localDir: 'linkshare-transactions',
-      remoteDir: 'linkshare-transactions',
-      password: 'e6ddf098-b9b1-47b0-8d72-dbf4967b37b5'
-    }
+module.exports = co.wrap(function* (logger, config) {
+  if (!config) {
+    logger.info("No ftpToS3 config found! No FTP server running!");
+    return;
   }
-};
-
-function setup(logger, config) {
-  config = FTP_CONFIG; // temporary
-  const server = new ftpd.FtpServer(config.host, {
-    logLevel: 3,
+  const IP_ADDR = process.env.NODE_ENV === 'dev' ? '127.0.0.1' : yield request.get('http://169.254.169.254/latest/meta-data/public-ipv4');
+  const server = new ftpd.FtpServer(IP_ADDR, {
     pasvPortRangeStart: config.pasvPortRangeStart,
     pasvPortRangeEnd: config.pasvPortRangeEnd,
     getInitialCwd: getInitialCwd,
@@ -40,7 +30,7 @@ function setup(logger, config) {
 
     conn.on('command:user', checkUsername);
     conn.on('command:pass', checkPassword);
-    conn.on('file:stor', doUpload);
+    conn.on('file:stor', co.wrap(doUpload));
 
     function checkUsername(user, ok, fail) {
       logger.info("checking user login "+user);
@@ -58,14 +48,41 @@ function setup(logger, config) {
       fail();
     }
 
-    function doUpload(event, data) {
+    function doS3put(bucket, path, streamOrData) {
+      return new Promise(function(resolve, reject) {
+        s3.putObject({
+          Bucket: bucket,
+          Key: path,
+          Body: streamOrData,
+          ACL: 'private'
+        }, function(err, result) {
+          if (err) return reject(err);
+          resolve(result);
+        });
+      });
+    }
+
+    function* doUpload(event, data) {
       if (event !== 'close') return;
       const filename = data.file.replace(/^\/+/, '');
       const localPath = path.join(config.ftp_root, currentUser.localDir, filename);
-      const remotePath = path.join(config.s3path, currentUser.remoteDir, filename);
-      logger.info("new file upload by "+currentUsername+" at "+localPath+", will upload to s3://"+remotePath);
+      const s3bucket = currentUser.s3_bucket;
+      const s3path = currentUser.s3_folder + "/" + filename;
+      try {
+        logger.info("New file uploaded by `"+currentUsername+"`: "+localPath);
+        const fileStream = fs.createReadStream(localPath);
+        logger.info("Sending "+filename+" to S3 "+s3bucket+":"+s3path);
+        const result = yield doS3put(s3bucket, s3path, fileStream);
+        logger.info(result, "successfully uploaded!");
+        yield fs.unlink(localPath);
+        logger.info("deleted file at "+localPath);
+        return result;
+      } catch (e) {
+        logger.error(e, "Error uploading "+filename+" to S3!");
+      }
     }
   });
+
   server.listen(config.port);
   logger.info("FTP server listening on "+config.host+":"+config.port);
 
@@ -88,6 +105,4 @@ function setup(logger, config) {
   function getRoot(conn, callback) {
     getUserFTPRoot(conn.username, callback);
   }
-}
-
-module.exports = setup;
+});

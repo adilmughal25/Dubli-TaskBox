@@ -7,5 +7,25 @@
       "user": "PlaceGenericNameHere",
       "pass": "PasswordOfDEVASTATION123!@#"
     }
+  },
+  "ftpToS3": {
+    "port": "2121",
+    "pasvPortRangeStart": 4000,
+    "pasvPortRangeEnd": 5000,
+    "ftp_root": "/tmp/ftp-to-s3-root",
+    "users": {
+      "linkshare-transactions": {
+        "localDir": "linkshare-transactions",
+        "s3_bucket": "ominto-devel",
+        "s3_folder": "ftp-to-s3-gateway/linkshare-transactions",
+        "password": "370d9b45-0eb5-4199-b22a-092ca4d42459"
+      },
+      "test-user": {
+        "localDir": "test",
+        "s3_bucket": "ominto-devel",
+        "s3_folder": "ftp-to-s3-gateway/test-user-local",
+        "password": "118febce-ecb5-45ac-80ae-763f1ff9ebf5"
+      }
+    }
   }
 }
