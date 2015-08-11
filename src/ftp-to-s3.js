@@ -14,7 +14,7 @@ module.exports = co.wrap(function* (logger, config) {
     logger.info("No ftpToS3 config found! No FTP server running!");
     return;
   }
-  const IP_ADDR = process.env.NODE_ENV === 'dev' ? '127.0.0.1' : yield request.get('http://169.254.169.254/latest/meta-data/public-ipv4');
+  const IP_ADDR = config.host;
   const server = new ftpd.FtpServer(IP_ADDR, {
     pasvPortRangeStart: config.pasvPortRangeStart,
     pasvPortRangeEnd: config.pasvPortRangeEnd,

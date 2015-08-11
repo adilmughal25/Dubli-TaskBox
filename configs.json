@@ -10,6 +10,7 @@
   },
   "ftpToS3": {
     "port": "2121",
+    "host": "127.0.0.1",
     "pasvPortRangeStart": 4000,
     "pasvPortRangeEnd": 5000,
     "ftp_root": "/tmp/ftp-to-s3-root",
