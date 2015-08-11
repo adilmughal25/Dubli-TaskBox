@@ -3,6 +3,7 @@ PATH=$PATH:/usr/local/bin
 
 # set up initial vars
 WWW_ROOT=/var/www
+FTP_ROOT=/var/tasker-ftp-root
 AWS_INSTANCE_ID=$(ec2metadata --instance-id | cut -d' ' -f2)
 AWS_REGION=$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | grep region | cut -d'"' -f4)
 AWS_AUTOSCALE_GROUP=$(aws --region ${AWS_REGION} autoscaling describe-auto-scaling-instances --instance-ids ${AWS_INSTANCE_ID} --query AutoScalingInstances[0].AutoScalingGroupName | cut -d'"' -f2)
@@ -28,6 +29,11 @@ chown node-app-run:node-app ${WWW_ROOT}/logs
 chown node-app-run:node-app ${WWW_ROOT}/var
 chmod 750 ${WWW_ROOT}
 
+if [ ! -f ${FTP_ROOT} ]; then
+  mkdir -p ${FTP_ROOT}
+fi
+chown -R node-app-run:node-app ${FTP_ROOT}
+
 #AWS Cloudwatch Logs -- this is the "default" that doesn't run under upstart
 service awslogs stop
 
@@ -47,6 +53,7 @@ EOF
 cat > /var/scripts/env.json <<EOF
 {
   "WWW_ROOT":"${WWW_ROOT}",
+  "FTP_ROOT":"${FTP_ROOT}",
   "AWS_INSTANCE_ID":"${AWS_INSTANCE_ID}",
   "AWS_REGION":"${AWS_REGION}",
   "AWS_AUTOSCALE_GROUP":"${AWS_AUTOSCALE_GROUP}",
