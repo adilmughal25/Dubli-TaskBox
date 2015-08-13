@@ -76,7 +76,7 @@ function devSaveMerchants(s_which, a_items) {
   if (!DEV_SAVE_MERCHANTS) return;
   var resolve = require('path').resolve;
   var write = require('fs').writeFile;
-  var f = resolve(__dirname, '../../../merchant-output-'+s_which+'.json');
+  var f = resolve(__dirname, '../../../test/output/merchant-output-'+s_which+'.json');
   write(f, JSON.stringify(a_items), 'utf-8', function (e) {
     if (e) return console.error('error saving file', e.stack);
     console.log("\n\n  -> SAVED "+f+'\n');
@@ -88,7 +88,7 @@ function devSaveCommissions(s_which, a_items) {
   if (!DEV_SAVE_COMMISSIONS) return;
   var resolve = require('path').resolve;
   var write = require('fs').writeFile;
-  var f = resolve(__dirname, '../../../commissions-output-'+s_which+'.json');
+  var f = resolve(__dirname, '../../../test/output/commissions-output-'+s_which+'.json');
   write(f, JSON.stringify(a_items), 'utf-8', function (e) {
     if (e) return console.error('error saving file', e.stack);
     console.log("\n\n  -> SAVED "+f+'\n');
