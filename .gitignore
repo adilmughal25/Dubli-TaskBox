@@ -28,7 +28,8 @@ node_modules
 
 configs.json
 mydb
-#docs
+/docs
+!/docs/sample-api-data
 
 # what happens if you run with SAVE_MERCHANTS=1
 /merchant-output-*.json
