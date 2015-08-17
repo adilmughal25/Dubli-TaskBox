@@ -18,7 +18,8 @@ var API_TYPES = {
 		path: "user/"								// https://www.adcell.de/api/v2/user/getToken?userName=*****&password=*****
   },
   program: {
-		path: "affiliate/program/"	// https://www.adcell.de/api/v2/affiliate/program/export?affiliateStatus=accepted&token=*****
+		path: "affiliate/program/",	// https://www.adcell.de/api/v2/affiliate/program/export?affiliateStatus=accepted&token=*****
+		rows: 50										// num rows to fetch pare page (per request); default is 25
   }
 };
 
@@ -81,21 +82,27 @@ AdCellClient.prototype.getToken = co.wrap(function* () {
 /**
  * Fetching all affiliate programs / merchants from AdCell which we are applied and accepted for.
  * @memberof AdCellClient
+ * @param {Object} params - The params to pass onto the api call
+ * @param {Object} params.page - which page to fetch from api
+ * @param {Object} params.rows - how many rows/items per page to fetch
  * @returns {{programId:string, programName:string, ...}[]}
  */
-AdCellClient.prototype.getAffiliateProgram = co.wrap(function* () {
+AdCellClient.prototype.getAffiliateProgram = co.wrap(function* (params) {
 	let response, body, arg = {
 		url: API_TYPES.program.path + 'export',
-		qs: {}
+		qs: {
+			rows: API_TYPES.program.rows,
+			page: 1
+		}
 	};
 
 	// make sure we have a valid token for next request
 	yield this.getToken();
 
-	arg.qs = {
+	_.extend(arg.qs, {
 		token: this.token,
 		affiliateStatus: 'accepted'
-	};
+	}, params);
 
 	debug("Used token: %s", this.token);
 
@@ -106,7 +113,7 @@ AdCellClient.prototype.getAffiliateProgram = co.wrap(function* () {
 		throw new Error("Could not get affiliate programs for export. Response: [" + body.status + "]" + body.message);
 	}
 
-	return response.items;
+	return response;
 });
 
 
