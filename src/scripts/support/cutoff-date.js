@@ -9,7 +9,8 @@ const dataClient = utils.getDataClient(o_configs.data_api.url, o_configs.data_ap
 
 module.exports = {
   get: co.wrap(getCutoffDate),
-  set: co.wrap(setCutoffDate)
+  set: co.wrap(setCutoffDate),
+  epoch: CUTOFF_EPOCH
 };
 
 function keyUrl(s_key) {
