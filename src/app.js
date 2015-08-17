@@ -43,6 +43,9 @@ const hasoffersGenericApi = require('./scripts/hasoffersGenericApi');
 const snapdealApi = hasoffersGenericApi('snapdeal');
 const vcommissionApi = hasoffersGenericApi('vcommission');
 
+const adCellApi = require('./scripts/adCellApi');
+
+
 function init(id) {
   process.on('message', function(msg) {
     console.log("MSG", msg);
@@ -121,6 +124,8 @@ function init(id) {
 
   // disabled for now:
   //createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
+
+	createTask("AdCell Merchants", adCellApi.getMerchants, {minute:28});
 
   function taskRunner(name, task) {
     return function() {
