@@ -9,7 +9,8 @@ var client = require('./api-clients/adCell')();
 
 const getMerchants = singleRun(function* () {
 	let results = yield pagedApiCall('getAffiliateProgram', 'items');
-	yield sendEvents.sendMerchants('adcell', results);
+	let merchants = results.map(merchant => ({merchant: merchant}));
+	yield sendEvents.sendMerchants('adcell', merchants);
 });
 
 /**
