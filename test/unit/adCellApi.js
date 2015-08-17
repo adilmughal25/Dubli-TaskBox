@@ -25,9 +25,10 @@
 		it('able to retrieve merchants', function() {
 			let merchantPromise = adCellApiClient.getAffiliateProgram();
 
-			return merchantPromise.then(function(merchants){
-				assert.isArray(merchants, 'merchants is an object');
-				expect(merchants[0]).to.have.property('programId');
+			return merchantPromise.then(function(results){
+				assert.isObject(results, 'results is an object');
+				assert.isArray(results.items, 'results.items is an object');
+				expect(results.items[0]).to.have.property('programId');
 			});
 		});
 
