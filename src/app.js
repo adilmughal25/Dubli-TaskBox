@@ -21,7 +21,6 @@ const linkShareApi = require("./scripts/linkShareApi");
 const omgpmApi = require('./scripts/omgpmApi');
 const pepperjamApi = require('./scripts/pepperjamApi');
 const performanceHorizonApi = require('./scripts/performanceHorizonApi');
-const publicideasApi = require('./scripts/publicideasApi');
 const tradetrackerApi = require('./scripts/tradetrackerApi');
 const webgainsApi = require('./scripts/webgainsApi');
 const zanoxApi = require('./scripts/zanoxApi');
@@ -42,6 +41,13 @@ const apdPerformanceApi = impactRadiusGenericApi('apdperformance');
 const hasoffersGenericApi = require('./scripts/hasoffersGenericApi');
 const snapdealApi = hasoffersGenericApi('snapdeal');
 const vcommissionApi = hasoffersGenericApi('vcommission');
+
+const publicideasGenericApi = require('./scripts/publicideasGenericApi');
+const publicideasESApi = publicideasGenericApi('es');
+const publicideasFRApi = publicideasGenericApi('fr');
+const publicideasITApi = publicideasGenericApi('it');
+const publicideasLATAMApi = publicideasGenericApi('latam');
+const publicideasUKApi = publicideasGenericApi('uk');
 
 function init(id) {
   process.on('message', function(msg) {
@@ -88,7 +94,7 @@ function init(id) {
   createTask("Avantlink Merchants", avantlinkApi.getMerchants, {minute:30});
   createTask("TradeTracker Merchants", tradetrackerApi.getMerchants, {minute:32});
   createTask("Affili.Net (Spain) Merchants", affilinetSpainApi.getMerchants, {minute:34});
-  createTask("PublicIdeas Merchants", publicideasApi.getMerchants, {minute:36});
+  createTask("PublicIdeas (ES) Merchants", publicideasESApi.getMerchants, {minute:36});
   createTask("Webgains Merchants", webgainsApi.getMerchants, {minute:38});
   createTask("APD Performance Merchants", apdPerformanceApi.getMerchants, {minute:40});
   createTask("Affili.Net (Switzerland) Merchants", affilinetSwitzerlandApi.getMerchants, {minute:42});
@@ -96,6 +102,10 @@ function init(id) {
   createTask("Belboon Merchants", belboonApi.getMerchants, {minute:46});
   createTask("OMGpm Merchants", omgpmApi.getMerchants, {minute:48});
   createTask("Affili.Net (Austria) Merchants", affilinetAustriaApi.getMerchants, {minute:50});
+  createTask("PublicIdeas (FR) Merchants", publicideasFRApi.getMerchants, {minute:52});
+  createTask("PublicIdeas (IT) Merchants", publicideasITApi.getMerchants, {minute:54});
+  createTask("PublicIdeas (LATAM) Merchants", publicideasLATAMApi.getMerchants, {minute:56});
+  createTask("PublicIdeas (UK) Merchants", publicideasUKApi.getMerchants, {minute:58});
 
   // createTask("", blah.getMerchants, {minute:52});
   // createTask("", blah.getMerchants, {minute:54});

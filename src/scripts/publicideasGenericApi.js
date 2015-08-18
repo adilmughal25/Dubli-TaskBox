@@ -7,14 +7,9 @@ var utils = require('ominto-utils');
 var sendEvents = require('./support/send-events');
 var singleRun = require('./support/single-run');
 
-var client = require('./api-clients/publicideas')();
+var createClient = require('./api-clients/publicideas');
 var ary = x => _.isArray(x) ? x : [x];
 
-var getMerchants = singleRun(function* (){
-  var merchants = yield client.getMerchants();
-  merchants = clean(merchants);
-  yield sendEvents.sendMerchants('publicideas', merchants);
-});
 
 // massage the input a tiny little bit, mostly for ease-of-use on the lambda side
 function clean(merchants) {
@@ -32,6 +27,18 @@ function clean(merchants) {
   });
 }
 
-module.exports = {
-  getMerchants: getMerchants
-};
+function setup(s_region) {
+  const client = createClient(s_region);
+  const getMerchants = singleRun(function* (){
+    const merchantsRaw = yield client.getMerchants();
+    const merchants = clean(merchantsRaw);
+    yield sendEvents.sendMerchants('publicideas-'+s_region, merchants);
+  });
+
+  const tasks = {
+    getMerchants: getMerchants
+  };
+  return tasks;
+}
+
+module.exports = setup;

@@ -1,32 +1,41 @@
 "use strict";
 
-// this will need to be generified soon; waiting for confirmation of this but it
-// looks like we need to treat each site-id as if it's a wholly different account.
-// api_key may or may not be the same for each.
-const API_USERID = '45415';
-
-const API_KEY = '322cf3a4b396a665d4d107d4ce6624b4';
-const API_URLS = {
-  // merchants: 'http://publisher.publicideas.com/xmlProgAff.php',
-  commissions: 'http://api.publicidees.com/cb.php'
-};
-const MERCHANTS_URL = 'http://publisher.publicideas.com/xmlProgAff.php?partid=45415&key=322cf3a4b396a665d4d107d4ce6624b4';
-
-
 const _ = require('lodash');
 const request = require('request-promise');
 const jsonify = require('./jsonify-xml-body');
 const querystring = require('querystring');
 const moment = require('moment');
 
-const ary = x => _.isArray(x) ? x : [x];
 
-function url (type, args) {
-  const fullArgs = _.extend({}, args, { p: API_USERID, k: API_KEY });
-  return API_URLS[type] + '?' + querystring.stringify(fullArgs);
-}
+const API_CREDENTIALS = {
+  es: {
+    partnerId: '45415',
+    key: '322cf3a4b396a665d4d107d4ce6624b4'
+  },
+  fr: {
+    partnerId: '45627',
+    key: 'a0f8cc107ca0778c9dd61d9948a7a893',
+  },
+  it: {
+    partnerId: '45628',
+    key: '7bd5fe616e0c2921845c151e2587b8c3',
+  },
+  latam: {
+    partnerId: '45629',
+    key: '7873c2e1862eb77a67c6f00d66f62244'
+  },
+  uk: {
+    partnerId: '45626',
+    key: '45caa809e2347d6b316860eab2ce943a'
+  }
+};
+const API_URLS = {
+  merchants: 'http://publisher.publicideas.com/xmlProgAff.php',
+  commissions: 'http://api.publicidees.com/cb.php'
+};
 
-
+// helpers
+const ary = x => x ? (_.isArray(x) ? x : [x]) : [];
 const formatDate = d => moment(d).format('YYYY-MM-DD');
 const isStringDate = d => _.isString(d) && /^\d{4}(-\d{2}){2}$/.test(d);
 const getDate = d => {
@@ -40,18 +49,29 @@ const getDate = d => {
 // for merchants, at least, publicideas only has a very simple xml feed.
 // luckily this feed includes all the details we'd normally grab about
 // merchants/links/deals/coupons/etc
-function createClient() {
-  var client = request.defaults({
+function createClient(s_region) {
+  if (!s_region) s_region = 'es';
+  if (!API_CREDENTIALS[s_region]) throw new Error("Unknown region: "+s_region);
+
+  const creds = API_CREDENTIALS[s_region];
+  const apiUser = creds.partnerId;
+  const apiKey = creds.key;
+
+  const client = request.defaults({
     resolveWithFullResponse: true
   });
 
-  client.url = url;
+  const url = client.url = function url (type, args) {
+    const extraArgs = type === 'merchants' ?
+      {partid:apiUser, key:apiKey} : {p:apiUser, k:apiKey};
+    const fullArgs = _.extend({}, args, extraArgs);
+    return API_URLS[type] + '?' + querystring.stringify(fullArgs);
+  };
 
   client.jsonify = jsonify;
 
   client.getMerchants = function() {
-    // const requestUrl = this.url('merchants');
-    const requestUrl = MERCHANTS_URL;
+    const requestUrl = this.url('merchants');
     console.log("URL", requestUrl);
     const promise = this.get(requestUrl)
       .then(this.jsonify)
@@ -68,18 +88,8 @@ function createClient() {
     console.log("URL", requestUrl);
     const promise = this.get(requestUrl)
       .then(x => {console.log(x.body); return x;})
-      .then(this.jsonify);
-      // this needs to be more robust -- i'm fairly certain that we get one
-      // array of programs with an inner array of actions.. of course, since
-      // this is coming from an xml2js parsing of the xml into json, we'll have
-      // to correct each of these into arrays if they come back with a single
-      // element.
-      //
-      // However, I have no data coming back from this API right now, despite
-      // test purchases being made 10+ days ago. Support teams have been
-      // dispatched to combat this problem.
-      //
-      // .then(data => ary(_.get(data, 'cashBack.programme.action') || []));
+      .then(this.jsonify)
+      .then(fixCommissions);
     return promise;
   };
 
@@ -92,6 +102,13 @@ function createClient() {
   };
 
   return client;
+}
+
+function fixCommissions(o_obj) {
+  const root = o_obj.cashBack;
+  root.programme = ary(root.programme);
+  root.programme.forEach(p => p.action = ary(p.action));
+  return root;
 }
 
 module.exports = createClient;
