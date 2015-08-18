@@ -24,30 +24,30 @@ const getMerchants = singleRun(function* () {
  */
 var pagedApiCall = co.wrap(function* (method, bodyKey, params) {
   let results = [],
-			perPage = 50,	// default is 25
-  		page = 0,
-			total = 0,
-			start = Date.now();
+      perPage = 50,	// default is 25
+      page = 0,
+      total = 0,
+      start = Date.now();
 
 	// check that we call a method which actually is provided by the api client
 	if (typeof client[method] !== 'function') {
-		throw new Error("Method " + method + " is not available by our api client.");
+    throw new Error("Method " + method + " is not available by our api client.");
 	}
 
 	// perform api calls with pagination until we reach total items to fetch
   while(true) {
     let arg = _.extend({}, params, {page:++page, rows:perPage}),
-				response;
+      response;
 
-		debug("%s : page %d of %s (%s)", method, page, Math.floor(total/perPage) || 'unknown', JSON.stringify({args:arg}));
+    debug("%s : page %d of %s (%s)", method, page, Math.floor(total/perPage) || 'unknown', JSON.stringify({args:arg}));
 
-		// perform actual api call
+    // perform actual api call
     response = yield client[method](arg);
 
     let items = _.get(response, bodyKey) || [];
     results = results.concat(items);
     total = response.total.totalItems;
-		
+
     if (page * perPage >= response.total.totalItems) break;
   }
   
