@@ -99,8 +99,8 @@ function init(id) {
   createTask("Belboon Merchants", belboonApi.getMerchants, {minute:46});
   createTask("OMGpm Merchants", omgpmApi.getMerchants, {minute:48});
   createTask("Affili.Net (Austria) Merchants", affilinetAustriaApi.getMerchants, {minute:50});
+  createTask("AdCell Merchants", adCellApi.getMerchants, {minute:52});
 
-  // createTask("", blah.getMerchants, {minute:52});
   // createTask("", blah.getMerchants, {minute:54});
   // createTask("", blah.getMerchants, {minute:56});
   // createTask("", blah.getMerchants, {minute:58});
@@ -124,8 +124,6 @@ function init(id) {
 
   // disabled for now:
   //createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
-
-	createTask("AdCell Merchants", adCellApi.getMerchants, {minute:28});
 
   function taskRunner(name, task) {
     return function() {
