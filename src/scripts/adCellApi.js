@@ -2,15 +2,45 @@
 
 var _ = require('lodash');
 var co = require('co');
-var debug = require('debug')('affiliatewindow:processor');
+var debug = require('debug')('adcell:processor');
 var sendEvents = require('./support/send-events');
 var singleRun = require('./support/single-run');
 var client = require('./api-clients/adCell')();
 
+var merge = require('./support/easy-merge')(
+  'programId',            // the identifier for our merchants
+  {
+    coupons: 'programId', // the identifier of coupons to match an merchant identifier
+    cashback: 'programId' // the identifier of commissions to match an merchant identifier
+  }
+);
+
 const getMerchants = singleRun(function* () {
-	let results = yield pagedApiCall('getAffiliateProgram', 'items');
-	let merchants = results.map(merchant => ({merchant: merchant}));
-	yield sendEvents.sendMerchants('adcell', merchants);
+  let results = {},
+      merchants = {},
+      programs = {},
+      merchantIds = [],
+      coupons = {},
+      commission = {};
+  
+	programs = yield pagedApiCall('getAffiliateProgram', 'items');
+
+  // prepare an array of merchant ids for requesting Coupons for those merchants
+  merchantIds = programs.map((m) => {
+    return m.programId;
+  });
+
+  coupons = yield pagedApiCall('getPromotionTypeCoupon', 'items', {programIds: merchantIds});
+  commission = yield pagedApiCall('getCommissions', 'items', {programIds: merchantIds});
+
+  results = {
+    merchants: programs,
+    coupons: coupons,
+    cashback: commission
+  };
+
+  merchants = merge(results);
+  yield sendEvents.sendMerchants('adcell', merchants);
 });
 
 /**
@@ -18,13 +48,11 @@ const getMerchants = singleRun(function* () {
  * @param {String} method - The method of the api to call
  * @param {String} bodyKey - Attribute name/path in response body object to deep select as results
  * @param {Object} params - The params to pass onto the api method
- * @param {Object} params.page - which page to fetch from api
- * @param {Object} params.rows - how many rows/items per page to fetch
  * @returns {Array}
  */
 var pagedApiCall = co.wrap(function* (method, bodyKey, params) {
   let results = [],
-      perPage = 50,	// default is 25
+      perPage = 250,	// default is 25
       page = 0,
       total = 0,
       start = Date.now();
@@ -46,11 +74,11 @@ var pagedApiCall = co.wrap(function* (method, bodyKey, params) {
 
     let items = _.get(response, bodyKey) || [];
     results = results.concat(items);
-    total = response.total.totalItems;
+    total = (response.total !== undefined ) ? response.total.totalItems || response.total.numberItems : 0;
 
-    if (page * perPage >= response.total.totalItems) break;
+    if (page * perPage >= total) break;
   }
-  
+
 	let end = Date.now();
   debug("%s finished: %d items over %d pages (%dms)", method, results.length, page, end-start);
 
