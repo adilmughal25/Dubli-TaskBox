@@ -5,25 +5,27 @@
  * Documentation requires valid Partner account credentials.
  */
 
-var _ = require('lodash');
-var co = require('co');
-var request = require('request-promise');
+const _ = require('lodash');
+const co = require('co');
+const request = require('request-promise');
 // debugging the requests || TODO: remove after finishing implementation
 //require('request-promise').debug = true; 
-var debug = require('debug')('adcell:api-client');
-var moment = require('moment');
+const debug = require('debug')('adcell:api-client');
+const moment = require('moment');
 
 const API_URL      = 'https://www.adcell.de/api/v2/';
-const API_USERID   = '205737';
-const API_PASSWORD = 'HF&239gj(VF23i7Fsrn%238';
+const API_USERID   = '205737';                  // DubLi-Legacy: 165872
+const API_PASSWORD = 'HF&239gj(VF23i7Fsrn%238'; // DubLi-Legacy: Hvg&sdu386HJf37d&hp4dF
+//const API_USERID   = '165872';
+//const API_PASSWORD = 'Hvg&sdu386HJf37d&hp4dF';
 
-var API_TYPES = {
+const API_TYPES = {
   user: {
     path: "user/"               // https://www.adcell.de/api/v2/user/getToken?userName=*****&password=*****
   },
   program: {
     path: "affiliate/program/", // https://www.adcell.de/api/v2/affiliate/program/export?affiliateStatus=accepted&token=*****
-    rows: 250                   // num rows to fetch pare page (per request); default is 25; max:1000
+    rows: 500                   // num rows to fetch pare page (per request); default is 25; max:1000
   },
   promotion: {
     path: "affiliate/promotion/", // https://www.adcell.de/api/v2/affiliate/promotion/getPromotionTypeCoupon?&token=****&programIds[]=3687&programIds[]=1762&programIds[]=...
