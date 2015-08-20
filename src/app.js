@@ -129,6 +129,7 @@ function init(id) {
   createTask("Affili.Net (Switzerland) Commissions", affilinetSwitzerlandApi.getCommissionDetails, {minute:22});
   createTask("Affili.Net (Austria) Commissions", affilinetAustriaApi.getCommissionDetails, {minute:24});
   createTask("AffiliateWindow Commissions", affiliatewindowApi.getCommissionDetails, {minute:26});
+  createTask("AdCell Commissions", adCellApi.getCommissionDetails, {minute:28});
 
   //createTask("LinkShare Commissions", linkShareApi.getCommissionDetails, {minute: 0});
 

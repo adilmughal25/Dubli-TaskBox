@@ -3,6 +3,8 @@
 /*
  * API Documentation: https://www.adcell.de/api/v2/
  * Documentation requires valid Partner account credentials.
+ *
+ * ToDo: aggregate all api method implementations into minimum of abstract methodsto reduce redundant code within the api methods.
  */
 
 const _ = require('lodash');
@@ -28,8 +30,12 @@ const API_TYPES = {
     rows: 500                   // num rows to fetch pare page (per request); default is 25; max:1000
   },
   promotion: {
-    path: "affiliate/promotion/", // https://www.adcell.de/api/v2/affiliate/promotion/getPromotionTypeCoupon?&token=****&programIds[]=3687&programIds[]=1762&programIds[]=...
-    rows: 500                   // num rows to fetch pare page (per request); default is 25; max:1000
+    path: "affiliate/promotion/", // https://www.adcell.de/api/v2/affiliate/promotion/getPromotionTypeCoupon?token=****&programIds[]=3687&programIds[]=1762&programIds[]=...
+    rows: 500                     // num rows to fetch pare page (per request); default is 25; max:1000
+  },
+  statistic: {
+    path: "affiliate/statistic/", // https://www.adcell.de/api/v2/affiliate/statistic/byCommission?token=****&startDate=2015-05-01&endDate=2015-05-31&...
+    rows: 500                     // num rows to fetch pare page (per request); default is 25; max:1000
   }
 };
 
@@ -93,7 +99,6 @@ AdCellClient.prototype.getToken = co.wrap(function* () {
   return this.token;
 });
 
-
 /**
  * Fetching all affiliate programs / merchants from AdCell which we are applied and accepted for.
  * @memberof AdCellClient
@@ -119,8 +124,6 @@ AdCellClient.prototype.getAffiliateProgram = co.wrap(function* (params) {
     token: this.token,
     affiliateStatus: 'accepted'
   }, params);
-
-	debug("Used token: %s", this.token);
 
 	body = yield this.client.get(arg);
 	response = _.get(body, 'data', []);
@@ -158,8 +161,7 @@ AdCellClient.prototype.getCommissions = co.wrap(function* (params) {
     token: this.token
   }, params);
 
-	debug("Used token: %s", this.token);
-  debug("Fetch commissions for programIds: %s", JSON.stringify(params.programIds));
+  debug("Fetch commissions for programIds: %s", JSON.stringify(arg.qs.programIds));
 
 	body = yield this.client.get(arg);
 	response = _.get(body, 'data', []);
@@ -172,17 +174,19 @@ AdCellClient.prototype.getCommissions = co.wrap(function* (params) {
 });
 
 /**
- * Fetching all available coupons for our accepted affiliate programs.
+ * Fetching all available coupons/text promos for our accepted affiliate programs.
  * @memberof AdCellClient
+ * @param {String} promoType - What type of promo:"Coupon" or "Text"
  * @param {Object} params - The params to pass onto the api call
  * @param {Object} params.programIds - array of programIds to fetch coupons for (!required)
  * @param {Object} params.page - which page to fetch from api
  * @param {Object} params.rows - how many rows/items per page to fetch
  * @returns {{promotionId:string, programId:string, ...}[]}
  */
-AdCellClient.prototype.getPromotionTypeCoupon = co.wrap(function* (params) {
+AdCellClient.prototype.getPromotionType = co.wrap(function* (promoType, params) {
+  promoType = promoType || 'Coupon';
 	let response, body, arg = {
-    url: API_TYPES.promotion.path + 'getPromotionTypeCoupon',
+    url: API_TYPES.promotion.path + 'getPromotionType' + promoType,
     qs: {
       rows: API_TYPES.promotion.rows,
       page: 1,
@@ -200,14 +204,75 @@ AdCellClient.prototype.getPromotionTypeCoupon = co.wrap(function* (params) {
     token: this.token
   }, params);
 
-	debug("Used token: %s", this.token);
-  debug("Fetch coupons for programIds: %s", JSON.stringify(params.programIds));
+  debug("Fetch " + promoType + " for %d programId's.", arg.qs.programIds.length);
 
 	body = yield this.client.get(arg);
 	response = _.get(body, 'data', []);
 
   if (body.status != 200) {
-    throw new Error("Could not get coupons for export. Response: [" + body.status + "]" + body.message);
+    throw new Error("Could not get " + promoType + " for export. Response: [" + body.status + "]" + body.message);
+  }
+
+	return response;
+});
+
+/**
+ * Function alias for getPromotionType('Coupon', {params})
+ * @memberof AdCellClient
+ */
+AdCellClient.prototype.getPromotionTypeCoupon = (params) => {
+  return this.getPromotionType('Coupon', params);
+};
+
+/**
+ * Function alias for getPromotionType('Text', {params})
+ * @memberof AdCellClient
+ */
+AdCellClient.prototype.getPromotionTypeText = (params) => {
+  return this.getPromotionType('Text', params);
+};
+
+
+/**
+ * Fetching all transactions/sales within a specified date period.
+ * @memberof AdCellClient
+ * @param {Object} params - The params to pass onto the api call
+ * @param {Object} params.startDate - date filter for transactions only AFTER that date
+ * @param {Object} params.endDate - date filter for transactions only BEFORE that date
+ * @param {Object} params.page - which page to fetch from api
+ * @param {Object} params.rows - how many rows/items per page to fetch
+ * @returns {Object[]}
+ */
+AdCellClient.prototype.getStatisticsByCommission = co.wrap(function* (params) {
+	let response, body, arg = {
+    url: API_TYPES.statistic.path + 'byCommission',
+    qs: {
+      rows: API_TYPES.statistic.rows,
+      page: 1,
+      format: 'json',
+      startDate: getDateFormatted(-1),  // default date to get transactions from AFTER that date
+      endDate: getDateFormatted(0)      // default date to get transactions from BEFORE that date
+    }
+  };
+
+  // format dates to API expected format
+  params.startDate = params.startDate ? moment(params.startDate).format('YYYY-MM-DD') : arg.qs.startDate;
+  params.endDate = params.endDate ? moment(params.endDate).format('YYYY-MM-DD'): arg.qs.endDate;
+
+	// make sure we have a valid token for next request
+	yield this.getToken();
+
+  _.extend(arg.qs, {
+    token: this.token
+  }, params);
+
+  debug("fetching statistics by commission between %s and %s", arg.qs.startDate, arg.qs.endDate);
+
+	body = yield this.client.get(arg);
+	response = _.get(body, 'data', []);
+
+  if (body.status != 200) {
+    throw new Error("Could not get transactions. Response: [" + body.status + "]" + body.message);
   }
 
 	return response;
@@ -224,7 +289,7 @@ AdCellClient.prototype.getPromotionTypeCoupon = co.wrap(function* (params) {
 function getDateFormatted(addDays, format) {
   addDays = addDays || 0;
   format = format || 'YYYY-MM-DD';
-  
+
   let _date = new Date();
   _date.setDate(_date.getDate() + addDays);
 

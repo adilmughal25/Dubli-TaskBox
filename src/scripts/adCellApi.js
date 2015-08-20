@@ -5,16 +5,29 @@ const co = require('co');
 const debug = require('debug')('adcell:processor');
 const sendEvents = require('./support/send-events');
 const singleRun = require('./support/single-run');
-var client = require('./api-clients/adCell')();
+const moment = require('moment');
 
+// 'accepted' means payment is approved and will happen soon, so we can count it as 'paid'
+const STATE_MAP = {
+  open: 'initiated',
+  cancelled: 'cancelled',
+  accepted: 'paid',
+};
+
+var client = require('./api-clients/adCell')();
 var merge = require('./support/easy-merge')(
   'programId',            // the identifier for our merchants
   {
     coupons: 'programId', // the identifier of coupons to match an merchant identifier
+    text: 'programId',    // the identifier of promo text to match an merchant identifier
     cashback: 'programId' // the identifier of commissions to match an merchant identifier
   }
 );
 
+/**
+ * Retrieve all merchant/program information from AdCell including there commissions and coupons.
+ * @returns {undefined}
+ */
 const getMerchants = singleRun(function* () {
   let response,
       results = {},
@@ -22,6 +35,7 @@ const getMerchants = singleRun(function* () {
       programs = [],
       merchantIds = [],
       coupons = [],
+      text = [],
       commission = [];
 
 	programs = yield pagedApiCall('getAffiliateProgram', 'items');
@@ -46,6 +60,8 @@ const getMerchants = singleRun(function* () {
   for( let i=0; i<idGroups.length; i++) {
     response = yield pagedApiCall('getPromotionTypeCoupon', 'items', {programIds: idGroups[i]});
     coupons = coupons.concat(response);
+    response = yield pagedApiCall('getPromotionTypeText', 'items', {programIds: idGroups[i]});
+    text = text.concat(response);
   }
 
   // get commission information for each group of programIds
@@ -57,6 +73,7 @@ const getMerchants = singleRun(function* () {
   results = {
     merchants: programs,
     coupons: coupons,
+    text: text,
     cashback: commission
   };
 
@@ -64,8 +81,23 @@ const getMerchants = singleRun(function* () {
   yield sendEvents.sendMerchants('adcell', merchants);
 });
 
+/**
+ * Retrieve all commission details (sales/transactions) from AdCell within given period of time.
+ * @returns {undefined}
+ */
 const getCommissionDetails = singleRun(function* () {
-  return yield "still todo";
+  let transactions = [],
+      events = [],
+      startDate = new Date(Date.now() - (2 * 86400 * 1000)),
+      endDate = new Date(Date.now() - (60 * 1000));
+  const exists = x => !!x;
+
+  debug("fetching all transactions between %s and %s", startDate, endDate);
+
+  transactions = yield pagedApiCall('getStatisticsByCommission', 'items', {startDate: startDate, endDate:endDate});
+  events = transactions.map(prepareCommission).filter(exists);
+
+  yield sendEvents.sendCommissions('adcell', events);
 });
 
 /**
@@ -110,6 +142,25 @@ const pagedApiCall = co.wrap(function* (method, bodyKey, params) {
   return results;
 });
 
+/**
+ * Function to prepare a single commission transaction for our data event.
+ * @param {Object} o_obj  The individual commission transaction straight from AdCell
+ * @returns {Object}
+ */
+function prepareCommission(o_obj) {
+  var event = {
+    transaction_id: o_obj.commissionId,
+    outclick_id: o_obj.subId,
+    currency: 'eur',
+    purchase_amount: o_obj.totalShoppingCart,
+    commission_amount: o_obj.totalCommission,
+    state: STATE_MAP[o_obj.status],
+    effective_date: new Date(o_obj.status === 'open' ? o_obj.createTime : o_obj.changeTime)
+  };
+  return event;
+}
+
 module.exports = {
   getMerchants: getMerchants,
+  getCommissionDetails: getCommissionDetails
 };
