@@ -43,48 +43,6 @@ function createClient() {
     return results;
   });
 
-  /* SAMPLE DATA AS PROVIDED BY http://www.flipkart.com/affiliate/apifaq :
-  {
-    "orderList": [
-      {
-        "price": 248,
-        "category": "books",
-        "title": "Golden Moments (English)",
-        "productId": "9780751541397",
-        "quantity": 1,
-        "sales": {
-          "amount": 248,
-          "currency": "INR"
-        },
-        "status": "failed",
-        "affiliateOrderItemId": "12345",
-        "orderDate": "02-09-2014",
-        "commissionRate": 10,
-        "tentativeCommission": {
-          "amount": 24.8,
-          "currency": "INR"
-        },
-        "affExtParam1": "test",
-        "affExtParam2": "",
-        "salesChannel": "WEBSITE",
-        "customerType": "NEW"
-      }
-    ],
-    "previous": "",
-    "next": "",
-    "first": "https://affiliate-api.flipkart.net/affiliate/report/orders/detail/json?startDate=2014-09-01&endDate=2014-10-02&status=cancelled&offset=0",
-    "last": "https://affiliate-api.flipkart.net/affiliate/report/orders/detail/json?startDate=2014-09-01&endDate=2014-10-02&status=cancelled&offset=0"
-  }
-
-  * I don't know what 'status' means, because the url has possible status values
-  * of (Pending|Approved|Cancelled|Disapproved), while the Api response has possible
-  * status values of (tentative|failed). there is no documentation about how these
-  * two fields relate to each other and I have no sample data to work with on this
-  * one yet. Both sets of status fields are documented both in the response JSON
-  * and in the api faq page. We've sent off a support email with questions to flipkart.
-  *
-  * committing this code as it is for now anyway, once I get this question figured out,
-  */
   client.ordersReportByStatus = co.wrap(function* (start, end, status) {
     let url = 'report/orders/detail/json?' + querystring.stringify({
       startDate: moment(start).format('YYYY-MM-DD'),
