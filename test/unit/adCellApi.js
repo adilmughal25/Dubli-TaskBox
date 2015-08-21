@@ -1,6 +1,6 @@
 (function() {
   "use strict";
-	
+
   var expect = require('chai').expect;
 	var assert = require('chai').assert;
 	var adCellApi = require(process.cwd() + '/src/scripts/adCellApi');
@@ -22,7 +22,7 @@
       });
     });
 
-    it('able to retrieve merchants', function() {
+    it.skip('able to retrieve merchants', function() {
       let merchantPromise = adCellApiClient.getAffiliateProgram();
 
       return merchantPromise.then(function(results) {
@@ -31,8 +31,8 @@
         expect(results.items[0]).to.have.property('programId');
       });
     });
-    
-    it('able to retrieve commission details', function() {
+
+    it.skip('able to retrieve commission details', function() {
       let startDate = new Date(Date.now() - (7 * 86400 * 1000)),
           endDate = new Date(Date.now() - (60 * 1000)),
           commissionPromise = adCellApiClient.getStatisticsByCommission({startDate: startDate, endDate: endDate, programIds: [6]});
