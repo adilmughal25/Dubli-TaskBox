@@ -8,6 +8,7 @@ var debug = require('debug')('pepperjam:api-client');
 const API_URL     = 'https://api.pepperjamnetwork.com/';
 const API_VERSION = '20120402';
 const API_KEY     = 'ecb45b324146cfba7de250119552a84c41d5eb84a6c6703013a892951cbb4e8e';
+//const API_KEY     = 'f0aeadbe7a8f877e5636cb8f4d62c766eb1720702a52911598395d22d4078f90'; // DubLi-Legacy
 
 function createClient() {
   var baseUrl = API_URL + API_VERSION;
