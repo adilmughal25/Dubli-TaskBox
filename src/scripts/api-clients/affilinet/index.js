@@ -153,7 +153,6 @@ AffiliNet.prototype.getTransactions = co.wrap(function* (args) {
     callArgs = _.extend({}, args, {page:currentPage, perPage:perPage});
     this.debug("fetching transactions page %d of %s", currentPage, totalPages);
     response = yield this._getTransactions_Page(callArgs);
-    console.log("Response is", JSON.stringify(response,null,2));
     collection = _.get(response, 'GetTransactionsResponse.TransactionCollection');
     total = _.get(response, 'GetTransactionsResponse.TotalRecords') || 0;
     if (totalPages === 'unknown') totalPages = Math.ceil(total/perPage);
@@ -196,7 +195,6 @@ _.pairs(CALL_DEFS).forEach(function(item) {
 // de-soap the response
 var has = key => item => item.hasOwnProperty(key);
 function rinse(o_obj) {
-  var show = x => console.log(x+" : ", JSON.stringify(o_obj,null,2));
   o_obj = deep.transform(o_obj, has('_'), x => x._);
   o_obj = deep.transform(o_obj, has('$'), x => _.omit(x, '$'));
   o_obj = transformKeys(o_obj, k => k.replace(/^.*:/, ''));

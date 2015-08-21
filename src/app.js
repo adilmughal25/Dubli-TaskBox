@@ -126,8 +126,9 @@ function init(id) {
   createTask("Affili.Net (Switzerland) Commissions", affilinetSwitzerlandApi.getCommissionDetails, {minute:22});
   createTask("Affili.Net (Austria) Commissions", affilinetAustriaApi.getCommissionDetails, {minute:24});
   createTask("AffiliateWindow Commissions", affiliatewindowApi.getCommissionDetails, {minute:26});
-
-  //createTask("LinkShare Commissions", linkShareApi.getCommissionDetails, {minute: 0});
+  createTask("LinkShare Commissions", linkShareApi.getCommissionDetails, {minute: 28});
+  createTask("SnapDeal Commissions", snapdealApi.getCommissionDetails, {minute:30});
+  createTask("VCommission Commissions", vcommissionApi.getCommissionDetails, {minute:32});
 
   // disabled for now:
   //createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
