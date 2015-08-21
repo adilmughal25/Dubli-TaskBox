@@ -9,7 +9,7 @@ dependencies:
 test:
   post:
     - npm run coverage
-    - echo "disabled: jsdoc -c test/conf.json"
+    - "echo disabled: jsdoc -c test/conf.json"
 general:
   artifacts:
     - "./docs"
