@@ -88,7 +88,7 @@ const getMerchants = singleRun(function* () {
 const getCommissionDetails = singleRun(function* () {
   let transactions = [],
       events = [],
-      startDate = new Date(Date.now() - (2 * 86400 * 1000)),
+      startDate = new Date(Date.now() - (14 * 86400 * 1000)),
       endDate = new Date(Date.now() - (60 * 1000));
   const exists = x => !!x;
 
