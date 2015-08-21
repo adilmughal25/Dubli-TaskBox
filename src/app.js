@@ -42,6 +42,8 @@ const hasoffersGenericApi = require('./scripts/hasoffersGenericApi');
 const snapdealApi = hasoffersGenericApi('snapdeal');
 const vcommissionApi = hasoffersGenericApi('vcommission');
 
+const adCellApi = require('./scripts/adCellApi');
+
 const publicideasGenericApi = require('./scripts/publicideasGenericApi');
 const publicideasESApi = publicideasGenericApi('es');
 const publicideasFRApi = publicideasGenericApi('fr');
@@ -102,12 +104,13 @@ function init(id) {
   createTask("Belboon Merchants", belboonApi.getMerchants, {minute:46});
   createTask("OMGpm Merchants", omgpmApi.getMerchants, {minute:48});
   createTask("Affili.Net (Austria) Merchants", affilinetAustriaApi.getMerchants, {minute:50});
+  createTask("AdCell Merchants", adCellApi.getMerchants, {minute:52});
+
   createTask("PublicIdeas (FR) Merchants", publicideasFRApi.getMerchants, {minute:52});
   createTask("PublicIdeas (IT) Merchants", publicideasITApi.getMerchants, {minute:54});
   createTask("PublicIdeas (LATAM) Merchants", publicideasLATAMApi.getMerchants, {minute:56});
   createTask("PublicIdeas (UK) Merchants", publicideasUKApi.getMerchants, {minute:58});
 
-  // createTask("", blah.getMerchants, {minute:52});
   // createTask("", blah.getMerchants, {minute:54});
   // createTask("", blah.getMerchants, {minute:56});
   // createTask("", blah.getMerchants, {minute:58});
@@ -126,6 +129,7 @@ function init(id) {
   createTask("Affili.Net (Switzerland) Commissions", affilinetSwitzerlandApi.getCommissionDetails, {minute:22});
   createTask("Affili.Net (Austria) Commissions", affilinetAustriaApi.getCommissionDetails, {minute:24});
   createTask("AffiliateWindow Commissions", affiliatewindowApi.getCommissionDetails, {minute:26});
+  createTask("AdCell Commissions", adCellApi.getCommissionDetails, {minute:28});
 
   //createTask("LinkShare Commissions", linkShareApi.getCommissionDetails, {minute: 0});
 

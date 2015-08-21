@@ -63,8 +63,17 @@ const STATE_MAP = {
   confirmed: 'paid'
 };
 
+/**
+ * Find our outclick id / Subid in Zanox action item.
+ * Its an *optional* object in the response. If Zanox has no zpar0 value, the object is not defined.
+ * Obj: [].gpps.gpp.$
+ * @returns {String}
+ */
 function findSubId(o_obj) {
-  const fields = ary(_.get(o_obj, 'gpps.gpp')).reduce((m,x) => _.set(m, x['@id'], x.$), {});
+  const fields = ary(_.get(o_obj, 'gpps.gpp')).reduce((m,x) => {
+    return (x !== undefined ? _.set(m, x['@id'], x.$) : {'zpar0':''});
+  }, {});
+
   return fields.zpar0;
 }
 

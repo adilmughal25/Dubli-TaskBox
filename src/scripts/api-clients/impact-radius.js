@@ -11,7 +11,10 @@ var requestMethods = 'get head post put patch del'.split(' ');
 var Auth = {
   impactradius: {
     sid: 'IRDHLqHpQY79155520ngJ28D9dMGTVZJA1',
-    token: 'EaMm5GVgjwCaZ3J3ccCriAqRuLsNsUKo'
+    token: 'EaMm5GVgjwCaZ3J3ccCriAqRuLsNsUKo',
+    // DubLi Legacy
+    //sid: 'IRXoYdVUGCz955369Aj7JfTNbTLEbjwzq1',
+    //token: 'q2tok7waySeXRdLgXNYcKLH7uirc2Gcc',
   },
   apdperformance: {
     sid: 'IRChfoXzapLZ168739NHtTNQFfqkmka6d3',
@@ -77,7 +80,7 @@ function impactRadiusClient(s_whitelabel) {
   client.getMerchants   = ()    => paged(url('Campaigns'), 'Campaigns');
   client.getCampaignAds = ()    => paged(url('Ads', {type:'TEXT_LINK,COUPON'}), 'Ads');
   client.getPromoAds    = ()    => paged(url('PromoAds'), 'PromotionalAds');
-  client.getCommissions = (s,e) => paged(url('Actions',{StartDate:date(s),EndDate:date(e)}), 'Actions');
+  client.getCommissions = (s,e) => paged(url('Actions',{StartDate:date(s),EndDate:date(e)}), 'Action');
 
   _clientCache[s_whitelabel] = client;
 
