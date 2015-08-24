@@ -1,19 +1,26 @@
 "use strict";
 
-/* helpful api documentation links!
-      Voucher code API  : http://www.webgains.fr/newsletter/images/VoucherCode_API_v2.pdf
-      Offers API  : http://www.webgains.fr/newsletter/images/Offers_API_Publisher.pdf
-      Banners API : http://www.webgains.fr/newsletter/images/ADS_API-en.pdf
-      Program API : http://www.webgains.fr/newsletter/images/Programs_API-en.pdf
-      API for transactions : http://ws.webgains.com/aws.php (SOAP)
-      Instead of usign transaciotn API, you can use the call back script : http://www.webgains.fr/newsletter/images/Callback_script.pdf
-*/
+/*
+ * Webgains API client for their RESTful API.
+ * Used for merchant information only. See "webgainsSoap.js" for SOAP API client to get commission information.
+ * 
+ * API Documentation: 
+ *    Voucher code API  : http://www.webgains.fr/newsletter/images/VoucherCode_API_v2.pdf
+ *    Offers API  : http://www.webgains.fr/newsletter/images/Offers_API_Publisher.pdf
+ *    Banners API : http://www.webgains.fr/newsletter/images/ADS_API-en.pdf
+ *    Program API : http://www.webgains.fr/newsletter/images/Programs_API-en.pdf
+ *
+ * TODO: Instead of usign transaction API, you can use the call back script : http://www.webgains.fr/newsletter/images/Callback_script.pdf
+ */
 
-const API_KEY = '96069aeda4817545eb3ad17641e68899';
 const API_URL = 'http://api.webgains.com/2.0';
+const API_KEY = '96069aeda4817545eb3ad17641e68899';
 const CAMPAIGN_ID = 177143;
+// DubLi legacy
+//const API_KEY = '123ceb006202c54d7d7668b7568ad2cb'; // DubLi DE acc.
+//const CAMPAIGN_ID = 75700;                          // DubLi DE acc.
 
-var request = require('request-promise');
+const request = require('request-promise');
 
 function createClient() {
   var client = request.defaults({
