@@ -7,7 +7,7 @@ var parseXml = denodeify(xml2js.parseString);
 
 // helper promise to decode xml into json
 function jsonify(response) {
-  return parseXml(response.body, {explicitArray: false}); // this returns a promise
+  return parseXml(response.body || response, {explicitArray: false}); // this returns a promise
 }
 
 module.exports = jsonify;
