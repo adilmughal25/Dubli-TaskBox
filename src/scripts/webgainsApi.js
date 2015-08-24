@@ -24,6 +24,24 @@ var merge = require('./support/easy-merge')('id', {
   coupons: 'programId'
 });
 
+//combination of "status"+"paymentStatus"
+const STATE_MAP = {
+  confirmed_: 'initiated',
+  confirmed_notcleared: 'initiated',
+  confirmed_cleared: 'confirmed',
+  confirmed_paid: 'paid',
+  
+  delayed_: 'initiated',
+  delayed_notcleared: 'initiated',
+  delayed_cleared: 'confirmed',
+  delayed_paid: 'confirmed',
+  
+  cancelled_: 'cancelled',
+  cancelled_cleared: 'cancelled',
+  cancelled_notcleared: 'cancelled',
+  cancelled_paid: 'cancelled',
+};
+
 /**
  * Retrieve all merchant/program information from webgains including there commissions and coupons.
  * @returns {undefined}
@@ -70,14 +88,16 @@ const getCommissionDetails = singleRun(function* () {
  * @returns {Object}
  */
 function prepareCommission(o_obj) {
-  var event = {
+  let status = o_obj.status + '_' + o_obj.paymentStatus;
+  let event = {
+    affiliate_name: o_obj.programName,
     transaction_id: o_obj.transactionID,
     outclick_id: o_obj.clickRef,
     currency: o_obj.currency,
     purchase_amount: o_obj.saleValue,
     commission_amount: o_obj.commission,
-    //state: STATE_MAP[o_obj.status],
-    effective_date: new Date(o_obj.validationDate)
+    state: STATE_MAP[status],
+    effective_date: 'auto'
   };
   return event;
 }
