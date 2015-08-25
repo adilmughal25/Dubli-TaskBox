@@ -22,7 +22,7 @@
       });
     });
 
-    it.skip('able to retrieve merchants', function() {
+    it('able to retrieve merchants', function() {
       let merchantPromise = adCellApiClient.getAffiliateProgram();
 
       return merchantPromise.then(function(results) {
@@ -32,8 +32,8 @@
       });
     });
 
-    it.skip('able to retrieve commission details', function() {
-      let startDate = new Date(Date.now() - (7 * 86400 * 1000)),
+    it('able to retrieve commission details', function() {
+      let startDate = new Date(Date.now() - (14 * 86400 * 1000)),
           endDate = new Date(Date.now() - (60 * 1000)),
           commissionPromise = adCellApiClient.getStatisticsByCommission({startDate: startDate, endDate: endDate, programIds: [6]});
 

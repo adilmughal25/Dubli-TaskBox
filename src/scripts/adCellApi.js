@@ -7,11 +7,10 @@ const sendEvents = require('./support/send-events');
 const singleRun = require('./support/single-run');
 const moment = require('moment');
 
-// 'accepted' means payment is approved and will happen soon, so we can count it as 'paid'
 const STATE_MAP = {
   open: 'initiated',
   cancelled: 'cancelled',
-  accepted: 'paid',
+  accepted: 'confirmed',
 };
 
 var client = require('./api-clients/adCell')();
@@ -88,7 +87,7 @@ const getMerchants = singleRun(function* () {
 const getCommissionDetails = singleRun(function* () {
   let transactions = [],
       events = [],
-      startDate = new Date(Date.now() - (14 * 86400 * 1000)),
+      startDate = new Date(Date.now() - (30 * 86400 * 1000)),
       endDate = new Date(Date.now() - (60 * 1000));
   const exists = x => !!x;
 
@@ -149,13 +148,14 @@ const pagedApiCall = co.wrap(function* (method, bodyKey, params) {
  */
 function prepareCommission(o_obj) {
   var event = {
+    affiliate_name: o_obj.programName,
     transaction_id: o_obj.commissionId,
     outclick_id: o_obj.subId,
     currency: 'eur',
     purchase_amount: o_obj.totalShoppingCart,
     commission_amount: o_obj.totalCommission,
     state: STATE_MAP[o_obj.status],
-    effective_date: new Date(o_obj.status === 'open' ? o_obj.createTime : o_obj.changeTime)
+    effective_date: (o_obj.changeTime !== '' ? new Date(o_obj.changeTime) : 'auto')
   };
   return event;
 }

@@ -40,7 +40,7 @@ var getMerchants = singleRun(function*() {
 
 var getCommissionDetails = singleRun(function* () {
   const queue = [];
-  const days = 2;
+  const days = 14;
   const add = (date, type) => queue.push(pagedApiCall('$getAllSalesOfDate', 'saleItems.saleItem', {datetype: type}, [date]));
   for (let i = 0; i < days; i++) {
     let date = moment().subtract(i, 'days').format('YYYY-MM-DD');

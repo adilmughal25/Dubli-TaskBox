@@ -58,7 +58,7 @@ function setup(s_regionId) {
   }
   const getCommissionDetails = singleRun(function* () {
     yield client.ensureLoggedIn();
-    const startDate = moment().subtract(1, 'days').format('YYYY-MM-DD');
+    const startDate = moment().subtract(30, 'days').format('YYYY-MM-DD');
     const endDate = moment().format('YYYY-MM-DD');
     const results = yield [
       client.getTransactions({startDate:startDate, endDate:endDate, valuationType:'DateOfRegistration'}),
