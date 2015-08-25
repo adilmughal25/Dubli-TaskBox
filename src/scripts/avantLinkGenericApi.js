@@ -6,24 +6,27 @@ const debug = require('debug')('avantlink:processor');
 const utils = require('ominto-utils');
 const sendEvents = require('./support/send-events');
 const singleRun = require('./support/single-run');
-const createClient = require('./api-clients/avantlink');
+const clientPool = require('./api-clients/avantlink');
 
 const merge = require('./support/easy-merge')('lngMerchantId', {
-  promos: 'Merchant_Id'
+  promos: 'Merchant_Id' // includes all type of promotions such as text, coupons, ...
 });
 
 const taskCache = {};
 
 function setup(s_region) {
   if (taskCache[s_region]) return taskCache[s_region];
-  
-  var client = createClient(s_region),
-      tasks = {};
 
+  var tasks = {};
+
+  // get all merchant information
   tasks.getMerchants = singleRun(function* () {
+    let clientM = clientPool.getClient(s_region, 'merchants'),
+        clientP = clientPool.getClient(s_region, 'promos');
+
     let results = yield {
-      merchants: client.getMerchants().then(hasPercentage),
-      promos: client.getPromotions().then(preparePromos)
+      merchants: clientM.getData().then(hasPercentage),
+      promos: clientP.getData().then(preparePromos)
     };
     let merchants = merge(results);
 
@@ -47,10 +50,12 @@ function hasPercentage(o_merchants) {
 
 /**
  * Little filter for to many Promos - excludes defined promot types from api response.
+ * Note: its either get all and filter here or fetch individually from api type by type and then merge.
+ *
  * @param {Object} o_promo  The individual promotion/ad object from AvantLink AdSearch API response
  * @returns {Object}
  */
-const promoTypesFilter = ['video', 'image', 'flash', 'html', 'dotd-html'];
+const promoTypesFilter = ['video', 'image', 'flash', 'html', 'dotd-html']; // type to be removed/ignored
 function preparePromos(o_promo) {
   return o_promo.filter(p => _.indexOf(promoTypesFilter, p.Ad_Type)  === -1);
 }

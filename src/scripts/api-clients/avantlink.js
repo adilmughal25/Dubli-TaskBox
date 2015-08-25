@@ -26,6 +26,7 @@ const API_CREDENTIALS = {
 };
 
 const API_TYPES = {
+  // all our merchant info
   merchants: {
     module: 'AssociationFeed',
     limit: [500, 84600], // 500 requests per day max
@@ -34,6 +35,7 @@ const API_TYPES = {
       association_status: 'active'
     }
   },
+  // any kind of promotions per merchant
   promos: {
     module: 'AdSearch',
     limit: [6000, 3600], // 7200 request(s) per hour. 150000 request(s) per day.
@@ -47,11 +49,49 @@ const API_TYPES = {
   }
 };
 
-function avantLinkClient(s_region) {
-  if (!s_region) s_region = 'us';
-  if (!API_CREDENTIALS[s_region]) throw new Error("Unknown AvantLink region: "+s_region);
+/**
+ * Wrapper Class to provide a Pool of clients exposed to our api client.
+ * As each API type has its own limitations and URI to get data from, we can leverage higher async performance when
+ * instantiating multiple clients per Region and Method, each with its own request limits.
+ */
+const avantLinkClientPool = {
+  activeClients: {},
+
+  /**
+   * Getting/Creating a new client for specified region and type. Creates new client, if no active client available.
+   * @param {String} s_region   The region to fetch data for. "us" or "ca" as defined in API_CREDENTIALS[<region>]
+   * @param {String} s_type     What type of api request to get a client for - mapping to the API methods as defined in API_TYPES[<type>]
+   * @returns {Object} avantLinkClient.client
+   */
+  getClient: function(s_region, s_type) {
+    if (!s_region) s_region = 'us';
+    if (!API_CREDENTIALS[s_region]) throw new Error("Unknown AvantLink region: " + s_region);
+    if (!API_TYPES[s_type]) throw new Error("Unknown AvantLink api type: " + s_type);
+
+    let _tag = s_region + '-' + s_type;
+    if (this.activeClients[_tag]) {
+      debug("Using active client with tag [%s]", _tag);
+      return this.activeClients[_tag];
+    }
+
+    this.activeClients[_tag] = avantLinkClient(s_region, s_type);
+
+    return this.activeClients[_tag];
+  }
+};
+
+/**
+ * The actual client setup.
+ * @param {String} s_region   The region to fetch data for. "us" or "ca" as defined in API_CREDENTIALS[<region>]
+ * @param {String} s_type     What type of api request to get a client for - mapping to the API methods as defined in API_TYPES[<type>]
+ * @returns {Object} client
+ */
+function avantLinkClient(s_region, s_type) {
+  let _prefix = s_region + '-' + s_type;
+  debug("Create new client for region [%s] and method [%s]", s_region, s_type);
 
   var creds = API_CREDENTIALS[s_region];
+  var cfg = API_TYPES[s_type];
 
   // default request options
   var client = request.defaults({
@@ -66,32 +106,35 @@ function avantLinkClient(s_region) {
     }
   });
 
-  client.getMerchants = function() {
-    let arg = {
-      json: (API_TYPES.merchants.defParams.output == 'json' ? true : false),
-      qs: _.merge({}, API_TYPES.merchants.defParams, {
-        module: API_TYPES.merchants.module,
+  client.getData = function() {
+    debug("getting data from api module [%s]", cfg.module);
+    let result, arg = {
+      json: (cfg.defParams.output == 'json' ? true : false),
+      qs: _.merge({}, cfg.defParams, {
+        module: cfg.module,
     })};
 
-    return client.get(arg);
-  };
-
-  client.getPromotions = function() {
-    let arg = {
-      json: (API_TYPES.promos.defParams.output == 'json' ? true : false),
-      qs: _.merge({}, API_TYPES.promos.defParams, {
-        module: API_TYPES.promos.module
-    })};
-
-    let result = client.get(arg)
-      .then(jsonify)
-      .then(data => data.NewDataSet.Table1)
-    ;
+    switch(cfg.module) {
+      default:
+      case 'AssociationFeed':
+        result = client.get(arg);
+        break;
+      case 'AdSearch':
+        result = client.get(arg)
+          .then(jsonify)
+          .then(data => data.NewDataSet.Table1)
+        ;
+        break;
+    }
 
     return result;
   };
 
+  if (cfg.limit) {
+    limiter.request(client, cfg.limit[0], cfg.limit[1]).debug(debug, _prefix);
+  }
+
   return client;
 }
 
-module.exports = avantLinkClient;
+module.exports = avantLinkClientPool;
