@@ -8,8 +8,8 @@ var sendEvents = require('./support/send-events');
 var singleRun = require('./support/single-run');
 
 var merge = require('./support/easy-merge')('Id', {
-  coupons: 'merchantId',
-  links: 'merchantId'
+  coupons: 'MerchantId',
+  links: 'MerchantId'
 });
 
 var client = require('./api-clients/commissionfactory')();
@@ -24,7 +24,7 @@ var getMerchants = singleRun(function*() {
     coupons: client.get(COUPONS_URL),
     links: client.get(PROMOTIONS_URL)
   };
-  console.log(JSON.stringify(results, null, 2));
+
   var merchants = merge(results);
   yield sendEvents.sendMerchants('commissionfactory', merchants);
 });
