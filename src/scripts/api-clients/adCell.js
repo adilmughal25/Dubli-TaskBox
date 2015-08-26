@@ -125,6 +125,8 @@ AdCellClient.prototype.getAffiliateProgram = co.wrap(function* (params) {
     affiliateStatus: 'accepted'
   }, params);
 
+  debug("Using token '%s' to request programs...", this.token);
+
 	body = yield this.client.get(arg);
 	response = _.get(body, 'data', []);
 
@@ -161,7 +163,7 @@ AdCellClient.prototype.getCommissions = co.wrap(function* (params) {
     token: this.token
   }, params);
 
-  debug("Fetch commissions for programIds: %s", JSON.stringify(arg.qs.programIds));
+  debug("Using token '%s' to request commissions for programIds: %s", this.token, JSON.stringify(arg.qs.programIds));
 
 	body = yield this.client.get(arg);
 	response = _.get(body, 'data', []);
@@ -266,7 +268,7 @@ AdCellClient.prototype.getStatisticsByCommission = co.wrap(function* (params) {
     token: this.token
   }, params);
 
-  debug("fetching statistics by commission between %s and %s", arg.qs.startDate, arg.qs.endDate);
+  debug("Using token '%s' to fetch statistics by commission between %s and %s", this.token, arg.qs.startDate, arg.qs.endDate);
 
 	body = yield this.client.get(arg);
 	response = _.get(body, 'data', []);
