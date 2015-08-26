@@ -9,6 +9,7 @@ const jsonify = require('./jsonify-xml-body');
 const limiter = require('ominto-utils').promiseRateLimiter;
 // debugging the requests || TODO: remove after finishing implementation
 //require('request-promise').debug = true; 
+const moment = require('moment');
 
 const API_CREDENTIALS = {
   us: {
@@ -16,6 +17,10 @@ const API_CREDENTIALS = {
     authKey: '401dc5ad219d787ee5ff88d38872c8d5',
     affiliateId: 147618,
     websiteId: 183130
+    // DubLi Legacy
+    //authKey: '22981e932ff2a495d7f688418444cdc1',
+    //affiliateId: 118181,
+    //websiteId: 141173
   },
   ca: {
     baseUrl: 'https://classic.avantlink.ca/api.php',
@@ -45,6 +50,19 @@ const API_TYPES = {
       show_contextual_analysis: 0,
       show_ad_relevance: 0,
       ad_type: '',  //  "dotd-html" (Deal of the Day-DynHTML), "dotd-text" (DotD-DynText), flash, html, image, text, and video. Default is to return all.
+    }
+  },
+  // commissions/transactions/sales
+  commissions: {
+    module: 'AffiliateReport',
+    limit: [41, 3600], // 41 per hours <= 1000 request(s) per day.
+    defParams: {
+      output: 'xml',
+      report_id: 8, // Sales/Commissions (Detail)
+	    date_begin: getDateFormatted(-14),
+      date_end: getDateFormatted(0),
+	    include_inactive_merchants:1,
+      search_results_include_cpc:0
     }
   }
 };
@@ -106,13 +124,14 @@ function avantLinkClient(s_region, s_type) {
     }
   });
 
-  client.getData = function() {
+  client.getData = function(o_params) {
     debug("getting data from api module [%s]", cfg.module);
+    o_params = o_params || {};
     let result, arg = {
       json: (cfg.defParams.output == 'json' ? true : false),
       qs: _.merge({}, cfg.defParams, {
         module: cfg.module,
-    })};
+    }, o_params)};
 
     switch(cfg.module) {
       default:
@@ -120,6 +139,7 @@ function avantLinkClient(s_region, s_type) {
         result = client.get(arg);
         break;
       case 'AdSearch':
+      case 'AffiliateReport':
         result = client.get(arg)
           .then(jsonify)
           .then(data => data.NewDataSet.Table1)
@@ -135,6 +155,24 @@ function avantLinkClient(s_region, s_type) {
   }
 
   return client;
+}
+
+/**
+ * Function getDateFormatted
+ * Returns a formatted date as string while optionally add {addDays} number of days to todays date.
+ * Little helper for API Request with dates in specific format.
+ * @param {Number} addDays  Optional number of days to add/substract from today/now.
+ * @param {String} format  The format to return the date - use node-moment formatting syntax. Default: YYYY-MM-DD HH:mm:ss
+ * @returns {String}
+ */
+function getDateFormatted(addDays, format) {
+  addDays = addDays || 0;
+  format = format || 'YYYY-MM-DD HH:mm:ss';
+
+  let _date = new Date();
+  _date.setDate(_date.getDate() + addDays);
+
+  return moment(_date).format(format);
 }
 
 module.exports = avantLinkClientPool;

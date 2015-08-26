@@ -11,6 +11,7 @@
     it('API definition', function() {
       assert.isObject(adCellApi, 'adCellApi is an object');
       expect(adCellApi).to.have.property('getMerchants');
+      expect(adCellApi).to.have.property('getCommissionDetails');
     });
 
     it('able to retrieve token', function() {
