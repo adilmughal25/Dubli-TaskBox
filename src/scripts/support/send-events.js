@@ -11,22 +11,21 @@ var gzip = denodeify(require('zlib').gzip);
 var _check = utils.checkApiResponse;
 var createEnvelope = utils.createEnvelope;
 var dataService = utils.getDataClient(o_configs.data_api.url, o_configs.data_api.auth);
+var kinesisClient = utils.kinesisClient(o_configs);
+var kinesisPut = co.wrap(kinesisClient.putEventFromTaskbox);
 
 const MAX_UNGZIPPED_SIZE = 32 * 1024; // if it's over 32kb, gzip it
 
 var send = co.wrap(function* (s_myName, s_streamName, s_streamType, s_taskName, items) {
   var debug = _debug(s_myName);
-  var s_url = '/event/' + s_streamName;
-  var a_trigger = [{
-    task: s_taskName,
-    timestamp: new Date()
-  }];
+
   var errors = [];
   var allStart = Date.now();
   var allCount = 0;
   var compressedCount = 0;
   var compressionTime = 0;
   debug("got %d events from %s to process!", items.length, s_taskName);
+
   for (var i = 0; i < items.length; i++) {
     try {
       var item = items[i];
@@ -40,10 +39,9 @@ var send = co.wrap(function* (s_myName, s_streamName, s_streamType, s_taskName, 
         o_flags.gzipped_data = true;
       }
 
-      var envelope = createEnvelope(s_streamType, {}, item, o_flags, a_trigger);
-      var params = { url: s_url, body: envelope };
-      var checker = _check(202, 'could not save kinesis stream event: '+JSON.stringify(envelope));
-      yield dataService.put(params).then(checker);
+      var checker = _check('could not save kinesis stream event: '+JSON.stringify(items[i]));
+      yield kinesisPut(s_streamName, s_streamType, item, o_flags, s_taskName).then(checker);
+
       allCount++;
       if (o_flags.gzipped_data) { compressedCount++; }
     } catch (e) {
@@ -63,8 +61,8 @@ var send = co.wrap(function* (s_myName, s_streamName, s_streamType, s_taskName, 
 
   if (errors.length) {
     var msg = ["Received "+errors.length+" errors while sending "+items.length+" kinesis events:"]
-      .concat(errors.map( (e,i) => "#" + (i+1) + ": " + e.message ))
-      .join('\n    ');
+      .concat(errors.map( (e,i) => "#" + (i+1) + ": " + e.stack ))
+      .join('\n    ') + "\n  --";
     throw new Error(msg);
   }
 
@@ -98,7 +96,7 @@ function devSaveCommissions(s_which, a_items) {
 function sendMerchants(s_myName, merchants) {
   var s_streamName = 'merchant';
   var s_streamType = 'merchant:add:' + s_myName;
-  var s_taskName = 'tasks:' + s_myName + ':api';
+  var s_taskName = 'tasks:' + s_myName + ':merchant-importer';
 
   devSaveMerchants(s_myName, merchants);
   return send(s_myName, s_streamName, s_streamType, s_taskName, merchants);
