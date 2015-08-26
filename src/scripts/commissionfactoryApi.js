@@ -24,7 +24,7 @@ var getMerchants = singleRun(function*() {
     coupons: client.get(COUPONS_URL),
     links: client.get(PROMOTIONS_URL)
   };
-  console.log(JSON.stringify(results, null, 2));
+  // console.log(JSON.stringify(results, null, 2));
   var merchants = merge(results);
   yield sendEvents.sendMerchants('commissionfactory', merchants);
 });
