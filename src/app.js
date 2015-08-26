@@ -105,7 +105,6 @@ function init(id) {
   createTask("OMGpm Merchants", omgpmApi.getMerchants, {minute:48});
   createTask("Affili.Net (Austria) Merchants", affilinetAustriaApi.getMerchants, {minute:50});
   createTask("AdCell Merchants", adCellApi.getMerchants, {minute:52});
-
   createTask("PublicIdeas (FR) Merchants", publicideasFRApi.getMerchants, {minute:52});
   createTask("PublicIdeas (IT) Merchants", publicideasITApi.getMerchants, {minute:54});
   createTask("PublicIdeas (LATAM) Merchants", publicideasLATAMApi.getMerchants, {minute:56});
