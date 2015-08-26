@@ -15,6 +15,7 @@ const affiliatewindowApi = require('./scripts/affiliatewindowApi');
 const belboonApi = require('./scripts/belboonApi');
 const clickJunctionApi = require("./scripts/clickJunctionApi");
 const commissionfactoryApi = require('./scripts/commissionfactoryApi');
+const flipkartApi = require('./scripts/flipkartApi');
 const impactRadiusProductFtp = require("./scripts/impactRadiusProductFtp");
 const linkShareApi = require("./scripts/linkShareApi");
 const omgpmApi = require('./scripts/omgpmApi');
@@ -111,7 +112,7 @@ function init(id) {
   createTask("PublicIdeas (IT) Merchants", publicideasITApi.getMerchants, {minute:54});
   createTask("PublicIdeas (LATAM) Merchants", publicideasLATAMApi.getMerchants, {minute:56});
   createTask("PublicIdeas (UK) Merchants", publicideasUKApi.getMerchants, {minute:58});
-  createTask("AvantLink (US) Merchants", avantLinkUSApi.getMerchants, {minute:2});
+  createTask("AvantLink (US) Merchants", avantLinkUSApi.getMerchants, {minute:0});
   createTask("AvantLink (CA) Merchants", avantLinkCAApi.getMerchants, {minute:2});
 
   // createTask("", blah.getMerchants, {minute:58});
@@ -134,9 +135,9 @@ function init(id) {
   createTask("LinkShare Commissions", linkShareApi.getCommissionDetails, {minute: 30});
   createTask("SnapDeal Commissions", snapdealApi.getCommissionDetails, {minute:32});
   createTask("VCommission Commissions", vcommissionApi.getCommissionDetails, {minute:34});
-
   createTask("AvantLink (US) Commissions", avantLinkUSApi.getCommissionDetails, {minute:36});
-  createTask("AvantLink (CA) Commissions", avantLinkCAApi.getCommissionDetails, {minute:36});
+  createTask("AvantLink (CA) Commissions", avantLinkCAApi.getCommissionDetails, {minute:38});
+  createTask("Flipkart Commissions", flipkartApi.getCommissionDetails, {minute:40});
 
   // disabled for now:
   //createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
