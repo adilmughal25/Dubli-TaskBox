@@ -11,6 +11,7 @@
     it('API definition', function() {
       assert.isObject(adCellApi, 'adCellApi is an object');
       expect(adCellApi).to.have.property('getMerchants');
+      expect(adCellApi).to.have.property('getCommissionDetails');
     });
 
     it('able to retrieve token', function() {
@@ -22,7 +23,7 @@
       });
     });
 
-    it.skip('able to retrieve merchants', function() {
+    it('able to retrieve merchants', function() {
       let merchantPromise = adCellApiClient.getAffiliateProgram();
 
       return merchantPromise.then(function(results) {
@@ -32,7 +33,7 @@
       });
     });
 
-    it.skip('able to retrieve commission details', function() {
+    it('able to retrieve commission details', function() {
       let startDate = new Date(Date.now() - (14 * 86400 * 1000)),
           endDate = new Date(Date.now() - (60 * 1000)),
           commissionPromise = adCellApiClient.getStatisticsByCommission({startDate: startDate, endDate: endDate, programIds: [6]});

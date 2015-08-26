@@ -12,7 +12,6 @@ const prettyMs = require('pretty-ms');
 const ftpToS3 = require('./ftp-to-s3');
 
 const affiliatewindowApi = require('./scripts/affiliatewindowApi');
-const avantlinkApi = require('./scripts/avantlinkApi');
 const belboonApi = require('./scripts/belboonApi');
 const clickJunctionApi = require("./scripts/clickJunctionApi");
 const commissionfactoryApi = require('./scripts/commissionfactoryApi');
@@ -50,6 +49,10 @@ const publicideasFRApi = publicideasGenericApi('fr');
 const publicideasITApi = publicideasGenericApi('it');
 const publicideasLATAMApi = publicideasGenericApi('latam');
 const publicideasUKApi = publicideasGenericApi('uk');
+
+const avantLinkGenericApi = require('./scripts/avantLinkGenericApi');
+const avantLinkUSApi = avantLinkGenericApi('us');
+const avantLinkCAApi = avantLinkGenericApi('ca');
 
 function init(id) {
   process.on('message', function(msg) {
@@ -93,7 +96,6 @@ function init(id) {
   createTask("CommissionFactory Merchants", commissionfactoryApi.getMerchants, {minute:24});
   createTask("Affili.Net (Germany) Merchants", affilinetGermanyApi.getMerchants, {minute:26});
   createTask("AffiliateWindow Merchants", affiliatewindowApi.getMerchants, {minute:28});
-  createTask("Avantlink Merchants", avantlinkApi.getMerchants, {minute:30});
   createTask("TradeTracker Merchants", tradetrackerApi.getMerchants, {minute:32});
   createTask("Affili.Net (Spain) Merchants", affilinetSpainApi.getMerchants, {minute:34});
   createTask("PublicIdeas (ES) Merchants", publicideasESApi.getMerchants, {minute:36});
@@ -110,8 +112,9 @@ function init(id) {
   createTask("PublicIdeas (LATAM) Merchants", publicideasLATAMApi.getMerchants, {minute:56});
   createTask("PublicIdeas (UK) Merchants", publicideasUKApi.getMerchants, {minute:58});
 
-  // createTask("", blah.getMerchants, {minute:54});
-  // createTask("", blah.getMerchants, {minute:56});
+  createTask("AvantLink (US) Merchants", avantLinkUSApi.getMerchants, {minute:2});
+  createTask("AvantLink (CA) Merchants", avantLinkCAApi.getMerchants, {minute:2});
+
   // createTask("", blah.getMerchants, {minute:58});
 
   createTask("ClickJunction (USA) Commissions", clickJunctionApi.getCommissionDetailsUSA, {minute: 0});
@@ -132,6 +135,9 @@ function init(id) {
   createTask("LinkShare Commissions", linkShareApi.getCommissionDetails, {minute: 30});
   createTask("SnapDeal Commissions", snapdealApi.getCommissionDetails, {minute:32});
   createTask("VCommission Commissions", vcommissionApi.getCommissionDetails, {minute:34});
+
+  createTask("AvantLink (US) Commissions", avantLinkUSApi.getCommissionDetails, {minute:36});
+  createTask("AvantLink (CA) Commissions", avantLinkCAApi.getCommissionDetails, {minute:36});
 
   // disabled for now:
   //createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
