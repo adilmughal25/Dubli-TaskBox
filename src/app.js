@@ -111,7 +111,6 @@ function init(id) {
   createTask("PublicIdeas (IT) Merchants", publicideasITApi.getMerchants, {minute:54});
   createTask("PublicIdeas (LATAM) Merchants", publicideasLATAMApi.getMerchants, {minute:56});
   createTask("PublicIdeas (UK) Merchants", publicideasUKApi.getMerchants, {minute:58});
-
   createTask("AvantLink (US) Merchants", avantLinkUSApi.getMerchants, {minute:2});
   createTask("AvantLink (CA) Merchants", avantLinkCAApi.getMerchants, {minute:2});
 
