@@ -11,21 +11,21 @@ const prettyMs = require('pretty-ms');
 
 const ftpToS3 = require('./ftp-to-s3');
 
-const affiliatewindowApi = require('./scripts/affiliatewindowApi');
-const belboonApi = require('./scripts/belboonApi');
-const clickJunctionApi = require("./scripts/clickJunctionApi");
-const commissionfactoryApi = require('./scripts/commissionfactoryApi');
-const flipkartApi = require('./scripts/flipkartApi');
-const impactRadiusProductFtp = require("./scripts/impactRadiusProductFtp");
-const linkShareApi = require("./scripts/linkShareApi");
-const omgpmApi = require('./scripts/omgpmApi');
-const pepperjamApi = require('./scripts/pepperjamApi');
-const performanceHorizonApi = require('./scripts/performanceHorizonApi');
-const tradetrackerApi = require('./scripts/tradetrackerApi');
-const webgainsApi = require('./scripts/webgainsApi');
-const zanoxApi = require('./scripts/zanoxApi');
+const affiliatewindowApi = require('./tasks/affiliate-networks/affiliatewindowApi');
+const belboonApi = require('./tasks/affiliate-networks/belboonApi');
+const clickJunctionApi = require("./tasks/affiliate-networks/clickJunctionApi");
+const commissionfactoryApi = require('./tasks/affiliate-networks/commissionfactoryApi');
+const flipkartApi = require('./tasks/affiliate-networks/flipkartApi');
+const impactRadiusProductFtp = require("./tasks/affiliate-networks/impactRadiusProductFtp");
+const linkShareApi = require("./tasks/affiliate-networks/linkShareApi");
+const omgpmApi = require('./tasks/affiliate-networks/omgpmApi');
+const pepperjamApi = require('./tasks/affiliate-networks/pepperjamApi');
+const performanceHorizonApi = require('./tasks/affiliate-networks/performanceHorizonApi');
+const tradetrackerApi = require('./tasks/affiliate-networks/tradetrackerApi');
+const webgainsApi = require('./tasks/affiliate-networks/webgainsApi');
+const zanoxApi = require('./tasks/affiliate-networks/zanoxApi');
 
-const affilinetGenericApi = require('./scripts/affilinetGenericApi');
+const affilinetGenericApi = require('./tasks/affiliate-networks/affilinetGenericApi');
 const affilinetUKApi = affilinetGenericApi('uk');
 const affilinetFranceApi = affilinetGenericApi('fr');
 const affilinetNetherlandsApi = affilinetGenericApi('nl');
@@ -34,24 +34,24 @@ const affilinetGermanyApi = affilinetGenericApi('de');
 const affilinetSwitzerlandApi = affilinetGenericApi('ch');
 const affilinetAustriaApi = affilinetGenericApi('at');
 
-const impactRadiusGenericApi = require('./scripts/impactRadiusGenericApi');
+const impactRadiusGenericApi = require('./tasks/affiliate-networks/impactRadiusGenericApi');
 const impactRadiusApi = impactRadiusGenericApi('impactradius');
 const apdPerformanceApi = impactRadiusGenericApi('apdperformance');
 
-const hasoffersGenericApi = require('./scripts/hasoffersGenericApi');
+const hasoffersGenericApi = require('./tasks/affiliate-networks/hasoffersGenericApi');
 const snapdealApi = hasoffersGenericApi('snapdeal');
 const vcommissionApi = hasoffersGenericApi('vcommission');
 
-const adCellApi = require('./scripts/adCellApi');
+const adCellApi = require('./tasks/affiliate-networks/adCellApi');
 
-const publicideasGenericApi = require('./scripts/publicideasGenericApi');
+const publicideasGenericApi = require('./tasks/affiliate-networks/publicideasGenericApi');
 const publicideasESApi = publicideasGenericApi('es');
 const publicideasFRApi = publicideasGenericApi('fr');
 const publicideasITApi = publicideasGenericApi('it');
 const publicideasLATAMApi = publicideasGenericApi('latam');
 const publicideasUKApi = publicideasGenericApi('uk');
 
-const avantLinkGenericApi = require('./scripts/avantLinkGenericApi');
+const avantLinkGenericApi = require('./tasks/affiliate-networks/avantLinkGenericApi');
 const avantLinkUSApi = avantLinkGenericApi('us');
 const avantLinkCAApi = avantLinkGenericApi('ca');
 

@@ -5,7 +5,7 @@ var wait = require('co-waiter');
 var uuid = require('node-uuid');
 var utils = require('ominto-utils');
 var prettyMs = require('pretty-ms');
-var o_configs = require('../../../configs');
+var o_configs = require('../../../../configs');
 var denodeify = require('denodeify');
 var gzip = denodeify(require('zlib').gzip);
 var _check = utils.checkApiResponse;
@@ -74,7 +74,7 @@ function devSaveMerchants(s_which, a_items) {
   if (!DEV_SAVE_MERCHANTS) return;
   var resolve = require('path').resolve;
   var write = require('fs').writeFile;
-  var f = resolve(__dirname, '../../../test/output/merchant-output-'+s_which+'.json');
+  var f = resolve(__dirname, '../../../../test/output/merchant-output-'+s_which+'.json');
   write(f, JSON.stringify(a_items), 'utf-8', function (e) {
     if (e) return console.error('error saving file', e.stack);
     console.log("\n\n  -> SAVED "+f+'\n');
@@ -86,7 +86,7 @@ function devSaveCommissions(s_which, a_items) {
   if (!DEV_SAVE_COMMISSIONS) return;
   var resolve = require('path').resolve;
   var write = require('fs').writeFile;
-  var f = resolve(__dirname, '../../../test/output/commissions-output-'+s_which+'.json');
+  var f = resolve(__dirname, '../../../../test/output/commissions-output-'+s_which+'.json');
   write(f, JSON.stringify(a_items), 'utf-8', function (e) {
     if (e) return console.error('error saving file', e.stack);
     console.log("\n\n  -> SAVED "+f+'\n');
