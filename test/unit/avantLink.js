@@ -9,8 +9,8 @@
   const chai = require('chai');
   const expect = chai.expect;
 	const assert = chai.assert;
-  const avantLinkGenericApi = require(process.cwd() + '/src/scripts/avantLinkGenericApi');
-  const avantLinkApiClient = require(process.cwd() + '/src/scripts/api-clients/avantlink');
+  const avantLinkGenericApi = require(process.cwd() + '/src/tasks/affiliate-networks/avantLinkGenericApi');
+  const avantLinkApiClient = require(process.cwd() + '/src/tasks/affiliate-networks/api-clients/avantlink');
   var avantLinkUSApi = avantLinkGenericApi('us');
 
   describe('AvantLink API', function() {
