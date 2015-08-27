@@ -142,7 +142,7 @@ function avantLinkClient(s_region, s_type) {
       case 'AffiliateReport':
         result = client.get(arg)
           .then(jsonify)
-          .then(data => data.NewDataSet.Table1)
+          .then( (data) => {return data.NewDataSet.Table1 || [];})
         ;
         break;
     }
