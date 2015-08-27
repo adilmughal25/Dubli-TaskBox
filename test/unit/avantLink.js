@@ -48,8 +48,8 @@
           commissionsPromise = avantLinkApiClient.getClient('us', 'commissions').getData({date_begin: startDate, date_end:endDate});
 
       return commissionsPromise.then(function(results) {
-        if (results !== undefined) { // there could simply be no transaction in selected time period
-          expect(results).to.have.length.above(1);
+        expect(results).to.be.array;
+        if (results.length > 0) { // there could simply be no transaction in selected time period
           expect(results[0]).to.have.property('Order_Id');
         }
       });

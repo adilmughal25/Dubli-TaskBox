@@ -8,7 +8,7 @@ const request = require('request-promise');
 const jsonify = require('./jsonify-xml-body');
 const limiter = require('ominto-utils').promiseRateLimiter;
 // debugging the requests || TODO: remove after finishing implementation
-//require('request-promise').debug = true; 
+//require('request-promise').debug = true;
 const moment = require('moment');
 
 const API_CREDENTIALS = {
@@ -127,7 +127,8 @@ function avantLinkClient(s_region, s_type) {
   client.getData = function(o_params) {
     debug("getting data from api module [%s]", cfg.module);
     o_params = o_params || {};
-    let result, arg = {
+    let result;
+    let arg = {
       json: (cfg.defParams.output == 'json' ? true : false),
       qs: _.merge({}, cfg.defParams, {
         module: cfg.module,
@@ -143,6 +144,10 @@ function avantLinkClient(s_region, s_type) {
         result = client.get(arg)
           .then(jsonify)
           .then(data => data.NewDataSet.Table1)
+          .then(data => {
+            if (!data) return [];
+            return _.isArray(data) ? data : [data];
+          })
         ;
         break;
     }

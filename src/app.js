@@ -29,10 +29,16 @@ function init(id) {
   });
   log.level(configs.logLevel);
 
+  // The Task Master:
   const createTask = scheduleTasks(log);
 
+  // set up ftp server for taskbox
   ftpToS3(log, configs.ftpToS3);
+
+  // all affiliate tasks are handled here:
   affiliates.init(createTask);
+
+  // other miscellaneous tasks
   createTask('TownClock SNS Ping', snsPing.ping, {minute: [0,15,30,45]});
 }
 
