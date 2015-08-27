@@ -9,7 +9,7 @@ const debug = require('debug')('taskbox:tasks');
 const _ = require('lodash');
 const prettyMs = require('pretty-ms');
 
-const affiliateTasks = require('./affiliate-tasks');
+const affiliateTasks = require('./affiliate-tasks'); // perhaps put this in ./tasks/affiliate-networks/index.js later?
 const ftpToS3 = require('./ftp-to-s3');
 const snsPing = require('./tasks/sns-ping');
 
