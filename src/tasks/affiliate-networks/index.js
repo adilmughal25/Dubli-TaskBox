@@ -15,6 +15,7 @@ const performanceHorizonApi = require('./performanceHorizonApi');
 const tradetrackerApi = require('./tradetrackerApi');
 const webgainsApi = require('./webgainsApi');
 const zanoxApi = require('./zanoxApi');
+const adCellApi = require('./adCellApi');
 
 const affilinetGenericApi = require('./affilinetGenericApi');
 const affilinetUKApi = affilinetGenericApi('uk');
@@ -33,8 +34,6 @@ const hasoffersGenericApi = require('./hasoffersGenericApi');
 const snapdealApi = hasoffersGenericApi('snapdeal');
 const vcommissionApi = hasoffersGenericApi('vcommission');
 
-const adCellApi = require('./adCellApi');
-
 const publicideasGenericApi = require('./publicideasGenericApi');
 const publicideasESApi = publicideasGenericApi('es');
 const publicideasFRApi = publicideasGenericApi('fr');
@@ -47,63 +46,68 @@ const avantLinkUSApi = avantLinkGenericApi('us');
 const avantLinkCAApi = avantLinkGenericApi('ca');
 
 function init(createTask) {
-  createTask("Affili.Net (UK) Merchants", affilinetUKApi.getMerchants, {minute:0});
-  createTask("ImpactRadius Merchants", impactRadiusApi.getMerchants, {minute: 2});
-  createTask("LinkShare Merchants", linkShareApi.getMerchants, {minute: 4});
-  createTask("ClickJunction Merchants (USA)", clickJunctionApi.getMerchantsUSA, {minute: 8});
-  createTask("Affili.Net (France) Merchants", affilinetFranceApi.getMerchants, {minute:10});
-  createTask("PerformanceHorizon Merchants", performanceHorizonApi.getMerchants, {minute: 12});
-  createTask("Zanox Merchants", zanoxApi.getMerchants, {minute: 14});
-  createTask("PepperJam Merchants", pepperjamApi.getMerchants, {minute: 16});
-  createTask("Affili.Net (Netherlands) Merchants", affilinetNetherlandsApi.getMerchants, {minute:18});
-  createTask("VCommission Merchants", vcommissionApi.getMerchants, {minute:20});
-  createTask("ClickJunction Merchants (Euro)", clickJunctionApi.getMerchantsEuro, {minute: 22});
-  createTask("CommissionFactory Merchants", commissionfactoryApi.getMerchants, {minute:24});
-  createTask("Affili.Net (Germany) Merchants", affilinetGermanyApi.getMerchants, {minute:26});
-  createTask("AffiliateWindow Merchants", affiliatewindowApi.getMerchants, {minute:28});
-  createTask("TradeTracker Merchants", tradetrackerApi.getMerchants, {minute:32});
-  createTask("Affili.Net (Spain) Merchants", affilinetSpainApi.getMerchants, {minute:34});
-  createTask("PublicIdeas (ES) Merchants", publicideasESApi.getMerchants, {minute:36});
-  createTask("Webgains Merchants", webgainsApi.getMerchants, {minute:38});
-  createTask("APD Performance Merchants", apdPerformanceApi.getMerchants, {minute:40});
-  createTask("Affili.Net (Switzerland) Merchants", affilinetSwitzerlandApi.getMerchants, {minute:42});
-  createTask("SnapDeal Merchants", snapdealApi.getMerchants, {minute:44});
-  createTask("Belboon Merchants", belboonApi.getMerchants, {minute:46});
-  createTask("OMGpm Merchants", omgpmApi.getMerchants, {minute:48});
-  createTask("Affili.Net (Austria) Merchants", affilinetAustriaApi.getMerchants, {minute:50});
-  createTask("AdCell Merchants", adCellApi.getMerchants, {minute:52});
-  createTask("PublicIdeas (FR) Merchants", publicideasFRApi.getMerchants, {minute:52});
-  createTask("PublicIdeas (IT) Merchants", publicideasITApi.getMerchants, {minute:54});
-  createTask("PublicIdeas (LATAM) Merchants", publicideasLATAMApi.getMerchants, {minute:56});
-  createTask("PublicIdeas (UK) Merchants", publicideasUKApi.getMerchants, {minute:58});
-  createTask("AvantLink (US) Merchants", avantLinkUSApi.getMerchants, {minute:0});
-  createTask("AvantLink (CA) Merchants", avantLinkCAApi.getMerchants, {minute:2});
 
-  // createTask("", blah.getMerchants, {minute:58});
+  // run each of these every 6 hours
+  createTask.createGroup(6, {
+    "APD Performance Merchants": apdPerformanceApi.getMerchants,
+    "AdCell Merchants": adCellApi.getMerchants,
+    "Affili.Net (Austria) Merchants": affilinetAustriaApi.getMerchants,
+    "Affili.Net (France) Merchants": affilinetFranceApi.getMerchants,
+    "Affili.Net (Germany) Merchants": affilinetGermanyApi.getMerchants,
+    "Affili.Net (Netherlands) Merchants": affilinetNetherlandsApi.getMerchants,
+    "Affili.Net (Spain) Merchants": affilinetSpainApi.getMerchants,
+    "Affili.Net (Switzerland) Merchants": affilinetSwitzerlandApi.getMerchants,
+    "Affili.Net (UK) Merchants": affilinetUKApi.getMerchants,
+    "AffiliateWindow Merchants": affiliatewindowApi.getMerchants,
+    "AvantLink (CA) Merchants": avantLinkCAApi.getMerchants,
+    "AvantLink (US) Merchants": avantLinkUSApi.getMerchants,
+    "Belboon Merchants": belboonApi.getMerchants,
+    "ClickJunction Merchants (Euro)": clickJunctionApi.getMerchantsEuro,
+    "ClickJunction Merchants (USA)": clickJunctionApi.getMerchantsUSA,
+    "CommissionFactory Merchants": commissionfactoryApi.getMerchants,
+    "ImpactRadius Merchants": impactRadiusApi.getMerchants,
+    "LinkShare Merchants": linkShareApi.getMerchants,
+    "OMGpm Merchants": omgpmApi.getMerchants,
+    "PepperJam Merchants": pepperjamApi.getMerchants,
+    "PerformanceHorizon Merchants": performanceHorizonApi.getMerchants,
+    "PublicIdeas (ES) Merchants": publicideasESApi.getMerchants,
+    "PublicIdeas (FR) Merchants": publicideasFRApi.getMerchants,
+    "PublicIdeas (IT) Merchants": publicideasITApi.getMerchants,
+    "PublicIdeas (LATAM) Merchants": publicideasLATAMApi.getMerchants,
+    "PublicIdeas (UK) Merchants": publicideasUKApi.getMerchants,
+    "SnapDeal Merchants": snapdealApi.getMerchants,
+    "TradeTracker Merchants": tradetrackerApi.getMerchants,
+    "VCommission Merchants": vcommissionApi.getMerchants,
+    "Webgains Merchants": webgainsApi.getMerchants,
+    "Zanox Merchants": zanoxApi.getMerchants,
+  });
 
-  createTask("ClickJunction (USA) Commissions", clickJunctionApi.getCommissionDetailsUSA, {minute: 0});
-  createTask("PepperJam Commissions", pepperjamApi.getCommissionDetails, {minute:2});
-  createTask("ImpactRadius Commissions", impactRadiusApi.getCommissionDetails, {minute: 4});
-  createTask("ClickJunction (Euro) Commissions", clickJunctionApi.getCommissionDetailsEuro, {minute: 6});
-  createTask("APD Performance Commissions", apdPerformanceApi.getCommissionDetails, {minute:8});
-  createTask("Zanox Commissions", zanoxApi.getCommissionDetails, {minute:10});
-  createTask("Affili.Net (UK) Commissions", affilinetUKApi.getCommissionDetails, {minute:12});
-  createTask("Affili.Net (France) Commissions", affilinetFranceApi.getCommissionDetails, {minute:14});
-  createTask("Affili.Net (Netherlands) Commissions", affilinetNetherlandsApi.getCommissionDetails, {minute:16});
-  createTask("Affili.Net (Spain) Commissions", affilinetSpainApi.getCommissionDetails, {minute:18});
-  createTask("Affili.Net (Germany) Commissions", affilinetGermanyApi.getCommissionDetails, {minute:20});
-  createTask("Affili.Net (Switzerland) Commissions", affilinetSwitzerlandApi.getCommissionDetails, {minute:22});
-  createTask("Affili.Net (Austria) Commissions", affilinetAustriaApi.getCommissionDetails, {minute:24});
-  createTask("AffiliateWindow Commissions", affiliatewindowApi.getCommissionDetails, {minute:26});
-  createTask("AdCell Commissions", adCellApi.getCommissionDetails, {minute:28});
-  createTask("LinkShare Commissions", linkShareApi.getCommissionDetails, {minute: 30});
-  createTask("SnapDeal Commissions", snapdealApi.getCommissionDetails, {minute:32});
-  createTask("VCommission Commissions", vcommissionApi.getCommissionDetails, {minute:34});
-  createTask("AvantLink (US) Commissions", avantLinkUSApi.getCommissionDetails, {minute:36});
-  createTask("AvantLink (CA) Commissions", avantLinkCAApi.getCommissionDetails, {minute:38});
-  createTask("Flipkart Commissions", flipkartApi.getCommissionDetails, {minute:40});
+  // run each of these every 6 hours
+  createTask.createGroup(6, {
+    "APD Performance Commissions": apdPerformanceApi.getCommissionDetails,
+    "AdCell Commissions": adCellApi.getCommissionDetails,
+    "Affili.Net (Austria) Commissions": affilinetAustriaApi.getCommissionDetails,
+    "Affili.Net (France) Commissions": affilinetFranceApi.getCommissionDetails,
+    "Affili.Net (Germany) Commissions": affilinetGermanyApi.getCommissionDetails,
+    "Affili.Net (Netherlands) Commissions": affilinetNetherlandsApi.getCommissionDetails,
+    "Affili.Net (Spain) Commissions": affilinetSpainApi.getCommissionDetails,
+    "Affili.Net (Switzerland) Commissions": affilinetSwitzerlandApi.getCommissionDetails,
+    "Affili.Net (UK) Commissions": affilinetUKApi.getCommissionDetails,
+    "AffiliateWindow Commissions": affiliatewindowApi.getCommissionDetails,
+    "AvantLink (CA) Commissions": avantLinkCAApi.getCommissionDetails,
+    "AvantLink (US) Commissions": avantLinkUSApi.getCommissionDetails,
+    "ClickJunction (Euro) Commissions": clickJunctionApi.getCommissionDetailsEuro,
+    "ClickJunction (USA) Commissions": clickJunctionApi.getCommissionDetailsUSA,
+    "Flipkart Commissions": flipkartApi.getCommissionDetails,
+    "ImpactRadius Commissions": impactRadiusApi.getCommissionDetails,
+    "LinkShare Commissions": linkShareApi.getCommissionDetails,
+    "PepperJam Commissions": pepperjamApi.getCommissionDetails,
+    "SnapDeal Commissions": snapdealApi.getCommissionDetails,
+    "VCommission Commissions": vcommissionApi.getCommissionDetails,
+    "Zanox Commissions": zanoxApi.getCommissionDetails,
+  });
 
   // disabled for now:
-  //createTask("ImpactRadius Product FTP", impactRadiusProductFtp.getProducts, {minute:1});
+  //createTask("ImpactRadius Product FTP": impactRadiusProductFtp.getProducts, {minute:35});
 
 }

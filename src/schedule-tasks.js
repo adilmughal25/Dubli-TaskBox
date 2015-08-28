@@ -15,6 +15,7 @@ function setup(log) {
   var runOnStart = runOnStartOnly || !!process.env.RUN_ON_START;
 
   var schedules = {};
+  createTask.createGroup = createGroup;
   return createTask;
 
   function taskRunner(name, task, logger) {
@@ -47,16 +48,16 @@ function setup(log) {
     var task_t = typeof task, isTask = task_t === 'function';
     if (!isTask) throw new Error("can't create task for "+name+": passed task is not a function! (is:"+task_t+")");
     var id = name.replace(/\W+/g, '-').toLowerCase();
+    if (schedules[id]) id = id + '-' + uuid.v4(); // handle collisions. shouldn't happen but just in case.
     var rule = new schedule.RecurrenceRule();
     _.extend(rule, spec);
     var taskLogger = log.child({
       taskId: id,
-      taskName: name,
       runSpec: JSON.stringify(spec)
     });
 
     if (!isDev || !runOnStartOnly) {
-      // log.info("Schedule task: "+name+" ("+id+") with spec: "+JSON.stringify(spec)+"");
+      taskLogger.info("Schedule task: "+name);
       schedules[id] = schedule.scheduleJob(spec, taskRunner(name, task, taskLogger));
     }
 
@@ -64,6 +65,26 @@ function setup(log) {
       debug("Dev Mode: Starting task `%s` immediately", id);
       taskRunner('(dev-autostart) '+name, task, taskLogger.child({autoStarted:true}))();
     }
+  }
+
+  function createGroup(i_numberOfHours, o_taskSet) {
+    if (24 % i_numberOfHours !== 0) throw new Error("number of hours must cleanly divide into 24 hours!");
+    const mult = 24 / i_numberOfHours;
+    const taskNames = _.shuffle(Object.keys(o_taskSet));
+    const numTasks = taskNames.length;
+    const timeBetweenTasks = i_numberOfHours / numTasks;
+    let time = 0;
+    taskNames.forEach(name => {
+      const hours = Math.floor(time);
+      const minutes = Math.floor((time-hours) * 60);
+      const hoursArray = [];
+      for (let i = 0; i < mult; i++) {
+        hoursArray.push(hours + (i*i_numberOfHours));
+      }
+      const spec = {hour:hoursArray, minute:minutes};
+      createTask(name, o_taskSet[name], spec);
+      time += timeBetweenTasks;
+    });
   }
 
 }
