@@ -51,11 +51,11 @@ const API_PARAMS_DEFAULT = {
  * @class
  */
 function TradeDoublerClient() {
-	if (!(this instanceof TradeDoublerClient)) return new TradeDoublerClient();
+  if (!(this instanceof TradeDoublerClient)) return new TradeDoublerClient();
   debug("Create new client");
 
-	// default request options
-	this.client = request.defaults({
+  // default request options
+  this.client = request.defaults({
     baseUrl: API_BASEURL,
     json: false,
     simple: true,
@@ -74,19 +74,19 @@ function TradeDoublerClient() {
 TradeDoublerClient.prototype.getMerchants = co.wrap(function* (key) {
   debug("getting merchants from report api");
   key = key || 'report.matrix[1].rows.row'; // default attribute path of all merchants
-	const arg = {
+  const arg = {
     url: 'aReport3Key.action',
     qs: API_PARAMS_DEFAULT
   };
 
-	const body = yield this.client.get(arg).then(response => {
+  const body = yield this.client.get(arg).then(response => {
     return (response.indexOf("<?xml") != -1 ? response : '');
   })
   .then(jsonify);
 
   const response = _.get(body, 'report.matrix[1].rows.row', []);
 
-	return response;
+  return response;
 });
 
 module.exports = TradeDoublerClient;
