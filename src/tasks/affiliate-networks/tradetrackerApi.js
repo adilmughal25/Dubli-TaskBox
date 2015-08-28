@@ -1,50 +1,89 @@
 "use strict";
 
-const _ = require('lodash');
-const co = require('co');
-const debug = require('debug')('tradedoubler:processor');
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
+var _ = require('lodash');
+var co = require('co');
+var debug = require('debug')('tradetracker:processor');
+var utils = require('ominto-utils');
+var sendEvents = require('./support/send-events');
+var client = require('./api-clients/tradetracker')();
+var XmlEntities = require('html-entities').XmlEntities;
+var entities = new XmlEntities();
 
-var client = require('./api-clients/tradedoubler')();
-
-/**
- * Retrieve all merchant/program information from webgains including there commissions and coupons.
- * @returns {undefined}
- */
-const getMerchants = singleRun(function*() {
-  let results = yield client.getMerchants();
-
-  let events = _.values(results.reduce(merchantReduce, {}));
-
-  yield sendEvents.sendMerchants('tradedoubler', events);
+var singleRun = require('./support/single-run');
+var merge = require('./support/easy-merge')('ID', {
+  links: 'campaign.ID',
+  vouchers: 'campaign.ID',
+  offers: 'campaign.ID'
 });
 
-const mFilter = ['siteName','affiliateId','programName','currentStatusExcel','programId','applicationDate','status'];
-var merchantReduce = function(merchants, item) {
-  let cleanedMerchant = _.omit(item, (val, key) => { return _.indexOf(mFilter, key)  === -1;});
-  let cleanedItem = _.pick(item, (val, key) => { return _.indexOf(mFilter, key)  === -1;});
-
-  if (merchants[item.programId] === undefined) {
-    merchants[item.programId] = _.extend({}, {
-      merchant: cleanedMerchant,
-      events:[]
-    });
-  }
-
-  merchants[item.programId].events.push(cleanedItem);
-
-  return merchants;
+const CAMPAIGN_ARGS = {
+  affiliateSiteID: client.siteId,
+  options: {assignmentStatus:'accepted'}
 };
 
-/**
- * Filter out any merchant without a percentage commission structure.
- * (No fixed commissions supported yet)
- * @param {Object} o_merchants  The individual merchant object from AvantLink API response
- * @returns {Object}
- */
-function hasPercentage(o_merchants) {
-  return o_merchants.events.filter(e => Number(e.programTariffPercentage) > 0);
+const MATERIAL_ARGS = {
+  affiliateSiteID: client.siteId,
+  materialOutputType: 'rss'
+};
+
+var getMerchants = singleRun(function*(){
+  yield client.setup(); // this gets soap info and does the auth login
+
+  var results = yield {
+    merchants: doApiMerchants(),
+    links: doApi('getMaterialTextItems', MATERIAL_ARGS, 'materialItems.item').then(extractUrl),
+    offers: doApi('getMaterialIncentiveOfferItems', MATERIAL_ARGS, 'materialItems.item').then(extractUrl),
+    vouchers: doApi('getMaterialIncentiveVoucherItems', MATERIAL_ARGS, 'materialItems.item').then(extractUrl)
+  };
+
+  var merchants = merge(results);
+
+  yield sendEvents.sendMerchants('tradetracker', merchants);
+});
+
+var doApi = co.wrap(function* (method, args, key) {
+  var results = yield client[method](args)
+    .then(extractAry(key))
+    .then(resp => rinse(resp));
+
+  return results || [];
+});
+
+function extractUrl(a_items) {
+  a_items.forEach(function(item) {
+    var url = item.code.replace(/(\n|\t)+/g, ' ').replace(/^.*<link>(.+)<\/link>.*$/, '$1');
+    item.url = entities.decode(url);
+  });
+  return a_items;
+}
+
+function doApiMerchants() {
+  return doApi('getCampaigns', CAMPAIGN_ARGS, 'campaigns.item').then(function(res) {
+    return res.map(function(item) { // make the object a little cleaner
+      _.extend(item, item.info);
+      delete item.info;
+      return item;
+    });
+  });
+}
+
+var ary = x => _.isArray(x) ? x : [x];
+function extractAry(key) {
+  return resp => ary(_.get(resp, key) || []);
+}
+
+// rinse: removes SOAP-y residue
+function rinse(any) {
+  if (_.isString(any)) return any;
+  if (_.isArray(any)) return any.map(rinse);
+  if (_.isObject(any)) {
+    delete any.attributes;
+    if (any.$value) {
+      return any.$value;
+    }
+    return _.mapValues(any, rinse);
+  }
+  return any;
 }
 
 module.exports = {
