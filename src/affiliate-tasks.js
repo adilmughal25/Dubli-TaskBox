@@ -2,20 +2,8 @@
 
 module.exports = { init: init };
 
+const adCellApi = require('./tasks/affiliate-networks/adCellApi');
 const affiliatewindowApi = require('./tasks/affiliate-networks/affiliatewindowApi');
-const belboonApi = require('./tasks/affiliate-networks/belboonApi');
-const clickJunctionApi = require("./tasks/affiliate-networks/clickJunctionApi");
-const commissionfactoryApi = require('./tasks/affiliate-networks/commissionfactoryApi');
-const flipkartApi = require('./tasks/affiliate-networks/flipkartApi');
-const impactRadiusProductFtp = require("./tasks/affiliate-networks/impactRadiusProductFtp");
-const linkShareApi = require("./tasks/affiliate-networks/linkShareApi");
-const omgpmApi = require('./tasks/affiliate-networks/omgpmApi');
-const pepperjamApi = require('./tasks/affiliate-networks/pepperjamApi');
-const performanceHorizonApi = require('./tasks/affiliate-networks/performanceHorizonApi');
-const tradetrackerApi = require('./tasks/affiliate-networks/tradetrackerApi');
-const webgainsApi = require('./tasks/affiliate-networks/webgainsApi');
-const zanoxApi = require('./tasks/affiliate-networks/zanoxApi');
-
 const affilinetGenericApi = require('./tasks/affiliate-networks/affilinetGenericApi');
 const affilinetUKApi = affilinetGenericApi('uk');
 const affilinetFranceApi = affilinetGenericApi('fr');
@@ -24,27 +12,33 @@ const affilinetSpainApi = affilinetGenericApi('es');
 const affilinetGermanyApi = affilinetGenericApi('de');
 const affilinetSwitzerlandApi = affilinetGenericApi('ch');
 const affilinetAustriaApi = affilinetGenericApi('at');
-
+const apdPerformanceApi = impactRadiusGenericApi('apdperformance');
+const avantLinkGenericApi = require('./tasks/affiliate-networks/avantLinkGenericApi');
+const avantLinkUSApi = avantLinkGenericApi('us');
+const avantLinkCAApi = avantLinkGenericApi('ca');
+const belboonApi = require('./tasks/affiliate-networks/belboonApi');
+const clickJunctionApi = require("./tasks/affiliate-networks/clickJunctionApi");
+const commissionfactoryApi = require('./tasks/affiliate-networks/commissionfactoryApi');
+const flipkartApi = require('./tasks/affiliate-networks/flipkartApi');
+const hasoffersGenericApi = require('./tasks/affiliate-networks/hasoffersGenericApi');
 const impactRadiusGenericApi = require('./tasks/affiliate-networks/impactRadiusGenericApi');
 const impactRadiusApi = impactRadiusGenericApi('impactradius');
-const apdPerformanceApi = impactRadiusGenericApi('apdperformance');
-
-const hasoffersGenericApi = require('./tasks/affiliate-networks/hasoffersGenericApi');
-const snapdealApi = hasoffersGenericApi('snapdeal');
-const vcommissionApi = hasoffersGenericApi('vcommission');
-
-const adCellApi = require('./tasks/affiliate-networks/adCellApi');
-
+const impactRadiusProductFtp = require("./tasks/affiliate-networks/impactRadiusProductFtp");
+const linkShareApi = require("./tasks/affiliate-networks/linkShareApi");
+const omgpmApi = require('./tasks/affiliate-networks/omgpmApi');
+const pepperjamApi = require('./tasks/affiliate-networks/pepperjamApi');
+const performanceHorizonApi = require('./tasks/affiliate-networks/performanceHorizonApi');
 const publicideasGenericApi = require('./tasks/affiliate-networks/publicideasGenericApi');
 const publicideasESApi = publicideasGenericApi('es');
 const publicideasFRApi = publicideasGenericApi('fr');
 const publicideasITApi = publicideasGenericApi('it');
 const publicideasLATAMApi = publicideasGenericApi('latam');
 const publicideasUKApi = publicideasGenericApi('uk');
-
-const avantLinkGenericApi = require('./tasks/affiliate-networks/avantLinkGenericApi');
-const avantLinkUSApi = avantLinkGenericApi('us');
-const avantLinkCAApi = avantLinkGenericApi('ca');
+const snapdealApi = hasoffersGenericApi('snapdeal');
+const tradetrackerApi = require('./tasks/affiliate-networks/tradetrackerApi');
+const vcommissionApi = hasoffersGenericApi('vcommission');
+const webgainsApi = require('./tasks/affiliate-networks/webgainsApi');
+const zanoxApi = require('./tasks/affiliate-networks/zanoxApi');
 
 function init(createTask) {
   createTask("Affili.Net (UK) Merchants", affilinetUKApi.getMerchants, {minute:0});
