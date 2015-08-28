@@ -2,7 +2,7 @@
 
 const co = require('co');
 const CUTOFF_EPOCH = new Date(1430463600000);
-const o_configs = require('../../../configs.json');
+const o_configs = require('../../../../configs.json');
 const utils = require('ominto-utils');
 const check = utils.checkApiResponse;
 const dataClient = utils.getDataClient(o_configs.data_api.url, o_configs.data_api.auth);

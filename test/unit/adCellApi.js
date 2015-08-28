@@ -3,8 +3,8 @@
 
   var expect = require('chai').expect;
 	var assert = require('chai').assert;
-	var adCellApi = require(process.cwd() + '/src/scripts/adCellApi');
-	var adCellApiClient = require(process.cwd() + '/src/scripts/api-clients/adCell')();
+	var adCellApi = require(process.cwd() + '/src/tasks/affiliate-networks/adCellApi');
+	var adCellApiClient = require(process.cwd() + '/src/tasks/affiliate-networks/api-clients/adCell')();
 
 	describe('AdCell API', function() {
 

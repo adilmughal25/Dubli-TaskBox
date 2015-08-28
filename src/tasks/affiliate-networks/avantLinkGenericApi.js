@@ -35,8 +35,8 @@ function setup(s_region) {
 
   // get all merchant information
   tasks.getMerchants = singleRun(function* () {
-    let clientM = clientPool.getClient(s_region, 'merchants'),
-        clientP = clientPool.getClient(s_region, 'promos');
+    let clientM = clientPool.getClient(s_region, 'merchants');
+    let clientP = clientPool.getClient(s_region, 'promos');
 
     let results = yield {
       merchants: clientM.getData().then(hasPercentage),
@@ -46,14 +46,14 @@ function setup(s_region) {
 
     yield sendEvents.sendMerchants('avantlink-'+s_region, merchants);
   });
-  
+
   // get commission report
   tasks.getCommissionDetails = singleRun(function* () {
-    let clientC = clientPool.getClient(s_region, 'commissions'),
-        transactions = [],
-        events = [],
-        startDate = new Date(Date.now() - (30 * 86400 * 1000)),
-        endDate = new Date(Date.now() - (60 * 1000));
+    let clientC = clientPool.getClient(s_region, 'commissions');
+    let transactions = [];
+    let events = [];
+    let startDate = new Date(Date.now() - (30 * 86400 * 1000));
+    let endDate = new Date(Date.now() - (60 * 1000));
     const exists = x => !!x;
 
     debug("fetching all transactions between %s and %s", startDate, endDate);
