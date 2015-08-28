@@ -3,14 +3,14 @@
 const _ = require('lodash');
 const co = require('co');
 const debug = require('debug')('tradedoubler:api-client');
-const denodeify = require('denodeify');
-const querystring = require('querystring');
 const request = require('request-promise');
 const jsonify = require('./jsonify-xml-body');
 // debugging the requests || TODO: remove after finishing implementation
 //require('request-promise').debug = true; 
 
 const API_BASEURL = 'http://reports.tradedoubler.com/pan/';
+//const API_KEY = '';
+// DubLi Legacy (UK)
 const API_KEY = '1cd41e04394f400298de770f33b4edec';
 
 const API_PARAMS_DEFAULT = {
@@ -61,21 +61,30 @@ function TradeDoublerClient() {
     simple: true,
     resolveWithFullResponse: false,
     headers: {
-      accept: "text/xml"
+      accept: 'text/xml'
     }
   });
 }
 
+/**
+ * Retrieve all merchant info from tradedoubler, includes events=commissions.
+ * @param {String} key  Optional key to deep-select from response object. Default: report.matrix[1].rows.row
+ * @returns {Array}
+ */
 TradeDoublerClient.prototype.getMerchants = co.wrap(function* (key) {
+  debug("getting merchants from report api");
   key = key || 'report.matrix[1].rows.row'; // default attribute path of all merchants
-	let response, body, 
-      arg = {
-        url: 'aReport3Key.action',
-        qs: API_PARAMS_DEFAULT
-      };
+	const arg = {
+    url: 'aReport3Key.action',
+    qs: API_PARAMS_DEFAULT
+  };
 
-	body = yield this.client.get(arg).then(jsonify);
-  response = _.get(body, 'report.matrix[1].rows.row', []);
+	const body = yield this.client.get(arg).then(response => {
+    return (response.indexOf("<?xml") != -1 ? response : '');
+  })
+  .then(jsonify);
+
+  const response = _.get(body, 'report.matrix[1].rows.row', []);
 
 	return response;
 });
