@@ -2,6 +2,7 @@
 
 module.exports = { init: init };
 
+const adCellApi = require('./adCellApi');
 const affiliatewindowApi = require('./affiliatewindowApi');
 const belboonApi = require('./belboonApi');
 const clickJunctionApi = require("./clickJunctionApi");
@@ -15,20 +16,19 @@ const performanceHorizonApi = require('./performanceHorizonApi');
 const tradetrackerApi = require('./tradetrackerApi');
 const webgainsApi = require('./webgainsApi');
 const zanoxApi = require('./zanoxApi');
-const adCellApi = require('./adCellApi');
 
 const affilinetGenericApi = require('./affilinetGenericApi');
-const affilinetUKApi = affilinetGenericApi('uk');
+const affilinetAustriaApi = affilinetGenericApi('at');
 const affilinetFranceApi = affilinetGenericApi('fr');
+const affilinetGermanyApi = affilinetGenericApi('de');
 const affilinetNetherlandsApi = affilinetGenericApi('nl');
 const affilinetSpainApi = affilinetGenericApi('es');
-const affilinetGermanyApi = affilinetGenericApi('de');
 const affilinetSwitzerlandApi = affilinetGenericApi('ch');
-const affilinetAustriaApi = affilinetGenericApi('at');
+const affilinetUKApi = affilinetGenericApi('uk');
 
 const impactRadiusGenericApi = require('./impactRadiusGenericApi');
-const impactRadiusApi = impactRadiusGenericApi('impactradius');
 const apdPerformanceApi = impactRadiusGenericApi('apdperformance');
+const impactRadiusApi = impactRadiusGenericApi('impactradius');
 
 const hasoffersGenericApi = require('./hasoffersGenericApi');
 const snapdealApi = hasoffersGenericApi('snapdeal');
@@ -42,8 +42,8 @@ const publicideasLATAMApi = publicideasGenericApi('latam');
 const publicideasUKApi = publicideasGenericApi('uk');
 
 const avantLinkGenericApi = require('./avantLinkGenericApi');
-const avantLinkUSApi = avantLinkGenericApi('us');
 const avantLinkCAApi = avantLinkGenericApi('ca');
+const avantLinkUSApi = avantLinkGenericApi('us');
 
 function init(createTask) {
 

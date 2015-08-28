@@ -48,7 +48,7 @@ function setup(log) {
     var task_t = typeof task, isTask = task_t === 'function';
     if (!isTask) throw new Error("can't create task for "+name+": passed task is not a function! (is:"+task_t+")");
     var id = name.replace(/\W+/g, '-').toLowerCase();
-    if (schedules[id]) id = id + '-' + uuid.v4(); // handle collisions. shouldn't happen but just in case.
+    if (schedules[id]) throw new Error("Task with id "+id+" has already been defined! Task names must be unique!");
     var rule = new schedule.RecurrenceRule();
     _.extend(rule, spec);
     var taskLogger = log.child({
