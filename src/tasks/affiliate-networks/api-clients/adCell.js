@@ -169,7 +169,7 @@ AdCellClient.prototype.getCommissions = co.wrap(function* (params) {
 	response = _.get(body, 'data', []);
 
   if (body.status != 200) {
-    throw new Error("Could not get commissions. Response: [" + body.status + "]" + body.message);
+    throw new Error("Could not get commissions. Response: [" + body.status + "]" + body.message + ". Token:[" + this.token + "]");
   }
 
 	return response;
@@ -212,7 +212,7 @@ AdCellClient.prototype.getPromotionType = co.wrap(function* (promoType, params) 
 	response = _.get(body, 'data', []);
 
   if (body.status != 200) {
-    throw new Error("Could not get " + promoType + " for export. Response: [" + body.status + "]" + body.message);
+    throw new Error("Could not get " + promoType + " for export. Response: [" + body.status + "]" + body.message + ". Token:[" + this.token + "]");
   }
 
 	return response;
@@ -274,7 +274,7 @@ AdCellClient.prototype.getStatisticsByCommission = co.wrap(function* (params) {
 	response = _.get(body, 'data', []);
 
   if (body.status != 200) {
-    throw new Error("Could not get transactions. Response: [" + body.status + "]" + body.message);
+    throw new Error("Could not get transactions. Response: [" + body.status + "]" + body.message + ". Token:[" + this.token + "]");
   }
 
 	return response;
