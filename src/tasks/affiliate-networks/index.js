@@ -8,6 +8,7 @@ const belboonApi = require('./belboonApi');
 const clickJunctionApi = require("./clickJunctionApi");
 const commissionfactoryApi = require('./commissionfactoryApi');
 const flipkartApi = require('./flipkartApi');
+const grouponApi = require('./grouponApi');
 const impactRadiusProductFtp = require("./impactRadiusProductFtp");
 const linkShareApi = require("./linkShareApi");
 const omgpmApi = require('./omgpmApi');
@@ -99,6 +100,7 @@ function init(createTask) {
     "ClickJunction (Euro) Commissions": clickJunctionApi.getCommissionDetailsEuro,
     "ClickJunction (USA) Commissions": clickJunctionApi.getCommissionDetailsUSA,
     "Flipkart Commissions": flipkartApi.getCommissionDetails,
+    "Groupon Commissions": grouponApi.getCommissionDetails,
     "ImpactRadius Commissions": impactRadiusApi.getCommissionDetails,
     "LinkShare Commissions": linkShareApi.getCommissionDetails,
     "PepperJam Commissions": pepperjamApi.getCommissionDetails,
