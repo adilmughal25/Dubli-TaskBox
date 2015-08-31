@@ -29,7 +29,7 @@ const API_TYPES = {
     }
   }
   /*
-  // possibly "ledger" later?!
+  // possibly "ledger" later?! - does not per item detail
   , ledger: {
     path: "ledger.json"
   }
