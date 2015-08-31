@@ -14,6 +14,7 @@ const request = require('request-promise');
 //require('request-promise').debug = true; 
 const debug = require('debug')('adcell:api-client');
 const moment = require('moment');
+const limiter = require('ominto-utils').promiseRateLimiter;
 
 const API_URL      = 'https://www.adcell.de/api/v2/';
 const API_USERID   = '205737';                  // DubLi-Legacy: 165872
@@ -62,6 +63,8 @@ function AdCellClient() {
       accept: "application/json"
     }
   });
+
+  limiter.request(this.client, 1, 2).debug(debug);
 }
 
 /**
