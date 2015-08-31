@@ -7,14 +7,15 @@ const denodeify = require('denodeify');
 const AWS = require('aws-sdk');
 const sns = new AWS.SNS();
 const snsPub = denodeify(sns.publish.bind(sns));
+const isDev = process.env.NODE_ENV === 'dev';
 
 function* ping() {
   const params = {
     Message: message(),
     TargetArn: ARN_TOWN_CLOCK
   };
-  const result = yield snsPub(params);
-  console.log("Got result:", result);
+  const result = yield (isDev ? devReport(params) : snsPub(params));
+  this.log.info(result, "Sent Ping to SNS");
   return result;
 }
 
@@ -22,7 +23,15 @@ function message() {
   const timestamp = new Date().toISOString();
   const msg = 'taskbox:ping:'+timestamp;
   return msg;
+}
 
+function devReport(params) {
+  return Promise.resolve({
+    development_mode: {
+      info: 'not actually triggering SNS -- server is in devel mode',
+      snsPayload: params
+    }
+  });
 }
 
 // var params = {

@@ -4,8 +4,8 @@ const configs = require('../configs.json');
 const bunyan = require('bunyan');
 
 const scheduleTasks = require('./schedule-tasks');
-const affiliates = require('./affiliate-tasks'); // perhaps put this in ./tasks/affiliate-networks/index.js later?
 const ftpToS3 = require('./ftp-to-s3');
+const affiliates = require('./tasks/affiliate-networks/index');
 const snsPing = require('./tasks/sns-ping');
 
 function init(id) {
@@ -29,7 +29,7 @@ function init(id) {
   });
   log.level(configs.logLevel);
 
-  // The Task Master:
+  // The Taskmaster:
   const createTask = scheduleTasks(log);
 
   // set up ftp server for taskbox
