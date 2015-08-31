@@ -49,9 +49,9 @@ const pagedApiCall = co.wrap(function* (method, params) {
   const _startTime = Date.now();
 
   // check that we call a method which actually is provided by the api client
-	if (typeof client[method] !== 'function') {
+  if (typeof client[method] !== 'function') {
     throw new Error("Method '" + method + "' is not available by our api client.");
-	}
+  }
 
 	// perform api calls with pagination until we reach total items to fetch
   while(true) {
@@ -68,7 +68,7 @@ const pagedApiCall = co.wrap(function* (method, params) {
     if (page * perPage >= total) break;
   }
 
-	const _endTime = Date.now();
+  const _endTime = Date.now();
   debug("%s finished: %d items over %d pages (%dms)", method, results.length, page, _endTime-_startTime);
 
   return results;

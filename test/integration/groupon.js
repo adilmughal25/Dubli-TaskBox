@@ -2,11 +2,11 @@
   "use strict";
 
   var expect = require('chai').expect;
-	var assert = require('chai').assert;
-	var grouponApi = require(process.cwd() + '/src/tasks/affiliate-networks/grouponApi');
-	var grouponApiClient = require(process.cwd() + '/src/tasks/affiliate-networks/api-clients/groupon')();
+  var assert = require('chai').assert;
+  var grouponApi = require(process.cwd() + '/src/tasks/affiliate-networks/grouponApi');
+  var grouponApiClient = require(process.cwd() + '/src/tasks/affiliate-networks/api-clients/groupon')();
 
-	describe('Groupon API', function() {
+  describe('Groupon API', function() {
 
     it('API definition', function() {
       assert.isObject(grouponApi, 'grouponApi is an object');
@@ -36,6 +36,6 @@
       });
     });
 
-	});
+  });
 
 })();

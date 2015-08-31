@@ -41,11 +41,11 @@ const API_TYPES = {
  * @class
  */
 function GrouponClient() {
-	if (!(this instanceof GrouponClient)) return new GrouponClient();
+  if (!(this instanceof GrouponClient)) return new GrouponClient();
   debug("Create new client");
 
-	// default request options
-	this.client = request.defaults({
+  // default request options
+  this.client = request.defaults({
     json: true,
     simple: true,
     resolveWithFullResponse: false,
@@ -67,7 +67,7 @@ function GrouponClient() {
  * @returns {Array}
  */
 GrouponClient.prototype.getOrders = co.wrap(function* (params) {
-	const arg = {
+  const arg = {
     url: API_TYPES.order.path,
     qs: {
       pageSize: API_TYPES.order.rows,
@@ -95,7 +95,7 @@ GrouponClient.prototype.getOrders = co.wrap(function* (params) {
   const body = yield this.client.get(url).catch( function(err) {
     throw new Error("Api returned error. Response: [" + err.statusCode + "] " + err.message);
   });
-	const response = body || [];
+  const response = body || [];
 
   return response;
 });
