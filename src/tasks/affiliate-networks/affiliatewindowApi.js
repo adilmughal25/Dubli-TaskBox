@@ -5,12 +5,8 @@ const co = require('co');
 const debug = require('debug')('affiliatewindow:processor');
 const sendEvents = require('./support/send-events');
 const singleRun = require('./support/single-run');
-const cutoffDate = require('./support/cutoff-date');
 const moment = require('moment');
 const client = require('./api-clients/affiliatewindow')();
-
-const CUTOFF_KEY_TRANSACTION = 'affiliatewindow:transaction-date-queries';
-const CUTOFF_KEY_VALIDATION  = 'affiliatewindow:validation-date-queries';
 
 // helper
 const ary = x => _.isArray(x) ? x : [x];
@@ -40,12 +36,9 @@ var doApiCashback = co.wrap(function* (a_merchants) {
 var getCommissionDetails = singleRun(function* () {
   yield client.setup();
   const endDate = new Date(Date.now() - (60 * 1000));
-  const starts = yield {
-    transaction: cutoffDate.get(CUTOFF_KEY_TRANSACTION),
-    validation: cutoffDate.get(CUTOFF_KEY_VALIDATION)
-  };
-  const transactionRanges = getRanges(starts.transaction, endDate);
-  const validationRanges = getRanges(starts.validation, endDate);
+  const startDate = moment().subtract(75, 'days').toDate();
+  const transactionRanges = getRanges(startDate, endDate);
+  const validationRanges = getRanges(startDate, endDate);
   let results = [];
 
   for (let i = 0; i < transactionRanges.length; i++) {
@@ -61,11 +54,6 @@ var getCommissionDetails = singleRun(function* () {
   const events = _.uniq(results, false, x => x.iId).map(prepareCommission);
 
   yield sendEvents.sendCommissions('affiliatewindow', events);
-
-  yield [
-    cutoffDate.set(CUTOFF_KEY_TRANSACTION, endDate),
-    cutoffDate.set(CUTOFF_KEY_VALIDATION, endDate)
-  ];
 });
 
 const STATE_MAP = {

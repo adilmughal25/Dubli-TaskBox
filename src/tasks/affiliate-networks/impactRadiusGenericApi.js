@@ -8,7 +8,6 @@ const debug = require('debug')('impactradius:processor');
 
 const sendEvents = require('./support/send-events');
 const singleRun = require('./support/single-run');
-const cutoffDate = require('./support/cutoff-date');
 const merge = require('./support/easy-merge')('CampaignId', {
   promoAds: 'CampaignId',
   campaignAds: 'CampaignId'
@@ -18,7 +17,6 @@ const taskCache = {};
 function setup(s_whitelabel) {
   if (taskCache[s_whitelabel]) return taskCache[s_whitelabel];
 
-  const CUTOFF_KEY = 'impactradius:'+s_whitelabel;
   const client = getClient(s_whitelabel);
   const tasks = {};
 
@@ -33,7 +31,7 @@ function setup(s_whitelabel) {
   });
 
   var getCommissionDetails = tasks.getCommissionDetails = singleRun(function* () {
-    const startTime = yield cutoffDate.get(CUTOFF_KEY);
+    const startTime = moment().subtract(60, 'days').toDate();
     const endTime = new Date(Date.now() - (60 * 1000)); //
     debug("fetching all events between %s and %s", startTime, endTime);
     const commissions = yield client.getCommissions(startTime, endTime);
@@ -42,7 +40,6 @@ function setup(s_whitelabel) {
       .filter(x => !!x); // so that the prepareCommission can return 'null' to skip one
     console.log("Commission Data: ", events);
     yield sendEvents.sendCommissions(s_whitelabel, commissions);
-    yield cutoffDate.set(CUTOFF_KEY, endTime);
   });
 
   taskCache[s_whitelabel] = tasks;

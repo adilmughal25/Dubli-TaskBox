@@ -12,6 +12,8 @@ const merge = require('./support/easy-merge')('PID', {
 
 const getClient = require('./api-clients/omgpm-legacy');
 
+const isNum = /^\d+$/;
+
 function setup(s_account) {
   const client = getClient(s_account);
 
@@ -28,25 +30,32 @@ function setup(s_account) {
   });
 
   tasks.getCommissionDetails = singleRun(function* (){
-    const start = moment().subtract(90, 'days');
-    const end = new Date();
-    const commissions = yield client.getTransactions(start, end);
-    const events = commissions.map(prepareCommission);
-    yield sendEvents.sendCommissions(accountKey, events);
+    // const start = moment().subtract(90, 'days');
+    // const end = new Date();
+    // const commissions = yield client.getTransactions(start, end);
+    // const events = commissions.map(prepareCommission);
+    // yield sendEvents.sendCommissions(accountKey, events);
+    throw new Error("OMG has issues regarding SubIDs and Currencies, Do not enable until these are fixed");
   });
 
   return tasks;
 }
 
+const STATUS_MAP = {
+  'Pending': 'initiated',
+  'Rejected': 'cancelled',
+  'Validated': 'confirmed'
+};
+
 function prepareCommission(o_obj) {
   const event = {
     transaction_id: o_obj.TransactionId,
-    outclick_id: o_obj.Ex1,
+    outclick_id: "BROKEN", //@TODO not in the transactions XML that I can see.
     purchase_amount: o_obj.TransactionValue,
     commission_amount: o_obj.VR,
-    currency: o_obj.FIX_ME, //@TODO: not in the transactions xml, need to email them
-    state: o_obj.FIX_ME,
-    effective_date: o_obj.FIX_ME,
+    currency: "BROKEN", //@TODO: not in the transactions xml, need to email them.
+    state: isNum.test(o_obj.Paid) ? 'paid' : STATUS_MAP[o_obj.Status],
+    effective_date: o_obj.Status === 'Pending' ? new Date(o_obj.TransactionTime) : 'auto',
   };
   return event;
 }

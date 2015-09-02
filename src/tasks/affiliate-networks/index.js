@@ -56,8 +56,10 @@ const omgpmAustraliaApi = omgpmGenericApi('australia');
 
 function init(createTask) {
 
-  // run each of these every 6 hours
-  createTask.createGroup(6, {
+  // run each of these every 24 hours -- since their position within the 24h
+  // segment is randomized, this could lead to some not being calculated every
+  // day if and when there's a deploy and/or taskbox restart.
+  createTask.createGroup(24, {
     "APD Performance Merchants": apdPerformanceApi.getMerchants,
     "AdCell Merchants": adCellApi.getMerchants,
     "Affili.Net (Austria) Merchants": affilinetAustriaApi.getMerchants,
@@ -93,10 +95,6 @@ function init(createTask) {
     "VCommission Merchants": vcommissionApi.getMerchants,
     "Webgains Merchants": webgainsApi.getMerchants,
     "Zanox Merchants": zanoxApi.getMerchants,
-  });
-
-  // run each of these every 24 hours
-  createTask.createGroup(24, {
     "ShareASale Merchants": shareASaleApi.getMerchants,
   });
 

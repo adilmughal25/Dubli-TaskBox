@@ -11,14 +11,11 @@ const utils = require('ominto-utils');
 const XmlEntities = require('html-entities').XmlEntities;
 const entities = new XmlEntities();
 const singleRun = require('./support/single-run');
-const cutoffDate = require('./support/cutoff-date');
 
 const linkShare = require('./api-clients/linkshare')();
 const _check = utils.checkApiResponse;
 const jsonify = require('./api-clients/jsonify-xml-body');
 const limiter = utils.promiseRateLimiter;
-
-const CUTOFF_KEY = 'linkshare';
 
 var getMerchants = singleRun(function* (){
   var results = yield {
@@ -93,7 +90,7 @@ var doApiTextLinks = co.wrap(function* () {
 var getCommissionDetails = singleRun(function*(){
   let page = 1;
   let commissions = [];
-  const startTime = yield cutoffDate.get(CUTOFF_KEY);
+  const startTime = moment().subtract(60, 'days').toDate();
   const endTime = new Date(Date.now() - (60 * 1000));
   while (true) {
     const client = yield linkShare.getFreshClient();
@@ -110,8 +107,7 @@ var getCommissionDetails = singleRun(function*(){
     page += 1;
   }
   const events = commissions.map(prepareCommission).filter(x => !!x);
-  yield sendEvents.sendCommissions('linkshare', commissions);
-  yield cutoffDate.set(CUTOFF_KEY, endTime);
+  yield sendEvents.sendCommissions('linkshare', events);
   linkShare.releaseClient();
 });
 
