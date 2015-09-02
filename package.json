@@ -8,7 +8,9 @@
     "test": "npm install && node --harmony node_modules/.bin/_mocha --timeout 10000 test/unit/*.js",
     "coverage": "npm install && node --harmony node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- --timeout 10000 test/unit/*.js",
     "integration": "npm install && node --harmony node_modules/.bin/_mocha --timeout 50000 test/integration/*.js",
-    "debug": "npm install && node --debug --harmony src/server.js | bunyan"
+    "debug": "npm install && node --debug --harmony src/server.js | bunyan",
+    "task-list": "node --harmony ./src/bin/task-runner.js --list",
+    "task": "node --harmony ./src/bin/task-runner.js --run"
   },
   "engines": {
     "node": "0.12.x"
