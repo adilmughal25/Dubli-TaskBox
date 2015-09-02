@@ -13,7 +13,12 @@ const querystring = require('querystring');
 const check = require('ominto-utils').checkApiResponse;
 const url = require('url');
 
-const ary = x => _.isArray(x) ? x : [x];
+const ary = x => !!x ? (_.isArray(x) ? x : [x]) : [];
+
+const MERCHANT_KEY     = 'Report.table1.Detail_Collection.Detail';
+const COUPONS_KEY      = 'Items.Item';
+const TRANSACTIONS_KEY = 'Report.Report.Report_Details_Group_Collection.Report_Details_Group';
+
 
 // urls:
 // IN: http://admin.optimisemedia.com/v2/Reports/Affiliate/ProgrammesExport.aspx?Agency=95&Country=0&Affiliate=808960&Search=&Sector=0&UidTracking=False&PayoutTypes=S&ProductFeedAvailable=False&Format=XML&AuthHash=93FD70005E94A58285948FB41785D135&AuthAgency=95&AuthContact=808960&ProductType=
@@ -86,25 +91,44 @@ function createClient(s_account) {
   client.url = getUrl;
 
   client.getMerchants = function() {
-    const url = client.url('merchants');
-    debug('GET '+url);
-    return client
-      .get(url)
+    const apiUrl = client.url('merchants');
+    debug('GET '+apiUrl);
+    return client.get(apiUrl)
       .then(check('2XX', 'Could not load merchants'))
       .then(jsonify)
-      .then(resp => ary(_.get(resp, 'Report.table1.Detail_Collection.Detail')))
+      .then(resp => ary(_.get(resp, MERCHANT_KEY)))
       .then(items => items.map(x => x.$).filter(isLive).filter(hasPercent));
   };
 
   client.getCoupons = function() {
-    const url = client.url('coupons');
-    debug('GET '+url);
-    return client
-      .get(url)
+    const apiUrl = client.url('coupons');
+    debug('GET '+apiUrl);
+    return client.get(apiUrl)
       .then(check('2XX', 'Could not load coupons'))
       .then(jsonify)
-      .then(resp => ary(_.get(resp, 'Items.Item')))
+      .then(resp => ary(_.get(resp, COUPONS_KEY)))
       .then(items => items.map(extractPid));
+  };
+
+  client.getTransactionsByCountry = function(country, start, end) {
+    const apiUrl = client.url('transactions', {
+      country : country,
+      start   : start,
+      end     : end,
+    });
+    debug('GET '+apiUrl);
+    return client.get(apiUrl)
+      .then(check('2XX', 'Could not load transactions for '+country+' ('+url+')'))
+      .then(jsonify)
+      .then(resp => ary(_.get(resp, TRANSACTIONS_KEY)))
+      .then(items => items.map(x => x.$));
+  };
+
+  // promises are effing cool.
+  client.getTransactions = function(start, end) {
+    const proc = country => client.getTransactionsByCountry(country, start, end);
+    const promises = client.credentials.transactionCountries.map(proc);
+    return Promise.all(promises).then(_.flatten);
   };
 
   _clientCache[s_account] = client;
@@ -167,6 +191,8 @@ function getUrl(urlType, params) {
     });
     return url;
   }
+
+  throw new Error("unknown url type "+urlType);
 }
 
 function dateComponents(date) {
