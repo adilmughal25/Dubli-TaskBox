@@ -48,7 +48,7 @@
           commissionsPromise = avantLinkApiClient.getClient('us', 'commissions').getData({date_begin: startDate, date_end:endDate});
 
       return commissionsPromise.then(function(results) {
-        expect(results).to.be.array;
+        assert.isArray(results, 'results is an array');
         if (results.length > 0) { // there could simply be no transaction in selected time period
           expect(results[0]).to.have.property('Order_Id');
         }

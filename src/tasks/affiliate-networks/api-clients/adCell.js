@@ -14,6 +14,7 @@ const request = require('request-promise');
 //require('request-promise').debug = true; 
 const debug = require('debug')('adcell:api-client');
 const moment = require('moment');
+const limiter = require('ominto-utils').promiseRateLimiter;
 
 const API_URL      = 'https://www.adcell.de/api/v2/';
 const API_USERID   = '205737';                  // DubLi-Legacy: 165872
@@ -62,6 +63,8 @@ function AdCellClient() {
       accept: "application/json"
     }
   });
+
+  limiter.request(this.client, 1, 2).debug(debug);
 }
 
 /**
@@ -169,7 +172,7 @@ AdCellClient.prototype.getCommissions = co.wrap(function* (params) {
 	response = _.get(body, 'data', []);
 
   if (body.status != 200) {
-    throw new Error("Could not get commissions. Response: [" + body.status + "]" + body.message);
+    throw new Error("Could not get commissions. Response: [" + body.status + "]" + body.message + ". Token:[" + this.token + "]");
   }
 
 	return response;
@@ -212,7 +215,7 @@ AdCellClient.prototype.getPromotionType = co.wrap(function* (promoType, params) 
 	response = _.get(body, 'data', []);
 
   if (body.status != 200) {
-    throw new Error("Could not get " + promoType + " for export. Response: [" + body.status + "]" + body.message);
+    throw new Error("Could not get " + promoType + " for export. Response: [" + body.status + "]" + body.message + ". Token:[" + this.token + "]");
   }
 
 	return response;
@@ -274,7 +277,7 @@ AdCellClient.prototype.getStatisticsByCommission = co.wrap(function* (params) {
 	response = _.get(body, 'data', []);
 
   if (body.status != 200) {
-    throw new Error("Could not get transactions. Response: [" + body.status + "]" + body.message);
+    throw new Error("Could not get transactions. Response: [" + body.status + "]" + body.message + ". Token:[" + this.token + "]");
   }
 
 	return response;

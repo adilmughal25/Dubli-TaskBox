@@ -2,15 +2,16 @@
 
 /*
  * http://classic.avantlink.com/api.php?help=1&module=AffiliateReport
- * Interpretion of commission details data - has to be confirmed :
- *  "Custom_Tracking_Code" => outclick_id => only alphanumeric characters, nothing else
- *  "AvantLink_Transaction_Id" => internal AvantLink id, NOT unique between same transaction status change; ie: "SALE-12331395" vs. "ADJUSTMENT-660153" of same sale
- *  "Order_Id" => transaction_id => Seems to be a unique TID between all status updated of same order?!
  *  "Transaction_Type" => status => could be used to map into a status.
  *     known types: SALE,RETURN,FRAUD,CANCELED,BONUS,ADJUSTMENT
- *  currency seems to be *always* USD, even in CA and AU programs?
  *
- * How to deal with ADJUSTMENT?
+ * How to deal with ADJUSTMENT? (come in with negative amounts)
+ *
+ * Explanation from AvantLink:
+ * SALE - Sale
+ * ADJUSTMENT - A Partial or full Amount manually adjusted
+ * RETURN or CANCELLED indicate the order was returned, or cancelled
+ * FRAUD indicates it was cancelled on your side due to fraud
  */
 
 const _ = require('lodash');
@@ -58,7 +59,7 @@ function setup(s_region) {
     debug("fetching all transactions between %s and %s", startDate, endDate);
 
     transactions = yield clientC.getData({date_begin: startDate, date_end:endDate});
-    events = transactions.map(prepareCommission).filter(exists);
+    events = transactions.map(prepareCommission.bind(null, s_region)).filter(exists);
 
     yield sendEvents.sendCommissions('avantlink-'+s_region, events);
   });
@@ -91,12 +92,18 @@ function preparePromos(o_promo) {
 }
 
 const STATE_MAP = {
-  sale: 'initiated',  // i would say its "confirmed" but do not know implications on data API when transaction gets updated or other restrictions.
+  sale: 'initiated',
   return: 'cancelled',
   fraud: 'cancelled',
   canceled: 'cancelled',
   bonus: 'paid', // bonus commission to Affiliate - nothing for customers - ignore
-  adjustment: 'initiated',  // i would say its "confirmed" but do not know implications on data API when transaction gets updated or other restrictions.
+  adjustment: 'cancelled',  // i would say its "cancelled" but do not know implications on data API when transaction gets updated or other restrictions.
+};
+
+const CURRENCY_MAP = {
+  us: 'usd',
+  ca: 'cad',
+  au: 'aud'
 };
 
 /**
@@ -105,12 +112,12 @@ const STATE_MAP = {
  * @returns {Object}
  */
 const amountPregPattern = /([^0-9\\.])/gi;  // to clean amounts like "($123.45)", "$432.12", ...
-function prepareCommission(o_obj) {
+function prepareCommission(region, o_obj) {
   var event = {
     affiliate_name: o_obj.Merchant,
     transaction_id: o_obj.Order_Id,
     outclick_id: o_obj.Custom_Tracking_Code,
-    currency: 'usd',
+    currency: CURRENCY_MAP[region],
     purchase_amount: o_obj.Transaction_Amount.replace(amountPregPattern, ''),
     commission_amount: o_obj.Total_Commission.replace(amountPregPattern, ''),
     state: STATE_MAP[o_obj.Transaction_Type.toLowerCase()],
