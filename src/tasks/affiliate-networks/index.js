@@ -13,6 +13,7 @@ const impactRadiusProductFtp = require("./impactRadiusProductFtp");
 const linkShareApi = require("./linkShareApi");
 const pepperjamApi = require('./pepperjamApi');
 const performanceHorizonApi = require('./performanceHorizonApi');
+const shareASaleApi = require('./shareASaleApi');
 const tradetrackerApi = require('./tradetrackerApi');
 const webgainsApi = require('./webgainsApi');
 const zanoxApi = require('./zanoxApi');
@@ -94,6 +95,11 @@ function init(createTask) {
     "Zanox Merchants": zanoxApi.getMerchants,
   });
 
+  // run each of these every 24 hours
+  createTask.createGroup(24, {
+    "ShareASale Merchants": shareASaleApi.getMerchants,
+  });
+
   // run each of these every 6 hours
   createTask.createGroup(6, {
     "APD Performance Commissions": apdPerformanceApi.getCommissionDetails,
@@ -116,6 +122,7 @@ function init(createTask) {
     "LinkShare Commissions": linkShareApi.getCommissionDetails,
     "PepperJam Commissions": pepperjamApi.getCommissionDetails,
     "SnapDeal Commissions": snapdealApi.getCommissionDetails,
+    "ShareASale Commissions": shareASaleApi.getCommissionDetails,
     "VCommission Commissions": vcommissionApi.getCommissionDetails,
     "Zanox Commissions": zanoxApi.getCommissionDetails,
   });
