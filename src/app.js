@@ -3,10 +3,9 @@
 const configs = require('../configs.json');
 const bunyan = require('bunyan');
 
-const scheduleTasks = require('./schedule-tasks');
 const ftpToS3 = require('./ftp-to-s3');
-const affiliates = require('./tasks/affiliate-networks/index');
-const snsPing = require('./tasks/sns-ping');
+const scheduleTasks = require('./schedule-tasks');
+const tasks = require('./tasks');
 
 function init(id) {
   process.on('message', function(msg) {
@@ -29,17 +28,12 @@ function init(id) {
   });
   log.level(configs.logLevel);
 
-  // The Taskmaster:
-  const createTask = scheduleTasks(log);
-
   // set up ftp server for taskbox
   ftpToS3(log, configs.ftpToS3);
 
-  // all affiliate tasks are handled here:
-  affiliates.init(createTask);
-
-  // other miscellaneous tasks
-  createTask('TownClock SNS Ping', snsPing.ping, {minute: [0,15,30,45]});
+  // The Taskmaster:
+  const createTask = scheduleTasks(log);
+  tasks(createTask);
 }
 
 module.exports = {

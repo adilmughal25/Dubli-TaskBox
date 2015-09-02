@@ -13,7 +13,6 @@ const STATE_MAP = {
   accepted: 'confirmed',
 };
 
-var client = require('./api-clients/adCell')();
 var merge = require('./support/easy-merge')(
   'programId',            // the identifier for our merchants
   {
@@ -27,7 +26,7 @@ var merge = require('./support/easy-merge')(
  * Retrieve all merchant/program information from AdCell including there commissions and coupons.
  * @returns {undefined}
  */
-const getMerchants = singleRun(function* () {
+var getMerchants = singleRun(function* () {
   let response,
       results = {},
       merchants = {},
@@ -51,8 +50,8 @@ const getMerchants = singleRun(function* () {
    */
 
   let idGroupSize = 25; // split list into groups of each 25 Ids, resulting in a URL param list of 25 times "&programIds[]=12345"
-  let idGroups = merchantIds.map(function(e,i) { 
-    return i%idGroupSize===0 ? merchantIds.slice(i,i+idGroupSize) : null; 
+  let idGroups = merchantIds.map(function(e,i) {
+    return i%idGroupSize===0 ? merchantIds.slice(i,i+idGroupSize) : null;
   }).filter((x) => {return x;});
 
   // get all coupons for each group of programIds
@@ -84,7 +83,7 @@ const getMerchants = singleRun(function* () {
  * Retrieve all commission details (sales/transactions) from AdCell within given period of time.
  * @returns {undefined}
  */
-const getCommissionDetails = singleRun(function* () {
+var getCommissionDetails = singleRun(function* () {
   let transactions = [],
       events = [],
       startDate = new Date(Date.now() - (30 * 86400 * 1000)),
@@ -106,7 +105,8 @@ const getCommissionDetails = singleRun(function* () {
  * @param {Object} params - The params to pass onto the api method
  * @returns {Array}
  */
-const pagedApiCall = co.wrap(function* (method, bodyKey, params) {
+var pagedApiCall = co.wrap(function* (method, bodyKey, params) {
+  const client = getClient();
   let results = [],
       perPage = 250,	// default is 25
       page = 0,
@@ -158,6 +158,14 @@ function prepareCommission(o_obj) {
     effective_date: (o_obj.changeTime !== '' ? new Date(o_obj.changeTime) : 'auto')
   };
   return event;
+}
+
+let _client;
+function getClient() {
+  if (!_client) {
+    _client = require('./api-clients/adCell')();
+  }
+  return _client;
 }
 
 module.exports = {

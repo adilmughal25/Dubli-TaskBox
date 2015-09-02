@@ -6,6 +6,7 @@ const API_URL = 'https://affiliate-api.flipkart.net/affiliate/';
 
 const _ = require('lodash');
 const co = require('co');
+const debug = require('debug')('flipkart:api-client');
 const moment = require('moment');
 const querystring = require('querystring');
 const request = require('request-promise');
@@ -13,9 +14,7 @@ const request = require('request-promise');
 const statuses = 'Cancelled Approved Pending Disapproved'.split(' ');
 const fixUrl = u => u.indexOf(API_URL) === 0 ? u.replace(API_URL, '') : u;
 
-
 // require('./src/scripts/api-clients/flipkart')().ordersReport(new Date(Date.now() - (86400 * 1000 * 120)), new Date()).then(x => console.log("ret",x), e => console.log("err",e))
-
 
 function createClient() {
   const client = request.defaults({
@@ -34,7 +33,9 @@ function createClient() {
     let currentUrl = fixUrl(url);
     let results = [];
     while (true) {
-      let response = yield client.get(url);
+      debug("fetch %s%s", API_URL, currentUrl);
+      let response = yield client.get(currentUrl);
+      debug("next url: %s", response.next);
       let val = _.get(response, key);
       if (val && _.isArray(val)) results = results.concat(val);
       if (! response.next) break;

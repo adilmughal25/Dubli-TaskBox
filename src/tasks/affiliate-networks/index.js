@@ -11,7 +11,6 @@ const flipkartApi = require('./flipkartApi');
 const grouponApi = require('./grouponApi');
 const impactRadiusProductFtp = require("./impactRadiusProductFtp");
 const linkShareApi = require("./linkShareApi");
-const omgpmApi = require('./omgpmApi');
 const pepperjamApi = require('./pepperjamApi');
 const performanceHorizonApi = require('./performanceHorizonApi');
 const shareASaleApi = require('./shareASaleApi');
@@ -47,6 +46,14 @@ const avantLinkGenericApi = require('./avantLinkGenericApi');
 const avantLinkCAApi = avantLinkGenericApi('ca');
 const avantLinkUSApi = avantLinkGenericApi('us');
 
+const omgpmGenericApi = require('./omgpmGenericApi');
+const omgpmIndiaApi = omgpmGenericApi('india');
+const omgpmUKApi = omgpmGenericApi('uk');
+const omgpmAsiaApi = omgpmGenericApi('asia');
+const omgpmBrazilApi = omgpmGenericApi('brazil');
+const omgpmAustraliaApi = omgpmGenericApi('australia');
+
+
 function init(createTask) {
 
   // run each of these every 6 hours
@@ -69,7 +76,11 @@ function init(createTask) {
     "CommissionFactory Merchants": commissionfactoryApi.getMerchants,
     "ImpactRadius Merchants": impactRadiusApi.getMerchants,
     "LinkShare Merchants": linkShareApi.getMerchants,
-    "OMGpm Merchants": omgpmApi.getMerchants,
+    "OMG (India) Merchants": omgpmIndiaApi.getMerchants,
+    "OMG (UK) Merchants": omgpmUKApi.getMerchants,
+    "OMG (Asia) Merchants": omgpmAsiaApi.getMerchants,
+    "OMG (Brazil) Merchants": omgpmBrazilApi.getMerchants,
+    "OMG (Australia) Merchants": omgpmAustraliaApi.getMerchants,
     "PepperJam Merchants": pepperjamApi.getMerchants,
     "PerformanceHorizon Merchants": performanceHorizonApi.getMerchants,
     "PublicIdeas (ES) Merchants": publicideasESApi.getMerchants,
