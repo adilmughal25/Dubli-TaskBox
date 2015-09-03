@@ -12,13 +12,13 @@
  */
 
 const SERVICE_WSDL = 'http://ws.webgains.com/aws.php?wsdl';
-//const API_USER = 'merchants@ominto.com';
-//const API_PASS = 'Minty789';
-//const SITE_ID = 177143;
+const API_USER = 'merchants@ominto.com';
+const API_PASS = 'Minty789';
+const SITE_ID = 177143;
 // DubLi legacy
-const API_USER = 'mall@dubli.com';
-const API_PASS = 'cashback6750';
-const SITE_ID = 75700;
+//const API_USER = 'mall@dubli.com';
+//const API_PASS = 'cashback6750';
+//const SITE_ID = 75700;
 
 const _ = require('lodash');
 const co = require('co');
