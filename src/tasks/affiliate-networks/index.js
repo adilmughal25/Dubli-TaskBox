@@ -119,6 +119,7 @@ function init(createTask) {
     "ImpactRadius Commissions": impactRadiusApi.getCommissionDetails,
     "LinkShare Commissions": linkShareApi.getCommissionDetails,
     "PepperJam Commissions": pepperjamApi.getCommissionDetails,
+    "PerformanceHorizon Commissions": performanceHorizonApi.getCommissionDetails,
     "SnapDeal Commissions": snapdealApi.getCommissionDetails,
     "ShareASale Commissions": shareASaleApi.getCommissionDetails,
     "VCommission Commissions": vcommissionApi.getCommissionDetails,
