@@ -1,11 +1,15 @@
 #!/usr/bin/env node --harmony
 "use strict";
 
-// force some things on for dev env
+// force some things on.
 process.env.DEBUG = '*';
 process.env.NODE_ENV = 'dev';
 process.env.SAVE_MERCHANTS = 1;
 process.env.SAVE_COMMISSIONS = 1;
+
+// getTasks() is basically just `require('../tasks')`, except that it shuts debug up for a while
+const tasks = getTasks();
+const debug = require('debug')('task-runner');
 
 const bunyan = require('bunyan');
 const co = require('co');
@@ -44,7 +48,6 @@ function help() {
 function startup() {
   const _id = n => n.toLowerCase().replace(/\W+/g, '-').replace(/(^-|-$)/g, '');
   const register = (name, func) => ALL_TASKS[_id(name)] = {desc:name, handler:func};
-  const tasks = require('../tasks');
   register.createGroup = (n, defs) => Object.keys(defs).forEach(n => register(n, defs[n]));
   tasks(register);
 }
@@ -77,4 +80,14 @@ function run(id) {
     .catch(error => error && console.error("Error: ", error.stack))
     .then(() => console.log("task "+name+" ("+id+") completed")));
   return p;
+}
+
+// getTasks() is basically just `require('../tasks')`, except that it shuts debug up for a while
+function getTasks() {
+  const _debug = require('debug');
+  const orig = _debug.log;
+  _debug.log = function() {};
+  const tasks = require('../tasks');
+  _debug.log = orig;
+  return tasks;
 }
