@@ -18,6 +18,10 @@ const tradetrackerApi = require('./tradetrackerApi');
 const webgainsApi = require('./webgainsApi');
 const zanoxApi = require('./zanoxApi');
 
+const affiliateGatewayGenericApi = require('./affiliateGatewayGenericApi');
+const affiliateGatewayAsiaApi = affiliateGatewayGenericApi('asia');
+const affiliateGatewaySgApi = affiliateGatewayGenericApi('sg');
+
 const affilinetGenericApi = require('./affilinetGenericApi');
 const affilinetAustriaApi = affilinetGenericApi('at');
 const affilinetFranceApi = affilinetGenericApi('fr');
@@ -109,6 +113,8 @@ function init(createTask) {
     "Affili.Net (Spain) Commissions": affilinetSpainApi.getCommissionDetails,
     "Affili.Net (Switzerland) Commissions": affilinetSwitzerlandApi.getCommissionDetails,
     "Affili.Net (UK) Commissions": affilinetUKApi.getCommissionDetails,
+    // "Affiliate Gateway (Asia) Commissions": affiliateGatewayAsiaApi.getCommissionDetails,
+    // "Affiliate Gateway (SG) Commissions": affiliateGatewaySgApi.getCommissionDetails,
     "AffiliateWindow Commissions": affiliatewindowApi.getCommissionDetails,
     "AvantLink (CA) Commissions": avantLinkCAApi.getCommissionDetails,
     "AvantLink (US) Commissions": avantLinkUSApi.getCommissionDetails,
