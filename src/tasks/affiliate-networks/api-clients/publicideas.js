@@ -6,7 +6,6 @@ const jsonify = require('./jsonify-xml-body');
 const querystring = require('querystring');
 const moment = require('moment');
 
-
 const API_CREDENTIALS = {
   es: {
     partnerId: '45415',
