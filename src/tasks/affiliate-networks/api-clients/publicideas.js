@@ -5,6 +5,7 @@ const request = require('request-promise');
 const jsonify = require('./jsonify-xml-body');
 const querystring = require('querystring');
 const moment = require('moment');
+const iconv = require('iconv-lite');
 
 const API_CREDENTIALS = {
   es: {
@@ -72,7 +73,8 @@ function createClient(s_region) {
   client.getMerchants = function() {
     const requestUrl = this.url('merchants');
     console.log("URL", requestUrl);
-    const promise = this.get(requestUrl)
+    const promise = this.get(requestUrl, {encoding:'binary'})
+      .then(data => iconv.decode(data.body, 'ISO-8859-1').toString('utf8'))
       .then(this.jsonify)
       .then(data => ary(data.partner.program));
     return promise;
