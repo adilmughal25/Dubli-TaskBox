@@ -3,6 +3,7 @@
 module.exports = { init: init };
 
 const adCellApi = require('./adCellApi');
+const admitadApi = require('./admitadApi');
 const affiliatewindowApi = require('./affiliatewindowApi');
 const belboonApi = require('./belboonApi');
 const clickJunctionApi = require("./clickJunctionApi");
@@ -106,6 +107,7 @@ function init(createTask) {
   createTask.createGroup(6, {
     "APD Performance Commissions": apdPerformanceApi.getCommissionDetails,
     "AdCell Commissions": adCellApi.getCommissionDetails,
+    //"Admitad Commissions": admitadApi.getCommissionDetails,
     "Affili.Net (Austria) Commissions": affilinetAustriaApi.getCommissionDetails,
     "Affili.Net (France) Commissions": affilinetFranceApi.getCommissionDetails,
     "Affili.Net (Germany) Commissions": affilinetGermanyApi.getCommissionDetails,
