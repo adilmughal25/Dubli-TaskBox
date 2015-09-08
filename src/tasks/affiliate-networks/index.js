@@ -3,6 +3,7 @@
 module.exports = { init: init };
 
 const adCellApi = require('./adCellApi');
+const admitadApi = require('./admitadApi');
 const affiliatewindowApi = require('./affiliatewindowApi');
 const belboonApi = require('./belboonApi');
 const clickJunctionApi = require("./clickJunctionApi");
@@ -17,6 +18,10 @@ const shareASaleApi = require('./shareASaleApi');
 const tradetrackerApi = require('./tradetrackerApi');
 const webgainsApi = require('./webgainsApi');
 const zanoxApi = require('./zanoxApi');
+
+const affiliateGatewayGenericApi = require('./affiliateGatewayGenericApi');
+const affiliateGatewayAsiaApi = affiliateGatewayGenericApi('asia');
+const affiliateGatewaySgApi = affiliateGatewayGenericApi('sg');
 
 const affilinetGenericApi = require('./affilinetGenericApi');
 const affilinetAustriaApi = affilinetGenericApi('at');
@@ -102,6 +107,7 @@ function init(createTask) {
   createTask.createGroup(6, {
     "APD Performance Commissions": apdPerformanceApi.getCommissionDetails,
     "AdCell Commissions": adCellApi.getCommissionDetails,
+    "Admitad Commissions": admitadApi.getCommissionDetails,
     "Affili.Net (Austria) Commissions": affilinetAustriaApi.getCommissionDetails,
     "Affili.Net (France) Commissions": affilinetFranceApi.getCommissionDetails,
     "Affili.Net (Germany) Commissions": affilinetGermanyApi.getCommissionDetails,
@@ -109,6 +115,8 @@ function init(createTask) {
     "Affili.Net (Spain) Commissions": affilinetSpainApi.getCommissionDetails,
     "Affili.Net (Switzerland) Commissions": affilinetSwitzerlandApi.getCommissionDetails,
     "Affili.Net (UK) Commissions": affilinetUKApi.getCommissionDetails,
+    // "Affiliate Gateway (Asia) Commissions": affiliateGatewayAsiaApi.getCommissionDetails,
+    // "Affiliate Gateway (SG) Commissions": affiliateGatewaySgApi.getCommissionDetails,
     "AffiliateWindow Commissions": affiliatewindowApi.getCommissionDetails,
     "AvantLink (CA) Commissions": avantLinkCAApi.getCommissionDetails,
     "AvantLink (US) Commissions": avantLinkUSApi.getCommissionDetails,
