@@ -96,7 +96,7 @@ AffiliNet.prototype.ensureLoggedIn = co.wrap(function*() {
     this._token = loginResp.CredentialToken;
     this.debug("Login success: token is %s", this._token);
     var checkResp = yield this.check$({token:this._token});
-    this._expires = new Date(Date.parse(checkResp.ExpirationDate));
+    this._expires = new Date(Date.parse(checkResp.ExpirationDate) - 1000);
     this.debug("New token expires at %s", this._expires);
   }
 });
