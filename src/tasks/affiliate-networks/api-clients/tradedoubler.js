@@ -1,5 +1,9 @@
 "use strict";
 
+/*
+ * Waiting for Ominto's API Key!! Currently DubLi Legacy active.
+ */
+
 const _ = require('lodash');
 const co = require('co');
 const debug = require('debug')('tradedoubler:api-client');
