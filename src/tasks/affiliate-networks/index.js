@@ -107,7 +107,7 @@ function init(createTask) {
   createTask.createGroup(6, {
     "APD Performance Commissions": apdPerformanceApi.getCommissionDetails,
     "AdCell Commissions": adCellApi.getCommissionDetails,
-    //"Admitad Commissions": admitadApi.getCommissionDetails,
+    "Admitad Commissions": admitadApi.getCommissionDetails,
     "Affili.Net (Austria) Commissions": affilinetAustriaApi.getCommissionDetails,
     "Affili.Net (France) Commissions": affilinetFranceApi.getCommissionDetails,
     "Affili.Net (Germany) Commissions": affilinetGermanyApi.getCommissionDetails,

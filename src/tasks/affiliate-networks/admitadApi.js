@@ -12,18 +12,16 @@ const moment = require('moment');
  * @returns {undefined}
  */
 var getCommissionDetails = singleRun(function* () {
-  let transactions = [],
-      events = [],
-      startDate = new Date(Date.now() - (30 * 86400 * 1000)),
+  let startDate = new Date(Date.now() - (30 * 86400 * 1000)),
       endDate = new Date(Date.now() - (60 * 1000));
   const exists = x => !!x;
 
   debug("fetching all transactions between %s and %s", startDate, endDate);
 
-  transactions = yield pagedApiCall('getStatisticsByAction', 'results', {date_start: startDate, date_end:endDate});
-  //yield sendEvents.sendCommissions('admitad', transactions);
-  //events = transactions.map(prepareCommission).filter(exists);
-  //yield sendEvents.sendCommissions('admitad', events);
+  let transactions = yield pagedApiCall('getStatisticsByAction', 'results', {status_updated_start: startDate, status_updated_end:endDate});
+  const events = transactions.map(prepareCommission).filter(exists);
+
+  yield sendEvents.sendCommissions('admitad', events);
 });
 
 /**
@@ -35,10 +33,10 @@ var getCommissionDetails = singleRun(function* () {
  */
 var pagedApiCall = co.wrap(function* (method, bodyKey, params) {
   const client = getClient();
-  let results = [],
-      perPage = 50,
-      page = 0,
-      total = 0,
+  let results = [],       // aggregated result sets
+      perPage = 250,      // number of max records per response/page
+      page = 0,           // current page of request
+      total = 0,          // total count of records available at response
       start = Date.now();
 
 	// check that we call a method which actually is provided by the api client

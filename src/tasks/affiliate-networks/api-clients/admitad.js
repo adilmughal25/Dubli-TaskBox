@@ -2,6 +2,8 @@
 
 /*
  * API Documentation: https://developers.admitad.com/en/doc/api
+ * For best results, use datefilter on "status_updated_start" and "status_updated_end".
+ * - While testing, i found "declined" status update in 8/2015 from sale dated to 6/2014!!
  */
 
 const _ = require('lodash');
@@ -11,14 +13,14 @@ const request = require('request-promise');
 //require('request-promise').debug = true; 
 const debug = require('debug')('admitad:api-client');
 const moment = require('moment');
-const limiter = require('ominto-utils').promiseRateLimiter;
+//const limiter = require('ominto-utils').promiseRateLimiter;
 
 const API_URL           = 'https://api.admitad.com/';
-//const API_CLIENT_ID     = '4f4a18238d260e4c457bd885667949';
-//const API_CLIENT_SECRET = 'e644187aaf8325ef993ead2c618589';
+const API_CLIENT_ID     = '4f4a18238d260e4c457bd885667949';
+const API_CLIENT_SECRET = 'e644187aaf8325ef993ead2c618589';
 // DubLi Legacy
-const API_CLIENT_ID     = 'ef607af853e28790fa360daf3f2616';
-const API_CLIENT_SECRET = '0ccae8ee1cf05bd25cfe1ceba81a96';
+//const API_CLIENT_ID     = 'ef607af853e28790fa360daf3f2616';
+//const API_CLIENT_SECRET = '0ccae8ee1cf05bd25cfe1ceba81a96';
 
 const API_TYPES = {
   token: {
@@ -68,9 +70,14 @@ function AdmitadClient() {
     }
   });
 
-  //limiter.request(this.client, 1, 2).debug(debug);
+  //limiter.request(this.client, 1, 2).debug(debug);  // no limitations knows/documented
 }
 
+/**
+ * Computes the list of all api scopes possibly used in one of the calls to apply to the access token permissions.
+ * @memberof AdmitadClient
+ * @returns {String}
+ */
 AdmitadClient.prototype.getScope = function() {
   let scope = '';
 
@@ -102,7 +109,7 @@ AdmitadClient.prototype.getToken = co.wrap(function* () {
   };
 
   body = yield this.client.post(arg).auth(API_CLIENT_ID, API_CLIENT_SECRET, true);
-  response = body || {};
+  response = body || {error:-1, error_description:'Unknown error. Empty response body.'};
 
   if (response.error) {
     throw new Error("Could not get Token for Admitad API requests. Response: [" + response.error + "]" + response.error_description);
@@ -132,14 +139,19 @@ AdmitadClient.prototype.getStatisticsByAction = co.wrap(function* (params) {
     qs: {
       limit: API_TYPES.statistics.rows,
       page: 1,
-      date_start: new Date(),
-      date_end: new Date(),
     }
   };
 
+  // require at least 1 set of dates
+  if(params.date_start === undefined && params.date_end === undefined && params.status_updated_start === undefined && params.status_updated_end === undefined) {
+    throw new Error("Invalid request. Please specify a date filter with param pair (date_start & date_end) or (status_updated_start & status_updated_end).");
+  }
+
   // format dates to API expected format
-  params.date_start = params.date_start ? moment(params.date_start).format('DD.MM.YYYY') : arg.qs.date_start;
-  params.date_end = params.date_end ? moment(params.date_end).format('DD.MM.YYYY'): arg.qs.date_end;
+  params.date_start = params.date_start ? moment(params.date_start).format('DD.MM.YYYY') : undefined;
+  params.date_end = params.date_end ? moment(params.date_end).format('DD.MM.YYYY'): undefined;
+  params.status_updated_start = params.status_updated_start ? moment(params.status_updated_start).format('DD.MM.YYYY 00:00:00') : undefined;
+  params.status_updated_end = params.status_updated_end ? moment(params.status_updated_end).format('DD.MM.YYYY HH:mm:ss'): undefined; // API validates that date/time isnt in future!
 
 	// make sure we have a valid token for next request
 	yield this.getToken();
@@ -149,7 +161,7 @@ AdmitadClient.prototype.getStatisticsByAction = co.wrap(function* (params) {
   // set the authentication type and value
   arg.auth[API_TYPES.statistics.authorization] = this.token;
 
-  debug("Using token '%s' to fetch statistics by commission between %s and %s", this.token, arg.qs.date_start, arg.qs.date_end);
+  debug("Using token '%s' to fetch statistics by commission between %s and %s", this.token, params.date_start || params.status_updated_start, params.date_end || params.status_updated_end);
 
 	body = yield this.client.get(arg);
 	response = body || {};
