@@ -13,9 +13,9 @@ const jsonify = require('./jsonify-xml-body');
 //require('request-promise').debug = true; 
 
 const API_BASEURL = 'http://reports.tradedoubler.com/pan/';
-//const API_KEY = '';
+const API_KEY = '508947a87aaea31b41d3ea73a69d6fb3';
 // DubLi Legacy (UK)
-const API_KEY = '1cd41e04394f400298de770f33b4edec';
+//const API_KEY = '1cd41e04394f400298de770f33b4edec';
 
 const API_PARAMS_DEFAULT = {
   key: API_KEY,
