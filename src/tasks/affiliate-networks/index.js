@@ -15,7 +15,7 @@ const linkShareApi = require("./linkShareApi");
 const pepperjamApi = require('./pepperjamApi');
 const performanceHorizonApi = require('./performanceHorizonApi');
 const shareASaleApi = require('./shareASaleApi');
-const tradetrackerApi = require('./tradetrackerApi');
+const tradedoublerApi = require('./tradedoublerApi');
 const webgainsApi = require('./webgainsApi');
 const zanoxApi = require('./zanoxApi');
 
@@ -58,6 +58,22 @@ const omgpmAsiaApi = omgpmGenericApi('asia');
 const omgpmBrazilApi = omgpmGenericApi('brazil');
 const omgpmAustraliaApi = omgpmGenericApi('australia');
 
+const tradetrackerGenericApi = require('./tradetrackerGenericApi');
+const tradetrackerATApi = tradetrackerGenericApi('at');
+const tradetrackerBEApi = tradetrackerGenericApi('be');
+const tradetrackerCHApi = tradetrackerGenericApi('ch');
+const tradetrackerCZApi = tradetrackerGenericApi('cz');
+const tradetrackerDEApi = tradetrackerGenericApi('de');
+const tradetrackerDKApi = tradetrackerGenericApi('dk');
+const tradetrackerESApi = tradetrackerGenericApi('es');
+const tradetrackerFIApi = tradetrackerGenericApi('fi');
+const tradetrackerFRApi = tradetrackerGenericApi('fr');
+const tradetrackerGBApi = tradetrackerGenericApi('gb');
+const tradetrackerITApi = tradetrackerGenericApi('it');
+const tradetrackerNLApi = tradetrackerGenericApi('nl');
+const tradetrackerNOApi = tradetrackerGenericApi('no');
+const tradetrackerRUApi = tradetrackerGenericApi('ru');
+const tradetrackerSEApi = tradetrackerGenericApi('se');
 
 function init(createTask) {
 
@@ -96,7 +112,22 @@ function init(createTask) {
     "PublicIdeas (LATAM) Merchants": publicideasLATAMApi.getMerchants,
     "PublicIdeas (UK) Merchants": publicideasUKApi.getMerchants,
     "SnapDeal Merchants": snapdealApi.getMerchants,
-    "TradeTracker Merchants": tradetrackerApi.getMerchants,
+    "TradeDoubler Merchants": tradedoublerApi.getMerchants,
+    "TradeTracker (AT) Merchants": tradetrackerATApi.getMerchants,
+    "TradeTracker (BE) Merchants": tradetrackerBEApi.getMerchants,
+    "TradeTracker (CH) Merchants": tradetrackerCHApi.getMerchants,
+    "TradeTracker (CZ) Merchants": tradetrackerCZApi.getMerchants,
+    "TradeTracker (DE) Merchants": tradetrackerDEApi.getMerchants,
+    "TradeTracker (DK) Merchants": tradetrackerDKApi.getMerchants,
+    "TradeTracker (ES) Merchants": tradetrackerESApi.getMerchants,
+    "TradeTracker (FI) Merchants": tradetrackerFIApi.getMerchants,
+    "TradeTracker (FR) Merchants": tradetrackerFRApi.getMerchants,
+    "TradeTracker (GB) Merchants": tradetrackerGBApi.getMerchants,
+    "TradeTracker (IT) Merchants": tradetrackerITApi.getMerchants,
+    "TradeTracker (NL) Merchants": tradetrackerNLApi.getMerchants,
+    "TradeTracker (NO) Merchants": tradetrackerNOApi.getMerchants,
+    "TradeTracker (RU) Merchants": tradetrackerRUApi.getMerchants,
+    "TradeTracker (SE) Merchants": tradetrackerSEApi.getMerchants,
     "VCommission Merchants": vcommissionApi.getMerchants,
     "Webgains Merchants": webgainsApi.getMerchants,
     "Zanox Merchants": zanoxApi.getMerchants,
