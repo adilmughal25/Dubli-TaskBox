@@ -9,7 +9,7 @@ const request = require('request-promise');
 require('tough-cookie'); // for request's benefit
 
 const API_SERVICE_WSDL  = 'http://ws.tradetracker.com/soap/affiliate?wsdl';
-const API_LOCALE        = 'en_GB'; // Possible values: nl_BE, fr_BE, cs_CZ, da_DK, de_DE, et_EE, en_GB, es_ES, fr_FR, it_IT, hu_HU, nl_NL, nb_NO, de_AT, pl_PL, fi_FI, sv_SE, ru_RU
+const API_LOCALE        = 'en_GB'; // Default locale; Possible values: nl_BE, fr_BE, cs_CZ, da_DK, de_DE, et_EE, en_GB, es_ES, fr_FR, it_IT, hu_HU, nl_NL, nb_NO, de_AT, pl_PL, fi_FI, sv_SE, ru_RU
 const API_CREDENTIALS   = {
   at: {
     siteId: 227197,
@@ -71,12 +71,6 @@ const API_CREDENTIALS   = {
     passphrase: '56d7c37a0fde4f3f538ad176c162da39a8e179d5',
     locale: 'nb_NO'
   },
-  ru: {
-    siteId: 227212,
-    customerId: 120335,
-    passphrase: '1608b1c6888577a635d187019ae8d1ca6d89d6fa',
-    locale: 'ru_RU'
-  },
   es: {
     siteId: 227214,
     customerId: 120335,
@@ -99,6 +93,16 @@ const API_CREDENTIALS   = {
     customerId: 120335,
     passphrase: 'cb7c439c5c11f70590b9ae6b8b8032a7ebed624e',
     locale: 'en_GB'
+  },
+  ru: {
+    siteId: 227212,
+    customerId: 120335,
+    passphrase: '1608b1c6888577a635d187019ae8d1ca6d89d6fa',
+    // DubLi Legacy
+    /* siteId: 181114,
+    customerId: 96906,
+    passphrase: 'e121440ed81b78569c22c7b769dfd32554dc44fe',*/
+    locale: 'ru_RU'
   }
 };
 
@@ -167,7 +171,7 @@ TradeTrackerSoapClient.prototype.setup = co.wrap(function* () {
         newFn = (args, cb) => fn(_.merge({affiliateSiteID: Client.siteId}, args), cb);
       }
 
-      debug("registering api call %s", method);
+      //debug("registering api call %s", method);
       _.set(Client, method, denodeify(newFn));
     }, this);
 

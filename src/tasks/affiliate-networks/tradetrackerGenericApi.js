@@ -16,8 +16,23 @@ const merge = require('./support/easy-merge')('ID', {
   vouchers: 'campaign.ID',
   offers: 'campaign.ID'
 });
+const exists = x => !!x;
 
 const MATERIAL_ARGS = {materialOutputType: 'rss'};
+const CONVERSIONTRANS_ARGS = {options:{
+  //ID: '',
+  //transactionType: '',    // click,lead,sale
+  //transactionStatus: '',  // pending,accepted,rejected
+  registrationDateFrom: '',
+  registrationDateTo: '',
+  //assessmentDateFrom: '',
+  //assessmentDateTo: '',
+  //reference: '',
+  //limit: '',
+  //offset: '',
+  //sort: '',
+  //sortDirection: ''
+}};
 
 function setup(s_region) {
   if (taskCache[s_region]) return taskCache[s_region];
@@ -38,32 +53,72 @@ function setup(s_region) {
 
     var merchants = merge(results);
 
-    yield sendEvents.sendMerchants('tradetracker-'+s_region, merchants);
+    yield sendEvents.sendMerchants('tradetracker-' + s_region, merchants);
   });
 
   // get commission report
-/*
-    task.getCommissionDetails = singleRun(function* () {
-    this.client = yield clientPool.getClient(s_region);
+  tasks.getCommissionDetails = singleRun(function* () {
+    tasks.client = yield clientPool.getClient(s_region);
     const startDate = new Date(Date.now() - (30 * 86400 * 1000));
     const endDate = new Date(Date.now() - (60 * 1000));
+    let args = _.merge(CONVERSIONTRANS_ARGS, {options:{
+      registrationDateFrom: dateFormat(startDate),
+      registrationDateTo: dateFormat(endDate),
+    }});
 
     debug("fetching all transactions between %s and %s", startDate, endDate);
 
-    const results = yield client.GetSalesData();
+    let transactions = yield tasks.pagedApiCall('getConversionTransactions', 'conversionTransactions.item', args);
+    const events = transactions.map(prepareCommission).filter(exists);
 
-    let transactions = _.get(results, 'Transactions', []);
-    let errors = _.get(results, 'Errors', []);
+    yield sendEvents.sendCommissions('tradetracker-' + s_region, events);
+  });
+  
+  /**
+   * Perform paginated api requests to any specified method of api client.
+   * @param {String} method - The method of the api to call
+   * @param {String} bodyKey - Attribute name/path in response body object to deep select as results
+   * @param {Object} params - The params to pass onto the api method
+   * @returns {Array}
+   */
+  tasks.pagedApiCall = co.wrap(function* (method, bodyKey, params) {
+    let results = [],
+        limit = 250,
+        offset = 0,
+        total = 0,
+        start = Date.now();
 
-    if (errors.Error && errors.Error.length > 0) {
-      throw new Error(errors.Error[0].attributes.code + " - " + errors.Error[0].$value);
+    // check that we call a method which actually is provided by the api client
+    if (typeof tasks.client[method] !== 'function') {
+      throw new Error("Method " + method + " is not available by our api client.");
     }
 
-    const events = transactions.map(prepareCommission.bind(null, s_region));
+    // perform api calls with pagination until we reach total items to fetch
+    while(true) {
+      let arg = _.merge({}, params, {options:{offset:offset, limit:limit}});
 
-    yield sendEvents.sendCommissions('tradetracker-'+s_region, events);
+      debug("%s : fetch %d items with offset %d (%s)", method, limit, offset, JSON.stringify({args:arg}));
+
+      // perform actual api call
+      let items = yield tasks.client[method](arg)
+        .then(extractAry(bodyKey))
+        .then(resp => rinse(resp));
+
+      results = results.concat(items);
+
+      // response doesnt provide any totals, so we have to request until 0 items returned
+      if (items.length > 0) {
+        offset += limit;
+      } else {
+        break;
+      }
+    }
+
+    let end = Date.now();
+    debug("%s finished: %d items over %d requests (%dms)", method, results.length, Math.ceil(offset/limit), end-start);
+
+    return results;
   });
-*/
 
   tasks.doApi = co.wrap(function* (method, args, key) {
     var results = yield tasks.client[method](args)
@@ -88,6 +143,39 @@ function setup(s_region) {
 
   return taskCache[s_region];
 }
+
+const STATE_MAP = {
+  'pending':    'initiated',
+  'accepted':   'confirmed',
+  'rejected':   'cancelled',
+
+  'paid': 'completed' // when "paidOut=true"
+};
+
+/**
+ * Function to prepare a single commission transaction for our data event.
+ * @param {Object} o_obj  The individual commission transaction
+ * @returns {Object}
+ */
+function prepareCommission(o_obj) {
+  let status = (o_obj.paidOut === true) ? 'paid' : o_obj.transactionStatus;
+  let date = o_obj.assessmentDate || o_obj.registrationDate;
+
+  var event = {
+    affiliate_name: o_obj.campaign.name,
+    transaction_id: o_obj.ID,
+    outclick_id: o_obj.reference,
+    currency: o_obj.currency.toLowerCase(),
+    purchase_amount: o_obj.orderAmount,
+    commission_amount: o_obj.commission,
+    state: STATE_MAP[status],
+    effective_date: date
+  };
+
+  return event;
+}
+
+const dateFormat = d => d.toISOString().replace(/\..+$/, '-00:00');
 
 function extractUrl(a_items) {
   a_items.forEach(function(item) {
