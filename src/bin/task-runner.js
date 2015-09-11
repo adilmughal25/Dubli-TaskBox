@@ -47,7 +47,13 @@ function help() {
 
 function startup() {
   const _id = n => n.toLowerCase().replace(/\W+/g, '-').replace(/(^-|-$)/g, '');
-  const register = (name, func) => ALL_TASKS[_id(name)] = {desc:name, handler:func};
+  const register = (name, func) => {
+    if (typeof func !== 'function') {
+      console.error("task named "+name+" is not a function :(");
+      process.exit(1);
+    }
+    ALL_TASKS[_id(name)] = {desc:name, handler:func};
+  };
   register.createGroup = (n, defs) => Object.keys(defs).forEach(n => register(n, defs[n]));
   tasks(register);
 }

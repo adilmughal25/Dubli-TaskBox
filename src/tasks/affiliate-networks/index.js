@@ -5,6 +5,7 @@ module.exports = { init: init };
 const adCellApi = require('./adCellApi');
 const admitadApi = require('./admitadApi');
 const affiliatewindowApi = require('./affiliatewindowApi');
+const amazonApi = require('./amazonApi');
 const belboonApi = require('./belboonApi');
 const clickJunctionApi = require("./clickJunctionApi");
 const commissionfactoryApi = require('./commissionfactoryApi');
@@ -149,6 +150,7 @@ function init(createTask) {
     // "Affiliate Gateway (Asia) Commissions": affiliateGatewayAsiaApi.getCommissionDetails,
     // "Affiliate Gateway (SG) Commissions": affiliateGatewaySgApi.getCommissionDetails,
     "AffiliateWindow Commissions": affiliatewindowApi.getCommissionDetails,
+    // "Amazon (IN) Commissions": amazonApi.getCommissionDetails, // problems w/ amazon.in
     "AvantLink (CA) Commissions": avantLinkCAApi.getCommissionDetails,
     "AvantLink (US) Commissions": avantLinkUSApi.getCommissionDetails,
     "ClickJunction (Euro) Commissions": clickJunctionApi.getCommissionDetailsEuro,
