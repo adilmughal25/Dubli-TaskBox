@@ -153,6 +153,7 @@ function init(createTask) {
     // "Amazon (IN) Commissions": amazonApi.getCommissionDetails, // problems w/ amazon.in
     "AvantLink (CA) Commissions": avantLinkCAApi.getCommissionDetails,
     "AvantLink (US) Commissions": avantLinkUSApi.getCommissionDetails,
+    "Belboon Commissions": belboonApi.getCommissionDetails,
     "ClickJunction (Euro) Commissions": clickJunctionApi.getCommissionDetailsEuro,
     "ClickJunction (USA) Commissions": clickJunctionApi.getCommissionDetailsUSA,
     "CommissionFactory Commissions": commissionfactoryApi.getCommissionDetails,
