@@ -31,10 +31,17 @@ function setup(s_regionId) {
       merchants: client.getPrograms(),
       coupons: client.getVouchers()
     };
+    debug("merchants count: %d", results.merchants.length);
+    debug("coupons count: %d", results.coupons.length);
     var ids = _.pluck(results.merchants, 'ProgramId');
-    _.extend(results, yield {
-      links: client.getCreatives({programIds:ids}),
-    });
+    let links = [];
+    for (let i = 0; i < ids.length; i += 50) {
+      let group = ids.slice(i, i+50);
+      links = links.concat(yield client.getCreatives({programIds:group}));
+      debug("[%d of %d] %d links totals", i+1, ids.length, links.length);
+    }
+    results.links = links;
+    debug("links count: %d", results.links.length);
 
     var merged = merge(results);
     yield sendEvents.sendMerchants('affilinet-'+s_regionId, merged);

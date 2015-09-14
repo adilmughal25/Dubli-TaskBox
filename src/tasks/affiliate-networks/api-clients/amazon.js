@@ -20,6 +20,7 @@ const API_USER = 'Ominto';
 const API_PASS = 'Bzvagb';
 
 const isReportUrl = /^getReport\?/;
+const ary = x => x ? (_.isArray(x) ? x : [x]) : [];
 
 module.exports = setup;
 
@@ -46,8 +47,7 @@ function* getCommissionReport(type, start, end, format) {
   if (type !== 'earnings' && type !== 'orders') throw new Error("invalid commission report type "+type);
   start = start ? moment(start).toDate() : moment().subtract(7, 'days').toDate();
   end = end ? moment(end).toDate() : new Date();
-  if (!format) format = 'tsv';
-
+  if (!format) format = 'xml'; // xml ends up working slightly nicer, though the data's mostly the same
 
   const client = this;
   const reports = (
@@ -70,7 +70,7 @@ function parseTsv(data, rec) {
   const lines = data.split(/\r?\n/);
   const garbageTopLine = lines[0];
   debug("Parsing file %s (description: %s)", rec.filename, garbageTopLine);
-  const realData = lines.slice(1).join("\n");
+  const realData = lines.filter(x => !!x.length).slice(1).join("\n");
   const promise = new Promise((resolve,reject) => {
     neatCsv(realData, {separator:'\t'}, function(err, json) {
       if (err) return reject(err);
@@ -83,8 +83,16 @@ function parseTsv(data, rec) {
   return promise;
 }
 
-function parseXml(data) {
-  throw new Error("XML parsing isn't implemented yet, can't really implement this one without live data (a new test purchase being made)");
+function parseXml(data, rec) {
+  const promise = jsonify(data).then(function(json) {
+    const items = json.Data.Items;
+    if (typeof items === 'string') return [];
+    console.log("items is", items);
+    if (!items.Item) return [];
+    const realItems = ary(items.Item).map(x => x.$);
+    return realItems;
+  });
+  return promise;
 }
 
 function getReportData(rec) {
@@ -121,17 +129,16 @@ function parseLinkInfo(link, $) {
   const filename = querystring.parse(query).filename;
   if (!filename) return null;
 
-  let matches = filename.match(/^(\w+)-(\d+)-(\w+)-report-(\d{4})(\d{2})(\d{2})\.(\w{3}).gz/);
+  let matches = filename.match(/^(\w+-\d+)-(\w+)-report-(\d{4})(\d{2})(\d{2})\.(\w{3}).gz/);
   if (!matches) return null;
 
   let meta = {
     url: linkUrl,
     filename: filename,
     account: matches[1],
-    id: matches[2],
-    type: matches[3],
-    date: [matches[4], matches[5], matches[6]].join('-'),
-    format: matches[7]
+    type: matches[2],
+    date: [matches[3], matches[4], matches[5]].join('-'),
+    format: matches[6]
   };
 
   return meta;

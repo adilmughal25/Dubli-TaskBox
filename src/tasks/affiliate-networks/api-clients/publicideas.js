@@ -108,8 +108,9 @@ function createClient(s_region) {
 function fixCommissions(o_obj) {
   const root = o_obj.cashBack;
   root.programme = ary(root.programme);
-  root.programme.forEach(p => p.action = ary(p.action));
-  return root;
+  let actions = [];
+  root.programme.forEach(p => actions = actions.concat(ary(p.action)));
+  return actions.map(a => a.$);
 }
 
 module.exports = createClient;
