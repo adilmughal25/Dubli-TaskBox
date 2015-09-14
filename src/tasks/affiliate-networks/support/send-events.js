@@ -72,25 +72,25 @@ var send = co.wrap(function* (s_myName, s_streamName, s_streamType, s_taskName, 
 var DEV_SAVE_MERCHANTS = (process.env.NODE_ENV === 'dev' && process.env.SAVE_MERCHANTS);
 function devSaveMerchants(s_which, a_items) {
   if (!DEV_SAVE_MERCHANTS) return;
+  var debug = _debug(s_which);
   var resolve = require('path').resolve;
-  var write = require('fs').writeFile;
+  var write = require('fs').writeFileSync;
   var f = resolve(__dirname, '../../../../test/output/merchant-output-'+s_which+'.json');
-  write(f, JSON.stringify(a_items), 'utf-8', function (e) {
-    if (e) return console.error('error saving file', e.stack);
-    console.log("\n\n  -> SAVED "+f+'\n');
-  });
+  debug("Saving output file to %s", f);
+  write(f, JSON.stringify(a_items), 'utf-8');
+  console.log("\n\n  -> SAVED "+f+'\n');
 }
 
 var DEV_SAVE_COMMISSIONS = (process.env.NODE_ENV === 'dev' && process.env.SAVE_COMMISSIONS);
 function devSaveCommissions(s_which, a_items) {
   if (!DEV_SAVE_COMMISSIONS) return;
+  var debug = _debug(s_which);
   var resolve = require('path').resolve;
-  var write = require('fs').writeFile;
+  var write = require('fs').writeFileSync;
   var f = resolve(__dirname, '../../../../test/output/commissions-output-'+s_which+'.json');
-  write(f, JSON.stringify(a_items), 'utf-8', function (e) {
-    if (e) return console.error('error saving file', e.stack);
-    console.log("\n\n  -> SAVED "+f+'\n');
-  });
+  debug("Saving output file to %s", f);
+  write(f, JSON.stringify(a_items), 'utf-8');
+  console.log("\n\n  -> SAVED "+f+'\n');
 }
 
 function sendMerchants(s_myName, merchants) {
