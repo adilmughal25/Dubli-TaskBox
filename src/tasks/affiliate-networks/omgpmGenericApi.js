@@ -50,10 +50,10 @@ const STATUS_MAP = {
 function prepareCommission(o_obj) {
   const event = {
     transaction_id: o_obj.TransactionId,
-    outclick_id: "BROKEN", //@TODO not in the transactions XML that I can see.
+    outclick_id: "BROKEN", //@TODO not in the transactions XML that I can see. (JRo: should be "UID")
     purchase_amount: o_obj.TransactionValue,
-    commission_amount: o_obj.VR,
-    currency: "BROKEN", //@TODO: not in the transactions xml, need to email them.
+    commission_amount: o_obj.VR,  // (JRo: should be "SR" and not "VR")
+    currency: "BROKEN", //@TODO: not in the transactions xml, need to email them. (JRo: DubLi - OMG reports all in INR)
     state: isNum.test(o_obj.Paid) ? 'paid' : STATUS_MAP[o_obj.Status],
     effective_date: o_obj.Status === 'Pending' ? new Date(o_obj.TransactionTime) : 'auto',
   };
