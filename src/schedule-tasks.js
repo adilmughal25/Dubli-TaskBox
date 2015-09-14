@@ -29,10 +29,10 @@ function setup(log) {
 
       var start = Date.now();
       subLogger.info(name +" started");
-      co(taskBound).then(function() {
+      co(taskBound).then(function(result) {
         var end = Date.now();
         var elapsed = prettyMs(end-start, {verbose:true});
-        subLogger.info(name + " successfully completed in "+ elapsed);
+        subLogger.info({result:result,elapsedTime:elapsed}, name + " successfully completed in "+ elapsed);
       }).catch(function(error) {
         if (error === "already-running") {
           debug(name + " is currently already running. Waiting until next run-time");

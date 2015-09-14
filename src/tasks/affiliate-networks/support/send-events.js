@@ -66,7 +66,20 @@ var send = co.wrap(function* (s_myName, s_streamName, s_streamType, s_taskName, 
     throw new Error(msg);
   }
 
-  return;
+  const report = {
+    timeSpentSaving: prettyMs(allElapsed, {verbose: true}),
+    timeSpentCompressing: prettyMs(compressionTime, {verbose: true}),
+    totalSentToKinesis: allCount,
+    compressedCount: compressedCount,
+    uncompressedCount: uncompressedCount,
+    errorCount: errors.length
+  };
+
+  if (errors.length) {
+    report.errors = errors;
+  }
+
+  return report;
 });
 
 var DEV_SAVE_MERCHANTS = (process.env.NODE_ENV === 'dev' && process.env.SAVE_MERCHANTS);
