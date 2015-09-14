@@ -151,6 +151,7 @@ function init(createTask) {
     "AffiliateWindow Commissions": affiliatewindowApi.getCommissionDetails,
     "AvantLink (CA) Commissions": avantLinkCAApi.getCommissionDetails,
     "AvantLink (US) Commissions": avantLinkUSApi.getCommissionDetails,
+    "Belboon Commissions": belboonApi.getCommissionDetails,
     "ClickJunction (Euro) Commissions": clickJunctionApi.getCommissionDetailsEuro,
     "ClickJunction (USA) Commissions": clickJunctionApi.getCommissionDetailsUSA,
     "CommissionFactory Commissions": commissionfactoryApi.getCommissionDetails,

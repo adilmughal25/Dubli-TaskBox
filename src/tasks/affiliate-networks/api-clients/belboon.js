@@ -1,109 +1,60 @@
 "use strict";
 
-const WSDL_URL = 'http://smartfeeds.belboon.com/SmartFeedServices.php?wsdl';
-const API_USERNAME = 'Ominto';
-const API_PASSWORD = 'iLukiDXmA33eJAdlSiLe';
-const DEAL_FEED_URL = 'http://ui.belboon.com/export/vouchercodes/?key=747109e8583d52fbaa39b3b98a3d4838&platformid=598628&status=partnership&format=xml';
-
 const _ = require('lodash');
 const co = require('co');
 const denodeify = require('denodeify');
 const soap = require('soap');
+const debug = require('debug')('belboon:api-client');
 const request = require('request-promise');
-const utils = require('ominto-utils');
-const piggyback = utils.promisePiggyback;
-const check = utils.checkApiResponse;
-const jsonify = require('./jsonify-xml-body');
-
-const ary = x => _.isArray(x) ? x : [x];
+require('tough-cookie'); // for request's benefit
+const limiter = require('ominto-utils').promiseRateLimiter;
 
 /*
- * API docs: https://ui.belboon.de/ShowWebservicesOverview,MID.88/DoHandleWebservicesOverview.en.html
- * Have to guess on these API calls because documentation is sparse. Deals don't
- * go through this API, they just have an xml download link (above).
- *
- * getPlatforms        : returns info about us
- *
- * getFeeds            : this looks like merchant data, but does not return the canonical ProgramID
- * getFeedUpdate       : this seems to just tell you the last time the feed was updated
- *
- * getProductData      : product feed for later
- * searchProducts
- * getProductById
- * searchProductsByEan
- *
- * getCategory
- * getCategories
- * getCategoryPath
+ * API docs: https://www.belboon.com/en/belboon-webservices.html
+ * 
+ * !Note: API has a limitation in amount of requests per hour. Though it is no clear yet, what that limit exactly is.
+ * A limit of 250req/hour is currently active - we expecting feedback from affiliate network with specific info. (as of 9/14/2015)
  */
+
+const API_SERVICE_WSDL  = 'http://api.belboon.com/?wsdl';
+const API_USER          = 'Ominto';
+const API_PASSWORD      = 'iLukiDXmA33eJAdlSiLe';
+const SITE_ID           = '598628'; // == PlatformId
+// DubLi Legacy
+//const API_USER          = 'DubLi';
+//const API_PASSWORD      = 'aUDaTrZQtoaVFwTIMnVR';
+//const SITE_ID           = '585191';
 
 function BelboonClient() {
   if (!(this instanceof BelboonClient)) return new BelboonClient();
   this._initialized = false;
 
-  // for soap calls
+  this.siteId = SITE_ID;
   this._client = null;
-  this._authKey = null;
-
-  // for non-soap calls
-  this._request = request.defaults({
-    resolveWithFullResponse: true
-  });
+  this.jar = request.jar();
 }
 
-BelboonClient.prototype.args = function(o_obj) {
-  return _.extend({}, o_obj, {sSessionHash:this._authKey});
-};
+BelboonClient.prototype.setup = co.wrap(function* () {
+  if (!this.initialized) {
+    debug("initializing SOAP client");
 
-BelboonClient.prototype.extractKeyVal = function(entry) {
-  return ary(entry).reduce((memo, item) => _.set(memo, item.key.$value, item.value.$value), {});
-};
+    let Client = this._client = yield init(this.jar);
+    let methods = Object.keys(this._client.describe().BelboonHandler.BelboonHandler);
+    methods.reduce( (self,method) => _.set(self, method, denodeify(Client[method].bind(Client))), this);
 
-BelboonClient.prototype.setup = piggyback(co.wrap(function* () {
-  if (this._authKey) return;
-  const self = this;
+    this._client.setSecurity(new soap.BasicAuthSecurity(API_USER, API_PASSWORD));
 
-  this._client = yield init();
-  const defs = this._client.describe().SmartFeedServices.SmartFeedServicesPort;
-  const keys = Object.keys(defs);
-  keys.forEach(key => self['_'+key] = denodeify(self._client[key].bind(self._client)));
-  const creds = {sUsername: API_USERNAME, sPassword: API_PASSWORD};
-  const loginResponseRaw = yield this._login(creds);
-  const loginResponse = this.extractKeyVal(loginResponseRaw.login.Records.item);
-  this._authKey = loginResponse.sessionHash;
-}));
-
-BelboonClient.prototype.getMerchants = co.wrap(function* () {
-  yield this.setup();
-  const self = this;
-  const args = this.args();
-  const feedsResponseRaw = yield this._getFeeds(args);
-  const feedsResponse = ary(feedsResponseRaw.getFeeds.Records.item);
-  const merchants = feedsResponse.map(entry => self.extractKeyVal(entry.item));
-  return merchants;
+    limiter.request(this._client, 250, 3600).debug(debug);
+    
+    this.initialized = true;
+  }
 });
 
-BelboonClient.prototype.getCategories = co.wrap(function* () {
-  yield this.setup();
-  const self = this;
-  const args = this.args();
-  const catsResponseRaw = yield this._getCategories(args);
-  const catsResponse = ary(catsResponseRaw.getCategories.Records.item);
-  const cats = catsResponse.map(entry => self.extractKeyVal(entry.item));
-  return cats;
-});
-
-BelboonClient.prototype.getDeals = co.wrap(function*() {
-  const _chk = check('2XX', 'Could not fetch deals');
-  const result = yield this._request.get(DEAL_FEED_URL).then(_chk).then(jsonify);
-  const deals = ary(result.Ads_Voucher_code.Ad_Voucher_code);
-  return deals;
-});
-
-function init() {
+function init(jar) {
+  var rq = request.defaults({jar:jar});
   return new Promise( (resolve, reject) => {
-    soap.createClient(WSDL_URL, function(err, client) {
-      if (err) return reject(err);
+    soap.createClient(API_SERVICE_WSDL, {request:rq}, function(error, client) {
+      if (error) return reject(error);
       resolve(client);
     });
   });
