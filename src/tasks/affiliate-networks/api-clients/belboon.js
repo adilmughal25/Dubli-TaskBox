@@ -13,7 +13,7 @@ const limiter = require('ominto-utils').promiseRateLimiter;
  * API docs: https://www.belboon.com/en/belboon-webservices.html
  * 
  * !Note: API has a limitation in amount of requests per hour. Though it is no clear yet, what that limit exactly is.
- * A limit of 250req/hour is currently active - we expecting feedback from affiliate network with specific info. (as of 9/14/2015)
+ * As per 9/14 we have a limit if 2500req/hours - we have pending request to increase to 10.000/h.
  */
 
 const API_SERVICE_WSDL  = 'http://api.belboon.com/?wsdl';
@@ -44,7 +44,7 @@ BelboonClient.prototype.setup = co.wrap(function* () {
 
     this._client.setSecurity(new soap.BasicAuthSecurity(API_USER, API_PASSWORD));
 
-    limiter.request(this._client, 250, 3600).debug(debug);
+    limiter.request(this._client, 2500, 3600).debug(debug);
     
     this.initialized = true;
   }
