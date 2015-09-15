@@ -7,6 +7,10 @@ const sendEvents = require('./support/send-events');
 const singleRun = require('./support/single-run');
 const moment = require('moment');
 
+const merge = require('./support/easy-merge')('id', {
+  coupons: 'campaign.id'
+});
+
 /**
  * Retrieve all commission details (sales/transactions) from Admitad within given period of time.
  * @returns {undefined}
@@ -23,6 +27,15 @@ var getCommissionDetails = singleRun(function* () {
 
   yield sendEvents.sendCommissions('admitad', events);
 });
+
+var getMerchants = singleRun(function* () {
+  const results = yield {
+    merchants: pagedApiCall('getMerchants', 'results'),
+    coupons: pagedApiCall('getCoupons', 'results'),
+  };
+
+  yield sendEvents.sendMerchants('admitad', merge(results));
+})
 
 /**
  * Perform paginated api requests to any specified method of api client.
@@ -105,5 +118,6 @@ function getClient() {
 }
 
 module.exports = {
-  getCommissionDetails: getCommissionDetails
+  getCommissionDetails: getCommissionDetails,
+  getMerchants: getMerchants
 };

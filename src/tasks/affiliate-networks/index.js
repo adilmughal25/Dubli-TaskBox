@@ -83,9 +83,10 @@ function init(createTask) {
   // run each of these every 24 hours -- since their position within the 24h
   // segment is randomized, this could lead to some not being calculated every
   // day if and when there's a deploy and/or taskbox restart.
-  createTask.createGroup(24, {
+  createTask.createGroup(1, { // temporarily changed to every hour for testing purposes
     "APD Performance Merchants": apdPerformanceApi.getMerchants,
     "AdCell Merchants": adCellApi.getMerchants,
+    "Admitad Merchants": admitadApi.getMerchants,
     "Affili.Net (Austria) Merchants": affilinetAustriaApi.getMerchants,
     "Affili.Net (France) Merchants": affilinetFranceApi.getMerchants,
     "Affili.Net (Germany) Merchants": affilinetGermanyApi.getMerchants,

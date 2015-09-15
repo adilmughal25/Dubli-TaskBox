@@ -34,3 +34,8 @@ mydb
 # what happens if you run with SAVE_MERCHANTS=1
 /merchant-output-*.json
 /commissions-output-*.json
+
+# Editor configs
+jsconfig.json
+*.iml
+.idea
