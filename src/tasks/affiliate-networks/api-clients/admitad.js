@@ -10,7 +10,7 @@ const _ = require('lodash');
 const co = require('co');
 const request = require('request-promise');
 // debugging the requests || TODO: remove after finishing implementation
-//require('request-promise').debug = true; 
+//require('request-promise').debug = true;
 const debug = require('debug')('admitad:api-client');
 const moment = require('moment');
 //const limiter = require('ominto-utils').promiseRateLimiter;
@@ -18,10 +18,13 @@ const moment = require('moment');
 const API_URL           = 'https://api.admitad.com/';
 const API_CLIENT_ID     = '4f4a18238d260e4c457bd885667949';
 const API_CLIENT_SECRET = 'e644187aaf8325ef993ead2c618589';
+const STORE_ID          = 296893;
 // DubLi Legacy
-//const API_CLIENT_ID     = 'ef607af853e28790fa360daf3f2616';
-//const API_CLIENT_SECRET = '0ccae8ee1cf05bd25cfe1ceba81a96';
+// const API_CLIENT_ID     = 'ef607af853e28790fa360daf3f2616';
+// const API_CLIENT_SECRET = '0ccae8ee1cf05bd25cfe1ceba81a96';
+// const STORE_ID          = 98792;
 
+// Paths MUST end with /
 const API_TYPES = {
   token: {
     path: 'token/',
@@ -41,10 +44,20 @@ const API_TYPES = {
       //date_end,
       order_by: '-id',  // The sign "-" before the value is the reverse order. For example order_by=-clicks&order_by=cr
       total: 0,         // Obtain aggregated data for entire request? 1/0 - aggregated data / non-aggregated
-      limit: 250,
+      limit: 250,       // Max is 500
       offset: 0
     }
   },
+  coupons: {
+    path: 'coupons/website/' + STORE_ID + '/',
+    scope: 'coupons_for_website',
+    authorization: 'bearer'
+  },
+  merchants: {
+    path: 'advcampaigns/website/' + STORE_ID + '/',
+    scope: 'advcampaigns_for_website',
+    authorization: 'bearer',
+  }
 };
 
 /**
@@ -167,6 +180,46 @@ AdmitadClient.prototype.getStatisticsByAction = co.wrap(function* (params) {
 	response = body || {};
 
 	return response;
+});
+
+AdmitadClient.prototype.getCoupons = co.wrap(function* (params) {
+  
+  let body, arg = {
+    url: API_TYPES.coupons.path,
+    auth: {},
+    qs: {}
+  };
+  
+  yield this.getToken();
+  arg.auth.bearer = this.token;
+  
+  params && _.extend(arg.qs, params);
+  
+  debug("Using token '%s' to fetch coupons", this.token);
+  
+  body = yield this.client.get(arg);
+  return body || {};
+  
+});
+
+AdmitadClient.prototype.getMerchants = co.wrap(function* (params) {
+  
+  let body, arg = {
+    url: API_TYPES.merchants.path,
+    auth: {},
+    qs: {}
+  }
+  
+  yield this.getToken();
+  arg.auth.bearer = this.token;
+  
+  params && _.extend(arg.qs, params);
+  
+  debug("Using token '%s' to fetch merchants", this.token);
+  
+  body = yield this.client.get(arg);
+  return body || {};
+  
 });
 
 module.exports = function() {
