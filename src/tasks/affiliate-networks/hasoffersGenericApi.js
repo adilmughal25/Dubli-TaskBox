@@ -22,7 +22,7 @@ function createApiProcessor(s_networkName) {
     };
     yield doApiGetAllTrackingLinks(results.merchants);
     var merged = merge(results);
-    yield sendEvents.sendMerchants(s_networkName, merged);
+    return yield sendEvents.sendMerchants(s_networkName, merged);
   });
 
   var doApiGetAllTrackingLinks  = co.wrap(function* (merchants) {
@@ -82,7 +82,7 @@ function createApiProcessor(s_networkName) {
     }
 
     const events = results.map(prepareCommission);
-    yield sendEvents.sendCommissions(s_networkName, events);
+    return yield sendEvents.sendCommissions(s_networkName, events);
   });
 
   const STATUS_MAP = {
