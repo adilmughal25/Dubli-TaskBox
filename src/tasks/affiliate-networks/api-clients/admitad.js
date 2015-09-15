@@ -114,7 +114,8 @@ AdmitadClient.prototype.getToken = co.wrap(function* () {
 
   debug("Get new token");
 
-  let response, body, arg = {
+  let response, body;
+  const arg = {
     url:  API_TYPES.token.path,
     qs:   _.merge(API_TYPES.token.qs, {
       scope: this.getScope()
@@ -146,7 +147,8 @@ AdmitadClient.prototype.getToken = co.wrap(function* () {
  * @returns {Object[]}
  */
 AdmitadClient.prototype.getStatisticsByAction = co.wrap(function* (params) {
-	let response, body, arg = {
+	let response, body;
+  const arg = {
     url: API_TYPES.statistics.path,
     auth: {},
     qs: {
@@ -184,7 +186,8 @@ AdmitadClient.prototype.getStatisticsByAction = co.wrap(function* (params) {
 
 AdmitadClient.prototype.getCoupons = co.wrap(function* (params) {
   
-  let body, arg = {
+  let body;
+  const arg = {
     url: API_TYPES.coupons.path,
     auth: {},
     qs: {}
@@ -204,7 +207,8 @@ AdmitadClient.prototype.getCoupons = co.wrap(function* (params) {
 
 AdmitadClient.prototype.getMerchants = co.wrap(function* (params) {
   
-  let body, arg = {
+  let body;
+  const arg = {
     url: API_TYPES.merchants.path,
     auth: {},
     qs: {}
