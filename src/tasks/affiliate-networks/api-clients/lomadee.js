@@ -15,75 +15,71 @@ const debug = require('debug')('lomadee:api-client');
 const API_URL = ' http://sandbox.buscape.com.br/service/';
 const API_TOKEN = '5749507a5a7258304352673d';
 const SOURCE_ID = '9262544';
+const MAX_RESULTS = 100;
 
 function createClient() {
 
   let _id = 0;
   let baseQuery =  {format: 'json'}
 
-  let client = request.default({
-    baseUr: API_URL,
+  let client = request.defaults({
+    baseUrl: API_URL,
     qs: baseQuery,
     json: true
   });
 
   let depaginate = co.wrap(function*(url, query, key) {
-    let i, j;
     let id = 'request#' + (++_id);
     let page = 1;
     let results = [];
     debug('[%s] got paginated request: %s %o', id, url, query);
     while (true) {
-      args = {
+      let args = {
         url: url,
-        qs: _.extend({}, baseQuery, query, {page: page})
+        qs: _.extend({}, baseQuery, query, {page: page, results: MAX_RESULTS})
       };
       debug('[%s] sending paginated request to %o', id, args);
-      body = yield client.get(args);
-      result = result.concat(body[key]);
-      total = result.totalpages
+      let body = yield client.get(args);
+      results = results.concat(body[key]);
+      // we're using totalresultsavailable because totalPages maxes out at 999
+      let total = Math.ceil(body.totalresultsavailable / MAX_RESULTS);
       debug('[%s] finished processing page %s of %d', id, page, total);
       if (++page > total) {
         debug('[%s] finished depaginating %d pages', id, total);
         break;
       }
     }
-    return results;
+    return results.map(r => r[key]);
   });
 
   client.baseUrl = API_URL;
   client.apiToken = API_TOKEN;
 
   client.getMerchants = co.wrap(function*() {
+    let i, j;
     let data = yield client.get({
       url: 'sellers/lomadee/' + API_TOKEN + '/BR'
     });
     let merchants = data.sellers;
 
     for(i = 0; i < merchants.length; i++) {
-      let offers = [];
-      let links = merchants[i].links;
-      for (j = 0; i < links; i++) {
-        if (links[j].type === 'link_to_offerlist') {
-          debug('Skipping unknown link type %s', links[j].type);
-          continue;
-        }
-        let offer = yield depaginate(links[j].url, {}, 'offer');
-        offers.push(offer);
-      }
-      merchants[i].offers = offers;
+      merchants[i].offers = yield depaginate(
+        'findOfferList/lomadee/' + API_TOKEN,
+        {allowedSellers: merchants[i].id},
+        'offer');
     }
 
     return merchants;
-  };
+  });
 
   client.getCoupons = co.wrap(function*() {
-    let results = yield depaginate(
+    return yield depaginate(
       'coupons/lomadee/' + API_TOKEN,
       {sourceId: SOURCE_ID},
       'coupon');
-    return results.map(c => c.coupon);
   });
+
+  return client;
 }
 
 module.exports = createClient;

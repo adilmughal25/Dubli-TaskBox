@@ -9,8 +9,8 @@ const merge = require('./support/easy-merge')('advertiserid', {
   coupons: 'advertiserid'
 });
 
-let getMerchants = singleRun(function() {
-  const results = yield  {
+let getMerchants = singleRun(function*() {
+  const results = yield {
     merchants: client.getMerchants(),
     coupons: client.getCoupons()
   };
@@ -19,7 +19,7 @@ let getMerchants = singleRun(function() {
   yield sendEvents.sendMerchants('lomadee', merchants);
 });
 
-let getCommissionDetails = singleRun(function() {
+let getCommissionDetails = singleRun(function*() {
   yield sendEvents.sendCommissions('lomadee', []);
 });
 
