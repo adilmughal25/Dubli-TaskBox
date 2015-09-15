@@ -5,15 +5,14 @@ const singleRun = require('./support/single-run');
 
 const client = require('./api-clients/lomadee')();
 
-const merge = require('./support/easy-merge')('id', {
-  coupons: 'program_id',
-  links: 'program_id',
-  generic: 'program_id'
+const merge = require('./support/easy-merge')('advertiserid', {
+  coupons: 'advertiserid'
 });
 
 var getMerchants = singleRun(function() {
   const results = yield  {
-    merchants: client.getMerchants()
+    merchants: client.getMerchants(),
+    coupons: client.getCoupons()
   };
 
   const merchants = merge(results);
