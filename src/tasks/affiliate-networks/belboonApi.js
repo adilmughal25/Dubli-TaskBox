@@ -1,5 +1,16 @@
 "use strict";
 
+/*
+ * The entire process of getting the merchant information will take many minutes!
+ * 
+ * In order to get all necessary merchant data, we would need to requests:
+ * - getPrograms() - paginated with 500 rows per requests (approx 2 calls)
+ * - getProgramDetails() - for each program we have to perform a single call to get details (#programs * 1)
+ * - getVoucherCodes() - paginated call to fetch all vouchers (approx 2-5 calls)
+ * - searchCommonAds() - paginated call to fetch all common ads (over 12,500 ads) *slow api - approx 50sec per call
+ * Documentation suggests we have 2,000 request/hour - however it repeatingly failed already after ~656 requests on Ominto acc but not on DubLi.
+ */
+
 const _ = require('lodash');
 const co = require('co');
 const debug = require('debug')('belboon:processor');
@@ -12,6 +23,7 @@ const client = require('./api-clients/belboon')();
 const merge = require('./support/easy-merge')('programid', {
   details:  'programid',
   vouchers: 'programid',
+  promos: 'programid',
 });
 
 const PROGRAMS_ARGS = {
@@ -32,6 +44,16 @@ const VOUCHER_ARGS = {
   //validFrom: null       // by default current date
   //validTo: null,
   //orderBy: null,
+};
+
+const COMMON_ADS_ARGS = {
+  adPlatformIds: [client.siteId], // array of adPlatformId's *required
+  hasPartnership: true,   // true|false, filter for vouchers with a active partner relationship
+  //programId: null,      // filter for specific programId only
+  //adType: null,
+	//adWidth: null,
+	//adHeight: null,
+	//orderBy: null,
 };
 
 const getMerchants = singleRun(function* () {
@@ -61,11 +83,18 @@ const getMerchants = singleRun(function* () {
   const vouchers = response.map((n) => {
     return n.item.reduce( (m,i) => _.extend(m, i), {});
   });
-  
+
+  // get all common ads for our siteId
+  response = yield pagedApiCall('searchCommonAds', 'result.handler.commonAds.item', COMMON_ADS_ARGS);
+  const commonads = response.map((n) => {
+    return n.item.reduce( (m,i) => _.extend(m, i), {});
+  });
+
   const events = merge({
     merchants: merchants,
     details: programDetails,
-    vouchers: vouchers
+    vouchers: vouchers,
+    promos: commonads,
   });
 
   yield sendEvents.sendMerchants('belboon', events);
@@ -103,7 +132,7 @@ function extractAry(key) {
  */
 const pagedApiCall = co.wrap(function* (method, bodyKey, params) {
   let results = [],
-      limit = 250,
+      limit = 500,
       offset = 0,
       total = 0,
       start = Date.now();
@@ -117,7 +146,7 @@ const pagedApiCall = co.wrap(function* (method, bodyKey, params) {
   while(true) {
     let arg = _.merge({}, params, {offset:offset, limit:limit});
 
-    debug("%s : fetch %d items with offset %d (%s)", method, limit, offset, JSON.stringify({args:arg}));
+    debug("%s: fetch %d items with offset %d (%s)", method, limit, offset, JSON.stringify({args:arg}));
 
     let items = yield apiCall(method, bodyKey, arg);
     results = results.concat(items);
@@ -136,16 +165,19 @@ const pagedApiCall = co.wrap(function* (method, bodyKey, params) {
   return results;
 });
 
+var numApiCalls = 0;
 const apiCall = co.wrap(function* (method, bodyKey, params) {
   // check that we call a method which actually is provided by the api client
   if (typeof client[method] !== 'function') {
     throw new Error("Method " + method + " is not available by our api client.");
   }
-  
+
+  debug("#%d. api call for %s (%s)", ++numApiCalls, method, JSON.stringify({params:params}));
+
   // perform actual api call
   return yield client[method](params)
-  .then(extractAry(bodyKey))
-  .then(resp => rinse(resp))
+    .then(extractAry(bodyKey))
+    .then(resp => rinse(resp))
   ;
 });
 
