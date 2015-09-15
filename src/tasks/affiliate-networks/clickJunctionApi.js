@@ -8,6 +8,7 @@ const sendEvents = require('./support/send-events');
 const singleRun = require('./support/single-run');
 const utils = require('ominto-utils');
 const co = require('co');
+const querystring = require('querystring');
 const cjClient = require('./api-clients/click-junction');
 const jsonify = require('./api-clients/jsonify-xml-body');
 
@@ -42,12 +43,54 @@ var getMerchants = co.wrap(function* getMerchants(s_regionId) {
     links: doApiLinks(s_regionId)
   };
 
-  var merchants = merge(results);
+  var merchants = merge(results).map(extractTrackingLinks);
 
   sendMerchantsToEventHub(merchants||[], s_regionId);
   // used during testing to give me a file full of example data
   // require('fs').writeFileSync("output-all.json", JSON.stringify(merchants,null,2));
 });
+
+function extractTrackingLinks(s_info) {
+  const merchant = s_info.merchant;
+  const allLinks = s_info.links;
+  const textLinks = allLinks.filter(x => x['link-type'] === 'Text Link');
+  s_info.links = textLinks; // replace this now
+
+  const pickUrl = url => {
+    s_info.merchant.main_tracking_url = url;
+    return s_info;
+  };
+
+  for (let i = 0; i < textLinks.length; i++) {
+    let cur = textLinks[i];
+    if (merchant['program-url'] === cur.destination) {
+      return pickUrl(cur.clickUrl);
+    }
+  }
+
+  // not found in text links, try again:
+  for (let i = 0; i < allLinks.length; i++) {
+    let cur = allLinks[i];
+    if (merchant['program-url'] === cur.destination) {
+      return pickUrl(cur.clickUrl);
+    }
+  }
+
+  // if still nothing, try the first textLink that has a tracking url
+  for (let i = 0; i < textLinks.length; i++) {
+    let cur = textLinks[i];
+    if (cur.clickUrl) return pickUrl(cur.clickUrl);
+  }
+
+  // fine just take any link
+  for (let i = 0; i < allLinks.length; i++) {
+    let cur = allLinks[i];
+    if (cur.clickUrl) return pickUrl(cur.clickUrl);
+  }
+
+  // just give up now
+  return pickUrl("");
+}
 
 var doApiLinks = co.wrap(function* (s_regionId) {
   var client = cjClient("links", s_regionId);
@@ -168,18 +211,33 @@ function commissionPeriods(i_days, i_count) {
 }
 
 function linksUrl(page, perPage, s_regionId) {
-  var websiteId = s_regionId === 'usa' ? '7811975' : '7845446';
-  return "/link-search?website-id="+websiteId+"&advertiser-ids=joined" +
-         "&link-type=Text Link&records-per-page=" + perPage +
-         "&page-number="+page;
+  const websiteId = s_regionId === 'usa' ? '7811975' : '7845446';
+  const url = "/link-search?" + querystring.stringify({
+    'website-id': websiteId,
+    'advertiser-ids': 'joined',
+    // 'link-type': 'text', // now scanning all links and filtering the list down to just text links, so this is disabled
+    'records-per-page': perPage,
+    'page-number': page
+  });
+  return url;
 }
 
 function advertiserUrl(page, perPage) {
-  return "/advertiser-lookup?advertiser-ids=joined&records-per-page="+perPage+"&page-number="+page;
+  const url = "/advertiser-lookup?" + querystring.stringify({
+    'advertiser-ids': 'joined',
+    'records-per-page': perPage,
+    'page-number': page
+  });
+  return url;
 }
 
 function commissionsUrl(start, end) {
-  return "/commissions?date-type=posting&start-date="+start+"&end-date="+end;
+  const url = "/commissions?" + querystring.stringify({
+    'date-type': 'posting',
+    'start-date': start,
+    'end-date': end
+  });
+  return url;
 }
 
 var ct = 0;

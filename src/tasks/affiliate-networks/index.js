@@ -14,6 +14,7 @@ const grouponApi = require('./grouponApi');
 const impactRadiusProductFtp = require("./impactRadiusProductFtp");
 const linkShareApi = require("./linkShareApi");
 const lomadeeApi = require('./lomadeeApi');
+const partnerAdsApi = require('./partnerAdsApi');
 const pepperjamApi = require('./pepperjamApi');
 const performanceHorizonApi = require('./performanceHorizonApi');
 const shareASaleApi = require('./shareASaleApi');
@@ -107,6 +108,7 @@ function init(createTask) {
     "OMG (Asia) Merchants": omgpmAsiaApi.getMerchants,
     "OMG (Brazil) Merchants": omgpmBrazilApi.getMerchants,
     "OMG (Australia) Merchants": omgpmAustraliaApi.getMerchants,
+    "PartnerAds Merchants": partnerAdsApi.getMerchants,
     "PepperJam Merchants": pepperjamApi.getMerchants,
     "PerformanceHorizon Merchants": performanceHorizonApi.getMerchants,
     "PublicIdeas (ES) Merchants": publicideasESApi.getMerchants,
@@ -149,12 +151,14 @@ function init(createTask) {
     "Affili.Net (Spain) Commissions": affilinetSpainApi.getCommissionDetails,
     "Affili.Net (Switzerland) Commissions": affilinetSwitzerlandApi.getCommissionDetails,
     "Affili.Net (UK) Commissions": affilinetUKApi.getCommissionDetails,
+    // Commissions xml response structure unclear - waiting for some test data
     // "Affiliate Gateway (Asia) Commissions": affiliateGatewayAsiaApi.getCommissionDetails,
     // "Affiliate Gateway (SG) Commissions": affiliateGatewaySgApi.getCommissionDetails,
     "AffiliateWindow Commissions": affiliatewindowApi.getCommissionDetails,
     // "Amazon (IN) Commissions": amazonApi.getCommissionDetails, // problems w/ amazon.in
     "AvantLink (CA) Commissions": avantLinkCAApi.getCommissionDetails,
     "AvantLink (US) Commissions": avantLinkUSApi.getCommissionDetails,
+    "Belboon Commissions": belboonApi.getCommissionDetails,
     "ClickJunction (Euro) Commissions": clickJunctionApi.getCommissionDetailsEuro,
     "ClickJunction (USA) Commissions": clickJunctionApi.getCommissionDetailsUSA,
     "CommissionFactory Commissions": commissionfactoryApi.getCommissionDetails,
@@ -163,6 +167,7 @@ function init(createTask) {
     "ImpactRadius Commissions": impactRadiusApi.getCommissionDetails,
     "LinkShare Commissions": linkShareApi.getCommissionDetails,
     "Lomadee Commissions": lomadee.getCommissionDetails,
+    "PartnerAds Commissions": partnerAdsApi.getCommissionDetails,
     "PepperJam Commissions": pepperjamApi.getCommissionDetails,
     "PerformanceHorizon Commissions": performanceHorizonApi.getCommissionDetails,
     // PI still has issues
