@@ -62,12 +62,18 @@ function createClient() {
     });
     let merchants = data.sellers;
 
+    let promises = [];
     for(i = 0; i < merchants.length; i++) {
-      merchants[i].offers = yield depaginate(
-        'findOfferList/lomadee/' + API_TOKEN,
-        {allowedSellers: merchants[i].id},
-        'offer');
+      promises.push(co.wrap(function*() {
+        merchants[i].offers = yield depaginate(
+          'findOfferList/lomadee/' + API_TOKEN,
+          {allowedSellers: merchants[i].id},
+          'offer');
+        return merchants[i];
+      })());
     }
+
+    yield Promise.all(promises);
 
     return merchants;
   });
