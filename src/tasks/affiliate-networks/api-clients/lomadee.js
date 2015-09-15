@@ -7,10 +7,10 @@
  *    Merchants API: http://developer.buscape.com.br/portal/developer/documentacao/apis-afiliados/api-lomadee/lojas/
  */
 
-var _ = require('lodash');
-var co = require('co');
+const _ = require('lodash');
+const co = require('co');
 const request = require('request-promise');
-var debug = require('debug')('lomadee:api-client');
+const debug = require('debug')('lomadee:api-client');
 
 const API_URL = ' http://sandbox.buscape.com.br/service/';
 const API_TOKEN = '5749507a5a7258304352673d';
@@ -18,20 +18,20 @@ const SOURCE_ID = '9262544';
 
 function createClient() {
 
-  var _id = 0;
-  var baseQuery =  {format: 'json'}
+  let _id = 0;
+  let baseQuery =  {format: 'json'}
 
-  var client = request.default({
+  let client = request.default({
     baseUr: API_URL,
     qs: baseQuery,
     json: true
   });
 
-  var depaginate = co.wrap(function*(url, query, key) {
-    var i, j;
-    var id = 'request#' + (++_id);
-    var page = 1;
-    var results = [];
+  let depaginate = co.wrap(function*(url, query, key) {
+    let i, j;
+    let id = 'request#' + (++_id);
+    let page = 1;
+    let results = [];
     debug('[%s] got paginated request: %s %o', id, url, query);
     while (true) {
       args = {
@@ -55,20 +55,20 @@ function createClient() {
   client.apiToken = API_TOKEN;
 
   client.getMerchants = co.wrap(function*() {
-    var data = yield client.get({
+    let data = yield client.get({
       url: 'sellers/lomadee/' + API_TOKEN + '/BR'
     });
-    var merchants = data.sellers;
+    let merchants = data.sellers;
 
     for(i = 0; i < merchants.length; i++) {
-      var offers = [];
-      var links = merchants[i].links;
+      let offers = [];
+      let links = merchants[i].links;
       for (j = 0; i < links; i++) {
         if (links[j].type === 'link_to_offerlist') {
           debug('Skipping unknown link type %s', links[j].type);
           continue;
         }
-        var offer = yield depaginate(links[j].url, {}, 'offer');
+        let offer = yield depaginate(links[j].url, {}, 'offer');
         offers.push(offer);
       }
       merchants[i].offers = offers;
@@ -78,10 +78,12 @@ function createClient() {
   };
 
   client.getCoupons = co.wrap(function*() {
-    var results = yield depaginate(
+    let results = yield depaginate(
       'coupons/lomadee/' + API_TOKEN,
       {sourceId: SOURCE_ID},
       'coupon');
     return results.map(c => c.coupon);
   });
 }
+
+module.exports = createClient;
