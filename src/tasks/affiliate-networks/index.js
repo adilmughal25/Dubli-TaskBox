@@ -85,6 +85,7 @@ function init(createTask) {
   createTask.createGroup(24, {
     "APD Performance Merchants": apdPerformanceApi.getMerchants,
     "AdCell Merchants": adCellApi.getMerchants,
+    "Admitad Merchants": admitadApi.getMerchants,
     "Affili.Net (Austria) Merchants": affilinetAustriaApi.getMerchants,
     "Affili.Net (France) Merchants": affilinetFranceApi.getMerchants,
     "Affili.Net (Germany) Merchants": affilinetGermanyApi.getMerchants,
