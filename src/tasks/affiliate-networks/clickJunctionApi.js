@@ -76,7 +76,20 @@ function extractTrackingLinks(s_info) {
     }
   }
 
-  return s_info;
+  // if still nothing, try the first textLink that has a tracking url
+  for (let i = 0; i < textLinks.length; i++) {
+    let cur = textLinks[i];
+    if (cur.clickUrl) return pickUrl(cur.clickUrl);
+  }
+
+  // fine just take any link
+  for (let i = 0; i < allLinks.length; i++) {
+    let cur = allLinks[i];
+    if (cur.clickUrl) return pickUrl(cur.clickUrl);
+  }
+
+  // just give up now
+  return pickUrl("");
 }
 
 var doApiLinks = co.wrap(function* (s_regionId) {
