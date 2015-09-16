@@ -28,6 +28,22 @@ function createClient() {
     json: true
   });
 
+  let carefulGet = co.wrap(function*(args) {
+    let result;
+    let tries = 5;
+    while (tries > 0) {
+      try {
+        result = yield client.get(args);
+        return result;
+      }
+      catch (e) {
+        debug('Error fetching %o error was %o', args, e);
+      }
+    }
+    debug('Retries exhausted featching %o', args);
+    return {};
+  });
+
   let depaginate = co.wrap(function*(url, query, key) {
     let id = 'request#' + (++_id);
     let page = 1;
@@ -39,7 +55,12 @@ function createClient() {
         qs: _.extend({}, baseQuery, query, {page: page, results: MAX_RESULTS})
       };
       debug('[%s] sending paginated request to %o', id, args);
-      let body = yield client.get(args);
+      let body = yield carefulGet(args);
+      if (!body) {
+        debug('[%s] failed to retrive response, skipping %o', id, args);
+        ++page;
+        continue;
+      }
       results = results.concat(body[key]);
       // we're using totalresultsavailable because totalPages maxes out at 999
       let total = Math.ceil(body.totalresultsavailable / MAX_RESULTS);
@@ -57,9 +78,12 @@ function createClient() {
 
   client.getMerchants = co.wrap(function*() {
     let i, j;
-    let data = yield client.get({
+    let data = yield carefulGet({
       url: 'sellers/lomadee/' + API_TOKEN + '/BR'
     });
+    if (!data) {
+      return [];
+    }
     let merchants = data.sellers;
 
     let promises = [];
