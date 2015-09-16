@@ -5,7 +5,7 @@ const singleRun = require('./support/single-run');
 
 const client = require('./api-clients/lomadee')();
 
-const merge = require('./support/easy-merge')('advertiserId', {
+const merge = require('./support/easy-merge')('advertiserid', {
   coupons: 'seller.advertiserid'
 });
 
