@@ -37,7 +37,8 @@ function createClient() {
         return result;
       }
       catch (e) {
-        debug('Error fetching %o error was %o', args, e);
+        tries--;
+        debug('Error fetching %o, %d more ties. Error was %o', args, tries, e);
       }
     }
     debug('Retries exhausted featching %o', args);
