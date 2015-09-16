@@ -13,6 +13,7 @@ const flipkartApi = require('./flipkartApi');
 const grouponApi = require('./grouponApi');
 const impactRadiusProductFtp = require("./impactRadiusProductFtp");
 const linkShareApi = require("./linkShareApi");
+const lomadeeApi = require('./lomadeeApi');
 const partnerAdsApi = require('./partnerAdsApi');
 const pepperjamApi = require('./pepperjamApi');
 const performanceHorizonApi = require('./performanceHorizonApi');
@@ -102,6 +103,7 @@ function init(createTask) {
     "CommissionFactory Merchants": commissionfactoryApi.getMerchants,
     "ImpactRadius Merchants": impactRadiusApi.getMerchants,
     "LinkShare Merchants": linkShareApi.getMerchants,
+    "Lomadee Merchants": lomadeeApi.getMerchants,
     "OMG (India) Merchants": omgpmIndiaApi.getMerchants,
     "OMG (UK) Merchants": omgpmUKApi.getMerchants,
     "OMG (Asia) Merchants": omgpmAsiaApi.getMerchants,
@@ -165,6 +167,7 @@ function init(createTask) {
     "Groupon Commissions": grouponApi.getCommissionDetails,
     "ImpactRadius Commissions": impactRadiusApi.getCommissionDetails,
     "LinkShare Commissions": linkShareApi.getCommissionDetails,
+    "Lomadee Commissions": lomadeeApi.getCommissionDetails,
     "PartnerAds Commissions": partnerAdsApi.getCommissionDetails,
     "PepperJam Commissions": pepperjamApi.getCommissionDetails,
     "PerformanceHorizon Commissions": performanceHorizonApi.getCommissionDetails,
