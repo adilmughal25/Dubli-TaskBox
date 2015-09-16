@@ -77,6 +77,13 @@ function createClient() {
   client.baseUrl = API_URL;
   client.apiToken = API_TOKEN;
 
+  client.getOffers = co.wrap(function*(merchantId) {
+    return yield depaginate(
+      'findOfferList/lomadee/' + API_TOKEN,
+      {allowedSellers: merchantId},
+      'offer');
+  });
+
   client.getMerchants = co.wrap(function*() {
     let i, j;
     let data = yield carefulGet({
@@ -85,22 +92,7 @@ function createClient() {
     if (!data) {
       return [];
     }
-    let merchants = data.sellers;
-
-    let promises = [];
-    for(i = 0; i < merchants.length; i++) {
-      promises.push(co.wrap(function*() {
-        merchants[i].offers = yield depaginate(
-          'findOfferList/lomadee/' + API_TOKEN,
-          {allowedSellers: merchants[i].id},
-          'offer');
-        return merchants[i];
-      })());
-    }
-
-    yield Promise.all(promises);
-
-    return merchants;
+    return data.sellers;
   });
 
   client.getCoupons = co.wrap(function*() {
