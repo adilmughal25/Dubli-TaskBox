@@ -85,14 +85,21 @@ function createClient() {
   });
 
   client.getMerchants = co.wrap(function*() {
-    let i, j;
+    let result = []
     let data = yield carefulGet({
       url: 'sellers/lomadee/' + API_TOKEN + '/BR'
     });
-    if (!data) {
-      return [];
+    let sellers = data.sellers || []
+    for (let i = 0; i < sellers.length; i++) {
+      debug('[merchant#%d] Getting merchant details', sellers[i].id);
+      let seller = (yield carefulGet({
+        url: 'viewSellerDetails/' + API_TOKEN,
+        qs: _.extend({}, baseQuery, {sellerId: sellers[i].id})
+      })).seller;
+      seller.advertiserid = sellers[i].advertiserId
+      result.push(seller);
     }
-    return data.sellers;
+    return result;
   });
 
   client.getCoupons = co.wrap(function*() {
