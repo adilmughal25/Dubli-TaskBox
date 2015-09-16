@@ -98,7 +98,8 @@ function createClient() {
           url: 'viewSellerDetails/' + API_TOKEN,
           qs: _.extend({}, baseQuery, {sellerId: merchant.id})
         })).seller;
-        seller.advertiserid = merchant.advertiserId
+        seller.advertiserid = merchant.advertiserId;
+        seller.thumbnail = merchant.thumbnail;
         seller.link = seller.links.filter(l => l.link.type === 'seller')[0].link;
         debug('[%s] Creating affiliate link', id);
         seller.link.lomadee = (yield carefulGet({
