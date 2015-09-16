@@ -34,9 +34,8 @@ var send = co.wrap(function* (s_myName, s_streamName, s_streamType, s_taskName, 
       if (s_item.length > MAX_UNGZIPPED_SIZE) {
         debug("item size is %d, max un-gzipped size is %d, compressing!", s_item.length, MAX_UNGZIPPED_SIZE);
         var start = Date.now();
-        item = (yield gzip(s_item)).toString('base64');
+        item = {gzippedData: (yield gzip(s_item)).toString('base64')};
         compressionTime += (Date.now() - start);
-        o_flags.gzipped_data = true;
       }
 
       var checker = _check('could not save kinesis stream event: '+JSON.stringify(items[i]));
