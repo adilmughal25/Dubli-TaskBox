@@ -14,7 +14,7 @@ const debug = require('debug')('lomadee:api-client');
 
 const API_URL = ' http://sandbox.buscape.com.br/service/';
 const API_TOKEN = '5749507a5a7258304352673d';
-const SOURCE_ID = '9262544';
+const SOURCE_ID = '33225840';
 const MAX_RESULTS = 100;
 
 function createClient() {
@@ -85,21 +85,31 @@ function createClient() {
   });
 
   client.getMerchants = co.wrap(function*() {
-    let result = []
+    let results = []
     let data = yield carefulGet({
       url: 'sellers/lomadee/' + API_TOKEN + '/BR'
     });
     let sellers = data.sellers || []
     for (let i = 0; i < sellers.length; i++) {
-      debug('[merchant#%d] Getting merchant details', sellers[i].id);
-      let seller = (yield carefulGet({
-        url: 'viewSellerDetails/' + API_TOKEN,
-        qs: _.extend({}, baseQuery, {sellerId: sellers[i].id})
-      })).seller;
-      seller.advertiserid = sellers[i].advertiserId
-      result.push(seller);
+      results.push(co.wrap(function*(merchant){
+        let id = 'merchant#' + merchant.id;
+        debug('[%s] Getting merchant details', id);
+        let seller = (yield carefulGet({
+          url: 'viewSellerDetails/' + API_TOKEN,
+          qs: _.extend({}, baseQuery, {sellerId: merchant.id})
+        })).seller;
+        seller.advertiserid = merchant.advertiserId;
+        seller.thumbnail = merchant.thumbnail;
+        seller.link = seller.links.filter(l => l.link.type === 'seller')[0].link;
+        debug('[%s] Creating affiliate link', id);
+        seller.link.lomadee = (yield carefulGet({
+          url: 'createLinks/lomadee/' + API_TOKEN,
+          qs: _.extend({}, baseQuery, {sourceId: SOURCE_ID, link1: seller.link.url})
+        })).lomadeelinks[0].lomadeelink.redirectlink;
+        return seller;
+      })(sellers[i]));
     }
-    return result;
+    return yield Promise.all(results);
   });
 
   client.getCoupons = co.wrap(function*() {
