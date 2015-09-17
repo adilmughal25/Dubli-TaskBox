@@ -134,8 +134,7 @@ function init(createTask) {
     "TradeTracker (SE) Merchants": tradetrackerSEApi.getMerchants,
     "VCommission Merchants": vcommissionApi.getMerchants,
     "Webgains Merchants": webgainsApi.getMerchants,
-    "Zanox Merchants": zanoxApi.getMerchants,
-    "ShareASale Merchants": shareASaleApi.getMerchants,
+    "Zanox Merchants": zanoxApi.getMerchants
   });
 
   // run each of these every 6 hours
@@ -175,7 +174,6 @@ function init(createTask) {
     // "PublicIdeas (LATAM) Commissions": publicideasLATAMApi.getCommissionDetails,
     // "PublicIdeas (UK) Commissions": publicideasUKApi.getCommissionDetails,
     "SnapDeal Commissions": snapdealApi.getCommissionDetails,
-    "ShareASale Commissions": shareASaleApi.getCommissionDetails,
     "TradeTracker (AT) Commissions": tradetrackerATApi.getCommissionDetails,
     "TradeTracker (BE) Commissions": tradetrackerBEApi.getCommissionDetails,
     "TradeTracker (CH) Commissions": tradetrackerCHApi.getCommissionDetails,
@@ -198,4 +196,6 @@ function init(createTask) {
   // disabled for now:
   //createTask("ImpactRadius Product FTP": impactRadiusProductFtp.getProducts, {minute:35});
 
+  createTask('ShareASale Merchants', shareASaleApi.getMerchants, {hour:12, minute:0, dayOfWeek:0}); // every sunday at 12:00
+  createTask('ShareASale Commissions', shareASaleApi.getCommissionDetails, {hour:12, minute:30});   // once a day at 12:30
 }
