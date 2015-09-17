@@ -78,12 +78,31 @@ const tradetrackerNOApi = tradetrackerGenericApi('no');
 const tradetrackerRUApi = tradetrackerGenericApi('ru');
 const tradetrackerSEApi = tradetrackerGenericApi('se');
 
-function init(createTask) {
+/*
+ * some thoughts by Rando:
+ *
+ *   The 24 Hour cycle for merchants and 6 hour cycle for commissions that most
+ *   of these tasks stick to is arbitrary and only an optimistic best attempt at
+ *   running without too stupid of a delay before things show up in our system.
+ *
+ *   If a network can't handle that much, just use the main createTask() function
+ *   to set up a regular cron-type schedule.
+ *
+ *   The createGroup() function is just for convenience, to sprinkle a bunch of
+ *   tasks around an X-hour period in a shuffled yet deterministic and consistent
+ *   order, but they were written quickly and off-hand just to keep me from having
+ *   to try to manually manage task cron timings :)
+ */
 
-  // run each of these every 24 hours -- since their position within the 24h
-  // segment is randomized, this could lead to some not being calculated every
-  // day if and when there's a deploy and/or taskbox restart.
-  createTask.createGroup(1, { // temporarily changed to every hour for testing purposes
+
+function init(createTask) {
+  initializeMerchantImporters(createTask);
+  initializeCommissionsProcessors(createTask);
+}
+
+function initializeMerchantImporters(createTask) {
+  // run each of these every 24 hours
+  createTask.createGroup(24, {
     "APD Performance Merchants": apdPerformanceApi.getMerchants,
     "AdCell Merchants": adCellApi.getMerchants,
     "Admitad Merchants": admitadApi.getMerchants,
@@ -139,7 +158,9 @@ function init(createTask) {
     "Zanox Merchants": zanoxApi.getMerchants,
     "ShareASale Merchants": shareASaleApi.getMerchants,
   });
+}
 
+function initializeCommissionsProcessors(createTask) {
   // run each of these every 6 hours
   createTask.createGroup(6, {
     "APD Performance Commissions": apdPerformanceApi.getCommissionDetails,

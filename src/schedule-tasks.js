@@ -6,6 +6,8 @@ const debug = require('debug')('taskbox:tasks');
 const prettyMs = require('pretty-ms');
 const schedule = require('node-schedule');
 const uuid = require('node-uuid');
+const crypto = require('crypto');
+const md5 = str => crypto.createHash('md5').update(str).digest('hex');
 
 module.exports = setup;
 
@@ -67,10 +69,11 @@ function setup(log) {
     }
   }
 
+
   function createGroup(i_numberOfHours, o_taskSet) {
     if (24 % i_numberOfHours !== 0) throw new Error("number of hours must cleanly divide into 24 hours!");
     const mult = 24 / i_numberOfHours;
-    const taskNames = _.shuffle(Object.keys(o_taskSet));
+    const taskNames = _.sortBy(Object.keys(o_taskSet), md5);
     const numTasks = taskNames.length;
     const timeBetweenTasks = i_numberOfHours / numTasks;
     let time = 0;
