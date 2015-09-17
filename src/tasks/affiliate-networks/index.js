@@ -157,6 +157,8 @@ function initializeMerchantImporters(createTask) {
     "Webgains Merchants": webgainsApi.getMerchants,
     "Zanox Merchants": zanoxApi.getMerchants
   });
+
+  createTask('ShareASale Merchants', shareASaleApi.getMerchants, {hour:12, minute:0, dayOfWeek:0}); // every sunday at 12:00
 }
 
 function initializeCommissionsProcessors(createTask) {
@@ -216,10 +218,9 @@ function initializeCommissionsProcessors(createTask) {
     "VCommission Commissions": vcommissionApi.getCommissionDetails,
     "Zanox Commissions": zanoxApi.getCommissionDetails,
   });
+  
+  createTask('ShareASale Commissions', shareASaleApi.getCommissionDetails, {hour:12, minute:30});   // once a day at 12:30
 
   // disabled for now:
   //createTask("ImpactRadius Product FTP": impactRadiusProductFtp.getProducts, {minute:35});
-
-  createTask('ShareASale Merchants', shareASaleApi.getMerchants, {hour:12, minute:0, dayOfWeek:0}); // every sunday at 12:00
-  createTask('ShareASale Commissions', shareASaleApi.getCommissionDetails, {hour:12, minute:30});   // once a day at 12:30
 }
