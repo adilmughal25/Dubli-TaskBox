@@ -8,6 +8,7 @@ const affiliatewindowApi = require('./affiliatewindowApi');
 const amazonApi = require('./amazonApi');
 const belboonApi = require('./belboonApi');
 const clickJunctionApi = require("./clickJunctionApi");
+const clixGaloreApi = require("./clixGaloreApi");
 const commissionfactoryApi = require('./commissionfactoryApi');
 const flipkartApi = require('./flipkartApi');
 const grouponApi = require('./grouponApi');
@@ -94,7 +95,6 @@ const tradetrackerSEApi = tradetrackerGenericApi('se');
  *   to try to manually manage task cron timings :)
  */
 
-
 function init(createTask) {
   initializeMerchantImporters(createTask);
   initializeCommissionsProcessors(createTask);
@@ -117,6 +117,7 @@ function initializeMerchantImporters(createTask) {
     "AvantLink (CA) Merchants": avantLinkCAApi.getMerchants,
     "AvantLink (US) Merchants": avantLinkUSApi.getMerchants,
     "Belboon Merchants": belboonApi.getMerchants,
+    "ClixGalore Merchants": clixGaloreApi.getMerchants,
     "ClickJunction Merchants (Euro)": clickJunctionApi.getMerchantsEuro,
     "ClickJunction Merchants (USA)": clickJunctionApi.getMerchantsUSA,
     "CommissionFactory Merchants": commissionfactoryApi.getMerchants,
@@ -182,6 +183,7 @@ function initializeCommissionsProcessors(createTask) {
     "AvantLink (CA) Commissions": avantLinkCAApi.getCommissionDetails,
     "AvantLink (US) Commissions": avantLinkUSApi.getCommissionDetails,
     "Belboon Commissions": belboonApi.getCommissionDetails,
+    "ClixGalore Commissions": clixGaloreApi.getCommissionDetails,
     "ClickJunction (Euro) Commissions": clickJunctionApi.getCommissionDetailsEuro,
     "ClickJunction (USA) Commissions": clickJunctionApi.getCommissionDetailsUSA,
     "CommissionFactory Commissions": commissionfactoryApi.getCommissionDetails,
@@ -218,7 +220,7 @@ function initializeCommissionsProcessors(createTask) {
     "VCommission Commissions": vcommissionApi.getCommissionDetails,
     "Zanox Commissions": zanoxApi.getCommissionDetails,
   });
-  
+
   createTask('ShareASale Commissions', shareASaleApi.getCommissionDetails, {hour:12, minute:30});   // once a day at 12:30
 
   // disabled for now:
