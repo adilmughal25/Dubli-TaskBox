@@ -44,7 +44,7 @@ BelboonClient.prototype.setup = co.wrap(function* () {
 
     this._client.setSecurity(new soap.BasicAuthSecurity(API_USER, API_PASSWORD));
 
-    limiter.request(this._client, 2500, 3600).debug(debug);
+    limiter.request(this._client, 10000, 3600).debug(debug);
     
     this.initialized = true;
   }
