@@ -4,12 +4,12 @@ const _ = require('lodash');
 const co = require('co');
 const request = require('request-promise');
 // debugging the requests || TODO: remove after finishing implementation
-require('request-promise').debug = true; 
+//require('request-promise').debug = true; 
 const debug = require('debug')('clixgalore:api-client');
 const limiter = require('ominto-utils').promiseRateLimiter;
 const jsonify = require('./jsonify-xml-body');
-
-const ary = x => x ? (_.isArray(x) ? x : [x]) : [];
+const spawn = require('child_process').spawn;
+const querystring = require('querystring');
 
 const API_URL = 'http://www.clixgalore.com/';
 const SITE_ID = 278221;
@@ -60,7 +60,7 @@ function ClixGaloreClient() {
 	// default request options
 	this.client = request.defaults({
     baseUrl: API_URL,
-    json: true,
+    json: false,
     encoding: 'ucs-2',
     resolveWithFullResponse: true,
     qs: {
@@ -71,9 +71,14 @@ function ClixGaloreClient() {
   //limiter.request(this.client, 1, 2).debug(debug);
 }
 
-ClixGaloreClient.prototype.getFeed = co.wrap(function* (s_type, bodyKey) {
+/** 
+ * Get XML feeds.
+ * @param {String} s_type The type of api/feed to request
+ * @param {String} s_bodyKey  The body key to deep select from resulting json
+ */
+ClixGaloreClient.prototype.getFeed = co.wrap(function* (s_type, s_bodyKey) {
   if (!API_TYPES[s_type]) throw new Error("Unknown ClixGalore api type: " + s_type);
-  bodyKey = bodyKey || 'DocumentElement.ReportData';
+  s_bodyKey = s_bodyKey || 'DocumentElement.ReportData';
 
   const arg = {
     url: API_TYPES[s_type].action,
@@ -81,7 +86,50 @@ ClixGaloreClient.prototype.getFeed = co.wrap(function* (s_type, bodyKey) {
   };
 
 	const body = yield this.client.get(arg).then(jsonify);
-	const response = _.get(body, bodyKey, []);
+	const response = _.get(body, s_bodyKey, []);
+
+  return response;
+});
+
+/** 
+ * workaround for "affiliateJoinRequests"
+ * Some (at least 1) of their feeds responds with invalid header, node cant handle and quits with error "Parse Error: HPE_INVALID_CONSTANT".
+ * On top of this, ClixGalore provides data in UCS2-LE encoding :/
+ * This hack will download the XML feed using curl.
+ * Due to heavy and complicated encoding within node, we pass the curl responds directly to linux iconv and encode it into utf8.
+ * @param {String} s_type The type of api/feed to request
+ * @param {String} s_bodyKey  The body key to deep select from resulting json
+ */
+ClixGaloreClient.prototype.curlXml = co.wrap(function* (s_type, s_bodyKey) {
+  if (!API_TYPES[s_type]) throw new Error("Unknown ClixGalore api type: " + s_type);
+  s_bodyKey = s_bodyKey || 'DocumentElement.ReportData';
+
+  let args = _.extend({AfID: SITE_ID}, API_TYPES[s_type].qs);
+  let url = API_URL + API_TYPES[s_type].action + '?' + querystring.stringify(args);
+
+  const promise = new Promise( (resolve,reject) => {
+    const curlCmd = spawn('/usr/bin/curl', ['-q', url]);
+    const iconvCmd = spawn('/usr/bin/iconv', ['-f', 'ucs-2le', '-t', 'utf-8']);
+    let data = "";
+    let err = "";
+
+    curlCmd.stdout.on('data', d => {iconvCmd.stdin.write(d);} );
+    curlCmd.stderr.on('data', d => err += d);
+    curlCmd.on('close', (code) => {
+      if (code !== 0) return reject('curl exited with status '+code+', errors: '+err);
+      iconvCmd.stdin.end();
+    });
+
+    iconvCmd.stdout.on('data', d => data += d);
+    iconvCmd.stderr.on('data', d => err += d);
+    iconvCmd.on('close', function (code) {
+      if (code !== 0) return reject('iconv exited with status '+code+', errors: '+err);
+      resolve(data);
+    });
+  });
+
+  const body = yield promise.then(jsonify);
+	const response = _.get(body, s_bodyKey, []);
 
   return response;
 });

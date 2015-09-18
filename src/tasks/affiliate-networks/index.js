@@ -183,7 +183,7 @@ function initializeCommissionsProcessors(createTask) {
     "AvantLink (CA) Commissions": avantLinkCAApi.getCommissionDetails,
     "AvantLink (US) Commissions": avantLinkUSApi.getCommissionDetails,
     "Belboon Commissions": belboonApi.getCommissionDetails,
-    "ClixGalore Commissions": clixGaloreApi.getCommissionDetails,
+    //"ClixGalore Commissions": clixGaloreApi.getCommissionDetails,
     "ClickJunction (Euro) Commissions": clickJunctionApi.getCommissionDetailsEuro,
     "ClickJunction (USA) Commissions": clickJunctionApi.getCommissionDetailsUSA,
     "CommissionFactory Commissions": commissionfactoryApi.getCommissionDetails,
