@@ -5,6 +5,9 @@
  * They seem to structure the whole progam differently -Ominto is not joining/related to programs/merchants but more to individual banners from such merchants.
  * - merchant Ids or such isnt existing either - so we create one with base64 out of the merchant name
  * @TODO: - complete the list of possible currency strings returned by any of the feeds - all feeds using diffrent syntax
+ *
+ * getCommissionDetails:
+ * !Note: transactions do not have any Ids - no transactionIds what so ever
  */
 
 const _ = require('lodash');
@@ -16,8 +19,6 @@ const client = require('./api-clients/clixGalore')();
 
 const ary = x => x ? (_.isArray(x) ? x : [x]) : [];
 const exists = x => !!x;
-const merchants = [];
-
 const merge = require('./support/easy-merge')('mid_base64', {
   banners: 'mid_base64',
   links: 'mid_base64',
@@ -25,6 +26,8 @@ const merge = require('./support/easy-merge')('mid_base64', {
 });
 
 var getMerchants = singleRun(function* () {
+  const merchants = [];
+
   // they dont have "merchants" so we have to filter individual merchants from their Banner lists and create a unique merchant list.
   const banners = ary(yield client.curlXml('affiliateJoinRequests'))
     .map(prepareBanners)
@@ -50,10 +53,31 @@ var getMerchants = singleRun(function* () {
   yield sendEvents.sendMerchants('clixgalore', events);
 });
 
+/**
+ * Retrieve all commission details (sales/transactions) from ClixGalore.
+ * @returns {undefined}
+ */
 var getCommissionDetails = singleRun(function* () {
-  console.log("get commission details...");
-  //yield sendEvents.sendCommissions('clixgalore', events);
+  let transactions = [], response = [];
+  const startDate = new Date(Date.now() - (30 * 86400 * 1000));
+  const endDate = new Date(Date.now() - (60 * 1000));
+
+  transactions = [].concat(
+    ary(yield client.getFeed('transactionsConfirmed', null, {SD: startDate, ED:endDate})),
+    ary(yield client.getFeed('transactionsPending', null, {SD: startDate, ED:endDate})),
+    ary(yield client.getFeed('transactionsCancelled', null, {SD: startDate, ED:endDate}))
+  );
+
+  const events = transactions.map(prepareCommission).filter(exists);
+
+  yield sendEvents.sendCommissions('clixgalore', events);
 });
+
+const STATE_MAP = {
+  'approved': 'initiated',
+  'pending': 'initiated',
+  'declined': 'cancelled',
+};
 
 const CURRENCY_MAP = {
   'US': 'usd',
@@ -146,7 +170,24 @@ function prepareCoupons(o_obj) {
   return o_link;
 }
 
+const amountPregPattern = /([^0-9\\.])/gi;  // to clean amounts like "AU$123.45", "NZ$432.12", ...
+function prepareCommission(o_obj) {
+  let eff_date = o_obj.Declined_Date || o_obj.Confirmed_Date || o_obj.Transaction_Date;
+  let event = {
+    affiliate_name: o_obj.Merchant_Site,
+    // transaction_id: null,
+    outclick_id: o_obj.Aff_Order_ID,
+    currency: CURRENCY_MAP[o_obj.Currency],
+    purchase_amount: o_obj.Sale_Value.replace(amountPregPattern, ''),
+    commission_amount: o_obj.Commission.replace(amountPregPattern, ''),
+    state: STATE_MAP[o_obj.Status.toLowerCase()],
+    effective_date: new Date(eff_date)
+  };
+
+  return event;
+}
+
 module.exports = {
   getMerchants: getMerchants,
-//  getCommissionDetails: getCommissionDetails
+  getCommissionDetails: getCommissionDetails
 };

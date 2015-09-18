@@ -3,17 +3,19 @@
 const _ = require('lodash');
 const co = require('co');
 const request = require('request-promise');
-// debugging the requests || TODO: remove after finishing implementation
-//require('request-promise').debug = true; 
 const debug = require('debug')('clixgalore:api-client');
 const limiter = require('ominto-utils').promiseRateLimiter;
 const jsonify = require('./jsonify-xml-body');
 const spawn = require('child_process').spawn;
 const querystring = require('querystring');
+const moment = require('moment');
 
 const API_URL = 'http://www.clixgalore.com/';
-const SITE_ID = 278221;
-const API_CID = 232646; // not sure what that param means
+//const SITE_ID = 278221;
+//const API_CID = 232646; // not sure what that param means
+// DubLi Legacy
+const SITE_ID = 204920;
+const API_CID = 163476;
 
 const API_TYPES = {
   affiliateJoinRequests: {
@@ -51,7 +53,32 @@ const API_TYPES = {
       // K: null,   // unknown
     }
   },
+  
+  /* Commissions/Sales */
+  _transactions: {
+    // http://www.clixGalore.com/AffiliateTransactionSentReport_Export.aspx?AfID=278221&ST=1&RP=4&CID=163476&S2=&AdID=0&SD=&ED=&B=2&type=xml
+    action: 'AffiliateTransactionSentReport_Export.aspx',
+    qs: {
+      CID: API_CID,
+      AdID: 0,
+      //ST: 1,      // 1=Confirmed; 2=Pending; 0=Cancelled
+      RP: 3,  	    // Period; 2=Last 7 days; 3=Last 31 days; 4=Last 90 days; 5=Last 1 year; 6=Specific Period
+      // S2: null,
+      // SD: null,
+      // ED: null,
+      B: 2, 		    // date filter based on; 1=Based On Approved/cancelled Date; 2=Based On Transaction Date
+      type: 'xml',
+    }
+  },
 };
+
+// Short-Cuts for specific Transaction status
+_.extend(API_TYPES, {
+  transactionsConfirmed:  _.merge({}, API_TYPES._transactions, {qs:{ ST:1 }}),
+  transactionsPending:    _.merge({}, API_TYPES._transactions, {qs:{ ST:2 }}),
+  transactionsCancelled:  _.merge({}, API_TYPES._transactions, {qs:{ ST:0 }}),
+});
+
 
 function ClixGaloreClient() {
 	if (!(this instanceof ClixGaloreClient)) return new ClixGaloreClient();
@@ -62,27 +89,35 @@ function ClixGaloreClient() {
     baseUrl: API_URL,
     json: false,
     encoding: 'ucs-2',
-    resolveWithFullResponse: true,
+    resolveWithFullResponse: false,
     qs: {
       AfID: SITE_ID,  // AffiliateId/SiteId - use "0" to get data for all even Ominto currently has only 1
     }
   });
 
-  //limiter.request(this.client, 1, 2).debug(debug);
+  limiter.request(this.client, 30, 60).debug(debug);
 }
 
 /** 
  * Get XML feeds.
  * @param {String} s_type The type of api/feed to request
  * @param {String} s_bodyKey  The body key to deep select from resulting json
+ * @param {Object} o_params  Optional params to pass/overwrite to request querystring
  */
-ClixGaloreClient.prototype.getFeed = co.wrap(function* (s_type, s_bodyKey) {
+ClixGaloreClient.prototype.getFeed = co.wrap(function* (s_type, s_bodyKey, o_params) {
   if (!API_TYPES[s_type]) throw new Error("Unknown ClixGalore api type: " + s_type);
   s_bodyKey = s_bodyKey || 'DocumentElement.ReportData';
 
+  if(o_params.SD) {
+    o_params.SD = moment(o_params.SD).format('YYYY-MM-DD');
+  }
+  if(o_params.ED) {
+    o_params.ED = moment(o_params.ED).format('YYYY-MM-DD');
+  }
+
   const arg = {
     url: API_TYPES[s_type].action,
-    qs: API_TYPES[s_type].qs
+    qs: _.merge({}, API_TYPES[s_type].qs, o_params),
   };
 
 	const body = yield this.client.get(arg).then(jsonify);
