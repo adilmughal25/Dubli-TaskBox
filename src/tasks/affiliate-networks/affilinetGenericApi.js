@@ -43,7 +43,7 @@ function setup(s_regionId) {
     results.links = links;
     debug("links count: %d", results.links.length);
 
-    var merged = merge(results);
+    var merged = merge(results).filter(checkIfActive);
     yield sendEvents.sendMerchants('affilinet-'+s_regionId, merged);
   });
 
@@ -80,6 +80,11 @@ function setup(s_regionId) {
     getMerchants: getMerchants,
     getCommissionDetails: getCommissionDetails
   };
+}
+
+function checkIfActive(rec) {
+  if (rec.merchant.PartnershipStatus !== 'Active') return false;
+  return true;
 }
 
 module.exports = setup;
