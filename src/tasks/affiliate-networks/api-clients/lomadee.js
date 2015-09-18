@@ -45,33 +45,61 @@ function createClient() {
     return {};
   });
 
-  let depaginate = co.wrap(function*(url, query, key) {
+  let getPage = co.wrap(function*(id, url, query, page) {
+    let args = {
+      url: url,
+      qs: _.extend({}, baseQuery, query, {page: page, results: MAX_RESULTS})
+    };
+    debug('[%s] sending paginated request to %o', id, args);
+    let body = yield carefulGet(args);
+    if (!body) {
+      debug('[%s] failed to retrive response, skipping %o', id, args);
+    }
+    else {
+      debug('[%s] finished processing page %d', id, page);
+    }
+    return body;
+  });
+
+
+  let depaginate = co.wrap(function*(url, query, transform) {
     let id = 'request#' + (++_id);
     let page = 1;
-    let results = [];
     debug('[%s] got paginated request: %s %o', id, url, query);
-    while (true) {
-      let args = {
-        url: url,
-        qs: _.extend({}, baseQuery, query, {page: page, results: MAX_RESULTS})
-      };
-      debug('[%s] sending paginated request to %o', id, args);
-      let body = yield carefulGet(args);
-      if (!body) {
-        debug('[%s] failed to retrive response, skipping %o', id, args);
-        ++page;
-        continue;
-      }
-      results = results.concat(body[key]);
-      // we're using totalresultsavailable because totalPages maxes out at 999
-      let total = Math.ceil(body.totalresultsavailable / MAX_RESULTS);
-      debug('[%s] finished processing page %s of %d', id, page, total);
-      if (++page > total) {
-        debug('[%s] finished depaginating %d pages', id, total);
-        break;
-      }
+    let promise = getPage(id, url, query, page);
+    let results = [promise.then(data => transform(data))];
+    let first = yield promise
+    if (first) {
+      // I'm using totalresultsavailable because totalPages maxes out at 999
+      let total = Math.ceil(first.totalresultsavailable / MAX_RESULTS);
+      // This created a defer objec that we can resolve when ready
+      let d  = {};
+      let p = new Promise((resolve, reject) => {
+        d.resolve = resolve;
+        d.reject = reject;
+      });
+      // The recursive loop method instead of a for or while method is to allow
+      // us to defer each iteration of the loop to the next execution step which
+      // creates fair queuing between the various merchants
+      let loop = co.wrap(function*() {
+        if (++page > total) {
+          return d.resolve();
+        }
+        results.push(getPage(id, url, query, page)
+          .then(data => transform(data)));
+        setTimeout(loop, 0);
+      });
+      loop();
+      yield p;
+      debug('[%s] finished depaginating %d page(s)', id, total);
     }
-    return results.map(r => r[key]);
+    results = yield Promise.all(results);
+    let items = [];
+    results.forEach(result => {
+      items = items.concat(result);
+    });
+
+    return items;
   });
 
   client.baseUrl = API_URL;
@@ -81,7 +109,20 @@ function createClient() {
     return yield depaginate(
       'findOfferList/lomadee/' + API_TOKEN,
       {allowedSellers: merchantId},
-      'offer');
+      body => {
+        let result = [];
+        if (body.offer) {
+          body.offer.forEach(offer => {
+            let item = offer.offer;
+            if(item.seller && item.seller.coupon) {
+              item.coupon = item.seller.coupon;
+            }
+            delete item.seller
+            result.push(item);
+          });
+        }
+        return result;
+      });
   });
 
   client.getMerchants = co.wrap(function*() {
@@ -106,6 +147,7 @@ function createClient() {
           url: 'createLinks/lomadee/' + API_TOKEN,
           qs: _.extend({}, baseQuery, {sourceId: SOURCE_ID, link1: seller.link.url})
         })).lomadeelinks[0].lomadeelink.redirectlink;
+        // seller.offers = yield client.getOffers(seller.id);
         return seller;
       })(sellers[i]));
     }
@@ -116,7 +158,18 @@ function createClient() {
     return yield depaginate(
       'coupons/lomadee/' + API_TOKEN,
       {sourceId: SOURCE_ID},
-      'coupon');
+      body => {
+        let result = [];
+        if (body.coupon) {
+          body.coupon.forEach(coupon => {
+            let item = coupon.coupon;
+            item.advertiserid = item.seller.advertiserid;
+            delete item.seller;
+            result.push(item);
+          });
+        }
+        return result;
+      });
   });
 
   return client;

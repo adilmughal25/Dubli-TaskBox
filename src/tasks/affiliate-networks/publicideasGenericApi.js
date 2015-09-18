@@ -54,9 +54,8 @@ function prepareCommission(s_region, o_obj) {
   const event = {
     transaction_id: o_obj.id,
     outclick_id: o_obj.cashBack,
-    // the xml i get back uses the 'montant*' fields but the documentation says the 'amount*' fields
-    purchase_amount: o_obj.montantVente || o_obj.amountSale,
-    commission_amount: o_obj.montantCom || o_obj.amountCom,
+    purchase_amount: o_obj.montantVente,
+    commission_amount: o_obj.montantCom,
     state: STATUS_MAP[o_obj.statut],
     currency: s_region === 'latam' ? 'MXN' : 'EUR',
     effective_date: new Date(o_obj.statut === 1 ? o_obj.dateAction : o_obj.dateValid)
