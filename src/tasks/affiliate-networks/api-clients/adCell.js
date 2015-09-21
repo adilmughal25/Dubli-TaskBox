@@ -179,26 +179,24 @@ AdCellClient.prototype.getCommissions = co.wrap(function* (params) {
 });
 
 /**
- * Fetching all available coupons/text promos for our accepted affiliate programs.
+ * Fetching all available coupons promos for our accepted affiliate programs.
  * @memberof AdCellClient
- * @param {String} promoType - What type of promo:"Coupon" or "Text"
  * @param {Object} params - The params to pass onto the api call
  * @param {Object} params.programIds - array of programIds to fetch coupons for (!required)
  * @param {Object} params.page - which page to fetch from api
  * @param {Object} params.rows - how many rows/items per page to fetch
  * @returns {{promotionId:string, programId:string, ...}[]}
  */
-AdCellClient.prototype.getPromotionType = co.wrap(function* (promoType, params) {
-  promoType = promoType || 'Coupon';
+AdCellClient.prototype.getPromotionTypeCoupon = co.wrap(function* (params) {
 	let response, body, arg = {
-    url: API_TYPES.promotion.path + 'getPromotionType' + promoType,
+    url: API_TYPES.promotion.path + 'getPromotionTypeCoupon',
     qs: {
       rows: API_TYPES.promotion.rows,
       page: 1,
       format: 'json',
       showJsCode: 0,     // 0=no;1=yes; show JSCode in ouput
       showhtmlCode: 0,   // 0=no;1=yes; show HTML Code in output,
-      endDate: getDateFormatted(1)  // Filtering by vouchers whose validity ends on or after this date; Format YYYY-mm-dd (e.g.: 2014-11-23) 
+      endDate: getDateFormatted(1)  // Filtering by vouchers whose validity ends on or after this date; Format YYYY-mm-dd (e.g.: 2014-11-23)
     }
   };
 
@@ -209,7 +207,7 @@ AdCellClient.prototype.getPromotionType = co.wrap(function* (promoType, params) 
     token: this.token
   }, params);
 
-  debug("Fetch " + promoType + " for %d programId's.", arg.qs.programIds.length);
+  debug("Fetch Coupon for %d programId's.", arg.qs.programIds.length);
 
 	body = yield this.client.get(arg);
 	response = _.get(body, 'data', []);
@@ -222,21 +220,45 @@ AdCellClient.prototype.getPromotionType = co.wrap(function* (promoType, params) 
 });
 
 /**
- * Function alias for getPromotionType('Coupon', {params})
+ * Fetching all available text promos for our accepted affiliate programs.
  * @memberof AdCellClient
+ * @param {Object} params - The params to pass onto the api call
+ * @param {Object} params.programIds - array of programIds to fetch coupons for (!required)
+ * @param {Object} params.page - which page to fetch from api
+ * @param {Object} params.rows - how many rows/items per page to fetch
+ * @returns {{promotionId:string, programId:string, ...}[]}
  */
-AdCellClient.prototype.getPromotionTypeCoupon = (params) => {
-  return this.getPromotionType('Coupon', params);
-};
+AdCellClient.prototype.getPromotionTypeText = co.wrap(function* (params) {
+	let response, body, arg = {
+    url: API_TYPES.promotion.path + 'getPromotionTypeText',
+    qs: {
+      rows: API_TYPES.promotion.rows,
+      page: 1,
+      format: 'json',
+      showJsCode: 0,     // 0=no;1=yes; show JSCode in ouput
+      showhtmlCode: 0,   // 0=no;1=yes; show HTML Code in output,
+      endDate: getDateFormatted(1)  // Filtering by vouchers whose validity ends on or after this date; Format YYYY-mm-dd (e.g.: 2014-11-23)
+    }
+  };
 
-/**
- * Function alias for getPromotionType('Text', {params})
- * @memberof AdCellClient
- */
-AdCellClient.prototype.getPromotionTypeText = (params) => {
-  return this.getPromotionType('Text', params);
-};
+	// make sure we have a valid token for next request
+	yield this.getToken();
 
+  _.extend(arg.qs, {
+    token: this.token
+  }, params);
+
+  debug("Fetch Text for %d programId's.", arg.qs.programIds.length);
+
+	body = yield this.client.get(arg);
+	response = _.get(body, 'data', []);
+
+  if (body.status != 200) {
+    throw new Error("Could not get " + promoType + " for export. Response: [" + body.status + "]" + body.message + ". Token:[" + this.token + "]");
+  }
+
+	return response;
+});
 
 /**
  * Fetching all transactions/sales within a specified date period.
