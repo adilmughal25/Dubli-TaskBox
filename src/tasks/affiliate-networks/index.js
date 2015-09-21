@@ -175,9 +175,8 @@ function initializeCommissionsProcessors(createTask) {
     "Affili.Net (Spain) Commissions": affilinetSpainApi.getCommissionDetails,
     "Affili.Net (Switzerland) Commissions": affilinetSwitzerlandApi.getCommissionDetails,
     "Affili.Net (UK) Commissions": affilinetUKApi.getCommissionDetails,
-    // Commissions xml response structure unclear - waiting for some test data
-    // "Affiliate Gateway (Asia) Commissions": affiliateGatewayAsiaApi.getCommissionDetails,
-    // "Affiliate Gateway (SG) Commissions": affiliateGatewaySgApi.getCommissionDetails,
+    "Affiliate Gateway (Asia) Commissions": affiliateGatewayAsiaApi.getCommissionDetails,
+    "Affiliate Gateway (SG) Commissions": affiliateGatewaySgApi.getCommissionDetails,
     "AffiliateWindow Commissions": affiliatewindowApi.getCommissionDetails,
     // "Amazon (IN) Commissions": amazonApi.getCommissionDetails, // problems w/ amazon.in
     "AvantLink (CA) Commissions": avantLinkCAApi.getCommissionDetails,
