@@ -194,6 +194,7 @@ AdCellClient.prototype.getPromotionTypeCoupon = co.wrap(function* (params) {
       rows: API_TYPES.promotion.rows,
       page: 1,
       format: 'json',
+      outputSubId: 'OMINTO_SID_REPLACEMENT',
       showJsCode: 0,     // 0=no;1=yes; show JSCode in ouput
       showhtmlCode: 0,   // 0=no;1=yes; show HTML Code in output,
       endDate: getDateFormatted(1)  // Filtering by vouchers whose validity ends on or after this date; Format YYYY-mm-dd (e.g.: 2014-11-23)
@@ -235,6 +236,7 @@ AdCellClient.prototype.getPromotionTypeText = co.wrap(function* (params) {
       rows: API_TYPES.promotion.rows,
       page: 1,
       format: 'json',
+      outputSubId: 'OMINTO_SID_REPLACEMENT',
       showJsCode: 0,     // 0=no;1=yes; show JSCode in ouput
       showhtmlCode: 0,   // 0=no;1=yes; show HTML Code in output,
       endDate: getDateFormatted(1)  // Filtering by vouchers whose validity ends on or after this date; Format YYYY-mm-dd (e.g.: 2014-11-23)
