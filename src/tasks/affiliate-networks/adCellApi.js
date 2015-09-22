@@ -55,9 +55,9 @@ var getMerchants = singleRun(function* () {
 
   // get all coupons for each group of programIds
   for( let i=0; i<idGroups.length; i++) {
-    response = yield pagedApiCall('getPromotionTypeCoupon', 'items', {programIds: idGroups[i]});
+    response = yield pagedApiCall('getPromotionType', 'items', {programIds: idGroups[i]}, ['Coupon']);
     coupons = coupons.concat(response);
-    response = yield pagedApiCall('getPromotionTypeText', 'items', {programIds: idGroups[i]});
+    response = yield pagedApiCall('getPromotionType', 'items', {programIds: idGroups[i]}, ['Text']);
     text = text.concat(response);
   }
 
@@ -102,9 +102,10 @@ var getCommissionDetails = singleRun(function* () {
  * @param {String} method - The method of the api to call
  * @param {String} bodyKey - Attribute name/path in response body object to deep select as results
  * @param {Object} params - The params to pass onto the api method
+ * @param {Array} extra - extra arguments to pass to the api method
  * @returns {Array}
  */
-var pagedApiCall = co.wrap(function* (method, bodyKey, params) {
+var pagedApiCall = co.wrap(function* (method, bodyKey, params, extra) {
   const client = getClient();
   let results = [],
       perPage = 250,	// default is 25
@@ -119,13 +120,13 @@ var pagedApiCall = co.wrap(function* (method, bodyKey, params) {
 
 	// perform api calls with pagination until we reach total items to fetch
   while(true) {
-    let arg = _.extend({}, params, {page:++page, rows:perPage}),
+    let arg = [_.extend({}, params, {page:++page, rows:perPage})].concat(extra),
       response;
 
     debug("%s : page %d of %s (%s)", method, page, Math.floor(total/perPage) || 'unknown', JSON.stringify({args:arg}));
 
     // perform actual api call
-    response = yield client[method](arg);
+    response = yield client[method].apply(client, arg);
 
     let items = _.get(response, bodyKey) || [];
     results = results.concat(items);

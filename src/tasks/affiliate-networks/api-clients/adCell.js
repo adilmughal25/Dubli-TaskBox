@@ -181,14 +181,14 @@ AdCellClient.prototype.getCommissions = co.wrap(function* (params) {
 /**
  * Fetching all available coupons/text promos for our accepted affiliate programs.
  * @memberof AdCellClient
- * @param {String} promoType - What type of promo:"Coupon" or "Text"
  * @param {Object} params - The params to pass onto the api call
  * @param {Object} params.programIds - array of programIds to fetch coupons for (!required)
  * @param {Object} params.page - which page to fetch from api
  * @param {Object} params.rows - how many rows/items per page to fetch
+ * @param {String} promoType - What type of promo:"Coupon" or "Text"
  * @returns {{promotionId:string, programId:string, ...}[]}
  */
-AdCellClient.prototype.getPromotionType = co.wrap(function* (promoType, params) {
+AdCellClient.prototype.getPromotionType = co.wrap(function* (params, promoType) {
   promoType = promoType || 'Coupon';
 	let response, body, arg = {
     url: API_TYPES.promotion.path + 'getPromotionType' + promoType,
@@ -196,9 +196,10 @@ AdCellClient.prototype.getPromotionType = co.wrap(function* (promoType, params) 
       rows: API_TYPES.promotion.rows,
       page: 1,
       format: 'json',
+      outputSubId: 'OMINTO_SID_REPLACEMENT',
       showJsCode: 0,     // 0=no;1=yes; show JSCode in ouput
       showhtmlCode: 0,   // 0=no;1=yes; show HTML Code in output,
-      endDate: getDateFormatted(1)  // Filtering by vouchers whose validity ends on or after this date; Format YYYY-mm-dd (e.g.: 2014-11-23) 
+      endDate: getDateFormatted(1)  // Filtering by vouchers whose validity ends on or after this date; Format YYYY-mm-dd (e.g.: 2014-11-23)
     }
   };
 
@@ -220,23 +221,6 @@ AdCellClient.prototype.getPromotionType = co.wrap(function* (promoType, params) 
 
 	return response;
 });
-
-/**
- * Function alias for getPromotionType('Coupon', {params})
- * @memberof AdCellClient
- */
-AdCellClient.prototype.getPromotionTypeCoupon = (params) => {
-  return this.getPromotionType('Coupon', params);
-};
-
-/**
- * Function alias for getPromotionType('Text', {params})
- * @memberof AdCellClient
- */
-AdCellClient.prototype.getPromotionTypeText = (params) => {
-  return this.getPromotionType('Text', params);
-};
-
 
 /**
  * Fetching all transactions/sales within a specified date period.
