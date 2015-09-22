@@ -23,7 +23,7 @@ var merge = require('./support/easy-merge')(
 
 const AdCellGenericApi = function(s_entity) {
   if (!(this instanceof AdCellGenericApi)) {
-    console.log("instantiating AdCellGenericApi for: " + s_entity);
+    debug("instantiating AdCellGenericApi for: %s", s_entity);
     return new AdCellGenericApi(s_entity);
   }
 

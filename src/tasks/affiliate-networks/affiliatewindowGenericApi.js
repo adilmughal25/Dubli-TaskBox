@@ -12,7 +12,7 @@ const ary = x => _.isArray(x) ? x : [x];
 
 const AffiliateWindowGenericApi = function(s_entity) {
   if (!(this instanceof AffiliateWindowGenericApi)) {
-    console.log("instantiating AffiliateWindowGenericApi for: " + s_entity);
+    debug("instantiating AffiliateWindowGenericApi for: %s", s_entity);
     return new AffiliateWindowGenericApi(s_entity);
   }
 

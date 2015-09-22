@@ -4,7 +4,6 @@ module.exports = { init: init };
 
 const admitadApi = require('./admitadApi');
 const amazonApi = require('./amazonApi');
-const belboonApi = require('./belboonApi');
 const clickJunctionApi = require("./clickJunctionApi");
 const clixGaloreApi = require("./clixGaloreApi");
 const commissionfactoryApi = require('./commissionfactoryApi');
@@ -41,6 +40,10 @@ const affilinetNetherlandsApi = affilinetGenericApi('nl');
 const affilinetSpainApi = affilinetGenericApi('es');
 const affilinetSwitzerlandApi = affilinetGenericApi('ch');
 const affilinetUKApi = affilinetGenericApi('uk');
+
+const belboonGenericApi = require('./belboonGenericApi');
+const belboonApi = belboonGenericApi();
+const belboonDubliApi = belboonGenericApi('dubli');
 
 const impactRadiusGenericApi = require('./impactRadiusGenericApi');
 const apdPerformanceApi = impactRadiusGenericApi('apdperformance');
@@ -239,5 +242,6 @@ function initializeCommissionsDubliProcessors(createTask) {
   createTask.createGroup(24, {
     "AdCell DubLi Commissions": adCellDubliApi.getCommissionDetails,
     "AffiliateWindow DubLi Commissions": affiliatewindowDubliApi.getCommissionDetails,
+    "Belboon DubLi Commissions": belboonDubliApi.getCommissionDetails,
   });
 }
