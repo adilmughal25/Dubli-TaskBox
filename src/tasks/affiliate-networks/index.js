@@ -2,12 +2,7 @@
 
 module.exports = { init: init };
 
-const adCellGenericApi = require('./adCellGenericApi');
-const adCellApi = adCellGenericApi();
-const adCellDubliApi = adCellGenericApi('dubli');
-
 const admitadApi = require('./admitadApi');
-const affiliatewindowApi = require('./affiliatewindowApi');
 const amazonApi = require('./amazonApi');
 const belboonApi = require('./belboonApi');
 const clickJunctionApi = require("./clickJunctionApi");
@@ -26,9 +21,17 @@ const tradedoublerApi = require('./tradedoublerApi');
 const webgainsApi = require('./webgainsApi');
 const zanoxApi = require('./zanoxApi');
 
+const adCellGenericApi = require('./adCellGenericApi');
+const adCellApi = adCellGenericApi();
+const adCellDubliApi = adCellGenericApi('dubli');
+
 const affiliateGatewayGenericApi = require('./affiliateGatewayGenericApi');
 const affiliateGatewayAsiaApi = affiliateGatewayGenericApi('asia');
 const affiliateGatewaySgApi = affiliateGatewayGenericApi('sg');
+
+const affiliatewindowGenericApi = require('./affiliatewindowGenericApi');
+const affiliatewindowApi = affiliatewindowGenericApi();
+const affiliatewindowDubliApi = affiliatewindowGenericApi('dubli');
 
 const affilinetGenericApi = require('./affilinetGenericApi');
 const affilinetAustriaApi = affilinetGenericApi('at');
@@ -101,7 +104,7 @@ const tradetrackerSEApi = tradetrackerGenericApi('se');
 function init(createTask) {
   initializeMerchantImporters(createTask);
   initializeCommissionsProcessors(createTask);
-  
+
   initializeCommissionsDubliProcessors(createTask);
 }
 
@@ -234,6 +237,7 @@ function initializeCommissionsProcessors(createTask) {
 function initializeCommissionsDubliProcessors(createTask) {
   // run each of these every 24 hours
   createTask.createGroup(24, {
-    "AdCell DubLi Commissions": adCellDubliApi.getCommissionDetails
+    "AdCell DubLi Commissions": adCellDubliApi.getCommissionDetails,
+    "AffiliateWindow DubLi Commissions": affiliatewindowDubliApi.getCommissionDetails,
   });
 }
