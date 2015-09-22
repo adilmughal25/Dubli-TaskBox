@@ -10,17 +10,21 @@
 const _ = require('lodash');
 const co = require('co');
 const request = require('request-promise');
-// debugging the requests || TODO: remove after finishing implementation
-//require('request-promise').debug = true; 
-const debug = require('debug')('adcell:api-client');
 const moment = require('moment');
 const limiter = require('ominto-utils').promiseRateLimiter;
+const debug = require('debug')('adcell:api-client');
 
-const API_URL      = 'https://www.adcell.de/api/v2/';
-const API_USERID   = '205737';                  // DubLi-Legacy: 165872
-const API_PASSWORD = 'HF&239gj(VF23i7Fsrn%238'; // DubLi-Legacy: Hvg&sdu386HJf37d&hp4dF
-//const API_USERID   = '165872';
-//const API_PASSWORD = 'Hvg&sdu386HJf37d&hp4dF';
+const API_CFG = {
+  url: 'https://www.adcell.de/api/v2/',
+  ominto: {
+    user: '205737',
+    pass: 'HF&239gj(VF23i7Fsrn%238',
+  },
+  dubli: {
+    user: '165872',
+    pass: 'Hvg&sdu386HJf37d&hp4dF',
+  }
+};
 
 const API_TYPES = {
   user: {
@@ -40,22 +44,24 @@ const API_TYPES = {
   }
 };
 
-
 /**
  * New Class AdCellClient
  * AdCell API requires a token for any request. This token has to be requested in a initial call and is valid for 15minutes.
  * @class
  */
-function AdCellClient() {
-	if (!(this instanceof AdCellClient)) return new AdCellClient();
-  debug("Create new client");
+function AdCellClient(s_entity) {
+	if (!(this instanceof AdCellClient)) return new AdCellClient(s_entity);
+  if (!s_entity) throw new Error("Missing required argument 's_entity'!");
+  if (!API_CFG[s_entity]) throw new Error("Entity '"+s_entity+"' is not defined in API_CFG.");
+  debug("Create new client for entity: %s", s_entity);
 
+  this.cfg = API_CFG[s_entity];
 	this.token = null;              // the token for re-use
 	this.tokenExpires = new Date(); // use token until expired
 
 	// default request options
 	this.client = request.defaults({
-    baseUrl: API_URL,
+    baseUrl: API_CFG.url,
     json: true,
     simple: true,
     resolveWithFullResponse: false,
@@ -78,13 +84,13 @@ AdCellClient.prototype.getToken = co.wrap(function* () {
     return this.token;
   }
 
-  debug("Get new token");
-  
+  debug("Get new token for api userid: %s.", this.cfg.user);
+
   let result, body, arg = {
     url: API_TYPES.user.path + 'getToken',
     qs: {
-      userName: API_USERID,
-      password: API_PASSWORD,
+      userName: this.cfg.user,
+      password: this.cfg.pass,
       format: 'json'
     }
   };
@@ -271,7 +277,7 @@ AdCellClient.prototype.getStatisticsByCommission = co.wrap(function* (params) {
     token: this.token
   }, params);
 
-  debug("Using token '%s' to fetch statistics by commission between %s and %s", this.token, arg.qs.startDate, arg.qs.endDate);
+  debug("Using token '%s' to fetch statistics by commission between %s and %s for entity %s", this.token, arg.qs.startDate, arg.qs.endDate, this.cfg.user);
 
 	body = yield this.client.get(arg);
 	response = _.get(body, 'data', []);
@@ -301,7 +307,4 @@ function getDateFormatted(addDays, format) {
   return moment(_date).format(format);
 }
 
-
-module.exports = function() {
-  return new AdCellClient();
-};
+module.exports = AdCellClient;

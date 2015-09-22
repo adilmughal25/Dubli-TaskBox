@@ -2,7 +2,10 @@
 
 module.exports = { init: init };
 
-const adCellApi = require('./adCellApi');
+const adCellGenericApi = require('./adCellGenericApi');
+const adCellApi = adCellGenericApi();
+const adCellDubliApi = adCellGenericApi('dubli');
+
 const admitadApi = require('./admitadApi');
 const affiliatewindowApi = require('./affiliatewindowApi');
 const amazonApi = require('./amazonApi');
@@ -98,6 +101,8 @@ const tradetrackerSEApi = tradetrackerGenericApi('se');
 function init(createTask) {
   initializeMerchantImporters(createTask);
   initializeCommissionsProcessors(createTask);
+  
+  initializeCommissionsDubliProcessors(createTask);
 }
 
 function initializeMerchantImporters(createTask) {
@@ -224,4 +229,11 @@ function initializeCommissionsProcessors(createTask) {
 
   // disabled for now:
   //createTask("ImpactRadius Product FTP": impactRadiusProductFtp.getProducts, {minute:35});
+}
+
+function initializeCommissionsDubliProcessors(createTask) {
+  // run each of these every 24 hours
+  createTask.createGroup(24, {
+    "AdCell DubLi Commissions": adCellDubliApi.getCommissionDetails
+  });
 }
