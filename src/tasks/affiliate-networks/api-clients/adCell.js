@@ -50,17 +50,17 @@ const API_TYPES = {
  * @class
  */
 function AdCellClient(s_entity) {
-	if (!(this instanceof AdCellClient)) return new AdCellClient(s_entity);
+  if (!(this instanceof AdCellClient)) return new AdCellClient(s_entity);
   if (!s_entity) throw new Error("Missing required argument 's_entity'!");
   if (!API_CFG[s_entity]) throw new Error("Entity '"+s_entity+"' is not defined in API_CFG.");
   debug("Create new client for entity: %s", s_entity);
 
   this.cfg = API_CFG[s_entity];
-	this.token = null;              // the token for re-use
-	this.tokenExpires = new Date(); // use token until expired
+  this.token = null;              // the token for re-use
+  this.tokenExpires = new Date(); // use token until expired
 
-	// default request options
-	this.client = request.defaults({
+  // default request options
+  this.client = request.defaults({
     baseUrl: API_CFG.url,
     json: true,
     simple: true,
@@ -117,7 +117,7 @@ AdCellClient.prototype.getToken = co.wrap(function* () {
  * @returns {{programId:string, programName:string, ...}[]}
  */
 AdCellClient.prototype.getAffiliateProgram = co.wrap(function* (params) {
-	let response, body, arg = {
+  let response, body, arg = {
     url: API_TYPES.program.path + 'export',
     qs: {
       rows: API_TYPES.program.rows,
@@ -126,8 +126,8 @@ AdCellClient.prototype.getAffiliateProgram = co.wrap(function* (params) {
     }
   };
 
-	// make sure we have a valid token for next request
-	yield this.getToken();
+  // make sure we have a valid token for next request
+  yield this.getToken();
 
   _.extend(arg.qs, {
     token: this.token,
@@ -156,7 +156,7 @@ AdCellClient.prototype.getAffiliateProgram = co.wrap(function* (params) {
  * @returns {{programId:string, programName:string, ...}[]}
  */
 AdCellClient.prototype.getCommissions = co.wrap(function* (params) {
-	let response, body, arg = {
+  let response, body, arg = {
     url: API_TYPES.program.path + 'getCommissions',
     qs: {
       rows: API_TYPES.program.rows,
@@ -165,8 +165,8 @@ AdCellClient.prototype.getCommissions = co.wrap(function* (params) {
     }
   };
 
-	// make sure we have a valid token for next request
-	yield this.getToken();
+  // make sure we have a valid token for next request
+  yield this.getToken();
 
   _.extend(arg.qs, {
     token: this.token
@@ -174,14 +174,14 @@ AdCellClient.prototype.getCommissions = co.wrap(function* (params) {
 
   debug("Using token '%s' to request commissions for programIds: %s", this.token, JSON.stringify(arg.qs.programIds));
 
-	body = yield this.client.get(arg);
-	response = _.get(body, 'data', []);
+  body = yield this.client.get(arg);
+  response = _.get(body, 'data', []);
 
   if (body.status != 200) {
     throw new Error("Could not get commissions. Response: [" + body.status + "]" + body.message + ". Token:[" + this.token + "]");
   }
 
-	return response;
+  return response;
 });
 
 /**
@@ -196,7 +196,7 @@ AdCellClient.prototype.getCommissions = co.wrap(function* (params) {
  */
 AdCellClient.prototype.getPromotionType = co.wrap(function* (promoType, params) {
   promoType = promoType || 'Coupon';
-	let response, body, arg = {
+  let response, body, arg = {
     url: API_TYPES.promotion.path + 'getPromotionType' + promoType,
     qs: {
       rows: API_TYPES.promotion.rows,
@@ -208,8 +208,8 @@ AdCellClient.prototype.getPromotionType = co.wrap(function* (promoType, params) 
     }
   };
 
-	// make sure we have a valid token for next request
-	yield this.getToken();
+  // make sure we have a valid token for next request
+  yield this.getToken();
 
   _.extend(arg.qs, {
     token: this.token
@@ -217,14 +217,14 @@ AdCellClient.prototype.getPromotionType = co.wrap(function* (promoType, params) 
 
   debug("Fetch " + promoType + " for %d programId's.", arg.qs.programIds.length);
 
-	body = yield this.client.get(arg);
-	response = _.get(body, 'data', []);
+  body = yield this.client.get(arg);
+  response = _.get(body, 'data', []);
 
   if (body.status != 200) {
     throw new Error("Could not get " + promoType + " for export. Response: [" + body.status + "]" + body.message + ". Token:[" + this.token + "]");
   }
 
-	return response;
+  return response;
 });
 
 /**
@@ -255,7 +255,7 @@ AdCellClient.prototype.getPromotionTypeText = (params) => {
  * @returns {Object[]}
  */
 AdCellClient.prototype.getStatisticsByCommission = co.wrap(function* (params) {
-	let response, body, arg = {
+  let response, body, arg = {
     url: API_TYPES.statistic.path + 'byCommission',
     qs: {
       rows: API_TYPES.statistic.rows,
@@ -270,8 +270,8 @@ AdCellClient.prototype.getStatisticsByCommission = co.wrap(function* (params) {
   params.startDate = params.startDate ? moment(params.startDate).format('YYYY-MM-DD') : arg.qs.startDate;
   params.endDate = params.endDate ? moment(params.endDate).format('YYYY-MM-DD'): arg.qs.endDate;
 
-	// make sure we have a valid token for next request
-	yield this.getToken();
+  // make sure we have a valid token for next request
+  yield this.getToken();
 
   _.extend(arg.qs, {
     token: this.token
@@ -279,14 +279,14 @@ AdCellClient.prototype.getStatisticsByCommission = co.wrap(function* (params) {
 
   debug("Using token '%s' to fetch statistics by commission between %s and %s for entity %s", this.token, arg.qs.startDate, arg.qs.endDate, this.cfg.user);
 
-	body = yield this.client.get(arg);
-	response = _.get(body, 'data', []);
+  body = yield this.client.get(arg);
+  response = _.get(body, 'data', []);
 
   if (body.status != 200) {
     throw new Error("Could not get transactions. Response: [" + body.status + "]" + body.message + ". Token:[" + this.token + "]");
   }
 
-	return response;
+  return response;
 });
 
 /**

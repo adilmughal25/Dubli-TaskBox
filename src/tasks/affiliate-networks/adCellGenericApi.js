@@ -23,7 +23,7 @@ var merge = require('./support/easy-merge')(
 
 const AdCellGenericApi = function(s_entity) {
   if (!(this instanceof AdCellGenericApi)) {
-    console.log("Not yet a instance - init: " + s_entity);
+    console.log("instantiating AdCellGenericApi for: " + s_entity);
     return new AdCellGenericApi(s_entity);
   }
 
@@ -31,6 +31,7 @@ const AdCellGenericApi = function(s_entity) {
 
   this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
   this.client = require('./api-clients/adCell')(this.entity);
+  this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'adcell';
 
   /**
    * Retrieve all merchant/program information from AdCell including there commissions and coupons.
@@ -86,7 +87,7 @@ const AdCellGenericApi = function(s_entity) {
     };
 
     merchants = merge(results);
-    yield sendEvents.sendMerchants(that.entity+'-adcell', merchants);
+    yield sendEvents.sendMerchants(that.eventName, merchants);
   });
 
   /**
@@ -105,7 +106,7 @@ const AdCellGenericApi = function(s_entity) {
     transactions = yield that.pagedApiCall('getStatisticsByCommission', 'items', {startDate: startDate, endDate:endDate});
     events = transactions.map(that.prepareCommission).filter(exists);
 
-    yield sendEvents.sendCommissions(that.entity+'-adcell', events);
+    yield sendEvents.sendCommissions(that.eventName, events);
   });
 
   /**
