@@ -210,7 +210,7 @@ AdCellClient.prototype.getPromotionType = co.wrap(function* (params, promoType) 
     token: this.token
   }, params);
 
-  debug("Fetch " + promoType + "for %d programId's.", arg.qs.programIds.length);
+  debug("Fetch " + promoType + " for %d programId's.", arg.qs.programIds.length);
 
 	body = yield this.client.get(arg);
 	response = _.get(body, 'data', []);
