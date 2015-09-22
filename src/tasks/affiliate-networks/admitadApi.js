@@ -8,7 +8,8 @@ const singleRun = require('./support/single-run');
 const moment = require('moment');
 
 const merge = require('./support/easy-merge')('id', {
-  coupons: 'campaign.id'
+  coupons: 'campaign.id',
+  links: 'campaign'
 });
 
 /**
@@ -29,11 +30,42 @@ var getCommissionDetails = singleRun(function* () {
 });
 
 var getMerchants = singleRun(function* () {
+  let merchants = yield pagedApiCall('getMerchants', 'results');
+  let links = [];
+  let coupons = [];
+  let promises = [];
+  
+  for (let id of _.pluck(merchants, 'id')) {
+      promises.push(
+          pagedApiCall('getLinks', 'results', { id: id })
+              .then(results => {
+                if (_.isEmpty(results)) {
+                  debug("found empty links for '%s'", id);
+                  return [];
+                } else {
+                  debug("adding campaign id to links. id=[%s] count=[%s]", id, results.length);
+                  for (let link of results) {
+                    link['campaign'] = id;
+                  }
+                  return results;
+                }
+              })
+              .then(results => links = links.concat(results)));
+      promises.push(
+          pagedApiCall('getCoupons', 'results', {campaign: id})
+              .then(results => coupons = coupons.concat(results))
+      )
+  }
+  yield Promise.all(promises);
+  
   const results = yield {
-    merchants: pagedApiCall('getMerchants', 'results'),
-    coupons: pagedApiCall('getCoupons', 'results'),
+    merchants: merchants,
+    coupons: _.flattenDeep(coupons),
+    links: _.flattenDeep(links)
   };
 
+  // console.error(JSON.stringify(results.links, null, 2));
+  // console.error(JSON.stringify(merge(results)));
   yield sendEvents.sendMerchants('admitad', merge(results));
 })
 
@@ -67,7 +99,7 @@ var pagedApiCall = co.wrap(function* (method, bodyKey, params) {
     // perform actual api call
     response = yield client[method](arg);
 
-    let items = _.get(response, bodyKey) || [];
+    let items = (bodyKey && _.get(response, bodyKey)) || response || [];
     results = results.concat(items);
     total = (response._meta !== undefined ) ? (response._meta.count || 0) : 0;
 

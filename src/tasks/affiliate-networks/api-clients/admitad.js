@@ -13,7 +13,7 @@ const request = require('request-promise');
 //require('request-promise').debug = true;
 const debug = require('debug')('admitad:api-client');
 const moment = require('moment');
-//const limiter = require('ominto-utils').promiseRateLimiter;
+const limiter = require('ominto-utils').promiseRateLimiter;
 
 const API_URL           = 'https://api.admitad.com/';
 const API_CLIENT_ID     = '4f4a18238d260e4c457bd885667949';
@@ -23,6 +23,13 @@ const STORE_ID          = 296893;
 // const API_CLIENT_ID     = 'ef607af853e28790fa360daf3f2616';
 // const API_CLIENT_SECRET = '0ccae8ee1cf05bd25cfe1ceba81a96';
 // const STORE_ID          = 98792;
+
+const generateDataRequest = function(base) {
+  return {
+    path: base + '/website/' + STORE_ID + '/',
+    scope: base + '_for_website',
+  }
+};
 
 // Paths MUST end with /
 const API_TYPES = {
@@ -48,15 +55,11 @@ const API_TYPES = {
       offset: 0
     }
   },
-  coupons: {
-    path: 'coupons/website/' + STORE_ID + '/',
-    scope: 'coupons_for_website',
-    authorization: 'bearer'
-  },
-  merchants: {
-    path: 'advcampaigns/website/' + STORE_ID + '/',
-    scope: 'advcampaigns_for_website',
-    authorization: 'bearer',
+  merchants: generateDataRequest('advcampaigns'),
+  coupons: generateDataRequest('coupons'),
+  links: {
+    path: _.template('banners/:campaign/website/:store/', {interpolate: /:(\w+)/g}),
+    scope: 'banners_for_website'
   }
 };
 
@@ -82,8 +85,10 @@ function AdmitadClient() {
       accept: "application/json"
     }
   });
-
-  //limiter.request(this.client, 1, 2).debug(debug);  // no limitations knows/documented
+   
+  // no limitations knows/documented
+  // DEH: Found some. It dies with a 503 if you try to parallelize it fully
+  limiter.request(this.client, 10, 1).debug(debug); 
 }
 
 /**
@@ -117,12 +122,16 @@ AdmitadClient.prototype.getToken = co.wrap(function* () {
   let response, body;
   const arg = {
     url:  API_TYPES.token.path,
+    auth: {
+      username: API_CLIENT_ID,
+      password: API_CLIENT_SECRET,
+    },
     qs:   _.merge(API_TYPES.token.qs, {
       scope: this.getScope()
     })
   };
 
-  body = yield this.client.post(arg).auth(API_CLIENT_ID, API_CLIENT_SECRET, true);
+  body = yield this.client.post(arg);
   response = body || {error:-1, error_description:'Unknown error. Empty response body.'};
 
   if (response.error) {
@@ -146,6 +155,7 @@ AdmitadClient.prototype.getToken = co.wrap(function* () {
  * @param {Object} params.rows - how many rows/items per page to fetch
  * @returns {Object[]}
  */
+// TODO: Refactor to use this.executeRequest
 AdmitadClient.prototype.getStatisticsByAction = co.wrap(function* (params) {
 	let response, body;
   const arg = {
@@ -184,46 +194,55 @@ AdmitadClient.prototype.getStatisticsByAction = co.wrap(function* (params) {
 	return response;
 });
 
+AdmitadClient.prototype.getMerchants = co.wrap(function* (params) {
+  
+  let body = yield this.executeRequest('merchants', params);
+  return body || {};
+  
+});
+
 AdmitadClient.prototype.getCoupons = co.wrap(function* (params) {
   
+  let body = yield this.executeRequest('coupons', params);
+  return body || {};
+  
+});
+
+AdmitadClient.prototype.getLinks = co.wrap(function* (params) {
+  
+  let fixedPath = API_TYPES.links.path({campaign: params.id, store: STORE_ID});
+  let arg = {
+    url: fixedPath,
+    simple: false,
+    qs: params,
+    resolveWithFullResponse: true
+  }
+  
+  yield this.getToken();
+  _.set(arg, 'auth.bearer', this.token);
+  
+  debug("Using token '%s' to fetch links for campaign '%s'", this.token, params.id);
+  
+  let resp = yield this.client.get(arg);
+  return (resp.statusCode !== 200 || resp.body.error) && {} || resp.body;
+  
+});
+
+AdmitadClient.prototype.executeRequest = co.wrap(function* (type, params) {
   let body;
   const arg = {
-    url: API_TYPES.coupons.path,
+    url: API_TYPES[type].path,
     auth: {},
-    qs: {}
+    qs: params
   };
   
   yield this.getToken();
   arg.auth.bearer = this.token;
   
-  params && _.extend(arg.qs, params);
-  
-  debug("Using token '%s' to fetch coupons", this.token);
+  debug("Using token '%s' to fetch '%s'", this.token, type);
   
   body = yield this.client.get(arg);
   return body || {};
-  
-});
-
-AdmitadClient.prototype.getMerchants = co.wrap(function* (params) {
-  
-  let body;
-  const arg = {
-    url: API_TYPES.merchants.path,
-    auth: {},
-    qs: {}
-  }
-  
-  yield this.getToken();
-  arg.auth.bearer = this.token;
-  
-  params && _.extend(arg.qs, params);
-  
-  debug("Using token '%s' to fetch merchants", this.token);
-  
-  body = yield this.client.get(arg);
-  return body || {};
-  
 });
 
 module.exports = function() {
