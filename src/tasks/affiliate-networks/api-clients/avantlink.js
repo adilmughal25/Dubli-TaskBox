@@ -7,26 +7,36 @@ const querystring = require('querystring');
 const request = require('request-promise');
 const jsonify = require('./jsonify-xml-body');
 const limiter = require('ominto-utils').promiseRateLimiter;
-// debugging the requests || TODO: remove after finishing implementation
-//require('request-promise').debug = true;
 const moment = require('moment');
 
 const API_CREDENTIALS = {
-  us: {
-    baseUrl: 'https://classic.avantlink.com/api.php',
-    authKey: '401dc5ad219d787ee5ff88d38872c8d5',
-    affiliateId: 147618,
-    websiteId: 183130
-    // DubLi Legacy
-    //authKey: '22981e932ff2a495d7f688418444cdc1',
-    //affiliateId: 118181,
-    //websiteId: 141173
+  ominto: {
+    us: {
+      baseUrl: 'https://classic.avantlink.com/api.php',
+      authKey: '401dc5ad219d787ee5ff88d38872c8d5',
+      affiliateId: 147618,
+      websiteId: 183130
+    },
+    ca: {
+      baseUrl: 'https://classic.avantlink.ca/api.php',
+      authKey: '486155f4cb679938e970330b6a620df8',
+      affiliateId: 150082,
+      websiteId: 186354
+    }
   },
-  ca: {
-    baseUrl: 'https://classic.avantlink.ca/api.php',
-    authKey: '486155f4cb679938e970330b6a620df8',
-    affiliateId: 150082,
-    websiteId: 186354
+  dubli: {
+    us: {
+      baseUrl: 'https://classic.avantlink.com/api.php',
+      authKey: '22981e932ff2a495d7f688418444cdc1',
+      affiliateId: 118181,
+      websiteId: 141173
+    },
+    ca: {
+      baseUrl: 'https://classic.avantlink.ca/api.php',
+      authKey: 'cc0924188d33fec2d4e3bad443841488',
+      affiliateId: 118339,
+      websiteId: 141367
+    }
   }
 };
 
@@ -77,22 +87,24 @@ const avantLinkClientPool = {
 
   /**
    * Getting/Creating a new client for specified region and type. Creates new client, if no active client available.
+   * @param {String} s_entity   What entity to initialize client for? "ominto" or "dubli"
    * @param {String} s_region   The region to fetch data for. "us" or "ca" as defined in API_CREDENTIALS[<region>]
    * @param {String} s_type     What type of api request to get a client for - mapping to the API methods as defined in API_TYPES[<type>]
    * @returns {Object} avantLinkClient.client
    */
-  getClient: function(s_region, s_type) {
+  getClient: function(s_entity, s_region, s_type) {
+    if (!s_entity) throw new Error("Missing required argument 's_entity'!");
     if (!s_region) s_region = 'us';
-    if (!API_CREDENTIALS[s_region]) throw new Error("Unknown AvantLink region: " + s_region);
+    if (!API_CREDENTIALS[s_entity][s_region]) throw new Error("Unknown AvantLink region: " + s_region);
     if (!API_TYPES[s_type]) throw new Error("Unknown AvantLink api type: " + s_type);
 
-    let _tag = s_region + '-' + s_type;
+    let _tag = s_entity + '-' + s_region + '-' + s_type;
     if (this.activeClients[_tag]) {
       debug("Using active client with tag [%s]", _tag);
       return this.activeClients[_tag];
     }
 
-    this.activeClients[_tag] = avantLinkClient(s_region, s_type);
+    this.activeClients[_tag] = avantLinkClient(s_entity, s_region, s_type);
 
     return this.activeClients[_tag];
   }
@@ -100,19 +112,20 @@ const avantLinkClientPool = {
 
 /**
  * The actual client setup.
+ * @param {String} s_entity   What entity to initialize client for? "ominto" or "dubli"
  * @param {String} s_region   The region to fetch data for. "us" or "ca" as defined in API_CREDENTIALS[<region>]
  * @param {String} s_type     What type of api request to get a client for - mapping to the API methods as defined in API_TYPES[<type>]
  * @returns {Object} client
  */
-function avantLinkClient(s_region, s_type) {
-  let _prefix = s_region + '-' + s_type;
+function avantLinkClient(s_entity, s_region, s_type) {
+  let _prefix = s_entity + '-' + s_region + '-' + s_type;
   debug("Create new client for region [%s] and method [%s]", s_region, s_type);
 
-  var creds = API_CREDENTIALS[s_region];
-  var cfg = API_TYPES[s_type];
+  let creds = API_CREDENTIALS[s_entity][s_region];
+  let cfg = API_TYPES[s_type];
 
   // default request options
-  var client = request.defaults({
+  const client = request.defaults({
     uri: creds.baseUrl,
     json: true,
     simple: true,

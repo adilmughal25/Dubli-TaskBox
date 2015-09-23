@@ -49,6 +49,12 @@ const affilinetDubliUKApi = affilinetGenericApi('uk', 'dubli');
 const affilinetDubliATApi = affilinetGenericApi('at', 'dubli');
 const affilinetDubliCHApi = affilinetGenericApi('ch', 'dubli');
 
+const avantLinkGenericApi = require('./avantLinkGenericApi');
+const avantLinkCAApi = avantLinkGenericApi('ca');
+const avantLinkUSApi = avantLinkGenericApi('us');
+const avantLinkDubliCAApi = avantLinkGenericApi('ca', 'dubli');
+const avantLinkDubliUSApi = avantLinkGenericApi('us', 'dubli');
+
 const belboonGenericApi = require('./belboonGenericApi');
 const belboonApi = belboonGenericApi();
 const belboonDubliApi = belboonGenericApi('dubli');
@@ -67,10 +73,6 @@ const publicideasFRApi = publicideasGenericApi('fr');
 const publicideasITApi = publicideasGenericApi('it');
 const publicideasLATAMApi = publicideasGenericApi('latam');
 const publicideasUKApi = publicideasGenericApi('uk');
-
-const avantLinkGenericApi = require('./avantLinkGenericApi');
-const avantLinkCAApi = avantLinkGenericApi('ca');
-const avantLinkUSApi = avantLinkGenericApi('us');
 
 const omgpmGenericApi = require('./omgpmGenericApi');
 const omgpmIndiaApi = omgpmGenericApi('india');
@@ -258,5 +260,8 @@ function initializeCommissionsDubliProcessors(createTask) {
     "Affili.Net DubLi (UK) Commissions": affilinetDubliUKApi.getCommissionDetails,
     "Affili.Net DubLi (AT) Commissions": affilinetDubliATApi.getCommissionDetails,
     "Affili.Net DubLi (CH) Commissions": affilinetDubliCHApi.getCommissionDetails,
+    
+    "AvantLink DubLi (CA) Commissions": avantLinkDubliCAApi.getCommissionDetails,
+    "AvantLink DubLi (US) Commissions": avantLinkDubliUSApi.getCommissionDetails,
   });
 }
