@@ -21,6 +21,7 @@ function createClient() {
     baseUrl: API_URL,
     resolveWithFullResponse: false,
     simple: true,
+    json: true,
     headers: {
       'Fk-Affiliate-Id': AFFILIATE_ID,
       'Fk-Affiliate-Token': AFFILIATE_TOKEN
@@ -51,7 +52,7 @@ function createClient() {
       status: status,
       offset: 0
     });
-    return yield client.getPaginated(url);
+    return yield client.getPaginated(url, 'orderList');
   });
 
 
