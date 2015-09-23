@@ -43,6 +43,7 @@ const impactRadiusApi = impactRadiusGenericApi('impactradius');
 const hasoffersGenericApi = require('./hasoffersGenericApi');
 const snapdealApi = hasoffersGenericApi('snapdeal');
 const vcommissionApi = hasoffersGenericApi('vcommission');
+const shopstylers = hasoffersGenericApi('shopstylers');
 
 const publicideasGenericApi = require('./publicideasGenericApi');
 const publicideasESApi = publicideasGenericApi('es');
@@ -137,6 +138,7 @@ function initializeMerchantImporters(createTask) {
     "PublicIdeas (IT) Merchants": publicideasITApi.getMerchants,
     "PublicIdeas (LATAM) Merchants": publicideasLATAMApi.getMerchants,
     "PublicIdeas (UK) Merchants": publicideasUKApi.getMerchants,
+    "ShopStylers Merchants": shopstylers.getMerchants,
     "SnapDeal Merchants": snapdealApi.getMerchants,
     "TradeDoubler Merchants": tradedoublerApi.getMerchants,
     "TradeTracker (AT) Merchants": tradetrackerATApi.getMerchants,
@@ -201,6 +203,7 @@ function initializeCommissionsProcessors(createTask) {
     "PublicIdeas (IT) Commissions": publicideasITApi.getCommissionDetails,
     "PublicIdeas (LATAM) Commissions": publicideasLATAMApi.getCommissionDetails,
     "PublicIdeas (UK) Commissions": publicideasUKApi.getCommissionDetails,
+    "ShopStylers": shopstylers.getCommissionDetails,
     "SnapDeal Commissions": snapdealApi.getCommissionDetails,
     "TradeTracker (AT) Commissions": tradetrackerATApi.getCommissionDetails,
     "TradeTracker (BE) Commissions": tradetrackerBEApi.getCommissionDetails,
