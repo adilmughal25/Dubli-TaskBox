@@ -43,6 +43,11 @@ const affilinetNetherlandsApi = affilinetGenericApi('nl');
 const affilinetSpainApi = affilinetGenericApi('es');
 const affilinetSwitzerlandApi = affilinetGenericApi('ch');
 const affilinetUKApi = affilinetGenericApi('uk');
+const affilinetDubliDEApi = affilinetGenericApi('de', 'dubli');
+const affilinetDubliESApi = affilinetGenericApi('es', 'dubli');
+const affilinetDubliUKApi = affilinetGenericApi('uk', 'dubli');
+const affilinetDubliATApi = affilinetGenericApi('at', 'dubli');
+const affilinetDubliCHApi = affilinetGenericApi('ch', 'dubli');
 
 const belboonGenericApi = require('./belboonGenericApi');
 const belboonApi = belboonGenericApi();
@@ -247,5 +252,11 @@ function initializeCommissionsDubliProcessors(createTask) {
     "AffiliateWindow DubLi Commissions": affiliatewindowDubliApi.getCommissionDetails,
     "Belboon DubLi Commissions": belboonDubliApi.getCommissionDetails,
     "Admitad DubLi Commissions": admitadDubliApi.getCommissionDetails,
+
+    "Affili.Net DubLi (DE) Commissions": affilinetDubliDEApi.getCommissionDetails,
+    "Affili.Net DubLi (ES) Commissions": affilinetDubliESApi.getCommissionDetails,
+    "Affili.Net DubLi (UK) Commissions": affilinetDubliUKApi.getCommissionDetails,
+    "Affili.Net DubLi (AT) Commissions": affilinetDubliATApi.getCommissionDetails,
+    "Affili.Net DubLi (CH) Commissions": affilinetDubliCHApi.getCommissionDetails,
   });
 }

@@ -6,6 +6,7 @@ const utils = require('ominto-utils');
 const sendEvents = require('./support/send-events');
 const singleRun = require('./support/single-run');
 const moment = require('moment');
+
 const merge = require('./support/easy-merge')('ProgramId', {
   links: 'ProgramId',
   coupons: 'ProgramId'
@@ -19,17 +20,23 @@ const STATE_MAP = {
   'cancelled': 'cancelled'
 };
 
-function setup(s_regionId) {
-  if (!s_regionId) throw new Error("Affili.net Generic API needs region id!");
+const AffilinetGenericApi = function(s_region, s_entity) {
+  if (!s_region) throw new Error("Affili.net Generic API needs region!");
+  if (!(this instanceof AffilinetGenericApi)) return new AffilinetGenericApi(s_region, s_entity);
 
-  const client = require('./api-clients/affilinet')(s_regionId);
-  const debug = require('debug')('affilinet:'+s_regionId+':processor');
+  var that = this;
 
-  const getMerchants = singleRun(function*() {
-    yield client.ensureLoggedIn();
+  this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
+  this.client = require('./api-clients/affilinet')(this.entity, s_region);
+  this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'affilinet-' + s_region;
+
+  const debug = require('debug')(this.eventName + ':processor');
+
+  this.getMerchants = singleRun(function*() {
+    yield that.client.ensureLoggedIn();
     var results = yield {
-      merchants: client.getPrograms(),
-      coupons: client.getVouchers()
+      merchants: that.client.getPrograms(),
+      coupons: that.client.getVouchers()
     };
     debug("merchants count: %d", results.merchants.length);
     debug("coupons count: %d", results.coupons.length);
@@ -37,49 +44,45 @@ function setup(s_regionId) {
     let links = [];
     for (let i = 0; i < ids.length; i += 50) {
       let group = ids.slice(i, i+50);
-      links = links.concat(yield client.getCreatives({programIds:group}));
+      links = links.concat(yield that.client.getCreatives({programIds:group}));
       debug("[%d of %d] %d links totals", i+1, ids.length, links.length);
     }
     results.links = links;
     debug("links count: %d", results.links.length);
 
     var merged = merge(results).filter(checkIfActive);
-    yield sendEvents.sendMerchants('affilinet-'+s_regionId, merged);
+    yield sendEvents.sendMerchants(that.eventName, merged);
   });
 
-  function prepareCommission(o_obj) {
-    let date = new Date(o_obj.RegistrationDate);
-    if (typeof o_obj.CheckDate === 'string' && isDate(o_obj.CheckDate)) {
-      date = new Date(o_obj.CheckDate);
-    }
-    const event = {
-      transaction_id: o_obj.TransactionId,
-      outclick_id: o_obj.SubId,
-      purchase_amount: o_obj.NetPrice,
-      commission_amount: o_obj.PublisherCommission,
-      currency: (s_regionId === 'uk' ? 'gbp' : 'euro'),
-      state: STATE_MAP[o_obj.TransactionStatus],
-      effective_date: date
-    };
-    return event;
-  }
-  const getCommissionDetails = singleRun(function* () {
-    yield client.ensureLoggedIn();
+  this.getCommissionDetails = singleRun(function* () {
+    yield that.client.ensureLoggedIn();
     const startDate = moment().subtract(30, 'days').format('YYYY-MM-DD');
     const endDate = moment().format('YYYY-MM-DD');
     const results = yield [
-      client.getTransactions({startDate:startDate, endDate:endDate, valuationType:'DateOfRegistration'}),
-      client.getTransactions({startDate:startDate, endDate:endDate, valuationType:'DateOfConfirmation'})
+      that.client.getTransactions({startDate:startDate, endDate:endDate, valuationType:'DateOfRegistration'}),
+      that.client.getTransactions({startDate:startDate, endDate:endDate, valuationType:'DateOfConfirmation'})
     ];
     const all = Array.prototype.concat.apply([], results);
-    const events = all.map(prepareCommission).filter(exists);
-    yield sendEvents.sendCommissions('affilinet-'+s_regionId, events);
+    const events = all.map(prepareCommission.bind(null, s_region)).filter(exists);
+    yield sendEvents.sendCommissions(that.eventName, events);
   });
+};
 
-  return {
-    getMerchants: getMerchants,
-    getCommissionDetails: getCommissionDetails
+function prepareCommission(region, o_obj) {
+  let date = new Date(o_obj.RegistrationDate);
+  if (typeof o_obj.CheckDate === 'string' && isDate(o_obj.CheckDate)) {
+    date = new Date(o_obj.CheckDate);
+  }
+  const event = {
+    transaction_id: o_obj.TransactionId,
+    outclick_id: o_obj.SubId,
+    purchase_amount: o_obj.NetPrice,
+    commission_amount: o_obj.PublisherCommission,
+    currency: (region === 'uk' ? 'gbp' : 'euro'),
+    state: STATE_MAP[o_obj.TransactionStatus],
+    effective_date: date
   };
+  return event;
 }
 
 function checkIfActive(rec) {
@@ -87,4 +90,4 @@ function checkIfActive(rec) {
   return true;
 }
 
-module.exports = setup;
+module.exports = AffilinetGenericApi;
