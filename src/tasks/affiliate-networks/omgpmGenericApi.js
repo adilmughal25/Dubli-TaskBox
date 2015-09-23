@@ -35,7 +35,6 @@ function setup(s_account) {
     const commissions = yield client.getTransactions(start, end);
     const events = commissions.map(prepareCommission.bind(null, s_account));
     yield sendEvents.sendCommissions(accountKey, events);
-    // throw new Error("OMG has issues regarding Currencies, Do not enable until these are fixed");
   });
 
   return tasks;
