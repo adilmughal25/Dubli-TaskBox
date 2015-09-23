@@ -36,25 +36,22 @@ var getMerchants = singleRun(function* () {
   let promises = [];
   
   for (let id of _.pluck(merchants, 'id')) {
-      promises.push(
-          pagedApiCall('getLinks', 'results', { id: id })
-              .then(results => {
-                if (_.isEmpty(results)) {
-                  debug("found empty links for '%s'", id);
-                  return [];
-                } else {
-                  debug("adding campaign id to links. id=[%s] count=[%s]", id, results.length);
-                  for (let link of results) {
-                    link['campaign'] = id;
-                  }
-                  return results;
-                }
-              })
-              .then(results => links = links.concat(results)));
-      promises.push(
-          pagedApiCall('getCoupons', 'results', {campaign: id})
-              .then(results => coupons = coupons.concat(results))
-      )
+    promises.push(
+        pagedApiCall('getLinks', 'results', { id: id })
+            .then(results => {
+              if (_.isEmpty(results)) {
+                debug("found empty links for '%s'", id);
+                return [];
+              } else {
+                debug("adding campaign id to links. id=[%s] count=[%s]", id, results.length);
+                return _(results).reject(_.isEmpty).forEach(l => l.campaign = id).value();
+              }
+            })
+            .then(results => links = links.concat(results)));
+    promises.push(
+        pagedApiCall('getCoupons', 'results', {campaign: id})
+            .then(results => coupons = coupons.concat(results))
+    );
   }
   yield Promise.all(promises);
   

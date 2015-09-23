@@ -15,6 +15,10 @@ const CREDENTIALS = deepFreeze({
   snapdeal: {
     api_key: 'a95b73344703625919998f1bc7c419185207e8566b682faf777e013caef1c438',
     NetworkId: 'jasper'
+  },
+  shopstylers: {
+    api_key: '5fae392de6f20a7199d2fe97f4b0e382acafc6d49e01eb84baccebacbc109ba6',
+    NetworkId: 'sscpa'
   }
 });
 
