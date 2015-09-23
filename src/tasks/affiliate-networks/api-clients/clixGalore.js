@@ -53,7 +53,7 @@ const API_TYPES = {
       // K: null,   // unknown
     }
   },
-  
+
   /* Commissions/Sales */
   _transactions: {
     // http://www.clixGalore.com/AffiliateTransactionSentReport_Export.aspx?AfID=278221&ST=1&RP=4&CID=163476&S2=&AdID=0&SD=&ED=&B=2&type=xml
@@ -98,15 +98,17 @@ function ClixGaloreClient() {
   limiter.request(this.client, 30, 60).debug(debug);
 }
 
-/** 
+/**
  * Get XML feeds.
  * @param {String} s_type The type of api/feed to request
  * @param {String} s_bodyKey  The body key to deep select from resulting json
  * @param {Object} o_params  Optional params to pass/overwrite to request querystring
  */
 ClixGaloreClient.prototype.getFeed = co.wrap(function* (s_type, s_bodyKey, o_params) {
+  if (!o_params) o_params = {};
   if (!API_TYPES[s_type]) throw new Error("Unknown ClixGalore api type: " + s_type);
   s_bodyKey = s_bodyKey || 'DocumentElement.ReportData';
+
 
   if(o_params.SD) {
     o_params.SD = moment(o_params.SD).format('YYYY-MM-DD');
@@ -126,7 +128,7 @@ ClixGaloreClient.prototype.getFeed = co.wrap(function* (s_type, s_bodyKey, o_par
   return response;
 });
 
-/** 
+/**
  * workaround for "affiliateJoinRequests"
  * Some (at least 1) of their feeds responds with invalid header, node cant handle and quits with error "Parse Error: HPE_INVALID_CONSTANT".
  * On top of this, ClixGalore provides data in UCS2-LE encoding :/
