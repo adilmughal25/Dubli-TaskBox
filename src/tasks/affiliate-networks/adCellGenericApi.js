@@ -67,9 +67,9 @@ const AdCellGenericApi = function(s_entity) {
 
     // get all coupons for each group of programIds
     for( let i=0; i<idGroups.length; i++) {
-      response = yield that.pagedApiCall('getPromotionTypeCoupon', 'items', {programIds: idGroups[i]});
+      response = yield that.pagedApiCall('getPromotionType', 'items', {programIds: idGroups[i]}, ['Coupon']);
       coupons = coupons.concat(response);
-      response = yield that.pagedApiCall('getPromotionTypeText', 'items', {programIds: idGroups[i]});
+      response = yield that.pagedApiCall('getPromotionType', 'items', {programIds: idGroups[i]}, ['Text']);
       text = text.concat(response);
     }
 
@@ -114,9 +114,10 @@ const AdCellGenericApi = function(s_entity) {
    * @param {String} method - The method of the api to call
    * @param {String} bodyKey - Attribute name/path in response body object to deep select as results
    * @param {Object} params - The params to pass onto the api method
+   * @param {Array} extra - extra arguments to pass to the api method
    * @returns {Array}
    */
-  this.pagedApiCall = co.wrap(function* (method, bodyKey, params) {
+  this.pagedApiCall = co.wrap(function* (method, bodyKey, params, extra) {
     let results = [];
     let perPage = 250;	// default is 25
     let page = 0;
@@ -130,12 +131,12 @@ const AdCellGenericApi = function(s_entity) {
 
     // perform api calls with pagination until we reach total items to fetch
     while(true) {
-      let arg = _.extend({}, params, {page:++page, rows:perPage});
+      let arg = [_.extend({}, params, {page:++page, rows:perPage})].concat(extra);
 
       debug("%s : page %d of %s (%s)", method, page, Math.floor(total/perPage) || 'unknown', JSON.stringify({args:arg}));
 
       // perform actual api call
-      let response = yield that.client[method](arg);
+      let response = yield that.client[method].apply(that.client, arg);
 
       let items = _.get(response, bodyKey) || [];
       results = results.concat(items);
