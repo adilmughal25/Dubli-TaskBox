@@ -2,7 +2,6 @@
 
 module.exports = { init: init };
 
-const admitadApi = require('./admitadApi');
 const amazonApi = require('./amazonApi');
 const clickJunctionApi = require("./clickJunctionApi");
 const clixGaloreApi = require("./clixGaloreApi");
@@ -23,6 +22,10 @@ const zanoxApi = require('./zanoxApi');
 const adCellGenericApi = require('./adCellGenericApi');
 const adCellApi = adCellGenericApi();
 const adCellDubliApi = adCellGenericApi('dubli');
+
+const admitadGenericApi = require('./admitadGenericApi');
+const admitadApi = admitadGenericApi();
+const admitadDubliApi = admitadGenericApi('dubli');
 
 const affiliateGatewayGenericApi = require('./affiliateGatewayGenericApi');
 const affiliateGatewayAsiaApi = affiliateGatewayGenericApi('asia');
@@ -243,5 +246,6 @@ function initializeCommissionsDubliProcessors(createTask) {
     "AdCell DubLi Commissions": adCellDubliApi.getCommissionDetails,
     "AffiliateWindow DubLi Commissions": affiliatewindowDubliApi.getCommissionDetails,
     "Belboon DubLi Commissions": belboonDubliApi.getCommissionDetails,
+    "Admitad DubLi Commissions": admitadDubliApi.getCommissionDetails,
   });
 }

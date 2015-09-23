@@ -9,37 +9,33 @@
 const _ = require('lodash');
 const co = require('co');
 const request = require('request-promise');
-// debugging the requests || TODO: remove after finishing implementation
-//require('request-promise').debug = true;
 const debug = require('debug')('admitad:api-client');
 const moment = require('moment');
 const limiter = require('ominto-utils').promiseRateLimiter;
 
-const API_URL           = 'https://api.admitad.com/';
-const API_CLIENT_ID     = '4f4a18238d260e4c457bd885667949';
-const API_CLIENT_SECRET = 'e644187aaf8325ef993ead2c618589';
-const STORE_ID          = 296893;
-// DubLi Legacy
-// const API_CLIENT_ID     = 'ef607af853e28790fa360daf3f2616';
-// const API_CLIENT_SECRET = '0ccae8ee1cf05bd25cfe1ceba81a96';
-// const STORE_ID          = 98792;
-
-const generateDataRequest = function(base) {
-  return {
-    path: base + '/website/' + STORE_ID + '/',
-    scope: base + '_for_website',
+const API_CFG = {
+  url: 'https://api.admitad.com/',
+  ominto: {
+    clientId: '4f4a18238d260e4c457bd885667949',
+    secret: 'e644187aaf8325ef993ead2c618589',
+    storeId: 296893,
+  },
+  dubli: {
+    clientId: 'ef607af853e28790fa360daf3f2616',
+    secret: '0ccae8ee1cf05bd25cfe1ceba81a96',
+    storeId: 98792,
   }
 };
 
 // Paths MUST end with /
-const API_TYPES = {
+const API_TYPES_DEFAULTS = {
   token: {
     path: 'token/',
     scope: 'public_data',
     qs: {
       scope: '',
       grant_type: 'client_credentials',
-      client_id: API_CLIENT_ID,
+      client_id: '{{clientId}}',
     },
   },
   statistics: {
@@ -47,16 +43,22 @@ const API_TYPES = {
     scope: 'statistics',
     authorization: 'bearer',
     qs: {
-      //date_start,
-      //date_end,
+      // date_start,
+      // date_end,
       order_by: '-id',  // The sign "-" before the value is the reverse order. For example order_by=-clicks&order_by=cr
       total: 0,         // Obtain aggregated data for entire request? 1/0 - aggregated data / non-aggregated
       limit: 250,       // Max is 500
       offset: 0
     }
   },
-  merchants: generateDataRequest('advcampaigns'),
-  coupons: generateDataRequest('coupons'),
+  merchants: {
+    path: 'advcampaigns/website/{{storeId}}/',
+    scope: 'advcampaigns_for_website',
+  },
+  coupons: {
+    path: 'coupons/website/{{storeId}}/',
+    scope: 'coupons_for_website',
+  },
   links: {
     path: _.template('banners/:campaign/website/:store/', {interpolate: /:(\w+)/g}),
     scope: 'banners_for_website'
@@ -68,16 +70,19 @@ const API_TYPES = {
  * Admitad API requires OAuth2.0 - token with expiration.
  * @class
  */
-function AdmitadClient() {
-	if (!(this instanceof AdmitadClient)) return new AdmitadClient();
-  debug("Create new client");
+function AdmitadClient(s_entity) {
+  if (!(this instanceof AdmitadClient)) return new AdmitadClient(s_entity);
+  if (!s_entity) throw new Error("Missing required argument 's_entity'!");
+  if (!API_CFG[s_entity]) throw new Error("Entity '"+s_entity+"' is not defined in API_CFG.");
+  debug("Create new client for entity: %s", s_entity);
 
+  this.cfg = API_CFG[s_entity];
 	this.token = null;              // the token for re-use
 	this.tokenExpires = new Date(); // use token until expired
 
 	// default request options
-	this.client = request.defaults({
-    baseUrl: API_URL,
+  this.client = request.defaults({
+    baseUrl: API_CFG.url,
     json: true,
     simple: true,
     resolveWithFullResponse: false,
@@ -85,7 +90,13 @@ function AdmitadClient() {
       accept: "application/json"
     }
   });
-   
+
+  this.apiTypes = _.clone(API_TYPES_DEFAULTS, true);
+  // fill api_types placeholder with entity dependant auth cfg
+  this.apiTypes.token.qs.client_id  = this.apiTypes.token.qs.client_id.replace('{{clientId}}', this.cfg.clientId);
+  this.apiTypes.merchants.path      = this.apiTypes.merchants.path.replace('{{storeId}}', this.cfg.storeId);
+  this.apiTypes.coupons.path        = this.apiTypes.coupons.path.replace('{{storeId}}', this.cfg.storeId);
+
   // no limitations knows/documented
   // DEH: Found some. It dies with a 503 if you try to parallelize it fully
   limiter.request(this.client, 10, 1).debug(debug); 
@@ -98,9 +109,10 @@ function AdmitadClient() {
  */
 AdmitadClient.prototype.getScope = function() {
   let scope = '';
+  let apiTypes = this.apiTypes;
 
-  Object.keys(API_TYPES).forEach(function(item, idx) {
-    scope += API_TYPES[item].scope + ' ';
+  Object.keys(apiTypes).forEach(function(item, idx) {
+    scope += apiTypes[item].scope + ' ';
   });
 
   return _.trim(scope);
@@ -121,12 +133,12 @@ AdmitadClient.prototype.getToken = co.wrap(function* () {
 
   let response, body;
   const arg = {
-    url:  API_TYPES.token.path,
+    url: this.apiTypes.token.path,
     auth: {
-      username: API_CLIENT_ID,
-      password: API_CLIENT_SECRET,
+      username: this.cfg.clientId,
+      password: this.cfg.secret,
     },
-    qs:   _.merge(API_TYPES.token.qs, {
+    qs: _.merge(this.apiTypes.token.qs, {
       scope: this.getScope()
     })
   };
@@ -159,10 +171,10 @@ AdmitadClient.prototype.getToken = co.wrap(function* () {
 AdmitadClient.prototype.getStatisticsByAction = co.wrap(function* (params) {
 	let response, body;
   const arg = {
-    url: API_TYPES.statistics.path,
+    url: this.apiTypes.statistics.path,
     auth: {},
     qs: {
-      limit: API_TYPES.statistics.rows,
+      limit: this.apiTypes.statistics.rows,
       page: 1,
     }
   };
@@ -184,7 +196,7 @@ AdmitadClient.prototype.getStatisticsByAction = co.wrap(function* (params) {
   // merge our passed params into the querystring
   _.extend(arg.qs, params);
   // set the authentication type and value
-  arg.auth[API_TYPES.statistics.authorization] = this.token;
+  arg.auth[this.apiTypes.statistics.authorization] = this.token;
 
   debug("Using token '%s' to fetch statistics by commission between %s and %s", this.token, params.date_start || params.status_updated_start, params.date_end || params.status_updated_end);
 
@@ -195,56 +207,48 @@ AdmitadClient.prototype.getStatisticsByAction = co.wrap(function* (params) {
 });
 
 AdmitadClient.prototype.getMerchants = co.wrap(function* (params) {
-  
   let body = yield this.executeRequest('merchants', params);
   return body || {};
-  
 });
 
 AdmitadClient.prototype.getCoupons = co.wrap(function* (params) {
-  
   let body = yield this.executeRequest('coupons', params);
   return body || {};
-  
 });
 
 AdmitadClient.prototype.getLinks = co.wrap(function* (params) {
-  
-  let fixedPath = API_TYPES.links.path({campaign: params.id, store: STORE_ID});
+  let fixedPath = this.apiTypes.links.path({campaign: params.id, store: this.cfg.storeId});
   let arg = {
     url: fixedPath,
     simple: false,
     qs: params,
     resolveWithFullResponse: true
-  }
-  
+  };
+
   yield this.getToken();
   _.set(arg, 'auth.bearer', this.token);
-  
+
   debug("Using token '%s' to fetch links for campaign '%s'", this.token, params.id);
-  
+
   let resp = yield this.client.get(arg);
   return (resp.statusCode !== 200 || resp.body.error) && {} || resp.body;
-  
 });
 
 AdmitadClient.prototype.executeRequest = co.wrap(function* (type, params) {
   let body;
   const arg = {
-    url: API_TYPES[type].path,
+    url: this.apiTypes[type].path,
     auth: {},
     qs: params
   };
-  
+
   yield this.getToken();
   arg.auth.bearer = this.token;
-  
+
   debug("Using token '%s' to fetch '%s'", this.token, type);
-  
+
   body = yield this.client.get(arg);
   return body || {};
 });
 
-module.exports = function() {
-  return new AdmitadClient();
-};
+module.exports = AdmitadClient;
