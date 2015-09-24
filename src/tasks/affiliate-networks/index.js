@@ -154,7 +154,7 @@ function initializeMerchantImporters(createTask) {
     "AvantLink (CA) Merchants": avantLinkCAApi.getMerchants,
     "AvantLink (US) Merchants": avantLinkUSApi.getMerchants,
     "Belboon Merchants": belboonApi.getMerchants,
-    "ClixGalore Merchants": clixGaloreApi.getMerchants,
+    // "ClixGalore Merchants": clixGaloreApi.getMerchants,
     "ClickJunction Merchants (Euro)": clickJunctionApi.getMerchantsEuro,
     "ClickJunction Merchants (USA)": clickJunctionApi.getMerchantsUSA,
     "CommissionFactory Merchants": commissionfactoryApi.getMerchants,
