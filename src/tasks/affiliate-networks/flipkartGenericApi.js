@@ -5,7 +5,8 @@ const debug = require('debug')('flipkart:processor');
 const moment = require('moment');
 const sendEvents = require('./support/send-events');
 const singleRun = require('./support/single-run');
-const client = require('./api-clients/flipkart')();
+
+
 
 var getCommissionDetails = singleRun(function* () {
   const start = moment().subtract(75, 'days').format('YYYY-MM-DD');
