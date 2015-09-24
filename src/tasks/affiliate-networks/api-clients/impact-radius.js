@@ -32,6 +32,14 @@ const Auth = {
       }
     }
   },
+  dgm: {
+    dubli: {
+      au: {
+        sid: 'IRJizyQiQ6yB30160CU8NUVS7EoYZLpvx3',
+        token: 'H5XGEDRmjPjj87bNxK5YoMjJBfPX7FTG',
+      }
+    }
+  },
   apdperformance: {
     ominto: {
       us: {

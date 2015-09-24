@@ -13,7 +13,8 @@ const merge = require('./support/easy-merge')('CampaignId', {
 
 const REGION2CURRENCY_MAP = {
   us: 'usd',
-  ca: 'cad'
+  ca: 'cad',
+  au: 'aud',
 };
 
 const taskCache = {};

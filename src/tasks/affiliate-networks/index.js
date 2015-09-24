@@ -74,6 +74,7 @@ const apdPerformanceApi = impactRadiusGenericApi('apdperformance');
 const impactRadiusApi = impactRadiusGenericApi('impactradius');
 const impactRadiusDubliUSApi = impactRadiusGenericApi('impactradius', 'us', 'dubli');
 const impactRadiusDubliCAApi = impactRadiusGenericApi('impactradius', 'ca', 'dubli');
+const dgmDubliAUApi = impactRadiusGenericApi('dgm', 'au', 'dubli');
 
 const hasoffersGenericApi = require('./hasoffersGenericApi');
 const snapdealApi = hasoffersGenericApi('snapdeal');
@@ -296,5 +297,6 @@ function initializeCommissionsDubliProcessors(createTask) {
 
     "ImpactRadius DubLi (US) Commissions": impactRadiusDubliUSApi.getCommissionDetails,
     "ImpactRadius DubLi (CA) Commissions": impactRadiusDubliCAApi.getCommissionDetails,
+    "DGM DubLi (AU) Commissions": dgmDubliAUApi.getCommissionDetails,
   });
 }
