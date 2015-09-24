@@ -77,6 +77,8 @@ const hasoffersGenericApi = require('./hasoffersGenericApi');
 const snapdealApi = hasoffersGenericApi('snapdeal');
 const vcommissionApi = hasoffersGenericApi('vcommission');
 const shopstylers = hasoffersGenericApi('shopstylers');
+const vcommissionDubliApi = hasoffersGenericApi('vcommission', 'dubli');
+const bestsellerDubliApi = hasoffersGenericApi('bestseller', 'dubli');
 
 const publicideasGenericApi = require('./publicideasGenericApi');
 const publicideasESApi = publicideasGenericApi('es');
@@ -238,7 +240,7 @@ function initializeCommissionsProcessors(createTask) {
     "PublicIdeas (IT) Commissions": publicideasITApi.getCommissionDetails,
     "PublicIdeas (LATAM) Commissions": publicideasLATAMApi.getCommissionDetails,
     "PublicIdeas (UK) Commissions": publicideasUKApi.getCommissionDetails,
-    "ShopStylers": shopstylers.getCommissionDetails,
+    "ShopStylers Commissions": shopstylers.getCommissionDetails,
     "SnapDeal Commissions": snapdealApi.getCommissionDetails,
     "TradeTracker (AT) Commissions": tradetrackerATApi.getCommissionDetails,
     "TradeTracker (BE) Commissions": tradetrackerBEApi.getCommissionDetails,
@@ -286,5 +288,8 @@ function initializeCommissionsDubliProcessors(createTask) {
     "Flipkart DubLi Commissions": flipkartDubliApi.getCommissionDetails,
     "Groupon DubLi (US) Commissions": grouponDubliUSApi.getCommissionDetails,
     "Groupon DubLi (EU) Commissions": grouponDubliEUApi.getCommissionDetails,
+    
+    "VCommission DubLi Commissions": vcommissionDubliApi.getCommissionDetails,
+    "BestSeller DubLi Commissions": bestsellerDubliApi.getCommissionDetails,
   });
 }
