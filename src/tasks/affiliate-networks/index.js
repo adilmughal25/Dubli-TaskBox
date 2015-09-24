@@ -2,16 +2,9 @@
 
 module.exports = { init: init };
 
-const adCellApi = require('./adCellApi');
-const admitadApi = require('./admitadApi');
-const affiliatewindowApi = require('./affiliatewindowApi');
 const amazonApi = require('./amazonApi');
-const belboonApi = require('./belboonApi');
 const clickJunctionApi = require("./clickJunctionApi");
 const clixGaloreApi = require("./clixGaloreApi");
-const commissionfactoryApi = require('./commissionfactoryApi');
-const flipkartApi = require('./flipkartApi');
-const grouponApi = require('./grouponApi');
 const impactRadiusProductFtp = require("./impactRadiusProductFtp");
 const linkShareApi = require("./linkShareApi");
 const lomadeeApi = require('./lomadeeApi');
@@ -23,9 +16,21 @@ const tradedoublerApi = require('./tradedoublerApi');
 const webgainsApi = require('./webgainsApi');
 const zanoxApi = require('./zanoxApi');
 
+const adCellGenericApi = require('./adCellGenericApi');
+const adCellApi = adCellGenericApi();
+const adCellDubliApi = adCellGenericApi('dubli');
+
+const admitadGenericApi = require('./admitadGenericApi');
+const admitadApi = admitadGenericApi();
+const admitadDubliApi = admitadGenericApi('dubli');
+
 const affiliateGatewayGenericApi = require('./affiliateGatewayGenericApi');
 const affiliateGatewayAsiaApi = affiliateGatewayGenericApi('asia');
 const affiliateGatewaySgApi = affiliateGatewayGenericApi('sg');
+
+const affiliatewindowGenericApi = require('./affiliatewindowGenericApi');
+const affiliatewindowApi = affiliatewindowGenericApi();
+const affiliatewindowDubliApi = affiliatewindowGenericApi('dubli');
 
 const affilinetGenericApi = require('./affilinetGenericApi');
 const affilinetAustriaApi = affilinetGenericApi('at');
@@ -35,15 +40,48 @@ const affilinetNetherlandsApi = affilinetGenericApi('nl');
 const affilinetSpainApi = affilinetGenericApi('es');
 const affilinetSwitzerlandApi = affilinetGenericApi('ch');
 const affilinetUKApi = affilinetGenericApi('uk');
+const affilinetDubliDEApi = affilinetGenericApi('de', 'dubli');
+const affilinetDubliESApi = affilinetGenericApi('es', 'dubli');
+const affilinetDubliUKApi = affilinetGenericApi('uk', 'dubli');
+const affilinetDubliATApi = affilinetGenericApi('at', 'dubli');
+const affilinetDubliCHApi = affilinetGenericApi('ch', 'dubli');
+
+const avantLinkGenericApi = require('./avantLinkGenericApi');
+const avantLinkCAApi = avantLinkGenericApi('ca');
+const avantLinkUSApi = avantLinkGenericApi('us');
+const avantLinkDubliCAApi = avantLinkGenericApi('ca', 'dubli');
+const avantLinkDubliUSApi = avantLinkGenericApi('us', 'dubli');
+
+const belboonGenericApi = require('./belboonGenericApi');
+const belboonApi = belboonGenericApi();
+const belboonDubliApi = belboonGenericApi('dubli');
+
+const commissionfactoryGenericApi = require('./commissionfactoryGenericApi');
+const commissionfactoryApi = commissionfactoryGenericApi();
+const commissionfactoryDubliApi = commissionfactoryGenericApi('dubli');
+
+const flipkartGenericApi = require('./flipkartGenericApi');
+const flipkartApi = flipkartGenericApi();
+const flipkartDubliApi = flipkartGenericApi('dubli');
+
+const grouponGenericApi = require('./grouponGenericApi');
+const grouponUSApi = grouponGenericApi('us'); //TODO: how about a/the EU account for Ominto?
+const grouponDubliUSApi = grouponGenericApi('us', 'dubli');
+const grouponDubliEUApi = grouponGenericApi('eu', 'dubli');
 
 const impactRadiusGenericApi = require('./impactRadiusGenericApi');
 const apdPerformanceApi = impactRadiusGenericApi('apdperformance');
 const impactRadiusApi = impactRadiusGenericApi('impactradius');
+const impactRadiusDubliUSApi = impactRadiusGenericApi('impactradius', 'us', 'dubli');
+const impactRadiusDubliCAApi = impactRadiusGenericApi('impactradius', 'ca', 'dubli');
+const dgmDubliAUApi = impactRadiusGenericApi('dgm', 'au', 'dubli');
 
 const hasoffersGenericApi = require('./hasoffersGenericApi');
 const snapdealApi = hasoffersGenericApi('snapdeal');
 const vcommissionApi = hasoffersGenericApi('vcommission');
 const shopstylers = hasoffersGenericApi('shopstylers');
+const vcommissionDubliApi = hasoffersGenericApi('vcommission', 'dubli');
+const bestsellerDubliApi = hasoffersGenericApi('bestseller', 'dubli');
 
 const publicideasGenericApi = require('./publicideasGenericApi');
 const publicideasESApi = publicideasGenericApi('es');
@@ -51,10 +89,6 @@ const publicideasFRApi = publicideasGenericApi('fr');
 const publicideasITApi = publicideasGenericApi('it');
 const publicideasLATAMApi = publicideasGenericApi('latam');
 const publicideasUKApi = publicideasGenericApi('uk');
-
-const avantLinkGenericApi = require('./avantLinkGenericApi');
-const avantLinkCAApi = avantLinkGenericApi('ca');
-const avantLinkUSApi = avantLinkGenericApi('us');
 
 const omgpmGenericApi = require('./omgpmGenericApi');
 const omgpmIndiaApi = omgpmGenericApi('india');
@@ -99,6 +133,8 @@ const tradetrackerSEApi = tradetrackerGenericApi('se');
 function init(createTask) {
   initializeMerchantImporters(createTask);
   initializeCommissionsProcessors(createTask);
+
+  initializeCommissionsDubliProcessors(createTask);
 }
 
 function initializeMerchantImporters(createTask) {
@@ -177,9 +213,8 @@ function initializeCommissionsProcessors(createTask) {
     "Affili.Net (Spain) Commissions": affilinetSpainApi.getCommissionDetails,
     "Affili.Net (Switzerland) Commissions": affilinetSwitzerlandApi.getCommissionDetails,
     "Affili.Net (UK) Commissions": affilinetUKApi.getCommissionDetails,
-    // Commissions xml response structure unclear - waiting for some test data
-    // "Affiliate Gateway (Asia) Commissions": affiliateGatewayAsiaApi.getCommissionDetails,
-    // "Affiliate Gateway (SG) Commissions": affiliateGatewaySgApi.getCommissionDetails,
+    "Affiliate Gateway (Asia) Commissions": affiliateGatewayAsiaApi.getCommissionDetails,
+    "Affiliate Gateway (SG) Commissions": affiliateGatewaySgApi.getCommissionDetails,
     "AffiliateWindow Commissions": affiliatewindowApi.getCommissionDetails,
     // "Amazon (IN) Commissions": amazonApi.getCommissionDetails, // problems w/ amazon.in
     "AvantLink (CA) Commissions": avantLinkCAApi.getCommissionDetails,
@@ -190,7 +225,7 @@ function initializeCommissionsProcessors(createTask) {
     "ClickJunction (USA) Commissions": clickJunctionApi.getCommissionDetailsUSA,
     "CommissionFactory Commissions": commissionfactoryApi.getCommissionDetails,
     "Flipkart Commissions": flipkartApi.getCommissionDetails,
-    "Groupon Commissions": grouponApi.getCommissionDetails,
+    "Groupon (US) Commissions": grouponUSApi.getCommissionDetails,
     "ImpactRadius Commissions": impactRadiusApi.getCommissionDetails,
     "LinkShare Commissions": linkShareApi.getCommissionDetails,
     "Lomadee Commissions": lomadeeApi.getCommissionDetails,
@@ -208,7 +243,7 @@ function initializeCommissionsProcessors(createTask) {
     "PublicIdeas (IT) Commissions": publicideasITApi.getCommissionDetails,
     "PublicIdeas (LATAM) Commissions": publicideasLATAMApi.getCommissionDetails,
     "PublicIdeas (UK) Commissions": publicideasUKApi.getCommissionDetails,
-    "ShopStylers": shopstylers.getCommissionDetails,
+    "ShopStylers Commissions": shopstylers.getCommissionDetails,
     "SnapDeal Commissions": snapdealApi.getCommissionDetails,
     "TradeTracker (AT) Commissions": tradetrackerATApi.getCommissionDetails,
     "TradeTracker (BE) Commissions": tradetrackerBEApi.getCommissionDetails,
@@ -233,4 +268,35 @@ function initializeCommissionsProcessors(createTask) {
 
   // disabled for now:
   //createTask("ImpactRadius Product FTP": impactRadiusProductFtp.getProducts, {minute:35});
+}
+
+function initializeCommissionsDubliProcessors(createTask) {
+  // run each of these every 24 hours
+  createTask.createGroup(24, {
+    "AdCell DubLi Commissions": adCellDubliApi.getCommissionDetails,
+    "AffiliateWindow DubLi Commissions": affiliatewindowDubliApi.getCommissionDetails,
+    "Belboon DubLi Commissions": belboonDubliApi.getCommissionDetails,
+    "Admitad DubLi Commissions": admitadDubliApi.getCommissionDetails,
+
+    "Affili.Net DubLi (DE) Commissions": affilinetDubliDEApi.getCommissionDetails,
+    "Affili.Net DubLi (ES) Commissions": affilinetDubliESApi.getCommissionDetails,
+    "Affili.Net DubLi (UK) Commissions": affilinetDubliUKApi.getCommissionDetails,
+    "Affili.Net DubLi (AT) Commissions": affilinetDubliATApi.getCommissionDetails,
+    "Affili.Net DubLi (CH) Commissions": affilinetDubliCHApi.getCommissionDetails,
+
+    "AvantLink DubLi (CA) Commissions": avantLinkDubliCAApi.getCommissionDetails,
+    "AvantLink DubLi (US) Commissions": avantLinkDubliUSApi.getCommissionDetails,
+
+    "CommissionFactory DubLi Commissions": commissionfactoryDubliApi.getCommissionDetails,
+    "Flipkart DubLi Commissions": flipkartDubliApi.getCommissionDetails,
+    "Groupon DubLi (US) Commissions": grouponDubliUSApi.getCommissionDetails,
+    "Groupon DubLi (EU) Commissions": grouponDubliEUApi.getCommissionDetails,
+    
+    "VCommission DubLi Commissions": vcommissionDubliApi.getCommissionDetails,
+    "BestSeller DubLi Commissions": bestsellerDubliApi.getCommissionDetails,
+
+    "ImpactRadius DubLi (US) Commissions": impactRadiusDubliUSApi.getCommissionDetails,
+    "ImpactRadius DubLi (CA) Commissions": impactRadiusDubliCAApi.getCommissionDetails,
+    "DGM DubLi (AU) Commissions": dgmDubliAUApi.getCommissionDetails,
+  });
 }

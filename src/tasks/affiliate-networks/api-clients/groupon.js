@@ -14,10 +14,24 @@ const debug = require('debug')('groupon:api-client');
 const moment = require('moment');
 const querystring = require('querystring');
 
-const API_URL = 'https://partner-api.groupon.com/reporting/v2/';
-const API_KEY = '86a0205660442988d738ec1e6716ac073c1e935f';
-// DubLi-Legacy
-//const API_KEY = 'cbfa54371c094c88d2178c0a260290ac09de4679';
+const API_CFG = {
+  ominto: {
+    us: {
+      url: 'https://partner-api.groupon.com/reporting/v2/',
+      key: '86a0205660442988d738ec1e6716ac073c1e935f'
+    }
+  },
+  dubli: {
+    us: {
+      url: 'https://partner-api.groupon.com/reporting/v2/',
+      key: 'cbfa54371c094c88d2178c0a260290ac09de4679'
+    },
+    eu: {
+      url: 'https://partner-int-api.groupon.com/reporting/v2/',
+      key: '469776c78dc3f8bfdf63fc32606da73788cf049c'
+    }
+  }
+};
 
 const API_TYPES = {
   order: {
@@ -40,9 +54,18 @@ const API_TYPES = {
  * New Class GrouponClient
  * @class
  */
-function GrouponClient() {
-  if (!(this instanceof GrouponClient)) return new GrouponClient();
-  debug("Create new client");
+const GrouponClient = function(s_entity, s_region) {
+  let _tag = s_entity + s_region;
+  if (!(this instanceof GrouponClient)) return new GrouponClient(s_entity, s_region);
+  if (!s_entity) throw new Error("Missing required argument 's_entity'!");
+  if (!s_region) s_region = 'us';
+  if (!API_CFG[s_entity][s_region]) throw new Error("Unknown groupon region `"+s_region+"` for entity `"+s_entity+"`! Available regions: "+Object.keys(API_CFG[s_entity]).join(', '));
+
+  this._token = undefined;
+  this._expires = new Date(0);
+  this._cfg = API_CFG[s_entity][s_region];
+
+  this.debug = require('debug')('groupon:'+s_entity+':'+s_region+':api-client');
 
   // default request options
   this.client = request.defaults({
@@ -54,7 +77,7 @@ function GrouponClient() {
       'accept-charset': 'utf-8'
     }
   });
-}
+};
 
 /**
  * Fetching all transactions/sales within a specified date period.
@@ -72,13 +95,14 @@ GrouponClient.prototype.getOrders = co.wrap(function* (params) {
     qs: {
       pageSize: API_TYPES.order.rows,
       page: 1,
-      clientId: API_KEY
+      clientId: this._cfg.key
     }
   };
 
   // format dates to API expected format
   params.startDate = params.startDate || new Date(Date.now() - (1 * 86400 * 1000));
   params.endDate = params.endDate || new Date();
+
   // Example: "..&date=[2014-01-01&date=2014-12-31]&var2=val2"
   let date = 'date=[' + moment(params.startDate).format('YYYY-MM-DD') +
     '&date=' + moment(params.endDate).format('YYYY-MM-DD')  + ']';
@@ -89,7 +113,7 @@ GrouponClient.prototype.getOrders = co.wrap(function* (params) {
 
   _.extend(arg.qs, API_TYPES.order.qs, params);
 
-  let url = API_URL + arg.url + '?' + querystring.stringify(arg.qs) + '&' + date;
+  let url = this._cfg.url + arg.url + '?' + querystring.stringify(arg.qs) + '&' + date;
 
   // request.get('https://partner-api.groupon.com/reporting/v2/order.json?clientId=cbfa54371c094c88d2178c0a260290ac09de4679&group=order%7Cdeal%7Cdate&date=%5B2015-08-01&date=2015-08-28%5D&timezone=UTC').then(x => console.log("x is", x));
   const body = yield this.client.get(url).catch( function(err) {
@@ -100,6 +124,4 @@ GrouponClient.prototype.getOrders = co.wrap(function* (params) {
   return response;
 });
 
-module.exports = function() {
-  return new GrouponClient();
-};
+module.exports = GrouponClient;

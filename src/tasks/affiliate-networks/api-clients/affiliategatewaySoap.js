@@ -1,8 +1,6 @@
 "use strict";
 
 /*
- * TODO: Need some actual transactions to test with!
- *
  * The Affiliate Gateway (TAG) provides a SOAP API.
  *  https://www.tagpm.com/ws/AffiliateSOAP.wsdl (UK)
  *  https://www.tagadmin.com.au/ws/AffiliateSOAP.wsdl (AU)

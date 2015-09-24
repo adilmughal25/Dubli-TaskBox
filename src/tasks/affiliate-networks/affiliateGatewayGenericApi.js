@@ -1,10 +1,7 @@
 "use strict";
 
 /*
- * - no sample transactions available yet
- * - double check response format of Transactions Object/Array?
- * - reporting currency unclear
- * - attributes possible values such as for "TransactionType" and status is unknown
+ * @TODO: reporting currency unclear
  */
 
 const _ = require('lodash');
@@ -38,7 +35,7 @@ function setup(s_region) {
       }
     });
 
-    let transactions = _.get(results, 'Transactions', []);
+    let transactions = _.get(results, 'Transactions.Transaction', []);
     let errors = _.get(results, 'Errors', []);
 
     if (errors.Error && errors.Error.length > 0) {
@@ -77,12 +74,12 @@ const CURRENCY_MAP = {
  */
 function prepareCommission(region, o_obj) {
   var event = {
-    affiliate_name: o_obj.MerchantName,
+    affiliate_name: o_obj.ProgramName, // MerchantName or ProgramName
     transaction_id: o_obj.TransactionId,
     outclick_id: (o_obj.AffiliateSubId || ''),  // is an optional element
     currency: CURRENCY_MAP[region],
-    purchase_amount: o_obj.OrderAmount,
-    commission_amount: o_obj.AffiliateCommissionAmount,
+    purchase_amount: Number(o_obj.OrderAmount),
+    commission_amount: Number(o_obj.AffiliateCommissionAmount),
     state: STATE_MAP[o_obj.ApprovalStatusId],   // .. or string representation from "ApprovalStatus"
     effective_date: 'auto'
   };

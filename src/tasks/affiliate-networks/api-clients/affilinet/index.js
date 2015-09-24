@@ -10,13 +10,22 @@ const deep = require('deep');
 const deepFreeze = require('deep-freeze');
 
 const CREDENTIALS = deepFreeze({
-  uk: { username: '733351', password: 'jXMPR3e4tW7KhOB7LfA4' },
-  fr: { username: '740021', password: 'laym18VmGqoNJUuxuS7O' },
-  nl: { username: '740024', password: '18GXF0E10sNWMVcotgB1' },
-  de: { username: '740737', password: 'srhJ8icnkrXCB8ALsW4a' },
-  es: { username: '740543', password: 'dYiiTTlrus3MMfleXMCz' },
-  ch: { username: '740893', password: 'YJpc2gW2nHhDEbDrm92a' },
-  at: { username: '740892', password: 'oywvZKdwywrouPjZAOz4' },
+  ominto: {
+    uk: { username: '733351', password: 'jXMPR3e4tW7KhOB7LfA4' },
+    fr: { username: '740021', password: 'laym18VmGqoNJUuxuS7O' },
+    nl: { username: '740024', password: '18GXF0E10sNWMVcotgB1' },
+    de: { username: '740737', password: 'srhJ8icnkrXCB8ALsW4a' },
+    es: { username: '740543', password: 'dYiiTTlrus3MMfleXMCz' },
+    ch: { username: '740893', password: 'YJpc2gW2nHhDEbDrm92a' },
+    at: { username: '740892', password: 'oywvZKdwywrouPjZAOz4' },
+  },
+  dubli: {
+    de: { username: '521710', password: 'kPmRW0bkOcb76MUlUuVe' },
+    es: { username: '554592', password: 'fQTy6GHJNbVAZmsKOtta' },
+    uk: { username: '637079', password: 'YzpiUVSKVX31FOqxLTkI' },
+    at: { username: '662486', password: 'kPmRW0bkOcb76MUlUuVe' },
+    ch: { username: '662487', password: 'kPmRW0bkOcb76MUlUuVe' },
+  }
 });
 
 const CALL_DEFS = {
@@ -71,22 +80,28 @@ const CALL_DEFS = {
 };
 
 const ary = x => _.isArray(x) ? x : [x];
-
 const _cache = {};
-function AffiliNet(s_accountId) {
-  if (_cache[s_accountId]) return _cache[s_accountId];
-  if (!(this instanceof AffiliNet)) return new AffiliNet(s_accountId);
+
+const AffiliNet = function(s_entity, s_accountId) {
+  let _tag = s_entity + s_accountId;
+  if (_cache[_tag]) return _cache[_tag];
+  if (!(this instanceof AffiliNet)) return new AffiliNet(s_entity, s_accountId);
+  if (!s_entity) throw new Error("Missing required argument 's_entity'!");
   if (!s_accountId) s_accountId = 'uk';
-  if (!CREDENTIALS[s_accountId]) throw new Error("Unknown affili.net account `"+s_accountId+"`! Available accounts: "+Object.keys(CREDENTIALS).join(', '));
+  if (!CREDENTIALS[s_entity][s_accountId]) throw new Error("Unknown affili.net account `"+s_accountId+"` for entity `"+s_entity+"`! Available accounts: "+Object.keys(CREDENTIALS[s_entity]).join(', '));
+
   this._client = request.defaults({});
   this._token = undefined;
   this._expires = new Date(0);
-  this._credentials = CREDENTIALS[s_accountId];
-  this.debug = require('debug')('affilinet:'+s_accountId+':api-client');
+  this._credentials = CREDENTIALS[s_entity][s_accountId];
+
+  this.debug = require('debug')('affilinet:'+s_entity+':'+s_accountId+':api-client');
+
   if (!this._credentials.username) throw new Error("Affili.net account `"+s_accountId+"` is missing `username`");
   if (!this._credentials.password) throw new Error("Affili.net account `"+s_accountId+"` is missing `password`");
-  _cache[s_accountId] = this;
-}
+
+  _cache[_tag] = this;
+};
 
 AffiliNet.prototype.ensureLoggedIn = co.wrap(function*() {
   var now = new Date();

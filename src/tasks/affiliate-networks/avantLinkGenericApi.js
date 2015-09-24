@@ -28,15 +28,18 @@ const merge = require('./support/easy-merge')('lngMerchantId', {
 
 const taskCache = {};
 
-function setup(s_region) {
-  if (taskCache[s_region]) return taskCache[s_region];
+function setup(s_region, s_entity) {
+  let entity = s_entity ? s_entity.toLowerCase() : 'ominto';
+  let eventName = (entity !== 'ominto' ? entity + '-' : '') + 'avantlink-' + s_region;
+
+  if (taskCache[eventName]) return taskCache[eventName];
 
   var tasks = {};
 
   // get all merchant information
   tasks.getMerchants = singleRun(function* () {
-    let clientM = clientPool.getClient(s_region, 'merchants');
-    let clientP = clientPool.getClient(s_region, 'promos');
+    let clientM = clientPool.getClient(entity, s_region, 'merchants');
+    let clientP = clientPool.getClient(entity, s_region, 'promos');
 
     let results = yield {
       merchants: clientM.getData().then(hasPercentage),
@@ -44,12 +47,12 @@ function setup(s_region) {
     };
     let merchants = merge(results);
 
-    yield sendEvents.sendMerchants('avantlink-'+s_region, merchants);
+    yield sendEvents.sendMerchants(eventName, merchants);
   });
 
   // get commission report
   tasks.getCommissionDetails = singleRun(function* () {
-    let clientC = clientPool.getClient(s_region, 'commissions');
+    let clientC = clientPool.getClient(entity, s_region, 'commissions');
     let transactions = [];
     let events = [];
     let startDate = new Date(Date.now() - (30 * 86400 * 1000));
@@ -61,10 +64,10 @@ function setup(s_region) {
     transactions = yield clientC.getData({date_begin: startDate, date_end:endDate});
     events = transactions.map(prepareCommission.bind(null, s_region)).filter(exists);
 
-    yield sendEvents.sendCommissions('avantlink-'+s_region, events);
+    yield sendEvents.sendCommissions(eventName, events);
   });
 
-  taskCache[s_region] = tasks;
+  taskCache[eventName] = tasks;
 
   return tasks;
 }

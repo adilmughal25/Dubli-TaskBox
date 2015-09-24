@@ -1,16 +1,30 @@
 "use strict";
 
+const soap = require('soap');
+const co = require('co');
+const denodeify = require('denodeify');
+const debug = require('debug')('affiliatewindow:api-client');
+
 const AFFILIATE_WSDL = 'http://api.affiliatewindow.com/v4/AffiliateService?wsdl';
-const ACCOUNT_ID = '238283';
-const ACCOUNT_PASSWORD = 'f03fa2315b493b550dc70a8677e97692382d97cbb754bd80';
+const API_CFG = {
+  ominto: {
+    user: '238283',
+    pass: 'f03fa2315b493b550dc70a8677e97692382d97cbb754bd80',
+  },
+  dubli: {
+    user: '128635',
+    pass: '439ac8c4ce3ad090fa3b22776fa9b6eaca9ccf95165da46c',
+  }
+};
 
-var soap = require('soap');
-var co = require('co');
-var denodeify = require('denodeify');
-var debug = require('debug')('affiliatewindow:api-client');
+function AWClient(s_entity) {
+  if (!(this instanceof AWClient)) return new AWClient(s_entity); // `new` not required
 
-function AWClient() {
-  if (!(this instanceof AWClient)) return new AWClient(); // `new` not required
+  if (!s_entity) throw new Error("Missing required argument 's_entity'!");
+  if (!API_CFG[s_entity]) throw new Error("Entity '"+s_entity+"' is not defined in API_CFG.");
+  debug("Create new client for entity: %s", s_entity);
+
+  this.cfg = API_CFG[s_entity];
   this._client = null;
   this.initialized = false;
 }
@@ -20,7 +34,7 @@ AWClient.prototype.setup = co.wrap(function* () {
     debug("initializing SOAP client");
     this._client = yield init();
     debug("setting up SOAP auth");
-    this._client.setSecurity(security());
+    this._client.setSecurity(security(this.cfg));
     var methods = Object.keys(this._client.describe().ApiService.ApiPort);
     for (var i = 0; i < methods.length; i++) {
       var method = methods[i];
@@ -45,15 +59,15 @@ function init() {
   });
 }
 
-function security() {
+function security(o_cfg) {
   return {
     toXML: function() {
       return (
         '<ns1:UserAuthentication '+
           'SOAP-ENV:mustUnderstand="1" ' +
           'SOAP-ENV:actor="http://api.affiliatewindow.com">' +
-          '<ns1:iId>' + ACCOUNT_ID + '</ns1:iId>' +
-          '<ns1:sPassword>' + ACCOUNT_PASSWORD + '</ns1:sPassword>' +
+          '<ns1:iId>' + o_cfg.user + '</ns1:iId>' +
+          '<ns1:sPassword>' + o_cfg.pass + '</ns1:sPassword>' +
           '<ns1:sType>affiliate</ns1:sType>' +
         '</ns1:UserAuthentication>'
       );
