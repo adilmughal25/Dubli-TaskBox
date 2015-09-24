@@ -5,7 +5,6 @@ module.exports = { init: init };
 const amazonApi = require('./amazonApi');
 const clickJunctionApi = require("./clickJunctionApi");
 const clixGaloreApi = require("./clixGaloreApi");
-const grouponApi = require('./grouponApi');
 const impactRadiusProductFtp = require("./impactRadiusProductFtp");
 const linkShareApi = require("./linkShareApi");
 const lomadeeApi = require('./lomadeeApi');
@@ -64,6 +63,11 @@ const commissionfactoryDubliApi = commissionfactoryGenericApi('dubli');
 const flipkartGenericApi = require('./flipkartGenericApi');
 const flipkartApi = flipkartGenericApi();
 const flipkartDubliApi = flipkartGenericApi('dubli');
+
+const grouponGenericApi = require('./grouponGenericApi');
+const grouponUSApi = grouponGenericApi('us'); //TODO: how about a/the EU account for Ominto?
+const grouponDubliUSApi = grouponGenericApi('us', 'dubli');
+const grouponDubliEUApi = grouponGenericApi('eu', 'dubli');
 
 const impactRadiusGenericApi = require('./impactRadiusGenericApi');
 const apdPerformanceApi = impactRadiusGenericApi('apdperformance');
@@ -216,7 +220,7 @@ function initializeCommissionsProcessors(createTask) {
     "ClickJunction (USA) Commissions": clickJunctionApi.getCommissionDetailsUSA,
     "CommissionFactory Commissions": commissionfactoryApi.getCommissionDetails,
     "Flipkart Commissions": flipkartApi.getCommissionDetails,
-    "Groupon Commissions": grouponApi.getCommissionDetails,
+    "Groupon (US) Commissions": grouponUSApi.getCommissionDetails,
     "ImpactRadius Commissions": impactRadiusApi.getCommissionDetails,
     "LinkShare Commissions": linkShareApi.getCommissionDetails,
     "Lomadee Commissions": lomadeeApi.getCommissionDetails,
@@ -280,5 +284,7 @@ function initializeCommissionsDubliProcessors(createTask) {
 
     "CommissionFactory DubLi Commissions": commissionfactoryDubliApi.getCommissionDetails,
     "Flipkart DubLi Commissions": flipkartDubliApi.getCommissionDetails,
+    "Groupon DubLi (US) Commissions": grouponDubliUSApi.getCommissionDetails,
+    "Groupon DubLi (EU) Commissions": grouponDubliEUApi.getCommissionDetails,
   });
 }

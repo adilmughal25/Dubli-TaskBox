@@ -2,10 +2,8 @@
 
 const _ = require('lodash');
 const co = require('co');
-const debug = require('debug')('groupon:processor');
 const sendEvents = require('./support/send-events');
 const singleRun = require('./support/single-run');
-const client = require('./api-clients/groupon')();
 
 const AFFILIATE_PROGRAM_NAME = 'Groupon';
 const STATE_MAP = {
@@ -17,62 +15,76 @@ const STATE_MAP = {
 var ary = x => _.isArray(x) ? x : [x];
 const exists = x => !!x;
 
-/**
- * Retrieve all commission details (sales/transactions) from Groupon within given period of time.
- * @returns {undefined}
- */
-const getCommissionDetails = singleRun(function* () {
-  const startDate = new Date(Date.now() - (30 * 86400 * 1000));
-  const endDate = new Date(Date.now() - (60 * 1000));
+const GrouponGenericApi = function(s_region, s_entity) {
+  if (!s_region) throw new Error("Groupon Generic API needs region!");
+  if (!(this instanceof GrouponGenericApi)) return new GrouponGenericApi(s_region, s_entity);
 
-  debug("fetching all transactions between %s and %s", startDate, endDate);
+  var that = this;
 
-  let results = yield pagedApiCall('getOrders', {startDate: startDate, endDate:endDate}).then(flattenCommissions);
-  const events = results.map(prepareCommission).filter(exists);
+  this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
+  this.client = require('./api-clients/groupon')(this.entity, s_region);
+  this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'groupon-' + s_region;
 
-  yield sendEvents.sendCommissions('groupon', events);
-});
+  const debug = require('debug')(this.eventName + ':processor');
 
-/**
- * Perform paginated api requests to any specified method of api client.
- * @param {String} method - The method of the api to call
- * @param {Object} params - The params to pass onto the api method
- * @param {Object} params.startDate - Date range filter, from date
- * @param {Object} params.endDate - Date range filter, until date
- * @returns {Array}
- */
-const pagedApiCall = co.wrap(function* (method, params) {
-  let results = [],
-      total = 0,
-      perPage = 250,  // default is 25
-      page = 0;
-  const _startTime = Date.now();
+  /**
+   * Retrieve all commission details (sales/transactions) from Groupon within given period of time.
+   * @returns {undefined}
+   */
+  this.getCommissionDetails = singleRun(function* () {
+    const startDate = new Date(Date.now() - (30 * 86400 * 1000));
+    const endDate = new Date(Date.now() - (60 * 1000));
 
-  // check that we call a method which actually is provided by the api client
-  if (typeof client[method] !== 'function') {
-    throw new Error("Method '" + method + "' is not available by our api client.");
-  }
+    debug("fetching all transactions between %s and %s", startDate, endDate);
 
-	// perform api calls with pagination until we reach total items to fetch
-  while(true) {
-    let arg = _.extend({}, params, {page:++page, pageSize:perPage});
+    let results = yield that.pagedApiCall('getOrders', {startDate: startDate, endDate:endDate}).then(flattenCommissions);
+    const events = results.map(prepareCommission).filter(exists);
 
-    debug("%s : page %d of %s (%s)", method, page, Math.floor(total/perPage) || 'unknown', JSON.stringify({args:arg}));
+    yield sendEvents.sendCommissions(that.eventName, events);
+  });
 
-    // perform actual api call
-    let response = yield client[method](arg);
+  /**
+   * Perform paginated api requests to any specified method of api client.
+   * @param {String} method - The method of the api to call
+   * @param {Object} params - The params to pass onto the api method
+   * @param {Object} params.startDate - Date range filter, from date
+   * @param {Object} params.endDate - Date range filter, until date
+   * @returns {Array}
+   */
+  this.pagedApiCall = co.wrap(function* (method, params) {
+    let results = [];
+    let total = 0;
+    let perPage = 250;  // default is 25
+    let page = 0;
+    const _startTime = Date.now();
 
-    results = results.concat( ary(_.get(response, 'records') || []) );
-    total = response.total || 0;
+    // check that we call a method which actually is provided by the api client
+    if (typeof that.client[method] !== 'function') {
+      throw new Error("Method '" + method + "' is not available by our api client.");
+    }
 
-    if (page * perPage >= total) break;
-  }
+    // perform api calls with pagination until we reach total items to fetch
+    while(true) {
+      let arg = _.extend({}, params, {page:++page, pageSize:perPage});
 
-  const _endTime = Date.now();
-  debug("%s finished: %d items over %d pages (%dms)", method, results.length, page, _endTime-_startTime);
+      debug("%s : page %d of %s (%s)", method, page, Math.floor(total/perPage) || 'unknown', JSON.stringify({args:arg}));
 
-  return results;
-});
+      // perform actual api call
+      let response = yield that.client[method](arg);
+
+      results = results.concat( ary(_.get(response, 'records') || []) );
+      total = response.total || 0;
+
+      if (page * perPage >= total) break;
+    }
+
+    const _endTime = Date.now();
+    debug("%s finished: %d items over %d pages (%dms)", method, results.length, page, _endTime-_startTime);
+
+    return results;
+  });
+
+};
 
 /**
  * Function to prepare a single commission transaction for our data event.
@@ -120,6 +132,4 @@ function flattenCommissions(groups) {
   });
 }
 
-module.exports = {
-  getCommissionDetails: getCommissionDetails
-};
+module.exports = GrouponGenericApi;
