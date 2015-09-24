@@ -56,10 +56,7 @@ const AdmitadGenericApi = function(s_entity) {
             return [];
           } else {
             debug("adding campaign id to links. id=[%s] count=[%s]", id, results.length);
-            for (let link of results) {
-              link['campaign'] = id;
-            }
-            return results;
+            return _(results).reject(_.isEmpty).forEach(l => l.campaign = id).value();
           }
         })
         .then(results => links = links.concat(results))

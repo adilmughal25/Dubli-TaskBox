@@ -30,12 +30,11 @@ function setup(s_account) {
   });
 
   tasks.getCommissionDetails = singleRun(function* (){
-    // const start = moment().subtract(90, 'days');
-    // const end = new Date();
-    // const commissions = yield client.getTransactions(start, end);
-    // const events = commissions.map(prepareCommission.bind(null, s_account));
-    // yield sendEvents.sendCommissions(accountKey, events);
-    throw new Error("OMG has issues regarding Currencies, Do not enable until these are fixed");
+    const start = moment().subtract(90, 'days');
+    const end = new Date();
+    const commissions = yield client.getTransactions(start, end);
+    const events = commissions.map(prepareCommission.bind(null, s_account));
+    yield sendEvents.sendCommissions(accountKey, events);
   });
 
   return tasks;
@@ -49,17 +48,11 @@ const STATUS_MAP = {
 
 function prepareCommission(s_account, o_obj) {
   const event = {
-    transaction_id: o_obj.TransactionId,
+    transaction_id: o_obj.TransactionID,
     outclick_id: o_obj.UID,
     purchase_amount: o_obj.TransactionValue,
     commission_amount: o_obj.SR,
-    //@TODO: not in the transactions xml, need to email them. (JRo: DubLi - OMG reports all in INR)
-    // update 9/17/2015 - according to omg:
-    //   YOU WILL NEED A CURRENCY ATTRIBUTE IF YOU ARE OPERATING IN SE.ASIA. THERE IS A NEW VERSION OF
-    //   THE REPORT THAT HAS BEEN DEPLAYED WHICH WILL RESOLVE THIS. WE ARE HOPING TO RELEASE IN THE
-    //   NEXT COUPLE 0F DAYS
-    // So, this is still on hold, but should be able to be resolved soon
-    currency: "BROKEN",
+    currency: o_obj.Currency,
     state: isNum.test(o_obj.Paid) ? 'paid' : STATUS_MAP[o_obj.Status],
     effective_date: o_obj.Status === 'Pending' ? new Date(o_obj.TransactionTime) : 'auto',
   };

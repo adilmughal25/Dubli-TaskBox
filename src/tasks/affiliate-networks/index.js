@@ -66,6 +66,7 @@ const impactRadiusApi = impactRadiusGenericApi('impactradius');
 const hasoffersGenericApi = require('./hasoffersGenericApi');
 const snapdealApi = hasoffersGenericApi('snapdeal');
 const vcommissionApi = hasoffersGenericApi('vcommission');
+const shopstylers = hasoffersGenericApi('shopstylers');
 
 const publicideasGenericApi = require('./publicideasGenericApi');
 const publicideasESApi = publicideasGenericApi('es');
@@ -158,6 +159,7 @@ function initializeMerchantImporters(createTask) {
     "PublicIdeas (IT) Merchants": publicideasITApi.getMerchants,
     "PublicIdeas (LATAM) Merchants": publicideasLATAMApi.getMerchants,
     "PublicIdeas (UK) Merchants": publicideasUKApi.getMerchants,
+    "ShopStylers Merchants": shopstylers.getMerchants,
     "SnapDeal Merchants": snapdealApi.getMerchants,
     "TradeDoubler Merchants": tradedoublerApi.getMerchants,
     "TradeTracker (AT) Merchants": tradetrackerATApi.getMerchants,
@@ -212,6 +214,11 @@ function initializeCommissionsProcessors(createTask) {
     "ImpactRadius Commissions": impactRadiusApi.getCommissionDetails,
     "LinkShare Commissions": linkShareApi.getCommissionDetails,
     "Lomadee Commissions": lomadeeApi.getCommissionDetails,
+    "OMG (India) Commissions": omgpmIndiaApi.getCommissionDetails,
+    "OMG (UK) Commissions": omgpmUKApi.getCommissionDetails,
+    "OMG (Asia) Commissions": omgpmAsiaApi.getCommissionDetails,
+    "OMG (Brazil) Commissions": omgpmBrazilApi.getCommissionDetails,
+    "OMG (Australia) Commissions": omgpmAustraliaApi.getCommissionDetails,
     "PartnerAds Commissions": partnerAdsApi.getCommissionDetails,
     "PepperJam Commissions": pepperjamApi.getCommissionDetails,
     "PerformanceHorizon Commissions": performanceHorizonApi.getCommissionDetails,
@@ -221,6 +228,7 @@ function initializeCommissionsProcessors(createTask) {
     "PublicIdeas (IT) Commissions": publicideasITApi.getCommissionDetails,
     "PublicIdeas (LATAM) Commissions": publicideasLATAMApi.getCommissionDetails,
     "PublicIdeas (UK) Commissions": publicideasUKApi.getCommissionDetails,
+    "ShopStylers": shopstylers.getCommissionDetails,
     "SnapDeal Commissions": snapdealApi.getCommissionDetails,
     "TradeTracker (AT) Commissions": tradetrackerATApi.getCommissionDetails,
     "TradeTracker (BE) Commissions": tradetrackerBEApi.getCommissionDetails,

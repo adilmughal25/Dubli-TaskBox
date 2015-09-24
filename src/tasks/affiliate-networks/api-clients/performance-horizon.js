@@ -36,7 +36,7 @@ function getUrl(type, params) {
 
   if (type === 'merchants') {
     const url = [
-      'user', 'publisher', this.publisherId, 'campaign', 'approved.json'
+      'user', 'publisher', this.publisherId, 'campaign', 'a', 'tracking.json'
     ].join('/');
 
     return url;
