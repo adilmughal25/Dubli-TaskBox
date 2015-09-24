@@ -5,7 +5,6 @@ module.exports = { init: init };
 const amazonApi = require('./amazonApi');
 const clickJunctionApi = require("./clickJunctionApi");
 const clixGaloreApi = require("./clixGaloreApi");
-const commissionfactoryApi = require('./commissionfactoryApi');
 const flipkartApi = require('./flipkartApi');
 const grouponApi = require('./grouponApi');
 const impactRadiusProductFtp = require("./impactRadiusProductFtp");
@@ -58,6 +57,10 @@ const avantLinkDubliUSApi = avantLinkGenericApi('us', 'dubli');
 const belboonGenericApi = require('./belboonGenericApi');
 const belboonApi = belboonGenericApi();
 const belboonDubliApi = belboonGenericApi('dubli');
+
+const commissionfactoryGenericApi = require('./commissionfactoryGenericApi');
+const commissionfactoryApi = commissionfactoryGenericApi();
+const commissionfactoryDubliApi = commissionfactoryGenericApi('dubli');
 
 const impactRadiusGenericApi = require('./impactRadiusGenericApi');
 const apdPerformanceApi = impactRadiusGenericApi('apdperformance');
@@ -268,8 +271,10 @@ function initializeCommissionsDubliProcessors(createTask) {
     "Affili.Net DubLi (UK) Commissions": affilinetDubliUKApi.getCommissionDetails,
     "Affili.Net DubLi (AT) Commissions": affilinetDubliATApi.getCommissionDetails,
     "Affili.Net DubLi (CH) Commissions": affilinetDubliCHApi.getCommissionDetails,
-    
+
     "AvantLink DubLi (CA) Commissions": avantLinkDubliCAApi.getCommissionDetails,
     "AvantLink DubLi (US) Commissions": avantLinkDubliUSApi.getCommissionDetails,
+
+    "CommissionFactory DubLi Commissions": commissionfactoryDubliApi.getCommissionDetails,
   });
 }
