@@ -72,6 +72,8 @@ const grouponDubliEUApi = grouponGenericApi('eu', 'dubli');
 const impactRadiusGenericApi = require('./impactRadiusGenericApi');
 const apdPerformanceApi = impactRadiusGenericApi('apdperformance');
 const impactRadiusApi = impactRadiusGenericApi('impactradius');
+const impactRadiusDubliUSApi = impactRadiusGenericApi('impactradius', 'us', 'dubli');
+const impactRadiusDubliCAApi = impactRadiusGenericApi('impactradius', 'ca', 'dubli');
 
 const hasoffersGenericApi = require('./hasoffersGenericApi');
 const snapdealApi = hasoffersGenericApi('snapdeal');
@@ -291,5 +293,8 @@ function initializeCommissionsDubliProcessors(createTask) {
     
     "VCommission DubLi Commissions": vcommissionDubliApi.getCommissionDetails,
     "BestSeller DubLi Commissions": bestsellerDubliApi.getCommissionDetails,
+
+    "ImpactRadius DubLi (US) Commissions": impactRadiusDubliUSApi.getCommissionDetails,
+    "ImpactRadius DubLi (CA) Commissions": impactRadiusDubliCAApi.getCommissionDetails,
   });
 }
