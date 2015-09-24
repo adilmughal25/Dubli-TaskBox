@@ -5,7 +5,6 @@ module.exports = { init: init };
 const amazonApi = require('./amazonApi');
 const clickJunctionApi = require("./clickJunctionApi");
 const clixGaloreApi = require("./clixGaloreApi");
-const flipkartApi = require('./flipkartApi');
 const grouponApi = require('./grouponApi');
 const impactRadiusProductFtp = require("./impactRadiusProductFtp");
 const linkShareApi = require("./linkShareApi");
@@ -61,6 +60,10 @@ const belboonDubliApi = belboonGenericApi('dubli');
 const commissionfactoryGenericApi = require('./commissionfactoryGenericApi');
 const commissionfactoryApi = commissionfactoryGenericApi();
 const commissionfactoryDubliApi = commissionfactoryGenericApi('dubli');
+
+const flipkartGenericApi = require('./flipkartGenericApi');
+const flipkartApi = flipkartGenericApi();
+const flipkartDubliApi = flipkartGenericApi('dubli');
 
 const impactRadiusGenericApi = require('./impactRadiusGenericApi');
 const apdPerformanceApi = impactRadiusGenericApi('apdperformance');
@@ -276,5 +279,6 @@ function initializeCommissionsDubliProcessors(createTask) {
     "AvantLink DubLi (US) Commissions": avantLinkDubliUSApi.getCommissionDetails,
 
     "CommissionFactory DubLi Commissions": commissionfactoryDubliApi.getCommissionDetails,
+    "Flipkart DubLi Commissions": flipkartDubliApi.getCommissionDetails,
   });
 }

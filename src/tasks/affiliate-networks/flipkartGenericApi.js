@@ -6,20 +6,33 @@ const moment = require('moment');
 const sendEvents = require('./support/send-events');
 const singleRun = require('./support/single-run');
 
+const FlipkartGenericApi = function(s_entity) {
+  if (!(this instanceof FlipkartGenericApi)) {
+    debug("instantiating FlipkartGenericApi for: %s", s_entity);
+    return new FlipkartGenericApi(s_entity);
+  }
 
+  var that = this;
 
-var getCommissionDetails = singleRun(function* () {
-  const start = moment().subtract(75, 'days').format('YYYY-MM-DD');
-  const end = moment().format('YYYY-MM-DD');
-  const results = yield client.ordersReport(start, end);
-  const events = [].concat(
-    results.Approved.map(prepareCommission.bind(null, 'confirmed')),
-    results.Disapproved.map(prepareCommission.bind(null, 'cancelled')),
-    results.Cancelled.map(prepareCommission.bind(null, 'cancelled')),
-    results.Pending.map(prepareCommission.bind(null, 'pending'))
-  );
-  return yield sendEvents.sendCommissions('flipkart', events);
-});
+  this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
+  this.client = require('./api-clients/flipkart')(this.entity);
+  this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'flipkart';
+
+  this.getCommissionDetails = singleRun(function* () {
+    const start = moment().subtract(75, 'days').format('YYYY-MM-DD');
+    const end = moment().format('YYYY-MM-DD');
+    const results = yield that.client.ordersReport(start, end);
+
+    const events = [].concat(
+      results.Approved.map(prepareCommission.bind(null, 'confirmed')),
+      results.Disapproved.map(prepareCommission.bind(null, 'cancelled')),
+      results.Cancelled.map(prepareCommission.bind(null, 'cancelled')),
+      results.Pending.map(prepareCommission.bind(null, 'pending'))
+    );
+
+    return yield sendEvents.sendCommissions(that.eventName, events);
+  });
+};
 
 function prepareCommission(status, o_obj) {
   const event = {
@@ -34,10 +47,7 @@ function prepareCommission(status, o_obj) {
   return event;
 }
 
-
-module.exports = {
-  getCommissionDetails: getCommissionDetails
-};
+module.exports = FlipkartGenericApi;
 
 /*
 
