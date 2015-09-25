@@ -29,26 +29,93 @@ const CURRENCY_MAP = {
   euro: 'Euro'
 };
 
-var getMerchantsUSA = singleRun(function*(){
-  return yield getMerchants('usa');
-});
+function setup(s_regionId) {
 
-var getMerchantsEuro = singleRun(function*(){
-  return yield getMerchants('euro');
-});
+  var getMerchants = co.wrap(function* getMerchants() {
+    const results = yield {
+      merchants: doApiMerchants(),
+      links: doApiLinks()
+    };
 
-var getMerchants = co.wrap(function* getMerchants(s_regionId) {
-  var results = yield {
-    merchants: doApiMerchants(s_regionId),
-    links: doApiLinks(s_regionId)
+    const merchants = merge(results).map(extractTrackingLinks);
+
+    return yield sendEvents.sendMerchants('clickjunction-'+s_regionId, merchants);
+  });
+
+  var doApiLinks = co.wrap(function* () {
+    var client = cjClient("links", s_regionId);
+    var perPage = 100;
+    var page = 1;
+    var url = linksUrl(page, perPage, s_regionId);
+    var links = [];
+
+    debug[s_regionId]("links fetch started");
+    while (url) {
+      debug[s_regionId]("links fetch: %s", url);
+      var ret = yield client.get(url).then(jsonify);
+      var info = _.get(ret, 'cj-api.links'); // ret['cj-api'].advertisers;
+      var meta = info.$;
+      links = links.concat(info.link || []);
+      url = (meta['total-matched'] >= perPage * meta['page-number']) ?
+        linksUrl(++page, perPage, s_regionId) : null;
+    }
+    debug[s_regionId]("links fetch complete");
+    return links;
+  });
+
+  var doApiMerchants = co.wrap(function* () {
+    var client = cjClient("advertisers", s_regionId);
+    var perPage = 100;
+    var page = 1;
+    var url = advertiserUrl(page, perPage);
+    var merchants = [];
+
+    debug[s_regionId]("merchants fetch started");
+    while (url) {
+      debug[s_regionId]("merchants fetch: %s", url);
+      var ret = yield client.get(url).then(jsonify);
+      var info = _.get(ret, 'cj-api.advertisers'); // ret['cj-api'].advertisers;
+      var meta = info.$;
+      merchants = merchants.concat(info.advertiser || []);
+      url = (meta['total-matched'] >= perPage * meta['page-number']) ?
+        advertiserUrl(++page, perPage) : null;
+    }
+    debug[s_regionId]("merchants fetch complete");
+    return merchants;
+  });
+
+  var getCommissionDetails = co.wrap(function* getCommissionDetails() {
+    const client = cjClient("commissions", s_regionId);
+    const currency = CURRENCY_MAP[s_regionId];
+    const periods = commissionPeriods(31, 3); // three 31-day periods
+    let all = [];
+    for (let i = 0; i < periods.length; i++) {
+      const p = periods[i];
+      const url = commissionsUrl(p.start, p.end);
+      const result = yield client.get(url)
+        .then(jsonify)
+        .then(extract('cj-api.commissions'));
+      if (result.commission) {
+        all = all.concat(ary(result.commission));
+      }
+    }
+    const prep = prepareCommission.bind(null, currency);
+    const exists = x => !!x;
+    const events = all.map(prep).filter(exists);
+
+    return yield sendEvents.sendCommissions('clickjunction-'+s_regionId, events);
+  });
+
+  return {
+    getCommissionDetails: getCommissionDetails,
+    getMerchants: getMerchants
   };
+}
 
-  var merchants = merge(results).map(extractTrackingLinks);
 
-  sendMerchantsToEventHub(merchants||[], s_regionId);
-  // used during testing to give me a file full of example data
-  // require('fs').writeFileSync("output-all.json", JSON.stringify(merchants,null,2));
-});
+function extract(key) {
+  return item => _.get(item, key);
+}
 
 function extractTrackingLinks(s_info) {
   const merchant = s_info.merchant;
@@ -91,82 +158,6 @@ function extractTrackingLinks(s_info) {
   // just give up now
   return pickUrl("");
 }
-
-var doApiLinks = co.wrap(function* (s_regionId) {
-  var client = cjClient("links", s_regionId);
-  var perPage = 100;
-  var page = 1;
-  var url = linksUrl(page, perPage, s_regionId);
-  var links = [];
-
-  debug[s_regionId]("links fetch started");
-  while (url) {
-    debug[s_regionId]("links fetch: %s", url);
-    var ret = yield client.get(url).then(jsonify);
-    var info = _.get(ret, 'cj-api.links'); // ret['cj-api'].advertisers;
-    var meta = info.$;
-    links = links.concat(info.link || []);
-    url = (meta['total-matched'] >= perPage * meta['page-number']) ?
-      linksUrl(++page, perPage, s_regionId) : null;
-  }
-  debug[s_regionId]("links fetch complete");
-  return links;
-});
-
-var doApiMerchants = co.wrap(function* (s_regionId) {
-  var client = cjClient("advertisers", s_regionId);
-  var perPage = 100;
-  var page = 1;
-  var url = advertiserUrl(page, perPage);
-  var merchants = [];
-
-  debug[s_regionId]("merchants fetch started");
-  while (url) {
-    debug[s_regionId]("merchants fetch: %s", url);
-    var ret = yield client.get(url).then(jsonify);
-    var info = _.get(ret, 'cj-api.advertisers'); // ret['cj-api'].advertisers;
-    var meta = info.$;
-    merchants = merchants.concat(info.advertiser || []);
-    url = (meta['total-matched'] >= perPage * meta['page-number']) ?
-      advertiserUrl(++page, perPage) : null;
-  }
-  debug[s_regionId]("merchants fetch complete");
-  return merchants;
-});
-
-var getCommissionDetailsUSA = singleRun(function*(){
-  return yield getCommissionDetails('usa');
-});
-
-var getCommissionDetailsEuro = singleRun(function*(){
-  return yield getCommissionDetails('euro');
-});
-
-function extract(key) {
-  return item => _.get(item, key);
-}
-
-var getCommissionDetails = co.wrap(function* getCommissionDetails(s_regionId) {
-  const client = cjClient("commissions", s_regionId);
-  const currency = CURRENCY_MAP[s_regionId];
-  const periods = commissionPeriods(31, 3); // three 31-day periods
-  let all = [];
-  for (let i = 0; i < periods.length; i++) {
-    const p = periods[i];
-    const url = commissionsUrl(p.start, p.end);
-    const result = yield client.get(url)
-      .then(jsonify)
-      .then(extract('cj-api.commissions'));
-    if (result.commission) {
-      all = all.concat(ary(result.commission));
-    }
-  }
-  const prep = prepareCommission.bind(null, currency);
-  const exists = x => !!x;
-  const events = all.map(prep).filter(exists);
-
-  return yield sendCommissionsToEventHub(events, s_regionId);
-});
 
 function prepareCommission(currency, item) {
   const event = {
@@ -240,22 +231,4 @@ function commissionsUrl(start, end) {
   return url;
 }
 
-var ct = 0;
-function sendMerchantsToEventHub(merchants, s_regionId) {
-  if (! merchants) { merchants = []; }
-  debug[s_regionId]("found %d merchants to process", merchants.length);
-  return sendEvents.sendMerchants('clickjunction-'+s_regionId, merchants);
-}
-
-function sendCommissionsToEventHub(commissions, s_regionId) {
-  if (! commissions) { commissions = []; }
-  debug[s_regionId]("found %d commisions to process", commissions.length);
-  return sendEvents.sendCommissions('clickjunction-'+s_regionId, commissions);
-}
-
-module.exports = {
-  getCommissionDetailsEuro: getCommissionDetailsEuro,
-  getCommissionDetailsUSA: getCommissionDetailsUSA,
-  getMerchantsEuro: getMerchantsEuro,
-  getMerchantsUSA: getMerchantsUSA
-};
+module.exports = setup;

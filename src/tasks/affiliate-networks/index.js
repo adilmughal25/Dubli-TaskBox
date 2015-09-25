@@ -3,7 +3,6 @@
 module.exports = { init: init };
 
 const amazonApi = require('./amazonApi');
-const clickJunctionApi = require("./clickJunctionApi");
 const clixGaloreApi = require("./clixGaloreApi");
 const impactRadiusProductFtp = require("./impactRadiusProductFtp");
 const linkShareApi = require("./linkShareApi");
@@ -114,6 +113,10 @@ const tradetrackerNOApi = tradetrackerGenericApi('no');
 const tradetrackerRUApi = tradetrackerGenericApi('ru');
 const tradetrackerSEApi = tradetrackerGenericApi('se');
 
+const clickJunctionGenericApi = require('./clickJunctionGenericApi');
+const clickJunctionUSAApi = clickJunctionGenericApi('usa');
+const clickJunctionEuroApi = clickJunctionGenericApi('euro');
+
 /*
  * some thoughts by Rando:
  *
@@ -155,8 +158,8 @@ function initializeMerchantImporters(createTask) {
     "AvantLink (US) Merchants": avantLinkUSApi.getMerchants,
     "Belboon Merchants": belboonApi.getMerchants,
     "ClixGalore Merchants": clixGaloreApi.getMerchants,
-    "ClickJunction Merchants (Euro)": clickJunctionApi.getMerchantsEuro,
-    "ClickJunction Merchants (USA)": clickJunctionApi.getMerchantsUSA,
+    "ClickJunction (Euro) Merchants": clickJunctionEuroApi.getMerchants,
+    "ClickJunction (USA) Merchants": clickJunctionUSAApi.getMerchants,
     "CommissionFactory Merchants": commissionfactoryApi.getMerchants,
     "ImpactRadius Merchants": impactRadiusApi.getMerchants,
     "LinkShare Merchants": linkShareApi.getMerchants,
@@ -221,8 +224,8 @@ function initializeCommissionsProcessors(createTask) {
     "AvantLink (US) Commissions": avantLinkUSApi.getCommissionDetails,
     "Belboon Commissions": belboonApi.getCommissionDetails,
     "ClixGalore Commissions": clixGaloreApi.getCommissionDetails,
-    "ClickJunction (Euro) Commissions": clickJunctionApi.getCommissionDetailsEuro,
-    "ClickJunction (USA) Commissions": clickJunctionApi.getCommissionDetailsUSA,
+    "ClickJunction (Euro) Commissions": clickJunctionEuroApi.getCommissionDetails,
+    "ClickJunction (USA) Commissions": clickJunctionUSAApi.getCommissionDetails,
     "CommissionFactory Commissions": commissionfactoryApi.getCommissionDetails,
     "Flipkart Commissions": flipkartApi.getCommissionDetails,
     "Groupon (US) Commissions": grouponUSApi.getCommissionDetails,
@@ -291,7 +294,7 @@ function initializeCommissionsDubliProcessors(createTask) {
     "Flipkart DubLi Commissions": flipkartDubliApi.getCommissionDetails,
     "Groupon DubLi (US) Commissions": grouponDubliUSApi.getCommissionDetails,
     "Groupon DubLi (EU) Commissions": grouponDubliEUApi.getCommissionDetails,
-    
+
     "VCommission DubLi Commissions": vcommissionDubliApi.getCommissionDetails,
     "BestSeller DubLi Commissions": bestsellerDubliApi.getCommissionDetails,
 
