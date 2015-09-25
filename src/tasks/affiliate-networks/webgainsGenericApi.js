@@ -49,8 +49,6 @@ const WebgainsGenericApi = function(s_entity) {
   var that = this;
 
   this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
-  this.client = require('./api-clients/webgains')(this.entity);
-  this.clientSoap = require('./api-clients/webgainsSoap')(this.entity);
   this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'webgains';
 
   /**
@@ -58,6 +56,7 @@ const WebgainsGenericApi = function(s_entity) {
    * @returns {undefined}
    */
   this.getMerchants = singleRun(function*() {
+    that.client = require('./api-clients/webgains')(that.entity);
     let results = yield {
       merchants: that.client.getMerchants(),
       deals: that.client.getOffers(),
@@ -74,6 +73,7 @@ const WebgainsGenericApi = function(s_entity) {
    * @returns {undefined}
    */
   this.getCommissionDetails = singleRun(function* () {
+    that.clientSoap = require('./api-clients/webgainsSoap')(that.entity);
     yield that.clientSoap.setup(); // setup our soap client
 
     let results = [];
@@ -84,9 +84,9 @@ const WebgainsGenericApi = function(s_entity) {
     results = yield that.doApi('getFullEarningsWithCurrency', {
       startdate: that.clientSoap.dateFormat(startDate),
       enddate: that.clientSoap.dateFormat(endDate),
-      campaignid: that.clientSoap.authcfg.siteId,
-      username: that.clientSoap.authcfg.user,
-      password: that.clientSoap.authcfg.pass,
+      campaignid: that.clientSoap.cfg.siteId,
+      username: that.clientSoap.cfg.user,
+      password: that.clientSoap.cfg.pass,
     }, 'return.item');
 
     transactions = results.map(prepareCommission).filter(exists);
