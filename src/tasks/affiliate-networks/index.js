@@ -12,7 +12,6 @@ const pepperjamApi = require('./pepperjamApi');
 const performanceHorizonApi = require('./performanceHorizonApi');
 const shareASaleApi = require('./shareASaleApi');
 const tradedoublerApi = require('./tradedoublerApi');
-const webgainsApi = require('./webgainsApi');
 const zanoxApi = require('./zanoxApi');
 
 const adCellGenericApi = require('./adCellGenericApi');
@@ -58,6 +57,10 @@ const belboonDubliApi = belboonGenericApi('dubli');
 const commissionfactoryGenericApi = require('./commissionfactoryGenericApi');
 const commissionfactoryApi = commissionfactoryGenericApi();
 const commissionfactoryDubliApi = commissionfactoryGenericApi('dubli');
+
+const clickJunctionGenericApi = require('./clickJunctionGenericApi');
+const clickJunctionUSAApi = clickJunctionGenericApi('usa');
+const clickJunctionEuroApi = clickJunctionGenericApi('euro');
 
 const flipkartGenericApi = require('./flipkartGenericApi');
 const flipkartApi = flipkartGenericApi();
@@ -113,9 +116,13 @@ const tradetrackerNOApi = tradetrackerGenericApi('no');
 const tradetrackerRUApi = tradetrackerGenericApi('ru');
 const tradetrackerSEApi = tradetrackerGenericApi('se');
 
-const clickJunctionGenericApi = require('./clickJunctionGenericApi');
-const clickJunctionUSAApi = clickJunctionGenericApi('usa');
-const clickJunctionEuroApi = clickJunctionGenericApi('euro');
+const webgainsGenericApi = require('./webgainsGenericApi');
+const webgainsApi = webgainsGenericApi();
+const webgainsDubliDEApi = webgainsGenericApi('dubli-de');
+const webgainsDubliDKApi = webgainsGenericApi('dubli-dk');
+const webgainsDubliESApi = webgainsGenericApi('dubli-es');
+const webgainsDubliGBApi = webgainsGenericApi('dubli-gb');
+const webgainsDubliITApi = webgainsGenericApi('dubli-it');
 
 /*
  * some thoughts by Rando:
@@ -157,9 +164,9 @@ function initializeMerchantImporters(createTask) {
     "AvantLink (CA) Merchants": avantLinkCAApi.getMerchants,
     "AvantLink (US) Merchants": avantLinkUSApi.getMerchants,
     "Belboon Merchants": belboonApi.getMerchants,
-    "ClixGalore Merchants": clixGaloreApi.getMerchants,
     "ClickJunction (Euro) Merchants": clickJunctionEuroApi.getMerchants,
     "ClickJunction (USA) Merchants": clickJunctionUSAApi.getMerchants,
+    // "ClixGalore Merchants": clixGaloreApi.getMerchants,
     "CommissionFactory Merchants": commissionfactoryApi.getMerchants,
     "ImpactRadius Merchants": impactRadiusApi.getMerchants,
     "LinkShare Merchants": linkShareApi.getMerchants,
@@ -223,9 +230,9 @@ function initializeCommissionsProcessors(createTask) {
     "AvantLink (CA) Commissions": avantLinkCAApi.getCommissionDetails,
     "AvantLink (US) Commissions": avantLinkUSApi.getCommissionDetails,
     "Belboon Commissions": belboonApi.getCommissionDetails,
-    "ClixGalore Commissions": clixGaloreApi.getCommissionDetails,
     "ClickJunction (Euro) Commissions": clickJunctionEuroApi.getCommissionDetails,
     "ClickJunction (USA) Commissions": clickJunctionUSAApi.getCommissionDetails,
+    // "ClixGalore Commissions": clixGaloreApi.getCommissionDetails,
     "CommissionFactory Commissions": commissionfactoryApi.getCommissionDetails,
     "Flipkart Commissions": flipkartApi.getCommissionDetails,
     "Groupon (US) Commissions": grouponUSApi.getCommissionDetails,
@@ -264,6 +271,7 @@ function initializeCommissionsProcessors(createTask) {
     "TradeTracker (RU) Commissions": tradetrackerRUApi.getCommissionDetails,
     "TradeTracker (SE) Commissions": tradetrackerSEApi.getCommissionDetails,
     "VCommission Commissions": vcommissionApi.getCommissionDetails,
+    "Webgains Commissions": webgainsApi.getCommissionDetails,
     "Zanox Commissions": zanoxApi.getCommissionDetails,
   });
 
@@ -301,5 +309,11 @@ function initializeCommissionsDubliProcessors(createTask) {
     "ImpactRadius DubLi (US) Commissions": impactRadiusDubliUSApi.getCommissionDetails,
     "ImpactRadius DubLi (CA) Commissions": impactRadiusDubliCAApi.getCommissionDetails,
     "DGM DubLi (AU) Commissions": dgmDubliAUApi.getCommissionDetails,
+
+    "Webgains DubLi (DE) Commissions": webgainsDubliDEApi.getCommissionDetails,
+    "Webgains DubLi (DK) Commissions": webgainsDubliDKApi.getCommissionDetails,
+    "Webgains DubLi (ES) Commissions": webgainsDubliESApi.getCommissionDetails,
+    "Webgains DubLi (GB) Commissions": webgainsDubliGBApi.getCommissionDetails,
+    "Webgains DubLi (IT) Commissions": webgainsDubliITApi.getCommissionDetails,
   });
 }
