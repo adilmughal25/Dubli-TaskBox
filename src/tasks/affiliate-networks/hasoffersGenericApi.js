@@ -25,7 +25,7 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
 
   this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
   this.client = require('./api-clients/hasoffers')(this.entity, s_networkName);
-  this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'hasoffer-' + s_networkName;
+  this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + s_networkName;
 
   const debug = require('debug')(this.eventName + ':processor');
 
