@@ -11,15 +11,6 @@
  * This webservice does not use a common authentication, every request is passing username/password as part of request params.
  */
 
-const SERVICE_WSDL = 'http://ws.webgains.com/aws.php?wsdl';
-const API_USER = 'merchants@ominto.com';
-const API_PASS = 'Minty789';
-const SITE_ID = 177143;
-// DubLi legacy
-//const API_USER = 'mall@dubli.com';
-//const API_PASS = 'cashback6750';
-//const SITE_ID = 75700;
-
 const _ = require('lodash');
 const co = require('co');
 const denodeify = require('denodeify');
@@ -28,24 +19,58 @@ const request = require('request-promise');
 const debug = require('debug')('webgainsSoap:api-client');
 require('tough-cookie'); // for request's benefit
 
-function WebgainsClient() {
-  if (!(this instanceof WebgainsClient)) return new WebgainsClient();
-  debug("Create new client");
+const API_SERVICE_WSDL = 'http://ws.webgains.com/aws.php?wsdl';
+const API_CFG = {
+  ominto: {
+    user: 'merchants@ominto.com',
+    pass: 'Minty789',
+    siteId: 177143
+  },
+  dubli_de: {
+    user: 'mall@dubli.com',
+    pass: 'cashback6750',
+    siteId: 75700
+  },
+  dubli_dk: {
+    user: 'mall@dubli.com',
+    pass: 'cashback6750',
+    siteId: 75705
+  },
+  dubli_es: {
+    user: 'mall@dubli.com',
+    pass: 'cashback6750',
+    siteId: 75701
+  },
+  dubli_gb: {
+    user: 'mall@dubli.com',
+    pass: 'cashback6750',
+    siteId: 135949
+  },
+  dubli_it: {
+    user: 'mall@dubli.com',
+    pass: 'cashback6750',
+    siteId: 151309
+  },
+};
 
+function WebgainsSoapClient(s_entity) {
+  if (!(this instanceof WebgainsSoapClient)) return new WebgainsSoapClient(s_entity);
+  if (!s_entity) throw new Error("Missing required argument 's_entity'!");
+
+  s_entity = s_entity.replace('-', '_');
+  if (!API_CFG[s_entity]) throw new Error("Entity '"+s_entity+"' is not defined in API_CFG.");
+
+  debug("Create new client for entity: %s", s_entity);
+
+  this.cfg = API_CFG[s_entity];
   this.client = null;
   this.initialized = false; // client initialized or not
   this.jar = request.jar();
-  
-  this.authcfg = {
-    user: API_USER,
-    pass: API_PASS,
-    siteId: SITE_ID
-  };
 
   this.dateFormat = d => d.toISOString().replace(/\..+$/, '-00:00');
 }
 
-WebgainsClient.prototype.setup = co.wrap(function* () {
+WebgainsSoapClient.prototype.setup = co.wrap(function* () {
   if (!this.initialized) {
     let Client = this.client = yield init(this.jar);
     let methods = Object.keys(this.client.describe().Webgains.WebgainsPort);
@@ -58,11 +83,11 @@ WebgainsClient.prototype.setup = co.wrap(function* () {
 function init(jar) {
   var rq = request.defaults({jar:jar});
   return new Promise(function(resolve, reject) {
-    soap.createClient(SERVICE_WSDL, {request:rq}, function(error, client) {
+    soap.createClient(API_SERVICE_WSDL, {request:rq}, function(error, client) {
       if (error) return reject(error);
       resolve(client);
     });
   });
 }
 
-module.exports = WebgainsClient;
+module.exports = WebgainsSoapClient;

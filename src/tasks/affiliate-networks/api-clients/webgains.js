@@ -13,68 +13,95 @@
  * TODO: Instead of usign transaction API, you can use the call back script : http://www.webgains.fr/newsletter/images/Callback_script.pdf
  */
 
-const API_URL = 'http://api.webgains.com/2.0';
-const API_KEY = '96069aeda4817545eb3ad17641e68899';
-const CAMPAIGN_ID = 177143;
-// DubLi legacy
-//const API_KEY = '123ceb006202c54d7d7668b7568ad2cb'; // DubLi DE acc.
-//const CAMPAIGN_ID = 75700;                          // DubLi DE acc.
-
+const co = require('co');
 const request = require('request-promise');
+const debug = require('debug')('webgains:api-client');
 
-function createClient() {
-  var client = request.defaults({
-    baseUrl: API_URL,
-    qs: {key: API_KEY},
-    json: true
+const API_CFG = {
+  url: 'http://api.webgains.com/2.0',
+  ominto: {
+    key: '96069aeda4817545eb3ad17641e68899',
+    campaignId: 177143,
+  }
+};
+
+function WebgainsClient(s_entity) {
+  if (!(this instanceof WebgainsClient)) return new WebgainsClient(s_entity);
+  if (!s_entity) throw new Error("Missing required argument 's_entity'!");
+  if (!API_CFG[s_entity]) throw new Error("Entity '"+s_entity+"' is not defined in API_CFG.");
+  debug("Create new client for entity: %s", s_entity);
+
+  this.cfg = API_CFG[s_entity];
+
+  // default request options
+  this.client = request.defaults({
+    baseUrl: API_CFG.url,
+    qs: {
+      key: this.cfg.key
+    },
+    json: true,
+    resolveWithFullResponse: false
   });
-
-  client.baseUrl = API_URL;
-  client.apiKey = API_KEY;
-  client.campaignId = CAMPAIGN_ID;
-
-  client.getMerchants = function() {
-    return this.get({
-      url: 'programs',
-      qs: {
-        key: API_KEY,
-        programsjoined: 1
-      }
-    });
-  }.bind(client);
-
-  client.getTextLinks = function() {
-    return this.get({
-      url: 'vouchers',
-      qs: {
-        key: API_KEY,
-        joined: 'joined',
-        media_type: 'text'
-      }
-    });
-  }.bind(client);
-
-  client.getCoupons = function() {
-    return this.get({
-      url: 'vouchers',
-      qs: {
-        key: API_KEY,
-        joined: 1
-      }
-    });
-  };
-
-  client.getOffers = function(campaignId) {
-    return this.get({
-      url: 'offers',
-      qs: {
-        key: API_KEY,
-        campaignId: campaignId
-      }
-    });
-  };
-
-  return client;
 }
 
-module.exports = createClient;
+// http://api.webgains.com/2.0/programs?key=96069aeda4817545eb3ad17641e68899&programsjoined=1
+WebgainsClient.prototype.getMerchants = co.wrap(function* () {
+  let that = this;
+  let body = yield this.client.get({
+    url: 'programs',
+    qs: {
+      key: that.cfg.key,
+      programsjoined: 1
+    }
+  });
+
+  return body || [];
+});
+
+// http://api.webgains.com/2.0/vouchers?key=96069aeda4817545eb3ad17641e68899&joined=1
+WebgainsClient.prototype.getCoupons = co.wrap(function* () {
+  let that = this;
+  let body = yield this.client.get({
+    url: 'vouchers',
+    qs: {
+      key: that.cfg.key,
+      joined: 1
+    }
+  });
+
+  return body || [];
+});
+
+// http://api.webgains.com/2.0/offers?key=96069aeda4817545eb3ad17641e68899&campaignId=177143&filters={"showexpired":"false", "filterby":"PROGRAMS_JOINED"}
+WebgainsClient.prototype.getOffers = co.wrap(function* () {
+  let that = this;
+  let body = yield this.client.get({
+    url: 'offers',
+    qs: {
+      key: that.cfg.key,
+      campaignId: that.cfg.campaignId,
+      // TODO@ append qith querystring - bad required value format => filters: '{"showexpired":"false", "filterby":"PROGRAMS_JOINED"}',
+    }
+  });
+
+  return body || [];
+});
+
+// http://api.webgains.com/2.0/publisher/ads?key=96069aeda4817545eb3ad17641e68899&campaignId=177143&joined=joined&filters={"media_type":["text"]}
+// *is currently returning empty page
+WebgainsClient.prototype.getAds = co.wrap(function* () {
+  let that = this;
+  let body = yield this.client.get({
+    url: 'publisher/ads',
+    qs: {
+      key: that.cfg.key,
+      campaignId: that.cfg.campaignId,
+      joined: 'joined',
+      filters: '{"media_type":["text"]}'
+    }
+  });
+
+  return body || [];
+});
+
+module.exports = WebgainsClient;
