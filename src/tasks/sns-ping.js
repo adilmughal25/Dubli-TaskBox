@@ -15,7 +15,7 @@ function* ping() {
     TargetArn: ARN_TOWN_CLOCK
   };
   const result = yield (isDev ? devReport(params) : snsPub(params));
-  this.log.info(result, "Sent Ping to SNS");
+  this.log.info({params: params, result: result}, "Sent Ping to SNS");
   return result;
 }
 
