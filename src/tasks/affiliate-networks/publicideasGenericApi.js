@@ -11,23 +11,6 @@ const singleRun = require('./support/single-run');
 const createClient = require('./api-clients/publicideas');
 const ary = x => _.isArray(x) ? x : [x];
 
-/*
-
-Waiting for a test transaction to show up in publicideas to verify all this, but
-commissions fields look like this:
-
-  id -> transaction id
-  currency -> i think this is always EUR for publicideas? it may be per-subaccount/region though -- EUR for everything other than LATAM, which is pesos (MXN)
-  amountCom -> commission amount
-  amountSale -> purchase amount
-  cashBack -> should be the subid
-  type -> transaction status
-    type:0 -> refused
-    type:1 -> pending
-    type:2 -> approved
-  dateValid / dateAction -> becomes effective_date. dateAction for type=pending, dateValid for refused/approved
-*/
-
 const STATUS_MAP = {
   0: 'cancelled', // their status: 'refused'
   1: 'initiated', // their status: 'pending'
