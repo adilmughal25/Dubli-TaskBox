@@ -59,8 +59,14 @@ const commissionfactoryApi = commissionfactoryGenericApi();
 const commissionfactoryDubliApi = commissionfactoryGenericApi('dubli');
 
 const clickJunctionGenericApi = require('./clickJunctionGenericApi');
-const clickJunctionUSAApi = clickJunctionGenericApi('usa');
-const clickJunctionEuroApi = clickJunctionGenericApi('euro');
+const clickJunctionUSApi = clickJunctionGenericApi('us');
+const clickJunctionEUApi = clickJunctionGenericApi('eu');
+const clickJunctionDubliUSApi = clickJunctionGenericApi('us', 'dubli');
+const clickJunctionDubliDEApi = clickJunctionGenericApi('de', 'dubli');
+const clickJunctionDubliESApi = clickJunctionGenericApi('es', 'dubli');
+const clickJunctionDubliGBApi = clickJunctionGenericApi('gb', 'dubli');
+const clickJunctionDubliDKApi = clickJunctionGenericApi('dk', 'dubli');
+const clickJunctionDubliITApi = clickJunctionGenericApi('it', 'dubli');
 
 const flipkartGenericApi = require('./flipkartGenericApi');
 const flipkartApi = flipkartGenericApi();
@@ -164,8 +170,8 @@ function initializeMerchantImporters(createTask) {
     "AvantLink (CA) Merchants": avantLinkCAApi.getMerchants,
     "AvantLink (US) Merchants": avantLinkUSApi.getMerchants,
     "Belboon Merchants": belboonApi.getMerchants,
-    "ClickJunction (Euro) Merchants": clickJunctionEuroApi.getMerchants,
-    "ClickJunction (USA) Merchants": clickJunctionUSAApi.getMerchants,
+    "ClickJunction (EU) Merchants": clickJunctionEUApi.getMerchants,
+    "ClickJunction (US) Merchants": clickJunctionUSApi.getMerchants,
     // "ClixGalore Merchants": clixGaloreApi.getMerchants,
     "CommissionFactory Merchants": commissionfactoryApi.getMerchants,
     "ImpactRadius Merchants": impactRadiusApi.getMerchants,
@@ -230,8 +236,8 @@ function initializeCommissionsProcessors(createTask) {
     "AvantLink (CA) Commissions": avantLinkCAApi.getCommissionDetails,
     "AvantLink (US) Commissions": avantLinkUSApi.getCommissionDetails,
     "Belboon Commissions": belboonApi.getCommissionDetails,
-    "ClickJunction (Euro) Commissions": clickJunctionEuroApi.getCommissionDetails,
-    "ClickJunction (USA) Commissions": clickJunctionUSAApi.getCommissionDetails,
+    "ClickJunction (EU) Commissions": clickJunctionEUApi.getCommissionDetails,
+    "ClickJunction (US) Commissions": clickJunctionUSApi.getCommissionDetails,
     // "ClixGalore Commissions": clixGaloreApi.getCommissionDetails,
     "CommissionFactory Commissions": commissionfactoryApi.getCommissionDetails,
     "Flipkart Commissions": flipkartApi.getCommissionDetails,
@@ -315,5 +321,12 @@ function initializeCommissionsDubliProcessors(createTask) {
     "Webgains DubLi (ES) Commissions": webgainsDubliESApi.getCommissionDetails,
     "Webgains DubLi (GB) Commissions": webgainsDubliGBApi.getCommissionDetails,
     "Webgains DubLi (IT) Commissions": webgainsDubliITApi.getCommissionDetails,
+    
+    "ClickJunction DubLi (US) Commissions": clickJunctionDubliUSApi.getCommissionDetails,
+    "ClickJunction DubLi (DE) Commissions": clickJunctionDubliDEApi.getCommissionDetails,
+    "ClickJunction DubLi (ES) Commissions": clickJunctionDubliESApi.getCommissionDetails,
+    "ClickJunction DubLi (GB) Commissions": clickJunctionDubliGBApi.getCommissionDetails,
+    "ClickJunction DubLi (DK) Commissions": clickJunctionDubliDKApi.getCommissionDetails,
+    "ClickJunction DubLi (IT) Commissions": clickJunctionDubliITApi.getCommissionDetails,
   });
 }

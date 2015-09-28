@@ -1,9 +1,5 @@
 "use strict";
 
-/*
- * @TODO: reporting currency unclear
- */
-
 const _ = require('lodash');
 const co = require('co');
 const debug = require('debug')('affiliategateway:processor');
@@ -58,12 +54,11 @@ const STATE_MAP = {
   3: 'cancelled',
 };
 
-// TODO : figure out the reporting currency
 const CURRENCY_MAP = {
-  asia: 'n/a',
-  sg: 'n/a',
-  uk: 'n/a',
-  au: 'n/a'
+  asia: 'usd',
+  sg: 'sgd',
+  uk: 'gbp',
+  au: 'aud'
 };
 
 /**
