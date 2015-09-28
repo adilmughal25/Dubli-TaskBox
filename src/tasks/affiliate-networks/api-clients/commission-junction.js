@@ -3,7 +3,7 @@
 const co = require('co');
 const _ = require('lodash');
 const request = require('request-promise');
-const debug = require('debug')('click-junction:api-client');
+const debug = require('debug')('commission-junction:api-client');
 const limiter = require('ominto-utils').promiseRateLimiter;
 const jsonify = require('./jsonify-xml-body');
 
@@ -87,7 +87,7 @@ const API_TYPES = {
 
 const activeClients = {};
 
-function clickJunctionClient(s_entity, s_region, s_type) {
+function commissionJunctionClient(s_entity, s_region, s_type) {
   if (!s_entity) throw new Error("Missing required argument 's_entity'!");
   if (!s_region) throw new Error("Missing required argument 's_region'!");
   if (!API_CFG[s_entity]) throw new Error("Entity '"+s_entity+"' is not defined in API_CFG.");
@@ -174,4 +174,4 @@ function clickJunctionClient(s_entity, s_region, s_type) {
   return client;
 }
 
-module.exports = clickJunctionClient;
+module.exports = commissionJunctionClient;
