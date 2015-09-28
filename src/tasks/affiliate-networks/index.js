@@ -155,7 +155,7 @@ function init(createTask) {
 
 function initializeMerchantImporters(createTask) {
   // run each of these every 24 hours
-  createTask.createGroup(24, {
+  createTask.createGroup(4, { // temporary post-database-reset
     "APD Performance Merchants": apdPerformanceApi.getMerchants,
     "AdCell Merchants": adCellApi.getMerchants,
     "Admitad Merchants": admitadApi.getMerchants,
@@ -213,7 +213,8 @@ function initializeMerchantImporters(createTask) {
     "Zanox Merchants": zanoxApi.getMerchants
   });
 
-  createTask('ShareASale Merchants', shareASaleApi.getMerchants, {hour:12, minute:0, dayOfWeek:0}); // every sunday at 12:00
+  // also temporarily hacked to be faster
+  createTask('ShareASale Merchants', shareASaleApi.getMerchants, {/*hour:12, */minute:0 /*, dayOfWeek:0 */}); // every sunday at 12:00
 }
 
 function initializeCommissionsProcessors(createTask) {
@@ -321,7 +322,7 @@ function initializeCommissionsDubliProcessors(createTask) {
     "Webgains DubLi (ES) Commissions": webgainsDubliESApi.getCommissionDetails,
     "Webgains DubLi (GB) Commissions": webgainsDubliGBApi.getCommissionDetails,
     "Webgains DubLi (IT) Commissions": webgainsDubliITApi.getCommissionDetails,
-    
+
     "CommissionJunction DubLi (US) Commissions": commissionJunctionDubliUSApi.getCommissionDetails,
     "CommissionJunction DubLi (DE) Commissions": commissionJunctionDubliDEApi.getCommissionDetails,
     "CommissionJunction DubLi (ES) Commissions": commissionJunctionDubliESApi.getCommissionDetails,
