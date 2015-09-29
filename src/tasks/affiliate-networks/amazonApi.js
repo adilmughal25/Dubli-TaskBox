@@ -10,6 +10,21 @@ const singleRun = require('./support/single-run');
 
 const client = require('./api-clients/amazon')();
 
+//@TODO: We're currently waiting on amazon.in -- Samantha is processing a purchase
+// with a pending return so we can see what those look like in the data (because
+// amazon has no documentation for this stuff)
+//
+// Once this is done and we can figure out those fields the process for this will be:
+//   scan back in the "API" 75 days (perhaps only processing things that have been
+//   marked 'modified' since the last time we ran -- this is tricky though because
+//   the "api" is just an html table listing a bunch of .xml/.tgz files that can
+//   be downloaded, with a created date and a modified date)
+//
+//   we get paid by amazon on a monthly schedule, and that payment should include
+//   all purchases from a previous block of time based on their existence in these
+//   files (this is documented in a secondary sheet in the ominto affiliate networks
+//   spreadsheet)
+
 var getCommissionDetails = singleRun(function* () {
   const items = yield client.getCommissionReport('earnings');
   const events = items.map(prepareCommission.bind(this)).filter(x => !!x);

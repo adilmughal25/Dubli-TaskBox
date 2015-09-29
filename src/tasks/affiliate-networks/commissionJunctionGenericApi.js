@@ -11,7 +11,7 @@ const sendEvents = require('./support/send-events');
 const singleRun = require('./support/single-run');
 const querystring = require('querystring');
 const jsonify = require('./api-clients/jsonify-xml-body');
-const cjClient = require('./api-clients/click-junction');
+const cjClient = require('./api-clients/commission-junction');
 
 const merge = require('./support/easy-merge')('advertiser-id', {
   links: 'advertiser-id'
@@ -28,15 +28,15 @@ const CURRENCY_MAP = {
   it: 'eur',
 };
 
-const ClickJunctionGenericApi = function(s_region, s_entity) {
-  if (!s_region) throw new Error("ClickJunction Generic API needs region!");
-  if (!(this instanceof ClickJunctionGenericApi)) return new ClickJunctionGenericApi(s_region, s_entity);
+const CommissionJunctionGenericApi = function(s_region, s_entity) {
+  if (!s_region) throw new Error("CommissionJunction Generic API needs region!");
+  if (!(this instanceof CommissionJunctionGenericApi)) return new CommissionJunctionGenericApi(s_region, s_entity);
 
   var that = this;
 
   this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
   this.region = s_region;
-  this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'clickjunction-' + s_region;
+  this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'commissionjunction-' + s_region;
 
   const debug = require('debug')(this.eventName + ':processor');
 
@@ -159,4 +159,4 @@ function commissionPeriods(i_days, i_count) {
   return vals;
 }
 
-module.exports = ClickJunctionGenericApi;
+module.exports = CommissionJunctionGenericApi;
