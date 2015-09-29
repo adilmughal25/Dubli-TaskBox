@@ -2,7 +2,7 @@
 
 /*
  * The entire process of getting the merchant information will take many minutes!
- * 
+ *
  * In order to get all necessary merchant data, we would need to requests:
  * - getPrograms() - paginated with 500 rows per requests (approx 2 calls)
  * - getProgramDetails() - for each program we have to perform a single call to get details (#programs * 1)
@@ -49,7 +49,7 @@ const COMMON_ADS_ARGS = {
   // *adPlatformIds: [BelboonGenericApi.client.siteId], // array of adPlatformId's *required
   hasPartnership: true,   // true|false, filter for vouchers with a active partner relationship
   // programId: null,      // filter for specific programId only
-  // adType: null,
+  adType: 'TEXT',
 	// adWidth: null,
 	// adHeight: null,
 	// orderBy: null,
