@@ -5,7 +5,6 @@ module.exports = { init: init };
 const amazonApi = require('./amazonApi');
 const clixGaloreApi = require("./clixGaloreApi");
 const impactRadiusProductFtp = require("./impactRadiusProductFtp");
-const linkShareApi = require("./linkShareApi");
 const lomadeeApi = require('./lomadeeApi');
 const partnerAdsApi = require('./partnerAdsApi');
 const pepperjamApi = require('./pepperjamApi');
@@ -90,6 +89,12 @@ const vcommissionApi = hasoffersGenericApi('vcommission');
 const shopstylers = hasoffersGenericApi('shopstylers');
 const vcommissionDubliApi = hasoffersGenericApi('vcommission', 'dubli');
 const bestsellerDubliApi = hasoffersGenericApi('bestseller', 'dubli');
+
+const linkShareGenericApi = require("./linkShareGenericApi");
+const linkShareApi = linkShareGenericApi();
+const linkShareDubliUSApi = linkShareGenericApi('us', 'dubli');
+const linkShareDubliCAApi = linkShareGenericApi('ca', 'dubli');
+const linkShareDubliGBApi = linkShareGenericApi('gb', 'dubli');
 
 const publicideasGenericApi = require('./publicideasGenericApi');
 const publicideasESApi = publicideasGenericApi('es');
@@ -328,5 +333,9 @@ function initializeCommissionsDubliProcessors(createTask) {
     "ClickJunction DubLi (GB) Commissions": clickJunctionDubliGBApi.getCommissionDetails,
     "ClickJunction DubLi (DK) Commissions": clickJunctionDubliDKApi.getCommissionDetails,
     "ClickJunction DubLi (IT) Commissions": clickJunctionDubliITApi.getCommissionDetails,
+    
+    "LinkShare DubLi (US) Commissions": linkShareDubliUSApi.getCommissionDetails,
+    "LinkShare DubLi (CA) Commissions": linkShareDubliCAApi.getCommissionDetails,
+    "LinkShare DubLi (GB) Commissions": linkShareDubliGBApi.getCommissionDetails,
   });
 }
