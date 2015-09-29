@@ -35,6 +35,7 @@ var send = co.wrap(function* (s_myName, s_streamName, s_streamType, s_taskName, 
         debug("item size is %d, max un-gzipped size is %d, compressing!", s_item.length, MAX_UNGZIPPED_SIZE);
         var start = Date.now();
         item = {gzippedData: (yield gzip(s_item)).toString('base64')};
+        compressedCount += 1;
         compressionTime += (Date.now() - start);
       }
 
