@@ -84,7 +84,7 @@ function setup(log) {
       for (let i = 0; i < mult; i++) {
         hoursArray.push(hours + (i*i_numberOfHours));
       }
-      const spec = {hour:hoursArray, minute:minutes};
+      const spec = {hour:hoursArray.length === 1 ? hoursArray[0] : hoursArray, minute:minutes};
       createTask(name, o_taskSet[name], spec);
       time += timeBetweenTasks;
     });
