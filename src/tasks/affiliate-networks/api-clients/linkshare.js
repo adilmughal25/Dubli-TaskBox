@@ -1,27 +1,61 @@
 "use strict";
 
-var _ = require('lodash');
-var co = require('co');
-var wait = require('co-waiter');
-var request = require('request-promise');
-var debug = require('debug')('linkshare:api-client');
-var querystring = require('querystring');
-var limiter = require('ominto-utils').promiseRateLimiter;
+const _ = require('lodash');
+const co = require('co');
+const wait = require('co-waiter');
+const request = require('request-promise');
+const debug = require('debug')('linkshare:api-client');
+const limiter = require('ominto-utils').promiseRateLimiter;
 
-var LS_PREAUTH = {
+// API auth - not related to individual LinkShare accounts
+const LS_PREAUTH = {
   Authorization: "Basic YkxnOXFicVRzZWdDQ0VPTE5NN2dieHV0eWFvYTpKRWZTcEVPMldyZWhnRlB0MHJCMXd2MHU1REVh"
 };
-var LS_AUTH_FORM = {
-  grant_type: 'password',
-  username: 'Ominto',
-  password: 'Mints098',
-  scope: '3239617'
+
+const API_AUTH_FORMS = {
+  ominto: {
+    global: {
+      grant_type: 'password',
+      username: 'Ominto',
+      password: 'Mints098',
+      scope: 3239617
+    },
+  },
+  dubli: {
+    // US/AU is 1 account with DubLi - has different reporting currencies
+    us: {
+      grant_type: 'password',
+      username: 'mngroup',
+      password: 'dubli200',
+      scope: 1347525
+    },
+    ca: {
+      grant_type: 'password',
+      username: 'bsprewards',
+      password: 'dubli200',
+      scope: 2335836
+    },
+    gb: {
+      grant_type: 'password',
+      username: 'dubliuk',
+      password: 'dubli200',
+      scope: 2739901
+    }
+  }
 };
 
-function LinkShare() {
-  if (!(this instanceof LinkShare)) return new LinkShare();
+function LinkShare(s_entity, s_region) {
+  if (!(this instanceof LinkShare)) return new LinkShare(s_entity, s_region);
+  if (!s_entity) throw new Error("Missing required argument 's_entity'!");
+  if (!s_region) throw new Error("Missing required argument 's_region'!");
+  if (!API_AUTH_FORMS[s_entity]) throw new Error("Entity '"+s_entity+"' is not defined in API_AUTH_FORMS.");
+  if (!API_AUTH_FORMS[s_entity][s_region]) throw new Error("Region '"+s_region+"' for entity '"+s_entity+"' is not defined in API_AUTH_FORMS.");
+
+  debug("Create new client for entity: %s, region: %s", s_entity, s_region);
+
+  this.authForm = API_AUTH_FORMS[s_entity][s_region];
   _.bindAll(this, '_authRequest', '_refreshClient');
-  debug("Create new client");
+
   this.counter = 0;
   this.queues = {};
   this.cleanup();
@@ -41,7 +75,7 @@ LinkShare.prototype.getFreshClient = co.wrap(function*() {
   debug("Authorizing (id: %s)", _id);
   this.authing = true;
   try {
-    yield this._authRequest(LS_AUTH_FORM);
+    yield this._authRequest(self.authForm);
   } catch (err) {
     debug("ERROR!", err.stack);
     this.cleanup(err);
@@ -177,8 +211,5 @@ function getLinkshareClient(fields) {
   return dataClient;
 }
 
-module.exports = function() {
-  return new LinkShare();
-};
-
+module.exports = LinkShare;
 module.exports.LinkShare = LinkShare;
