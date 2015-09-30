@@ -94,7 +94,7 @@ var send = co.wrap(function* (s_myName, s_streamName, s_streamType, s_taskName, 
 
 
 function getRedisClient(o_configs) {
-  let config = o_configs.indexer;
+  let config = o_configs.redis.writer;
   let client = redis.createClient(config.port, config.host, {auth_pass: config.auth});
   return client;
 }

@@ -8,10 +8,17 @@
       "pass": "PasswordOfDEVASTATION123!@#"
     }
   },
-  "indexer": {
-    "host": "127.0.0.1",
-    "port": 6379,
-    "auth": null
+  "redis": {
+    "reader": {
+      "host": "127.0.0.1",
+      "port": 6379,
+      "auth": null
+    },
+    "writer": {
+      "host": "127.0.0.1",
+      "port": 6379,
+      "auth": null
+    }
   },
   "ftpToS3": {
     "port": "2121",
