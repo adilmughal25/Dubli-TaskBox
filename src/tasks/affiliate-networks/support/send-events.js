@@ -1,20 +1,20 @@
 "use strict";
 
-var co = require('co');
-var wait = require('co-waiter');
-var uuid = require('node-uuid');
-var utils = require('ominto-utils');
-var prettyMs = require('pretty-ms');
-var o_configs = require('../../../../configs');
-var denodeify = require('denodeify');
-var redis = require('redis');
-var gzip = denodeify(require('zlib').gzip);
-var _check = utils.checkApiResponse;
-var createEnvelope = utils.createEnvelope;
-var dataService = utils.getDataClient(o_configs.data_api.url, o_configs.data_api.auth);
-var kinesisClient = utils.kinesisClient(o_configs);
-var redisClient = getRedisClient(o_configs);
-var kinesisPut = co.wrap(kinesisClient.putEventFromTaskbox);
+const co = require('co');
+const wait = require('co-waiter');
+const uuid = require('node-uuid');
+const utils = require('ominto-utils');
+const prettyMs = require('pretty-ms');
+const o_configs = require('../../../../configs');
+const denodeify = require('denodeify');
+const gzip = denodeify(require('zlib').gzip);
+const _check = utils.checkApiResponse;
+
+const createEnvelope = utils.createEnvelope;
+const dataService = utils.getDataClient(o_configs.data_api.url, o_configs.data_api.auth);
+
+const storePayloadInRedis = require('./store-payload-in-redis');
+const kinesisPut = require('./direct-kinesis-put');
 
 const MAX_UNGZIPPED_SIZE = 32 * 1024; // if it's over 32kb, gzip it
 
@@ -49,8 +49,7 @@ var send = co.wrap(function* (s_myName, s_streamName, s_streamType, s_taskName, 
         }
       }
 
-      var checker = _check('could not save kinesis stream event: '+JSON.stringify(items[i]));
-      yield kinesisPut(s_streamName, s_streamType, item, o_flags, s_taskName).then(checker);
+      yield kinesisPut(s_streamName, s_streamType, item, o_flags, s_taskName);
 
       allCount++;
       if (o_flags.gzipped_data) { compressedCount++; }
@@ -93,23 +92,6 @@ var send = co.wrap(function* (s_myName, s_streamName, s_streamType, s_taskName, 
 });
 
 
-function getRedisClient(o_configs) {
-  let config = o_configs.redis.writer;
-  let client = redis.createClient(config.port, config.host, {auth_pass: config.auth});
-  return client;
-}
-
-function storePayloadInRedis(value) {
-  const _uuid = uuid.v4();
-  const key = 'kinesis-event-data:' + _uuid;
-  const promise = new Promise(function(resolve, reject) {
-    redisClient.setex(key, 86400, value, function(err) {
-      if (err) return reject(err);
-      resolve(_uuid);
-    });
-  });
-  return promise;
-}
 
 var DEV_SAVE_MERCHANTS = (process.env.NODE_ENV === 'dev' && process.env.SAVE_MERCHANTS);
 function devSaveMerchants(s_which, a_items) {
