@@ -5,7 +5,6 @@ module.exports = { init: init };
 const amazonApi = require('./amazonApi');
 const clixGaloreApi = require("./clixGaloreApi");
 const impactRadiusProductFtp = require("./impactRadiusProductFtp");
-const linkShareApi = require("./linkShareApi");
 const lomadeeApi = require('./lomadeeApi');
 const partnerAdsApi = require('./partnerAdsApi');
 const pepperjamApi = require('./pepperjamApi');
@@ -90,6 +89,12 @@ const vcommissionApi = hasoffersGenericApi('vcommission');
 const shopstylers = hasoffersGenericApi('shopstylers');
 const vcommissionDubliApi = hasoffersGenericApi('vcommission', 'dubli');
 const bestsellerDubliApi = hasoffersGenericApi('bestseller', 'dubli');
+
+const linkShareGenericApi = require("./linkShareGenericApi");
+const linkShareApi = linkShareGenericApi();
+const linkShareDubliUSApi = linkShareGenericApi('us', 'dubli');
+const linkShareDubliCAApi = linkShareGenericApi('ca', 'dubli');
+const linkShareDubliGBApi = linkShareGenericApi('gb', 'dubli');
 
 const publicideasGenericApi = require('./publicideasGenericApi');
 const publicideasESApi = publicideasGenericApi('es');
@@ -292,42 +297,38 @@ function initializeCommissionsDubliProcessors(createTask) {
   // run each of these every 24 hours
   createTask.createGroup(24, {
     "AdCell DubLi Commissions": adCellDubliApi.getCommissionDetails,
-    "AffiliateWindow DubLi Commissions": affiliatewindowDubliApi.getCommissionDetails,
-    "Belboon DubLi Commissions": belboonDubliApi.getCommissionDetails,
     "Admitad DubLi Commissions": admitadDubliApi.getCommissionDetails,
-
     "Affili.Net DubLi (DE) Commissions": affilinetDubliDEApi.getCommissionDetails,
     "Affili.Net DubLi (ES) Commissions": affilinetDubliESApi.getCommissionDetails,
     "Affili.Net DubLi (UK) Commissions": affilinetDubliUKApi.getCommissionDetails,
     "Affili.Net DubLi (AT) Commissions": affilinetDubliATApi.getCommissionDetails,
     "Affili.Net DubLi (CH) Commissions": affilinetDubliCHApi.getCommissionDetails,
-
+    "AffiliateWindow DubLi Commissions": affiliatewindowDubliApi.getCommissionDetails,
     "AvantLink DubLi (CA) Commissions": avantLinkDubliCAApi.getCommissionDetails,
     "AvantLink DubLi (US) Commissions": avantLinkDubliUSApi.getCommissionDetails,
-
-    "CommissionFactory DubLi Commissions": commissionfactoryDubliApi.getCommissionDetails,
-    "Flipkart DubLi Commissions": flipkartDubliApi.getCommissionDetails,
-    "Groupon DubLi (US) Commissions": grouponDubliUSApi.getCommissionDetails,
-    "Groupon DubLi (EU) Commissions": grouponDubliEUApi.getCommissionDetails,
-
-    "VCommission DubLi Commissions": vcommissionDubliApi.getCommissionDetails,
+    "Belboon DubLi Commissions": belboonDubliApi.getCommissionDetails,
     "BestSeller DubLi Commissions": bestsellerDubliApi.getCommissionDetails,
-
-    "ImpactRadius DubLi (US) Commissions": impactRadiusDubliUSApi.getCommissionDetails,
-    "ImpactRadius DubLi (CA) Commissions": impactRadiusDubliCAApi.getCommissionDetails,
-    "DGM DubLi (AU) Commissions": dgmDubliAUApi.getCommissionDetails,
-
-    "Webgains DubLi (DE) Commissions": webgainsDubliDEApi.getCommissionDetails,
-    "Webgains DubLi (DK) Commissions": webgainsDubliDKApi.getCommissionDetails,
-    "Webgains DubLi (ES) Commissions": webgainsDubliESApi.getCommissionDetails,
-    "Webgains DubLi (GB) Commissions": webgainsDubliGBApi.getCommissionDetails,
-    "Webgains DubLi (IT) Commissions": webgainsDubliITApi.getCommissionDetails,
-
+    "CommissionFactory DubLi Commissions": commissionfactoryDubliApi.getCommissionDetails,
     "CommissionJunction DubLi (US) Commissions": commissionJunctionDubliUSApi.getCommissionDetails,
     "CommissionJunction DubLi (DE) Commissions": commissionJunctionDubliDEApi.getCommissionDetails,
     "CommissionJunction DubLi (ES) Commissions": commissionJunctionDubliESApi.getCommissionDetails,
     "CommissionJunction DubLi (GB) Commissions": commissionJunctionDubliGBApi.getCommissionDetails,
     "CommissionJunction DubLi (DK) Commissions": commissionJunctionDubliDKApi.getCommissionDetails,
     "CommissionJunction DubLi (IT) Commissions": commissionJunctionDubliITApi.getCommissionDetails,
+    "DGM DubLi (AU) Commissions": dgmDubliAUApi.getCommissionDetails,
+    "Flipkart DubLi Commissions": flipkartDubliApi.getCommissionDetails,
+    "Groupon DubLi (US) Commissions": grouponDubliUSApi.getCommissionDetails,
+    "Groupon DubLi (EU) Commissions": grouponDubliEUApi.getCommissionDetails,
+    "ImpactRadius DubLi (US) Commissions": impactRadiusDubliUSApi.getCommissionDetails,
+    "ImpactRadius DubLi (CA) Commissions": impactRadiusDubliCAApi.getCommissionDetails,
+    "LinkShare DubLi (US) Commissions": linkShareDubliUSApi.getCommissionDetails,
+    "LinkShare DubLi (CA) Commissions": linkShareDubliCAApi.getCommissionDetails,
+    "LinkShare DubLi (GB) Commissions": linkShareDubliGBApi.getCommissionDetails,
+    "VCommission DubLi Commissions": vcommissionDubliApi.getCommissionDetails,
+    "Webgains DubLi (DE) Commissions": webgainsDubliDEApi.getCommissionDetails,
+    "Webgains DubLi (DK) Commissions": webgainsDubliDKApi.getCommissionDetails,
+    "Webgains DubLi (ES) Commissions": webgainsDubliESApi.getCommissionDetails,
+    "Webgains DubLi (GB) Commissions": webgainsDubliGBApi.getCommissionDetails,
+    "Webgains DubLi (IT) Commissions": webgainsDubliITApi.getCommissionDetails,
   });
 }
