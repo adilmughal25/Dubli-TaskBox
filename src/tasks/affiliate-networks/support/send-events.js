@@ -7,16 +7,20 @@ var utils = require('ominto-utils');
 var prettyMs = require('pretty-ms');
 var o_configs = require('../../../../configs');
 var denodeify = require('denodeify');
+var redis = require('redis');
 var gzip = denodeify(require('zlib').gzip);
 var _check = utils.checkApiResponse;
 var createEnvelope = utils.createEnvelope;
 var dataService = utils.getDataClient(o_configs.data_api.url, o_configs.data_api.auth);
 var kinesisClient = utils.kinesisClient(o_configs);
+var redisClient = getRedisClient(o_configs);
 var kinesisPut = co.wrap(kinesisClient.putEventFromTaskbox);
 
 const MAX_UNGZIPPED_SIZE = 32 * 1024; // if it's over 32kb, gzip it
 
-var send = co.wrap(function* (s_myName, s_streamName, s_streamType, s_taskName, items) {
+var send = co.wrap(function* (s_myName, s_streamName, s_streamType, s_taskName, items, options) {
+  if (!options) options = {};
+
   var debug = _debug(s_myName);
 
   var errors = [];
@@ -31,11 +35,18 @@ var send = co.wrap(function* (s_myName, s_streamName, s_streamType, s_taskName, 
       var item = items[i];
       var o_flags = {};
       var s_item = JSON.stringify(item);
-      if (s_item.length > MAX_UNGZIPPED_SIZE) {
-        debug("item size is %d, max un-gzipped size is %d, compressing!", s_item.length, MAX_UNGZIPPED_SIZE);
-        var start = Date.now();
-        item = {gzippedData: (yield gzip(s_item)).toString('base64')};
-        compressionTime += (Date.now() - start);
+      if (options.redis) {
+        var key = yield storePayloadInRedis(s_item);
+        item = {redisDataKey: key};
+        debug({stored:item}, 'storing payload data in redis');
+      } else {
+        if (s_item.length > MAX_UNGZIPPED_SIZE) {
+          debug("item size is %d, max un-gzipped size is %d, compressing!", s_item.length, MAX_UNGZIPPED_SIZE);
+          var start = Date.now();
+          item = {gzippedData: (yield gzip(s_item)).toString('base64')};
+          compressedCount += 1;
+          compressionTime += (Date.now() - start);
+        }
       }
 
       var checker = _check('could not save kinesis stream event: '+JSON.stringify(items[i]));
@@ -81,6 +92,25 @@ var send = co.wrap(function* (s_myName, s_streamName, s_streamType, s_taskName, 
   return report;
 });
 
+
+function getRedisClient(o_configs) {
+  let config = o_configs.indexer;
+  let client = redis.createClient(config.port, config.host, {auth_pass: config.auth});
+  return client;
+}
+
+function storePayloadInRedis(value) {
+  const _uuid = uuid.v4();
+  const key = 'kinesis-event-data:' + _uuid;
+  const promise = new Promise(function(resolve, reject) {
+    redisClient.setex(key, 86400, value, function(err) {
+      if (err) return reject(err);
+      resolve(_uuid);
+    });
+  });
+  return promise;
+}
+
 var DEV_SAVE_MERCHANTS = (process.env.NODE_ENV === 'dev' && process.env.SAVE_MERCHANTS);
 function devSaveMerchants(s_which, a_items) {
   if (!DEV_SAVE_MERCHANTS) return;
@@ -111,7 +141,7 @@ function sendMerchants(s_myName, merchants) {
   var s_taskName = 'tasks:' + s_myName + ':merchant-importer';
 
   devSaveMerchants(s_myName, merchants);
-  return send(s_myName, s_streamName, s_streamType, s_taskName, merchants);
+  return send(s_myName, s_streamName, s_streamType, s_taskName, merchants, {redis:true});
 }
 
 function sendCommissions(s_myName, commissions) {
