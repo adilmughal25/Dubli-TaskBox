@@ -8,6 +8,11 @@
       "pass": "PasswordOfDEVASTATION123!@#"
     }
   },
+  "indexer": {
+    "host": "127.0.0.1",
+    "port": 6379,
+    "auth": null
+  },
   "ftpToS3": {
     "port": "2121",
     "host": "127.0.0.1",

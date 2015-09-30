@@ -155,7 +155,7 @@ function init(createTask) {
 
 function initializeMerchantImporters(createTask) {
   // run each of these every 24 hours
-  createTask.createGroup(8, { // temporary post-database-reset
+  createTask.createGroup(24, {
     "APD Performance Merchants": apdPerformanceApi.getMerchants,
     "AdCell Merchants": adCellApi.getMerchants,
     "Admitad Merchants": admitadApi.getMerchants,
