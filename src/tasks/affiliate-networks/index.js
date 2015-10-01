@@ -126,6 +126,11 @@ const tradetrackerNLApi = tradetrackerGenericApi('nl');
 const tradetrackerNOApi = tradetrackerGenericApi('no');
 const tradetrackerRUApi = tradetrackerGenericApi('ru');
 const tradetrackerSEApi = tradetrackerGenericApi('se');
+const tradetrackerDubliCHApi = tradetrackerGenericApi('ch', 'dubli');
+const tradetrackerDubliDEApi = tradetrackerGenericApi('de', 'dubli');
+const tradetrackerDubliDKApi = tradetrackerGenericApi('dk', 'dubli');
+const tradetrackerDubliATApi = tradetrackerGenericApi('at', 'dubli');
+const tradetrackerDubliRUApi = tradetrackerGenericApi('ru', 'dubli');
 
 const webgainsGenericApi = require('./webgainsGenericApi');
 const webgainsApi = webgainsGenericApi();
@@ -324,6 +329,11 @@ function initializeCommissionsDubliProcessors(createTask) {
     "LinkShare DubLi (US) Commissions": linkShareDubliUSApi.getCommissionDetails,
     "LinkShare DubLi (CA) Commissions": linkShareDubliCAApi.getCommissionDetails,
     "LinkShare DubLi (GB) Commissions": linkShareDubliGBApi.getCommissionDetails,
+    "TradeTracker DubLi (CH) Commissions": tradetrackerDubliCHApi.getCommissionDetails,
+    "TradeTracker DubLi (DE) Commissions": tradetrackerDubliDEApi.getCommissionDetails,
+    "TradeTracker DubLi (DK) Commissions": tradetrackerDubliDKApi.getCommissionDetails,
+    "TradeTracker DubLi (AT) Commissions": tradetrackerDubliATApi.getCommissionDetails,
+    "TradeTracker DubLi (RU) Commissions": tradetrackerDubliRUApi.getCommissionDetails,
     "VCommission DubLi Commissions": vcommissionDubliApi.getCommissionDetails,
     "Webgains DubLi (DE) Commissions": webgainsDubliDEApi.getCommissionDetails,
     "Webgains DubLi (DK) Commissions": webgainsDubliDKApi.getCommissionDetails,
