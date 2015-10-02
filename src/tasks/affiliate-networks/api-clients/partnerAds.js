@@ -8,17 +8,20 @@
 const _ = require('lodash');
 const co = require('co');
 const request = require('request-promise');
-// debugging the requests || TODO: remove after finishing implementation
-//require('request-promise').debug = true; 
 const debug = require('debug')('partnerads:api-client');
 const iconv = require('iconv-lite');
 const jsonify = require('./jsonify-xml-body');
 const moment = require('moment');
 
-const API_URL = 'http://www.partner-ads.com/dk/';
-const API_KEY = '53456144231849860441';
-// DubLi Legacy
-//const API_KEY = '50281138263829750385';
+const API_CFG = {
+  url: 'http://www.partner-ads.com/dk/',
+  ominto: {
+    key: '53456144231849860441',
+  },
+  dubli: {
+    key: '50281138263829750385',
+  }
+};
 
 const API_TYPES = {
   programs: {
@@ -43,24 +46,27 @@ const API_TYPES = {
   }
 };
 
-
 /**
  * New Class PartnerAdsClient
  * @class
  */
-function PartnerAdsClient() {
-	if (!(this instanceof PartnerAdsClient)) return new PartnerAdsClient();
-  debug("Create new client");
+function PartnerAdsClient(s_entity) {
+	if (!(this instanceof PartnerAdsClient)) return new PartnerAdsClient(s_entity);
+  if (!s_entity) throw new Error("Missing required argument 's_entity'!");
+  if (!API_CFG[s_entity]) throw new Error("Entity '"+s_entity+"' is not defined in API_CFG.");
+  debug("Create new client for entity: %s", s_entity);
 
-	// default request options
-	this.client = request.defaults({
-    baseUrl: API_URL,
+  this.cfg = API_CFG[s_entity];
+
+  // default request options
+  this.client = request.defaults({
+    baseUrl: API_CFG.url,
     json: false,
     simple: true,
     resolveWithFullResponse: false,
     encoding: null,
     qs: {
-      key: API_KEY
+      key: this.cfg.key
     },
     headers: {
       accept: "application/xml",
@@ -104,6 +110,4 @@ PartnerAdsClient.prototype.call = co.wrap(function* (type, bodyKey, params) {
   return response;
 });
 
-module.exports = function() {
-  return new PartnerAdsClient();
-};
+module.exports = PartnerAdsClient;

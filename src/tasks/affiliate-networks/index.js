@@ -6,7 +6,6 @@ const amazonApi = require('./amazonApi');
 const clixGaloreApi = require("./clixGaloreApi");
 const impactRadiusProductFtp = require("./impactRadiusProductFtp");
 const lomadeeApi = require('./lomadeeApi');
-const partnerAdsApi = require('./partnerAdsApi');
 const pepperjamApi = require('./pepperjamApi');
 const performanceHorizonApi = require('./performanceHorizonApi');
 const shareASaleApi = require('./shareASaleApi');
@@ -109,6 +108,10 @@ const omgpmUKApi = omgpmGenericApi('uk');
 const omgpmAsiaApi = omgpmGenericApi('asia');
 const omgpmBrazilApi = omgpmGenericApi('brazil');
 const omgpmAustraliaApi = omgpmGenericApi('australia');
+
+const partnerAdsGenericApi = require('./partnerAdsGenericApi');
+const partnerAdsApi = partnerAdsGenericApi();
+const partnerAdsDubliApi = partnerAdsGenericApi('dubli');
 
 const tradetrackerGenericApi = require('./tradetrackerGenericApi');
 const tradetrackerATApi = tradetrackerGenericApi('at');
@@ -329,6 +332,7 @@ function initializeCommissionsDubliProcessors(createTask) {
     "LinkShare DubLi (US) Commissions": linkShareDubliUSApi.getCommissionDetails,
     "LinkShare DubLi (CA) Commissions": linkShareDubliCAApi.getCommissionDetails,
     "LinkShare DubLi (GB) Commissions": linkShareDubliGBApi.getCommissionDetails,
+    "PartnerAds DubLi Commissions": partnerAdsDubliApi.getCommissionDetails,
     "TradeTracker DubLi (CH) Commissions": tradetrackerDubliCHApi.getCommissionDetails,
     "TradeTracker DubLi (DE) Commissions": tradetrackerDubliDEApi.getCommissionDetails,
     "TradeTracker DubLi (DK) Commissions": tradetrackerDubliDKApi.getCommissionDetails,

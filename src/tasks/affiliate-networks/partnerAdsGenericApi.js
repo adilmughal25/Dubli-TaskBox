@@ -3,7 +3,7 @@
 /*
  * for getCommissionDetails:
  * - Note that cancellations (sales transactions) do not provide same/full set of details as regular sales transactions.
- * - The commissions processor must have a way of matching the possibly privious imported "initiated" transaction with a later "cancelled" one.
+ * - The commissions processor must have a way of matching the possibly previous imported "initiated" transaction with a later "cancelled" one.
  * - They do not provide a unique transaction id. We concatenate "programid"+""-"+"ordrenr"
  */
 
@@ -12,37 +12,50 @@ const co = require('co');
 const debug = require('debug')('partnerads:processor');
 const sendEvents = require('./support/send-events');
 const singleRun = require('./support/single-run');
-const client = require('./api-clients/partnerAds')();
 
-/**
- * Retrieve all merchant/program information from PartnerAds.
- * @returns {undefined}
- */
-var getMerchants = singleRun(function* () {
-  const programs = (yield client.call('programs', 'partnerprogrammer.program')).map(m => ({merchant:m}));
+const PartnerAdsGenericApi = function(s_entity) {
+  if (!(this instanceof PartnerAdsGenericApi)) {
+    debug("instantiating PartnerAdsGenericApi for: %s", s_entity);
+    return new PartnerAdsGenericApi(s_entity);
+  }
 
-  yield sendEvents.sendMerchants('partnerads', programs);
-});
+  var that = this;
 
-/**
- * Retrieve all sales/lead transactions (newly and cancelled) from PartnerAds.
- * @returns {undefined}
- */
-const getCommissionDetails = singleRun(function* () {
-  let startDate = new Date(Date.now() - (30 * 86400 * 1000)),
-      endDate = new Date(Date.now() - (60 * 1000));
+  this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
+  this.client = require('./api-clients/partnerAds')(this.entity);
+  this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'partnerads';
+  
+  /**
+   * Retrieve all merchant/program information from PartnerAds.
+   * @returns {undefined}
+   */
+  this.getMerchants = singleRun(function* () {
+    const programs = (yield that.client.call('programs', 'partnerprogrammer.program')).map(m => ({merchant:m}));
 
-  // get all sales/leads
-	const sales = (yield client.call('commissions', 'salgspec.salg', {fra: startDate, til:endDate})).map(prepareCommission);
+    yield sendEvents.sendMerchants(that.eventName, programs);
+  });
 
-  // get all cancelled sales/leads
-  const cancellations = (yield client.call('cancellations', 'annulleredeordrer.annullering', {fra: startDate, til:endDate})).map(prepareCancellations);
+  /**
+   * Retrieve all sales/lead transactions (newly and cancelled) from PartnerAds.
+   * @returns {undefined}
+   */
+  this.getCommissionDetails = singleRun(function* () {
+    const startDate = new Date(Date.now() - (30 * 86400 * 1000));
+    const endDate = new Date(Date.now() - (60 * 1000));
 
-  // merge it
-  const transactions = sales.concat(cancellations);
+    // get all sales/leads
+    const sales = (yield that.client.call('commissions', 'salgspec.salg', {fra: startDate, til:endDate})).map(prepareCommission);
 
-  yield sendEvents.sendCommissions('partnerads', transactions);
-});
+    // get all cancelled sales/leads
+    const cancellations = (yield that.client.call('cancellations', 'annulleredeordrer.annullering', {fra: startDate, til:endDate})).map(prepareCancellations);
+
+    // merge it
+    const transactions = sales.concat(cancellations);
+
+    yield sendEvents.sendCommissions(that.eventName, transactions);
+  });
+  
+};
 
 /**
  * Function to prepare a single commission transaction for our data event.
@@ -90,7 +103,4 @@ function prepareCancellations(o_obj) {
   return sale;
 }
 
-module.exports = {
-  getMerchants: getMerchants,
-  getCommissionDetails: getCommissionDetails
-};
+module.exports = PartnerAdsGenericApi;
