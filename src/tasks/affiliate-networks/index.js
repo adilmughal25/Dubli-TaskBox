@@ -6,7 +6,6 @@ const amazonApi = require('./amazonApi');
 const clixGaloreApi = require("./clixGaloreApi");
 const impactRadiusProductFtp = require("./impactRadiusProductFtp");
 const lomadeeApi = require('./lomadeeApi');
-const pepperjamApi = require('./pepperjamApi');
 const performanceHorizonApi = require('./performanceHorizonApi');
 const shareASaleApi = require('./shareASaleApi');
 const tradedoublerApi = require('./tradedoublerApi');
@@ -95,13 +94,6 @@ const linkShareDubliUSApi = linkShareGenericApi('us', 'dubli');
 const linkShareDubliCAApi = linkShareGenericApi('ca', 'dubli');
 const linkShareDubliGBApi = linkShareGenericApi('gb', 'dubli');
 
-const publicideasGenericApi = require('./publicideasGenericApi');
-const publicideasESApi = publicideasGenericApi('es');
-const publicideasFRApi = publicideasGenericApi('fr');
-const publicideasITApi = publicideasGenericApi('it');
-const publicideasLATAMApi = publicideasGenericApi('latam');
-const publicideasUKApi = publicideasGenericApi('uk');
-
 const omgpmGenericApi = require('./omgpmGenericApi');
 const omgpmIndiaApi = omgpmGenericApi('india');
 const omgpmUKApi = omgpmGenericApi('uk');
@@ -112,6 +104,16 @@ const omgpmAustraliaApi = omgpmGenericApi('australia');
 const partnerAdsGenericApi = require('./partnerAdsGenericApi');
 const partnerAdsApi = partnerAdsGenericApi();
 const partnerAdsDubliApi = partnerAdsGenericApi('dubli');
+const pepperjamGenericApi = require('./pepperjamGenericApi');
+const pepperjamApi = pepperjamGenericApi();
+const pepperjamDubliApi = pepperjamGenericApi('dubli');
+
+const publicideasGenericApi = require('./publicideasGenericApi');
+const publicideasESApi = publicideasGenericApi('es');
+const publicideasFRApi = publicideasGenericApi('fr');
+const publicideasITApi = publicideasGenericApi('it');
+const publicideasLATAMApi = publicideasGenericApi('latam');
+const publicideasUKApi = publicideasGenericApi('uk');
 
 const tradetrackerGenericApi = require('./tradetrackerGenericApi');
 const tradetrackerATApi = tradetrackerGenericApi('at');
@@ -333,6 +335,7 @@ function initializeCommissionsDubliProcessors(createTask) {
     "LinkShare DubLi (CA) Commissions": linkShareDubliCAApi.getCommissionDetails,
     "LinkShare DubLi (GB) Commissions": linkShareDubliGBApi.getCommissionDetails,
     "PartnerAds DubLi Commissions": partnerAdsDubliApi.getCommissionDetails,
+    "PepperJam DubLi Commissions": pepperjamDubliApi.getCommissionDetails,
     "TradeTracker DubLi (CH) Commissions": tradetrackerDubliCHApi.getCommissionDetails,
     "TradeTracker DubLi (DE) Commissions": tradetrackerDubliDEApi.getCommissionDetails,
     "TradeTracker DubLi (DK) Commissions": tradetrackerDubliDKApi.getCommissionDetails,
