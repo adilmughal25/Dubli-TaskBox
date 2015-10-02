@@ -2,41 +2,70 @@
 
 const request = require('request-promise');
 const querystring = require('querystring');
+const debug = require('debug')('performancehorizon:api-client');
 
-const PHG_API_KEY  = 'p3tew145y3tag41n';
-const PHG_USER_KEY = 'xElyiP16';
-const PUBLISHER_ID = '1101l317';
+const API_CFG = {
+  ominto: {
+    hostname: 'api.performancehorizon.com',
+    apiKey: 'p3tew145y3tag41n',
+    userKey: 'xElyiP16',
+    publisherId: '1101l317',
+  },
+  dubli_apple: {
+    hostname: 'api.performancehorizon.com',
+    apiKey: 'idj0NgJhMQ',
+    userKey: 'TyJQtS0J',
+    publisherId: '305368'
+  },
+  dubli_itunes: {
+    hostname: 'itunes-api.performancehorizon.com',
+    apiKey: 'yyit5mqdd1',
+    userKey: 'l1n3cpqj',
+    publisherId: '10l9362'
+  },
+  // BritishAirways
+  dubli_ba: {
+    hostname: 'api.performancehorizon.com',
+    apiKey: 'gb3KsZwx2p',
+    userKey: '8zEBlCr7',
+    publisherId: '100l1328'
+  },
+  // WoolWorth
+  dubli_ww: {
+    hostname: 'api.performancehorizon.com',
+    apiKey: 'SOEABGW9XY',
+    userKey: 'oJT95Guj',
+    publisherId: '1100l183'
+  }
+};
 
-// dubli/Apple credentials, helpful for testing transactions
-// const PHG_API_KEY  = 'idj0NgJhMQ';
-// const PHG_USER_KEY = 'TyJQtS0J';
-// const PUBLISHER_ID = '305368';
+function PerformanceHorizonApiClient(s_entity) {
+  if (!(this instanceof PerformanceHorizonApiClient)) return new PerformanceHorizonApiClient(s_entity);
+  if (!s_entity) throw new Error("Missing required argument 's_entity'!");
+  if (!API_CFG[s_entity]) throw new Error("Entity '"+s_entity+"' is not defined in API_CFG.");
+  debug("Create new client for entity: %s", s_entity);
 
+  this.cfg = API_CFG[s_entity];
+  let baseUrl = 'https://' + this.cfg.apiKey + ':' + this.cfg.userKey + '@' + this.cfg.hostname + '/';
 
-function createClient() {
-  var baseUrl = 'https://' + PHG_API_KEY + ':' +
-    PHG_USER_KEY + '@api.performancehorizon.com/';
-
-  var client = request.defaults({
+  // default request options
+  this.client = request.defaults({
     baseUrl: baseUrl,
+    json: true,
     simple: true,
-    json: true
+    resolveWithFullResponse: false
   });
-
-  client.publisherId = PUBLISHER_ID;
-
-  client.url = getUrl;
-
-
-  return client;
+  
+  this.get = this.client.get; // propagate method public
 }
 
-function getUrl(type, params) {
+PerformanceHorizonApiClient.prototype.getUrl = function (type, params) {
   if (!params) params = {};
+  let url = [];
 
   if (type === 'merchants') {
-    const url = [
-      'user', 'publisher', this.publisherId, 'campaign', 'a', 'tracking.json'
+    url = [
+      'user', 'publisher', this.cfg.publisherId, 'campaign', 'a', 'tracking.json'
     ].join('/');
 
     return url;
@@ -46,8 +75,8 @@ function getUrl(type, params) {
     let page = params.page ? params.page - 1 : 0;
     let perpage = 300;
     let offset = page * perpage;
-    const url = [
-      'reporting', 'report_publisher', 'publisher', this.publisherId, 'conversion.json'
+    url = [
+      'reporting', 'report_publisher', 'publisher', this.cfg.publisherId, 'conversion.json'
     ].join('/') + '?' + querystring.stringify({
       start_date: params.start,
       end_date: params.end,
@@ -55,21 +84,11 @@ function getUrl(type, params) {
       limit: perpage,
       offset: offset
     });
+
     return url;
   }
 
   throw new Error("Can't build "+type+", "+JSON.stringify(params));
-}
+};
 
-module.exports = createClient;
-
-
-/*
-
-"Apple=> username=idj0NgJhMQ, password=TyJQtS0J, PublisherId=305368, ApiSubdomain=api
-iTunes=> username=yyit5mqdd1, password=l1n3cpqj, PublisherId=10l9362, ApiSubdomain=itunes-api
-BritishAirways=> username=gb3KsZwx2p, password=8zEBlCr7, PublisherId=100l1328, ApiSubdomain=api
-WoolWorth=> username=SOEABGW9XY, password=oJT95Guj, PublisherId=1100l183, ApiSubdomain=api
-"
-
-*/
+module.exports = PerformanceHorizonApiClient;

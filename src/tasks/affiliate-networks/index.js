@@ -6,7 +6,6 @@ const amazonApi = require('./amazonApi');
 const clixGaloreApi = require("./clixGaloreApi");
 const impactRadiusProductFtp = require("./impactRadiusProductFtp");
 const lomadeeApi = require('./lomadeeApi');
-const performanceHorizonApi = require('./performanceHorizonApi');
 const shareASaleApi = require('./shareASaleApi');
 const tradedoublerApi = require('./tradedoublerApi');
 const zanoxApi = require('./zanoxApi');
@@ -107,7 +106,12 @@ const partnerAdsDubliApi = partnerAdsGenericApi('dubli');
 const pepperjamGenericApi = require('./pepperjamGenericApi');
 const pepperjamApi = pepperjamGenericApi();
 const pepperjamDubliApi = pepperjamGenericApi('dubli');
-
+const performanceHorizonGenericApi = require('./performanceHorizonGenericApi');
+const performanceHorizonApi = performanceHorizonGenericApi();
+const performanceHorizonDubliAppleApi = performanceHorizonGenericApi('dubli_apple');
+const performanceHorizonDubliItunesApi = performanceHorizonGenericApi('dubli_itunes');
+const performanceHorizonDubliBAApi = performanceHorizonGenericApi('dubli_ba');
+const performanceHorizonDubliWWApi = performanceHorizonGenericApi('dubli_ww');
 const publicideasGenericApi = require('./publicideasGenericApi');
 const publicideasESApi = publicideasGenericApi('es');
 const publicideasFRApi = publicideasGenericApi('fr');
@@ -336,6 +340,10 @@ function initializeCommissionsDubliProcessors(createTask) {
     "LinkShare DubLi (GB) Commissions": linkShareDubliGBApi.getCommissionDetails,
     "PartnerAds DubLi Commissions": partnerAdsDubliApi.getCommissionDetails,
     "PepperJam DubLi Commissions": pepperjamDubliApi.getCommissionDetails,
+    "PerformanceHorizon DubLi-Apple Commissions": performanceHorizonDubliAppleApi.getCommissionDetails,
+    "PerformanceHorizon DubLi-iTunes Commissions": performanceHorizonDubliItunesApi.getCommissionDetails,
+    "PerformanceHorizon DubLi-BritishAirways Commissions": performanceHorizonDubliBAApi.getCommissionDetails,
+    "PerformanceHorizon DubLi-WoolWorth Commissions": performanceHorizonDubliWWApi.getCommissionDetails,
     "TradeTracker DubLi (CH) Commissions": tradetrackerDubliCHApi.getCommissionDetails,
     "TradeTracker DubLi (DE) Commissions": tradetrackerDubliDEApi.getCommissionDetails,
     "TradeTracker DubLi (DK) Commissions": tradetrackerDubliDKApi.getCommissionDetails,
