@@ -6,7 +6,6 @@ const amazonApi = require('./amazonApi');
 const clixGaloreApi = require("./clixGaloreApi");
 const impactRadiusProductFtp = require("./impactRadiusProductFtp");
 const lomadeeApi = require('./lomadeeApi');
-const shareASaleApi = require('./shareASaleApi');
 const tradedoublerApi = require('./tradedoublerApi');
 const zanoxApi = require('./zanoxApi');
 
@@ -118,6 +117,10 @@ const publicideasFRApi = publicideasGenericApi('fr');
 const publicideasITApi = publicideasGenericApi('it');
 const publicideasLATAMApi = publicideasGenericApi('latam');
 const publicideasUKApi = publicideasGenericApi('uk');
+
+const shareASaleGenericApi = require('./shareASaleGenericApi');
+const shareASaleApi = shareASaleGenericApi();
+const shareASaleDubliApi = shareASaleGenericApi('dubli');
 
 const tradetrackerGenericApi = require('./tradetrackerGenericApi');
 const tradetrackerATApi = tradetrackerGenericApi('at');
@@ -344,6 +347,7 @@ function initializeCommissionsDubliProcessors(createTask) {
     "PerformanceHorizon DubLi-iTunes Commissions": performanceHorizonDubliItunesApi.getCommissionDetails,
     "PerformanceHorizon DubLi-BritishAirways Commissions": performanceHorizonDubliBAApi.getCommissionDetails,
     "PerformanceHorizon DubLi-WoolWorth Commissions": performanceHorizonDubliWWApi.getCommissionDetails,
+    "ShareASale DubLi Commissions": shareASaleDubliApi.getCommissionDetails,
     "TradeTracker DubLi (CH) Commissions": tradetrackerDubliCHApi.getCommissionDetails,
     "TradeTracker DubLi (DE) Commissions": tradetrackerDubliDEApi.getCommissionDetails,
     "TradeTracker DubLi (DK) Commissions": tradetrackerDubliDKApi.getCommissionDetails,
