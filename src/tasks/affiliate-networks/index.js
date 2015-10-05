@@ -97,6 +97,7 @@ const omgpmUKApi = omgpmGenericApi('uk');
 const omgpmAsiaApi = omgpmGenericApi('asia');
 const omgpmBrazilApi = omgpmGenericApi('brazil');
 const omgpmAustraliaApi = omgpmGenericApi('australia');
+const omgpmDubliIndiaApi = omgpmGenericApi('india', 'dubli');
 
 const partnerAdsGenericApi = require('./partnerAdsGenericApi');
 const partnerAdsApi = partnerAdsGenericApi();
@@ -350,6 +351,7 @@ function initializeCommissionsDubliProcessors(createTask) {
     "LinkShare DubLi (US) Commissions": linkShareDubliUSApi.getCommissionDetails,
     "LinkShare DubLi (CA) Commissions": linkShareDubliCAApi.getCommissionDetails,
     "LinkShare DubLi (GB) Commissions": linkShareDubliGBApi.getCommissionDetails,
+    "OMG DubLi (India) Commissions": omgpmDubliIndiaApi.getCommissionDetails,
     "PartnerAds DubLi Commissions": partnerAdsDubliApi.getCommissionDetails,
     "PepperJam DubLi Commissions": pepperjamDubliApi.getCommissionDetails,
     "PerformanceHorizon DubLi-Apple Commissions": performanceHorizonDubliAppleApi.getCommissionDetails,

@@ -19,7 +19,6 @@ const MERCHANT_KEY     = 'Report.table1.Detail_Collection.Detail';
 const COUPONS_KEY      = 'Items.Item';
 const TRANSACTIONS_KEY = 'Report.Report.Report_Details_Group_Collection.Report_Details_Group';
 
-
 // urls:
 // IN: http://admin.optimisemedia.com/v2/Reports/Affiliate/ProgrammesExport.aspx?Agency=95&Country=0&Affiliate=808960&Search=&Sector=0&UidTracking=False&PayoutTypes=S&ProductFeedAvailable=False&Format=XML&AuthHash=93FD70005E94A58285948FB41785D135&AuthAgency=95&AuthContact=808960&ProductType=
 // IN: https://admin.optimisemedia.com/v2/VoucherCodes/Affiliate/ExportVoucherCodes.ashx?Auth=95:808960:93FD70005E94A58285948FB41785D135&Status=Active&Format=Xml&Agency=95
@@ -40,50 +39,68 @@ const TRANSACTIONS_KEY = 'Report.Report.Report_Details_Group_Collection.Report_D
 // aus: https://admin.optimisemedia.com/v2/VoucherCodes/Affiliate/ExportVoucherCodes.ashx?Auth=47:835094:DF1F0E5DD0AB1859FDF9C5583ECFB5FF&Status=Active&Format=Xml&Agency=47
 // aus: https://admin.optimisemedia.com/v2/reports/affiliate/leads/leadsummaryexport.aspx?Contact=835094&Country=22&Agency=47&Status=-1&Year=2015&Month=9&Day=1&DateType=0&Sort=CompletionDate&Login=DF1F0E5DD0AB1859FDF9C5583ECFB5FF&Format=XML&RestrictURL=0
 
-const CREDENTIALS = {
-  'india': {
-    agency: '95',
-    affiliateId: '808960',
-    authHash: '93FD70005E94A58285948FB41785D135',
-    login: '93FD70005E94A58285948FB41785D135',
-    transactionCountries: ['26', '228'],
+const API_CFG = {
+  url: 'https://admin.optimisemedia.com/v2',
+  ominto: {
+    india: {
+      agency: 95,
+      affiliateId: 808960,
+      authHash: '93FD70005E94A58285948FB41785D135',
+      login: '93FD70005E94A58285948FB41785D135',
+      transactionCountries: ['26', '228'],
+    },
+    uk: {
+      agency: 1,
+      affiliateId: 835519,
+      authHash: '15911EC45848DB22ACCB62C0F951ED1B',
+      login: '75479e8a743aa64b1c0ec410b97ae55b',
+      transactionCountries: ['1', '2', '20'],
+    },
+    asia: {
+      agency: 118,
+      affiliateId: 826495,
+      authHash: '6BB2810C48BADCA07378DC0819824992',
+      login: '6BB2810C48BADCA07378DC0819824992',
+      transactionCountries: ['228', '27', '110', '135', '170', '189', '205'],
+    },
+    brazil: {
+      agency: 142,
+      affiliateId: '835579',
+      authHash: '26E4FDB10EEF76851ABBBBB9FFC2DF4F',
+      login: '683A45C61A2B9B0A77E631EF7AB301E1',
+      transactionCountries: ['56'],
+    },
+    australia: {
+      agency: 47,
+      affiliateId: 835094,
+      authHash: 'DF1F0E5DD0AB1859FDF9C5583ECFB5FF',
+      login: 'DF1F0E5DD0AB1859FDF9C5583ECFB5FF',
+      transactionCountries: ['22', '24', '228']
+    }
   },
-  'uk': {
-    agency: '1',
-    affiliateId: '835519',
-    authHash: '15911EC45848DB22ACCB62C0F951ED1B',
-    login: '75479e8a743aa64b1c0ec410b97ae55b',
-    transactionCountries: ['1', '2', '20'],
-  },
-  'asia': {
-    agency: '118',
-    affiliateId: '826495',
-    authHash: '6BB2810C48BADCA07378DC0819824992',
-    login: '6BB2810C48BADCA07378DC0819824992',
-    transactionCountries: ['228', '27', '110', '135', '170', '189', '205'],
-  },
-  'brazil': {
-    agency: '142',
-    affiliateId: '835579',
-    authHash: '26E4FDB10EEF76851ABBBBB9FFC2DF4F',
-    login: '683A45C61A2B9B0A77E631EF7AB301E1',
-    transactionCountries: ['56'],
-  },
-  'australia': {
-    agency: '47',
-    affiliateId: '835094',
-    authHash: 'DF1F0E5DD0AB1859FDF9C5583ECFB5FF',
-    login: 'DF1F0E5DD0AB1859FDF9C5583ECFB5FF',
-    transactionCountries: ['22', '24', '228']
+  dubli: {
+    india: {
+      agency: 95,
+      affiliateId: 629574,
+      authHash: 'AA398ED0689EDB9B162B65CA3104A7D4',
+      login: 'AA398ED0689EDB9B162B65CA3104A7D4',
+      transactionCountries: ['26', '228'],
+    },
   }
 };
 
 const _clientCache = {};
-function createClient(s_account) {
-  if (!s_account) s_account = 'india';
-  if (_clientCache[s_account]) return _clientCache[s_account];
+function OmgPmLegacyApiClient(s_entity, s_region) {
+  if (!s_entity) throw new Error("Missing required argument 's_entity'!");
+  if (!s_region) s_region = 'india';
+  if (!API_CFG[s_entity]) throw new Error("Entity '"+s_entity+"' is not defined in API_CFG.");
+  if (!API_CFG[s_entity][s_region]) throw new Error("Region '"+s_region+"' for entity '"+s_entity+"' is not defined in API_CFG.");
 
-  const creds = CREDENTIALS[s_account];
+  const _tag = s_entity + '-' + s_region;
+
+  if (_clientCache[_tag]) return _clientCache[_tag];
+
+  const creds = API_CFG[s_entity][s_region];
   const client = request.defaults({
     resolveWithFullResponse: true,
   });
@@ -93,6 +110,7 @@ function createClient(s_account) {
   client.getMerchants = function() {
     const apiUrl = client.url('merchants');
     debug('GET '+apiUrl);
+
     return client.get(apiUrl)
       .then(check('2XX', 'Could not load merchants'))
       .then(jsonify)
@@ -103,6 +121,7 @@ function createClient(s_account) {
   client.getCoupons = function() {
     const apiUrl = client.url('coupons');
     debug('GET '+apiUrl);
+
     return client.get(apiUrl)
       .then(check('2XX', 'Could not load coupons'))
       .then(jsonify)
@@ -117,6 +136,7 @@ function createClient(s_account) {
       end     : end,
     });
     debug('GET '+apiUrl);
+
     return client.get(apiUrl)
       .then(check('2XX', 'Could not load transactions for '+country+' ('+url+')'))
       .then(jsonify)
@@ -128,10 +148,11 @@ function createClient(s_account) {
   client.getTransactions = function(start, end) {
     const proc = country => client.getTransactionsByCountry(country, start, end);
     const promises = client.credentials.transactionCountries.map(proc);
+
     return Promise.all(promises).then(_.flatten);
   };
 
-  _clientCache[s_account] = client;
+  _clientCache[_tag] = client;
   return client;
 }
 
@@ -141,7 +162,7 @@ function getUrl(urlType, params) {
   if (!params) params = {};
 
   if (urlType === 'merchants') {
-    let url = 'http://admin.optimisemedia.com/v2/Reports/Affiliate/ProgrammesExport.aspx?' + querystring.stringify({
+    let url = API_CFG.url + '/Reports/Affiliate/ProgrammesExport.aspx?' + querystring.stringify({
       Agency: creds.agency,
       Country: '0',
       Affiliate: creds.affiliateId,
@@ -156,23 +177,25 @@ function getUrl(urlType, params) {
       AuthContact: creds.affiliateId,
       ProductType: ''
     });
+
     return url;
   }
 
   if (urlType === 'coupons') {
-    let url = 'https://admin.optimisemedia.com/v2/VoucherCodes/Affiliate/ExportVoucherCodes.ashx?' + querystring.stringify({
+    let url = API_CFG.url + '/VoucherCodes/Affiliate/ExportVoucherCodes.ashx?' + querystring.stringify({
       Auth: [creds.agency, creds.affiliateId, creds.authHash].join(':'),
       Status: 'Active',
       Format: 'Xml',
       Agency: creds.agency
     });
+
     return url;
   }
 
   if (urlType === 'transactions') {
     let _start = dateComponents(params.start);
     let _end = dateComponents(params.end);
-    let url = 'https://admin.optimisemedia.com/v2/reports/affiliate/leads/leadsummaryexport.aspx?' + querystring.stringify({
+    let url = API_CFG.url + '/reports/affiliate/leads/leadsummaryexport.aspx?' + querystring.stringify({
       Contact: creds.affiliateId,
       Country: params.country,
       Agency: creds.agency,
@@ -189,6 +212,7 @@ function getUrl(urlType, params) {
       Format: 'XML',
       RestrictURL: '0'
     });
+
     return url;
   }
 
@@ -224,7 +248,7 @@ function extractPid(o_coupon) {
   }
 }
 
-module.exports = createClient;
+module.exports = OmgPmLegacyApiClient;
 
 
 /*
