@@ -7,7 +7,6 @@ const clixGaloreApi = require("./clixGaloreApi");
 const impactRadiusProductFtp = require("./impactRadiusProductFtp");
 const lomadeeApi = require('./lomadeeApi');
 const tradedoublerApi = require('./tradedoublerApi');
-const zanoxApi = require('./zanoxApi');
 
 const adCellGenericApi = require('./adCellGenericApi');
 const adCellApi = adCellGenericApi();
@@ -151,6 +150,16 @@ const webgainsDubliDKApi = webgainsGenericApi('dubli-dk');
 const webgainsDubliESApi = webgainsGenericApi('dubli-es');
 const webgainsDubliGBApi = webgainsGenericApi('dubli-gb');
 const webgainsDubliITApi = webgainsGenericApi('dubli-it');
+
+const zanoxGenericApi = require('./zanoxGenericApi');
+const zanoxApi = zanoxGenericApi();
+const zanoxDubliDEApi = zanoxGenericApi('de', 'dubli');
+const zanoxDubliESApi = zanoxGenericApi('es', 'dubli');
+const zanoxDubliAUApi = zanoxGenericApi('au', 'dubli');
+const zanoxDubliDKApi = zanoxGenericApi('dk', 'dubli');
+const zanoxDubliSEApi = zanoxGenericApi('se', 'dubli');
+const zanoxDubliNOApi = zanoxGenericApi('no', 'dubli');
+const zanoxDubliGlobalApi = zanoxGenericApi('global', 'dubli');
 
 /*
  * some thoughts by Rando:
@@ -359,5 +368,12 @@ function initializeCommissionsDubliProcessors(createTask) {
     "Webgains DubLi (ES) Commissions": webgainsDubliESApi.getCommissionDetails,
     "Webgains DubLi (GB) Commissions": webgainsDubliGBApi.getCommissionDetails,
     "Webgains DubLi (IT) Commissions": webgainsDubliITApi.getCommissionDetails,
+    "Zanox DubLi (DE) Commissions": zanoxDubliDEApi.getCommissionDetails,
+    "Zanox DubLi (ES) Commissions": zanoxDubliESApi.getCommissionDetails,
+    "Zanox DubLi (AU) Commissions": zanoxDubliAUApi.getCommissionDetails,
+    "Zanox DubLi (DK) Commissions": zanoxDubliDKApi.getCommissionDetails,
+    "Zanox DubLi (SE) Commissions": zanoxDubliSEApi.getCommissionDetails,
+    "Zanox DubLi (NO) Commissions": zanoxDubliNOApi.getCommissionDetails,
+    "Zanox DubLi (Global) Commissions": zanoxDubliGlobalApi.getCommissionDetails,
   });
 }
