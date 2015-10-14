@@ -1,46 +1,258 @@
 {
   "env": "dev",
-  "logLevel": "debug",
+  "logLevel": "info",
+  "host": "http://127.0.0.1",
+  "api": {
+    "url": "http://127.0.0.1:8081/",
+    "port": 8081
+  },
   "data_api": {
-    "url": "http://localhost:8090/",
+    "url": "http://127.0.0.1:8090/",
+    "port": 8090,
     "auth": {
       "user": "PlaceGenericNameHere",
       "pass": "PasswordOfDEVASTATION123!@#"
+    },
+    "admin": {
+      "name": "NSAdminOfDOOM",
+      "pass": "AllYourDatazAreBelongToUs!!!!"
     }
   },
-  "redis": {
+  "urls": {
+    "loginRedirect": "https://alpha.ominto.com/",
+    "site": "https://alpha.ominto.com/",
+    "api": "https://api.ominto.com/"
+  },
+  "whitelabel": {
+    "ominto": {
+      "slug": "ominto",
+      "name": "Ominto",
+      "org": "Ominto, Inc.",
+      "domain": "alpha.ominto.com",
+      "domain-fancy": "Alpha.Ominto.com",
+      "outgoingEmailAddress": "account@ominto.com",
+      "emailSubjects": {
+        "registration": "Welcome to Ominto!",
+        "passwordReset": "Reset your Ominto password",
+        "resendActivation": "Your Ominto activation link"
+      },
+      "address": {
+        "line-1": "1100-112th Avenue NE",
+        "line-2": "Suite 350",
+        "line-3": "Bellevue, WA 98004"
+      },
+      "oauth": {
+        "facebook": {
+          "clientID": "967716783250165",
+          "clientSecret": "d9d7815af1fd4e9ed7a9daf216389454",
+          "callbackURL": "http://localhost:8081/auth/facebook/callback",
+          "scope": [
+            "email",
+            "read_stream"
+          ]
+        },
+        "twitter": {
+          "clientID": "evv8yddWe9S2F1ResiuoN8u63",
+          "clientSecret": "aLScnlRQOZ7eN9THmMKL9WLhGOwEo6EKHFyEj48tjtjpnsGIug",
+          "callbackURL": "http://localhost:8081/auth/twitter/callback"
+        },
+        "google": {
+          "clientID": "668004601135-0cav59racudfdud2nlmd0p7hftjhr82m.apps.googleusercontent.com",
+          "clientSecret": "2WdKHgMPw7sTqNou3seRojYD",
+          "callbackURL": "http://localhost:8081/auth/google/callback",
+          "scope": [
+            "openid",
+            "profile",
+            "email"
+          ]
+        }
+      }
+    },
+    "dubli": {
+      "slug": "dubli",
+      "name": "DubLi",
+      "org": "DUBLICOMLtd.",
+      "domain": "dubli.com",
+      "domain-fancy": "DubLi.com",
+      "outgoingEmailAddress": "account@ominto.com",
+      "emailSubjects": {
+        "registration": "Welcome to Dubli!",
+        "passwordReset": "Reset your Dubli password",
+        "resendActivation": "Your Dubli activation link"
+      },
+      "address": {
+        "line-1": "17Gr.XenopoulouStreet",
+        "line-2": "3106Limassol",
+        "line-3": "Cyprus"
+      },
+      "oauth": {
+        "facebook": {
+          "clientID": "967716279916882",
+          "clientSecret": "c3c1a2017910c82a8b1cbde18f087bb8",
+          "callbackURL": "https://api.ominto.com/auth/facebook/callback",
+          "scope": [
+            "email",
+            "read_stream"
+          ]
+        }
+      }
+    },
+    "inficashback": {
+      "outgoingEmailAddress": "account@ominto.com",
+      "emailSubjects": {
+        "registration": "Welcome to Inficashback!",
+        "passwordReset": "Reset your Inficashback password",
+        "resendActivation": "Your Inficashback activation link"
+      }
+    }
+  },
+  "dataStore": {
+    "publicCache": {
+      "hosts": [
+        "127.0.0.1:11211"
+      ],
+      "poolSize": 5
+    },
+    "privateCache": {
+      "hosts": [
+        "127.0.0.1:11211"
+      ],
+      "poolSize": 5
+    },
+    "redis": {
+      "writer": {
+        "host": "127.0.0.1",
+        "port": 6379,
+        "auth": null
+      },
+      "reader": {
+        "host": "127.0.0.1",
+        "port": 6379,
+        "auth": null
+      }
+    },
     "reader": {
       "host": "127.0.0.1",
-      "port": 6379,
-      "auth": null
+      "port": 3306,
+      "user": "local-data",
+      "password": "local-data",
+      "database": "data",
+      "poolSize": 5,
+      "ssl": null
     },
     "writer": {
       "host": "127.0.0.1",
-      "port": 6379,
-      "auth": null
+      "port": 3306,
+      "user": "local-data",
+      "password": "local-data",
+      "database": "data",
+      "poolSize": 5,
+      "ssl": null
     }
   },
-  "aws": {
-    "default_region": "us-east-1"
+  "jwt": {
+    "key": "secret",
+    "lowExpireInMinutes": 43830,
+    "highExpireInMinutes": 10
   },
-  "ftpToS3": {
-    "port": "2121",
-    "host": "127.0.0.1",
-    "pasvPortRangeStart": 4000,
-    "pasvPortRangeEnd": 5000,
-    "ftp_root": "/tmp/ftp-to-s3-root",
-    "users": {
-      "linkshare-transactions": {
-        "localDir": "linkshare-transactions",
-        "s3_bucket": "ominto-devel",
-        "s3_folder": "ftp-to-s3-gateway/linkshare-transactions",
-        "password": "370d9b45-0eb5-4199-b22a-092ca4d42459"
-      },
-      "test-user": {
-        "localDir": "test",
-        "s3_bucket": "ominto-devel",
-        "s3_folder": "ftp-to-s3-gateway/test-user-local",
-        "password": "118febce-ecb5-45ac-80ae-763f1ff9ebf5"
+  "purchaseItems": {
+    "vip": {
+      "dollarAmount": 99,
+      "success_url": "/join/vip/success",
+      "cancel_url": "/join/vip/cancel"
+    }
+  },
+  "points": {
+    "multiplier": 100,
+    "transactionCap": 500,
+    "defaultLifetimeInSeconds": 2592000
+  },
+  "aws": {
+    "default_region": "us-east-1",
+    "accessKey": "AKIAISZCDY2VLD5LMJEA",
+    "secretKey": "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",
+    "cloudsearch": {
+      "endpoint": "doc-ominto-stage-yf2tmqhzdyuhdugsj2qerahttq.us-east-1.cloudsearch.amazonaws.com"
+    },
+    "ftpToS3": {
+      "port": "2121",
+      "host": "127.0.0.1",
+      "pasvPortRangeStart": 4000,
+      "pasvPortRangeEnd": 5000,
+      "ftp_root": "/tmp/ftp-to-s3-root",
+      "users": {
+        "linkshare-transactions": {
+          "localDir": "linkshare-transactions",
+          "s3_bucket": "ominto-devel",
+          "s3_folder": "ftp-to-s3-gateway/linkshare-transactions",
+          "password": "370d9b45-0eb5-4199-b22a-092ca4d42459"
+        },
+        "test-user": {
+          "localDir": "test",
+          "s3_bucket": "ominto-devel",
+          "s3_folder": "ftp-to-s3-gateway/test-user-local",
+          "password": "118febce-ecb5-45ac-80ae-763f1ff9ebf5"
+        }
+      }
+    }
+  },
+  "paymentGateways": {
+    "stripe": {
+      "api_key": "pk_test_jj6KGYm58mQ6L31DnvmcFPzX",
+      "api_secret": "sk_test_uEQ6210lanccXvUxUnb6YhlM"
+    },
+    "paypal": {
+      "client_id": "AR9Fbe1Rpu2QUxbTOgyiAYva5Htgyik3EBh9TIPWfo7MSG8ve4lfoOgbv1OshjTnd9VCv7pofnHaJoMI",
+      "client_secret": "EII8MqAbE4dt1DQPVMguCCsDfo9yawhHQCnwOSPmc5rJI-SgAXSCqRJhdnHHYJg8pntWaTrsgWoTcULH",
+      "mode": "sandbox"
+    },
+    "dwolla": {
+      "api_key": "80XCArTKY+Ep1L+YlXr8eNYSrNKlzR4QiLgST1AlkPtJaMqx50",
+      "api_secret": "qExG59p12HPLyNtTj8V8+RkQAXP564xlYYvhkWEeSSErBOGFCZ",
+      "pin": 1234,
+      "sandbox": true,
+      "accountId": "812-741-3732",
+      "redirect_url": "http://127.0.0.1:8081/wallet/dwolla/login/finish",
+      "oauth_scope": "accountinfofull|send|transactions|funding|request"
+    },
+    "infiPlanet": {
+      "api_secret": "DF347F00-8E39-4627-B3F2-A2774F7EE8C8",
+      "url": "https://pg.infiplanets.com/pgredirect.aspx",
+      "merchantId": "0179",
+      "merchantName": "InfiCashBack",
+      "cancel_url": "/payment/cancel"
+    },
+    "payu": {
+      "url": "https://test.payu.in",
+      "success_url": "http://example.com?status=1",
+      "fail_url": "http://example.com?status=2",
+      "cancel_url": "http://example.com?status=3",
+      "key": "gtKFFx",
+      "salt": "eCwWELxi"
+    },
+    "coinbase": {
+      "url": "https://api.sandbox.coinbase.com/v2",
+      "authUrl": "https://sandbox.coinbase.com/oauth/authorize",
+      "tokenUrl": "https://api.sandbox.coinbase.com/oauth/token",
+      "clientID": "0a6a99b1b6b066cc931d62d27633602d1935e62c7873c281b38b698fc423d973",
+      "clientSecret": "588965dc66afc288c20e5bc7b41446f9ca6c3afda3f1dbed0438453827fcd5e7",
+      "redirect_url": "http://127.0.0.1:8081/coinbase/callback",
+      "email": "tmain@ominto.com"
+    }
+  },
+  "thirdPartyApi": {
+    "kissmetrics": {
+      "apiKey": "8daf0bce1b73a2f226d6f606ea1afc912dd2a743"
+    },
+    "twilio": {
+      "sid": "AC0ff722cd6cce92221a6f6d64a2000049",
+      "token": "95dc1e4dbd29b7327eebbe56711478ef",
+      "source": "+13374664686"
+    },
+    "google": {
+      "search": {
+        "cx": "004458909247814798125:7jzn79_hsyu",
+        "key": "AIzaSyDPSouYx0ui5YrmyCCxT1ZLk1-Fk-edS6w"
       }
     }
   }
