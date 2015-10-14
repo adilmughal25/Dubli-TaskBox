@@ -6,12 +6,7 @@ const amazonApi = require('./amazonApi');
 const clixGaloreApi = require("./clixGaloreApi");
 const impactRadiusProductFtp = require("./impactRadiusProductFtp");
 const lomadeeApi = require('./lomadeeApi');
-const partnerAdsApi = require('./partnerAdsApi');
-const pepperjamApi = require('./pepperjamApi');
-const performanceHorizonApi = require('./performanceHorizonApi');
-const shareASaleApi = require('./shareASaleApi');
 const tradedoublerApi = require('./tradedoublerApi');
-const zanoxApi = require('./zanoxApi');
 
 const adCellGenericApi = require('./adCellGenericApi');
 const adCellApi = adCellGenericApi();
@@ -96,6 +91,26 @@ const linkShareDubliUSApi = linkShareGenericApi('us', 'dubli');
 const linkShareDubliCAApi = linkShareGenericApi('ca', 'dubli');
 const linkShareDubliGBApi = linkShareGenericApi('gb', 'dubli');
 
+const omgpmGenericApi = require('./omgpmGenericApi');
+const omgpmIndiaApi = omgpmGenericApi('india');
+const omgpmUKApi = omgpmGenericApi('uk');
+const omgpmAsiaApi = omgpmGenericApi('asia');
+const omgpmBrazilApi = omgpmGenericApi('brazil');
+const omgpmAustraliaApi = omgpmGenericApi('australia');
+const omgpmDubliIndiaApi = omgpmGenericApi('india', 'dubli');
+
+const partnerAdsGenericApi = require('./partnerAdsGenericApi');
+const partnerAdsApi = partnerAdsGenericApi();
+const partnerAdsDubliApi = partnerAdsGenericApi('dubli');
+const pepperjamGenericApi = require('./pepperjamGenericApi');
+const pepperjamApi = pepperjamGenericApi();
+const pepperjamDubliApi = pepperjamGenericApi('dubli');
+const performanceHorizonGenericApi = require('./performanceHorizonGenericApi');
+const performanceHorizonApi = performanceHorizonGenericApi();
+const performanceHorizonDubliAppleApi = performanceHorizonGenericApi('dubli_apple');
+const performanceHorizonDubliItunesApi = performanceHorizonGenericApi('dubli_itunes');
+const performanceHorizonDubliBAApi = performanceHorizonGenericApi('dubli_ba');
+const performanceHorizonDubliWWApi = performanceHorizonGenericApi('dubli_ww');
 const publicideasGenericApi = require('./publicideasGenericApi');
 const publicideasESApi = publicideasGenericApi('es');
 const publicideasFRApi = publicideasGenericApi('fr');
@@ -103,12 +118,9 @@ const publicideasITApi = publicideasGenericApi('it');
 const publicideasLATAMApi = publicideasGenericApi('latam');
 const publicideasUKApi = publicideasGenericApi('uk');
 
-const omgpmGenericApi = require('./omgpmGenericApi');
-const omgpmIndiaApi = omgpmGenericApi('india');
-const omgpmUKApi = omgpmGenericApi('uk');
-const omgpmAsiaApi = omgpmGenericApi('asia');
-const omgpmBrazilApi = omgpmGenericApi('brazil');
-const omgpmAustraliaApi = omgpmGenericApi('australia');
+const shareASaleGenericApi = require('./shareASaleGenericApi');
+const shareASaleApi = shareASaleGenericApi();
+const shareASaleDubliApi = shareASaleGenericApi('dubli');
 
 const tradetrackerGenericApi = require('./tradetrackerGenericApi');
 const tradetrackerATApi = tradetrackerGenericApi('at');
@@ -126,6 +138,11 @@ const tradetrackerNLApi = tradetrackerGenericApi('nl');
 const tradetrackerNOApi = tradetrackerGenericApi('no');
 const tradetrackerRUApi = tradetrackerGenericApi('ru');
 const tradetrackerSEApi = tradetrackerGenericApi('se');
+const tradetrackerDubliCHApi = tradetrackerGenericApi('ch', 'dubli');
+const tradetrackerDubliDEApi = tradetrackerGenericApi('de', 'dubli');
+const tradetrackerDubliDKApi = tradetrackerGenericApi('dk', 'dubli');
+const tradetrackerDubliATApi = tradetrackerGenericApi('at', 'dubli');
+const tradetrackerDubliRUApi = tradetrackerGenericApi('ru', 'dubli');
 
 const webgainsGenericApi = require('./webgainsGenericApi');
 const webgainsApi = webgainsGenericApi();
@@ -134,6 +151,16 @@ const webgainsDubliDKApi = webgainsGenericApi('dubli-dk');
 const webgainsDubliESApi = webgainsGenericApi('dubli-es');
 const webgainsDubliGBApi = webgainsGenericApi('dubli-gb');
 const webgainsDubliITApi = webgainsGenericApi('dubli-it');
+
+const zanoxGenericApi = require('./zanoxGenericApi');
+const zanoxApi = zanoxGenericApi();
+const zanoxDubliDEApi = zanoxGenericApi('de', 'dubli');
+const zanoxDubliESApi = zanoxGenericApi('es', 'dubli');
+const zanoxDubliAUApi = zanoxGenericApi('au', 'dubli');
+const zanoxDubliDKApi = zanoxGenericApi('dk', 'dubli');
+const zanoxDubliSEApi = zanoxGenericApi('se', 'dubli');
+const zanoxDubliNOApi = zanoxGenericApi('no', 'dubli');
+const zanoxDubliGlobalApi = zanoxGenericApi('global', 'dubli');
 
 /*
  * some thoughts by Rando:
@@ -324,11 +351,31 @@ function initializeCommissionsDubliProcessors(createTask) {
     "LinkShare DubLi (US) Commissions": linkShareDubliUSApi.getCommissionDetails,
     "LinkShare DubLi (CA) Commissions": linkShareDubliCAApi.getCommissionDetails,
     "LinkShare DubLi (GB) Commissions": linkShareDubliGBApi.getCommissionDetails,
+    "OMG DubLi (India) Commissions": omgpmDubliIndiaApi.getCommissionDetails,
+    "PartnerAds DubLi Commissions": partnerAdsDubliApi.getCommissionDetails,
+    "PepperJam DubLi Commissions": pepperjamDubliApi.getCommissionDetails,
+    "PerformanceHorizon DubLi-Apple Commissions": performanceHorizonDubliAppleApi.getCommissionDetails,
+    "PerformanceHorizon DubLi-iTunes Commissions": performanceHorizonDubliItunesApi.getCommissionDetails,
+    "PerformanceHorizon DubLi-BritishAirways Commissions": performanceHorizonDubliBAApi.getCommissionDetails,
+    "PerformanceHorizon DubLi-WoolWorth Commissions": performanceHorizonDubliWWApi.getCommissionDetails,
+    "ShareASale DubLi Commissions": shareASaleDubliApi.getCommissionDetails,
+    "TradeTracker DubLi (CH) Commissions": tradetrackerDubliCHApi.getCommissionDetails,
+    "TradeTracker DubLi (DE) Commissions": tradetrackerDubliDEApi.getCommissionDetails,
+    "TradeTracker DubLi (DK) Commissions": tradetrackerDubliDKApi.getCommissionDetails,
+    "TradeTracker DubLi (AT) Commissions": tradetrackerDubliATApi.getCommissionDetails,
+    "TradeTracker DubLi (RU) Commissions": tradetrackerDubliRUApi.getCommissionDetails,
     "VCommission DubLi Commissions": vcommissionDubliApi.getCommissionDetails,
     "Webgains DubLi (DE) Commissions": webgainsDubliDEApi.getCommissionDetails,
     "Webgains DubLi (DK) Commissions": webgainsDubliDKApi.getCommissionDetails,
     "Webgains DubLi (ES) Commissions": webgainsDubliESApi.getCommissionDetails,
     "Webgains DubLi (GB) Commissions": webgainsDubliGBApi.getCommissionDetails,
     "Webgains DubLi (IT) Commissions": webgainsDubliITApi.getCommissionDetails,
+    "Zanox DubLi (DE) Commissions": zanoxDubliDEApi.getCommissionDetails,
+    "Zanox DubLi (ES) Commissions": zanoxDubliESApi.getCommissionDetails,
+    "Zanox DubLi (AU) Commissions": zanoxDubliAUApi.getCommissionDetails,
+    "Zanox DubLi (DK) Commissions": zanoxDubliDKApi.getCommissionDetails,
+    "Zanox DubLi (SE) Commissions": zanoxDubliSEApi.getCommissionDetails,
+    "Zanox DubLi (NO) Commissions": zanoxDubliNOApi.getCommissionDetails,
+    "Zanox DubLi (Global) Commissions": zanoxDubliGlobalApi.getCommissionDetails,
   });
 }

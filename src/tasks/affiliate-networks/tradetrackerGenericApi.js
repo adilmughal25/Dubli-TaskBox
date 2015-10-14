@@ -17,6 +17,7 @@ const merge = require('./support/easy-merge')('ID', {
   offers: 'campaign.ID'
 });
 const exists = x => !!x;
+const dateFormat = d => d.toISOString().replace(/\..+$/, '-00:00');
 
 const MATERIAL_ARGS = {materialOutputType: 'rss'};
 const CONVERSIONTRANS_ARGS = {options:{
@@ -33,16 +34,37 @@ const CONVERSIONTRANS_ARGS = {options:{
   //sort: '',
   //sortDirection: ''
 }};
+const STATE_MAP = {
+  'pending':    'initiated',
+  'accepted':   'confirmed',
+  'rejected':   'cancelled',
 
-function setup(s_region) {
-  if (taskCache[s_region]) return taskCache[s_region];
+  'paid': 'completed' // when "paidOut=true"
+};
+
+const TradeTrackerGenericApi = function(s_region, s_entity) {
+  if (!(this instanceof TradeTrackerGenericApi)) {
+    debug("instantiating TradeTrackerGenericApi for: %s-%s", s_entity, s_region);
+    return new TradeTrackerGenericApi(s_region, s_entity);
+  }
+
+  var that = this;
+
+  this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
+  this.region = s_region;
+  this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'tradetracker-' + this.region;
+
+  if (taskCache[this.eventName]) return taskCache[this.eventName];
 
   var tasks = {
     client: {},
+    entity: this.entity,
+    region: this.region,
+    eventName: this.eventName
   };
 
   tasks.getMerchants = singleRun(function*(){
-    tasks.client = yield clientPool.getClient(s_region);
+    tasks.client = yield clientPool.getClient(tasks.entity, tasks.region);
 
     var results = yield {
       merchants: tasks.doApiMerchants(),
@@ -53,12 +75,12 @@ function setup(s_region) {
 
     var merchants = merge(results);
 
-    yield sendEvents.sendMerchants('tradetracker-' + s_region, merchants);
+    yield sendEvents.sendMerchants(tasks.eventName, merchants);
   });
 
   // get commission report
   tasks.getCommissionDetails = singleRun(function* () {
-    tasks.client = yield clientPool.getClient(s_region);
+    tasks.client = yield clientPool.getClient(tasks.entity, tasks.region);
     const startDate = new Date(Date.now() - (30 * 86400 * 1000));
     const endDate = new Date(Date.now() - (60 * 1000));
     let args = _.merge(CONVERSIONTRANS_ARGS, {options:{
@@ -71,9 +93,9 @@ function setup(s_region) {
     let transactions = yield tasks.pagedApiCall('getConversionTransactions', 'conversionTransactions.item', args);
     const events = transactions.map(prepareCommission).filter(exists);
 
-    yield sendEvents.sendCommissions('tradetracker-' + s_region, events);
+    yield sendEvents.sendCommissions(tasks.eventName, events);
   });
-  
+
   /**
    * Perform paginated api requests to any specified method of api client.
    * @param {String} method - The method of the api to call
@@ -82,11 +104,11 @@ function setup(s_region) {
    * @returns {Array}
    */
   tasks.pagedApiCall = co.wrap(function* (method, bodyKey, params) {
-    let results = [],
-        limit = 250,
-        offset = 0,
-        total = 0,
-        start = Date.now();
+    let results = [];
+    let limit = 250;
+    let offset = 0;
+    let total = 0;
+    let start = Date.now();
 
     // check that we call a method which actually is provided by the api client
     if (typeof tasks.client[method] !== 'function') {
@@ -101,8 +123,8 @@ function setup(s_region) {
 
       // perform actual api call
       let items = yield tasks.client[method](arg)
-        .then(extractAry(bodyKey))
-        .then(resp => rinse(resp));
+      .then(extractAry(bodyKey))
+      .then(resp => rinse(resp));
 
       results = results.concat(items);
 
@@ -139,17 +161,8 @@ function setup(s_region) {
     });
   };
 
-  taskCache[s_region] = tasks;
-
-  return taskCache[s_region];
-}
-
-const STATE_MAP = {
-  'pending':    'initiated',
-  'accepted':   'confirmed',
-  'rejected':   'cancelled',
-
-  'paid': 'completed' // when "paidOut=true"
+  taskCache[this.eventName] = tasks;
+  return taskCache[this.eventName];
 };
 
 /**
@@ -174,8 +187,6 @@ function prepareCommission(o_obj) {
 
   return event;
 }
-
-const dateFormat = d => d.toISOString().replace(/\..+$/, '-00:00');
 
 function extractUrl(a_items) {
   a_items.forEach(function(item) {
@@ -204,4 +215,4 @@ function rinse(any) {
   return any;
 }
 
-module.exports = setup;
+module.exports = TradeTrackerGenericApi;

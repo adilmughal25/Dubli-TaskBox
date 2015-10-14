@@ -19,15 +19,20 @@ const jsonify = require('./jsonify-xml-body');
 const moment = require('moment');
 const ary = x => _.isArray(x) ? x : [x];
 
-const API_LIMIT  = {req:7, sec: 86400}; // api request rate limiter - currently based on API restriction of 200/months
-const API_URL    = 'https://api.shareasale.com/x.cfm';
-const API_TOKEN  = 'bUqdXM4gsQgiU5h2';
-const API_SECRET = 'RVz8ts7d7PLcpc6wMMo4es0y0TQqkv1i';
-const API_SITEID = 1107596; // Site Id / Affiliate Id
-// DubLi Legacy
-//const API_TOKEN  = 'Sl1P6gT6qInPLy6T';
-//const API_SECRET = 'TAc3lx1p5GCfze1nCQm7kn0a5BMkqk1g';
-//const API_SITEID = 775483;
+const API_CFG = {
+  url: 'https://api.shareasale.com/x.cfm',
+  limit: {req:7, sec: 86400}, // api request rate limiter - currently based on API restriction of 200/months
+  ominto: {
+    token: 'bUqdXM4gsQgiU5h2',
+    secret: 'RVz8ts7d7PLcpc6wMMo4es0y0TQqkv1i',
+    siteId: 1107596, // Site Id / Affiliate Id
+  },
+  dubli: {
+    token: 'Sl1P6gT6qInPLy6T',
+    secret: 'TAc3lx1p5GCfze1nCQm7kn0a5BMkqk1g',
+    siteId: 775483,
+  }
+};
 
 // XMLFormat:1
 const API_TYPES = {
@@ -98,25 +103,29 @@ const API_TYPES = {
  * New Class ShareASaleClient
  * @class
  */
-function ShareASaleClient() {
-	if (!(this instanceof ShareASaleClient)) return new ShareASaleClient();
-  debug("Create new client");
+function ShareASaleClient(s_entity) {
+  if (!(this instanceof ShareASaleClient)) return new ShareASaleClient(s_entity);
+  if (!s_entity) throw new Error("Missing required argument 's_entity'!");
+  if (!API_CFG[s_entity]) throw new Error("Entity '"+s_entity+"' is not defined in API_CFG.");
+  debug("Create new client for entity: %s", s_entity);
+
+  this.cfg = API_CFG[s_entity];
 
 	// default request options
 	this.client = request.defaults({
-    uri: API_URL,
+    uri: API_CFG.url,
     json: false,
     simple: true,
     resolveWithFullResponse: false,
     qs: {
-      affiliateId: API_SITEID,
-      token: API_TOKEN,
+      affiliateId: this.cfg.siteId,
+      token: this.cfg.token,
       XMLFormat: 1
     },
     headers: {}
   });
 
-  limiter.request(this.client, API_LIMIT.req, API_LIMIT.sec).debug(debug);
+  limiter.request(this.client, API_CFG.limit.req, API_CFG.limit.sec).debug(debug);
 
   /**
    * Function to create the custom authentification header for Share A Sale API requests.
@@ -125,10 +134,10 @@ function ShareASaleClient() {
    */
   this.getCustomHeaders = function(actionVerb) {
     let timestamp = moment(new Date()).format('ddd, DD MMM YYYY HH:mm:ss') + ' GMT';  // "Thu, 14 Apr 2011 22:44:22 GMT"
-    let signature = API_TOKEN + ':' +
+    let signature = this.cfg.token + ':' +
         timestamp + ':' + 
         actionVerb + ':' +
-        API_SECRET;
+        this.cfg.secret;
 
     let signatureHash = crypto.createHash('sha256').update(signature).digest('hex');
 
@@ -158,7 +167,7 @@ ShareASaleClient.prototype.getByAction = co.wrap(function* (actionVerb, params) 
 
   let response = {};
 
-  if (process.env.NODE_ENV === 'dev') {
+  if (process.env.NODE_ENV === 'Adev') {
     // for testing we do not perform live api requests - too low request limit
     response = yield devApiResponse(actionVerb).then(jsonify);
   } else {
@@ -291,6 +300,4 @@ ShareASaleClient.prototype.getLedgerReport = (params) => {
   ;
 };
 
-module.exports = function() {
-  return new ShareASaleClient();
-};
+module.exports = ShareASaleClient;
