@@ -14,7 +14,7 @@
       "pass": "PasswordOfDEVASTATION123!@#"
     },
     "admin": {
-      "name": "NSAdminOfDOOM",
+      "user": "NSAdminOfDOOM",
       "pass": "AllYourDatazAreBelongToUs!!!!"
     }
   },
@@ -169,11 +169,6 @@
   },
   "aws": {
     "default_region": "us-east-1",
-    "accessKey": "AKIAISZCDY2VLD5LMJEA",
-    "secretKey": "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",
-    "cloudsearch": {
-      "endpoint": "doc-ominto-stage-yf2tmqhzdyuhdugsj2qerahttq.us-east-1.cloudsearch.amazonaws.com"
-    },
     "ftpToS3": {
       "port": "2121",
       "host": "127.0.0.1",
