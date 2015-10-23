@@ -28,12 +28,12 @@ const STATE_MAP = {
   confirmed_notcleared: 'initiated',
   confirmed_cleared: 'confirmed',
   confirmed_paid: 'paid',
-  
+
   delayed_: 'initiated',
   delayed_notcleared: 'initiated',
   delayed_cleared: 'confirmed',
   delayed_paid: 'confirmed',
-  
+
   cancelled_: 'cancelled',
   cancelled_cleared: 'cancelled',
   cancelled_notcleared: 'cancelled',
@@ -93,7 +93,7 @@ const WebgainsGenericApi = function(s_entity) {
 
     yield sendEvents.sendCommissions(that.eventName, transactions);
   });
-  
+
   this.doApi = co.wrap(function* (method, args, key) {
     let results = yield that.clientSoap[method](args)
       .then(extractAry(key))
@@ -108,7 +108,9 @@ const WebgainsGenericApi = function(s_entity) {
  * Filter out merchants we are not yet approved for.
  */
 function approvedAffiliate(item) {
-  if (Number(item.merchant.affiliateApprovalStatus) === 1) return true;
+  var status = Number(item.merchant.affiliateApprovalStatus);
+  if (status === 1) return true;
+  if (status === 2) return true;
   return false;
 }
 
