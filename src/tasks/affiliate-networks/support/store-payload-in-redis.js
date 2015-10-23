@@ -8,7 +8,7 @@ const redis = require('redis');
 const redisClient = getRedisClient(o_configs);
 
 function getRedisClient(o_configs) {
-  const config = o_configs.redis.writer;
+  const config = o_configs.dataStore.redis.writer;
   const client = redis.createClient(config.port, config.host, {auth_pass: config.auth});
   return client;
 }

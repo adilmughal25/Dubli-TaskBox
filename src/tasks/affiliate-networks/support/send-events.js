@@ -11,7 +11,7 @@ const gzip = denodeify(require('zlib').gzip);
 const _check = utils.checkApiResponse;
 
 const createEnvelope = utils.createEnvelope;
-const dataService = utils.getDataClient(o_configs.data_api.url, o_configs.data_api.auth);
+const dataService = utils.getDataClient(o_configs.data_api.internalUrl, o_configs.data_api.auth);
 
 const storePayloadInRedis = require('./store-payload-in-redis');
 const kinesisPut = require('./direct-kinesis-put');
