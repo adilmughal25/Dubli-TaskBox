@@ -35,9 +35,11 @@ const LinkShareGenericApi = function(s_region, s_entity) {
     };
 
     var merchants = mergeResults(results);
+
+    that.client.cleanup();
     return yield sendEvents.sendMerchants(that.eventName, merchants);
   });
-  
+
   this.doApiMerchants = co.wrap(function*() {
     var url = 'linklocator/1.0/getMerchByAppStatus/approved';
     var handleError = _check('merchant fetch error');
@@ -51,7 +53,7 @@ const LinkShareGenericApi = function(s_region, s_entity) {
 
     return merchants;
   });
-  
+
   this.doApiCoupons = co.wrap(function* () {
     var page = 1;
     var _url = page => 'coupon/1.0?resultsperpage=500&pagenumber=' + page;
@@ -76,7 +78,7 @@ const LinkShareGenericApi = function(s_region, s_entity) {
 
     return results;
   });
-  
+
   this.doApiTextLinks = co.wrap(function* () {
     var page = 1;
     var date = moment(Date.now() - 86400*3).format('MMDDYYYY');
@@ -102,7 +104,7 @@ const LinkShareGenericApi = function(s_region, s_entity) {
 
     return results;
   });
-  
+
   this.getCommissionDetails = singleRun(function*(){
     let page = 1;
     let commissions = [];
@@ -125,9 +127,8 @@ const LinkShareGenericApi = function(s_region, s_entity) {
     }
 
     const events = commissions.map(prepareCommission).filter(x => !!x);
-    
+    that.client.cleanup();
     yield sendEvents.sendCommissions(that.eventName, events);
-    that.client.releaseClient();
   });
 };
 
