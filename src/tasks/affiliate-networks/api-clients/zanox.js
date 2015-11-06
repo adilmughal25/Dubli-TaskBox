@@ -54,16 +54,16 @@ function ZanoxApiClient(s_entity, s_region) {
   this.cfg = API_CFG[s_entity][s_region];
   this.client = zanox_req(this.cfg.connectId, this.cfg.secretKey);
   var that = this;
-  
-  this.getIncentives = function(params, next) {
+
+  this.client.getIncentives = function(params, next) {
     return that.client.sendRequest('GET', '/incentives', params, next);
   };
 
-  this.getExclusiveIncentives = function(params, next) {
+  this.client.getExclusiveIncentives = function(params, next) {
     return that.client.sendRequest('GET', '/incentives/exclusive', params, next);
   };
-  
-  Object.keys(this.client).forEach(function(method) {
+
+  Object.keys(this.client).sort().forEach(function(method) {
     if (typeof that.client[method] !== 'function') return;
     const $method = '$' + method;
     that[$method] = denodeify(that.client[method]).bind(that.client);
