@@ -47,6 +47,7 @@ const ZanoxGenericApi = function(s_region, s_entity) {
       incentives: that.apiCall('$getIncentives', 'incentiveItems.incentiveItem', {'incentiveType':'coupons'}),
       exclusiveIncentives: that.apiCall('$getExclusiveIncentives', 'incentiveItems.incentiveItem', {'incentiveType':'coupons'}),
     };
+    // require('fs').writeFileSync('erf.json', JSON.stringify(results));
     let merchants = merge(results);
 
     // sadly, zanox doesn't let us clamp any of the above 4 api calls to only
@@ -115,7 +116,8 @@ const ZanoxGenericApi = function(s_region, s_entity) {
     debug("%s (%s)", method, JSON.stringify(arg));
 
     const response = yield that.client[method](arg);
-    const items = _.get(response, bodyKey) || [];
+    let items = _.get(response, bodyKey) || [];
+    if (!_.isArray(items)) items = [items];
     const end = Date.now();
     debug("%s finished: %d items (%dms)", method, items.length, end-start);
 
