@@ -35,12 +35,13 @@ const ShareASaleGenericApi = function(s_entity) {
   this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
   this.client = require('./api-clients/shareASale')(this.entity);
   this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'shareasale';
-  
+
   /**
    * Retrieve all merchant information from ShareASale datafeed including their cashback data and coupons/deals.
    * @returns {undefined}
    */
   this.getMerchants = singleRun(function*() {
+    debug('scanning all merchants');
     const results = {
       merchants: yield that.client.getMerchants(),
       cashback: yield that.client.getMerchantStatus(),
@@ -90,7 +91,7 @@ const ShareASaleGenericApi = function(s_entity) {
  * @param {Object} o_obj  A single activity object
  * @returns {Object}
  */
-const transformActivity = function(o_obj) {
+function transformActivity (o_obj) {
   let voided = Number(o_obj.voided) === 1;
 
   var event = {
@@ -105,7 +106,7 @@ const transformActivity = function(o_obj) {
   };
 
   return event;
-};
+}
 
 /**
  * Transforms the ledger report items into a commissions object.
@@ -113,7 +114,7 @@ const transformActivity = function(o_obj) {
  * @param {Object} o_obj  A single ledger report object
  * @returns {Object}
  */
-const transformLedger = function(o_obj) {
+function transformLedger (o_obj) {
   if(o_obj.transtype.toLowerCase() === 'affiliate payment') return;
 
   let status = 'confirmed',
@@ -138,6 +139,6 @@ const transformLedger = function(o_obj) {
   };
 
   return event;
-};
+}
 
 module.exports = ShareASaleGenericApi;

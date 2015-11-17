@@ -4,7 +4,7 @@ process.env.TZ = 'UTC'; // TODO; how can we ensure node is always running in UTC
 /*
  * API Documentation: https://account.shareasale.com/a-apimanager.cfm
  * Documentation requires valid account credentials.
- * 
+ *
  * !!! NOTE !!!
  * Currently the Account is setup to allow only 200 !!! API requests per *MONTHS* !
  */
@@ -78,21 +78,21 @@ const API_TYPES = {
     params: {
       version: '2.0',
       action: 'ledger',
-      // mm/dd/yyyy - Valid date in which you would like the result set to start. ** default is 30 days before dateend; 
-      // If neither start or end date is passed the most recent 30 days of ledger activity will be returned. 
+      // mm/dd/yyyy - Valid date in which you would like the result set to start. ** default is 30 days before dateend;
+      // If neither start or end date is passed the most recent 30 days of ledger activity will be returned.
       // The maximum range allowed between the start and end date is 90 days.
       dateStart: new Date(Date.now() - (30 * 86400 * 1000)),
 
-      // mm/dd/yyyy - Valid date in which you would like the result set to end. ** default is the current date; 
-      // If neither start or end date is passed the most recent 30 days of ledger activity will be returned. 
+      // mm/dd/yyyy - Valid date in which you would like the result set to end. ** default is the current date;
+      // If neither start or end date is passed the most recent 30 days of ledger activity will be returned.
       // The maximum range allowed between the start and end date is 90 days
       dateEnd: new Date(Date.now() - (60 * 1000)),
 
-      // 0 or 1 - If the specified API version is 1.8 or higher, passing includeOrderDetails=1 will append 
+      // 0 or 1 - If the specified API version is 1.8 or higher, passing includeOrderDetails=1 will append
       // the columns orderimpact and ordernumber.
       includeOrderDetails: 1,
 
-      //  0 or 1 - If the specified API version is 1.8 or higher, passing includeMerchantDetails=1 will append 
+      //  0 or 1 - If the specified API version is 1.8 or higher, passing includeMerchantDetails=1 will append
       // the columns merchantorganization, merchantwww, storename, and storewww.
       includeMerchantDetails: 1,
     }
@@ -135,7 +135,7 @@ function ShareASaleClient(s_entity) {
   this.getCustomHeaders = function(actionVerb) {
     let timestamp = moment(new Date()).format('ddd, DD MMM YYYY HH:mm:ss') + ' GMT';  // "Thu, 14 Apr 2011 22:44:22 GMT"
     let signature = this.cfg.token + ':' +
-        timestamp + ':' + 
+        timestamp + ':' +
         actionVerb + ':' +
         this.cfg.secret;
 
@@ -145,7 +145,7 @@ function ShareASaleClient(s_entity) {
       'x-ShareASale-Date': timestamp,
       'x-ShareASale-Authentication': signatureHash
     };
-
+    debug('getCustomHeaders for %s: %o', actionVerb, headers);
     return headers;
   };
 }
@@ -159,6 +159,7 @@ function ShareASaleClient(s_entity) {
  */
 ShareASaleClient.prototype.getByAction = co.wrap(function* (actionVerb, params) {
   params = params || {};
+  debug('getByAction %s with params %o', actionVerb, params);
   const apiCfg = API_TYPES[actionVerb];
 	let arg = {
     headers: this.getCustomHeaders(apiCfg.params.action),
@@ -183,7 +184,7 @@ ShareASaleClient.prototype.getByAction = co.wrap(function* (actionVerb, params) 
  * @param {String} actionVerb
  * @returns {Object} returns a promise
  */
-const devApiResponse = co.wrap(function* (actionVerb) {
+var devApiResponse = co.wrap(function* (actionVerb) {
   // for testing - live API has very low limit of requests per months! Careful!
   let testResponse = '';
 
@@ -213,6 +214,7 @@ const devApiResponse = co.wrap(function* (actionVerb) {
  * @memberof ShareASaleClient
  */
 ShareASaleClient.prototype.getMerchants = (params) => {
+  debug('running getMerchants with %o', params);
   return this.getByAction('merchantDataFeeds', params)
     .then(data => data.datafeedlistreport.datafeedlistreportrecord)
     .then(data => {
@@ -227,6 +229,7 @@ ShareASaleClient.prototype.getMerchants = (params) => {
  * @memberof ShareASaleClient
  */
 ShareASaleClient.prototype.getDeals = (params) => {
+  debug('running getDeals with %o', params);
   return this.getByAction('couponDeals', params)
     .then(data => data.dealcouponlistreport.dealcouponlistreportrecord)
     .then(data => {
@@ -241,6 +244,7 @@ ShareASaleClient.prototype.getDeals = (params) => {
  * @memberof ShareASaleClient
  */
 ShareASaleClient.prototype.getMerchantStatus = (params) => {
+  debug('running getMerchantStatus with %o', params);
   return this.getByAction('merchantStatus', params)
     .then(data => data.merchantstatusreport.merchantstatusreportrecord)
     .then(data => {
@@ -258,6 +262,8 @@ ShareASaleClient.prototype.getMerchantStatus = (params) => {
  * @param {Date} params.dateEnd   - Date end filter
  */
 ShareASaleClient.prototype.getActivityDetails = (params) => {
+  debug('running getActivityDetails with %o', params);
+
   // ensure we have some dates to work with
   params = params || {};
   params.dateStart = params.dateStart ? params.dateStart : API_TYPES.activity.params.dateStart;
@@ -283,6 +289,8 @@ ShareASaleClient.prototype.getActivityDetails = (params) => {
  * @param {Date} params.dateEnd   - Date end filter
  */
 ShareASaleClient.prototype.getLedgerReport = (params) => {
+  debug('running getLedgerReport with %o', params);
+
   // ensure we have some dates to work with
   params = params || {};
   params.dateStart = params.dateStart ? params.dateStart : API_TYPES.ledger.params.dateStart;

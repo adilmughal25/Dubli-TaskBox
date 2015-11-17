@@ -250,7 +250,7 @@ function initializeMerchantImporters(createTask) {
   });
 
   // also temporarily hacked to be faster
-  createTask('ShareASale Merchants', shareASaleApi.getMerchants, {/*hour:12, */minute:0 /*, dayOfWeek:0 */}); // every sunday at 12:00
+  createTask('ShareASale Merchants', shareASaleApi.getMerchants, {hour:12, minute:0, dayOfWeek:0 }); // every sunday at 12:00
 }
 
 function initializeCommissionsProcessors(createTask) {
