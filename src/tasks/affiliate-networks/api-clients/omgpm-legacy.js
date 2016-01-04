@@ -10,7 +10,10 @@ const request = require('request-promise');
 const moment = require('moment');
 const jsonify = require('./jsonify-xml-body');
 const querystring = require('querystring');
-const check = require('ominto-utils').checkApiResponse;
+const utils = require('ominto-utils');
+const check = utils.checkApiResponse;
+const normalizeCurrency = utils.currency.getIntegerAmountForCurrency;
+
 const url = require('url');
 
 const ary = x => !!x ? (_.isArray(x) ? x : [x]) : [];
@@ -115,7 +118,7 @@ function OmgPmLegacyApiClient(s_entity, s_region) {
       .then(check('2XX', 'Could not load merchants'))
       .then(jsonify)
       .then(resp => ary(_.get(resp, MERCHANT_KEY)))
-      .then(items => items.map(x => x.$).filter(isLive).filter(hasPercent));
+      .then(items => items.map(x => x.$).filter(isLive).map(fixFlatRates.bind(null, s_region)));
   };
 
   client.getCoupons = function() {
@@ -232,8 +235,29 @@ function isLive(o_merchant) {
   return o_merchant.ProgrammeStatus == 'Live';
 }
 
-function hasPercent(o_merchant) {
-  return o_merchant.Commission.indexOf('%') > -1;
+function fixFlatRates(region, o_merchant) {
+  if (o_merchant.Commission.indexOf('%') > -1) return o_merchant;
+
+  var amt = Number(o_merchant.Commission.replace(/£/g, ''));
+
+  var properCurrency = (
+    region === 'india' ? 'inr' :
+    region === 'uk' ? 'gbp' :
+    region === 'australia' ? 'aud' :
+    region === 'brazil' ? 'brl' :
+    region === 'asia' ? 'sgd' :
+    'unknown');
+
+  delete o_merchant.Commission;
+  if (properCurrency === 'unknown') {
+    o_merchant.CommissionFlat = amt;
+    o_merchant.CommissionCurrency = 'xxx';
+  } else {
+    o_merchant.CommissionFlat = normalizeCurrency(amt, properCurrency);
+    o_merchant.CommissionCurrency = properCurrency;
+  }
+
+  return o_merchant;
 }
 
 function extractPid(o_coupon) {
