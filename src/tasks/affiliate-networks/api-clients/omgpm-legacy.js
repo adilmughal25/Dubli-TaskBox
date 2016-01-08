@@ -238,7 +238,7 @@ function isLive(o_merchant) {
 function fixFlatRates(region, o_merchant) {
   if (o_merchant.Commission.indexOf('%') > -1) return o_merchant;
 
-  var amt = Number(o_merchant.Commission.replace(/£/g, ''));
+  var amts = _.uniq(o_merchant.Commission.replace(/£/g, '').split(/\s+-\s+/g)).map(x => Number(x));
 
   var properCurrency = (
     region === 'india' ? 'inr' :
@@ -248,12 +248,12 @@ function fixFlatRates(region, o_merchant) {
     region === 'asia' ? 'sgd' :
     'unknown');
 
-  delete o_merchant.Commission;
+  // delete o_merchant.Commission;
   if (properCurrency === 'unknown') {
-    o_merchant.CommissionFlat = amt;
+    o_merchant.CommissionFlat = amts.join(', ');
     o_merchant.CommissionCurrency = 'xxx';
   } else {
-    o_merchant.CommissionFlat = normalizeCurrency(amt, properCurrency);
+    o_merchant.CommissionFlat = amts.map(x => normalizeCurrency(x, properCurrency)).join(', ');
     o_merchant.CommissionCurrency = properCurrency;
   }
 
