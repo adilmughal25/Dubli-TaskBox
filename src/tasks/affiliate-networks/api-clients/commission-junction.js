@@ -12,7 +12,7 @@ var runCounter = 0;
 const API_CFG = {
   ominto: {
     us: {
-      key: '009c8796168d78c027c9b4f1d8ed3902172eefa59512b9f9647482240bcd99d00a70c6358dd2b855f30afeafe055e1c8d99e632a626b1fa073a4092f4dd915e26d/36d998315cefa43e0d0377fff0d89a2fef85907b556d8fc3b0c3edc7a90b2e07fc8455369f721cc69524653234978c36fd12c67646205bf969bfa34f8242de8d',
+      key: '00bea07dbb74ab519de55477a272fea9b9e7eca6895ecade844bc92fdccebd3a744e404fc9c91a1cfe8c1a689d314ed93509a370e7aaee2928775d1cf2e5a64137/3f3b67598602ca08f1284aa2d5384a3e8383095ee9d5ab6800e7947bcf0c0fd62f9f842b53a44659e4cc73897450be91c06ddc22bb3006ddd595643311bdab29',
       siteId: 7811975,
     },
     eu: {
@@ -120,7 +120,7 @@ function commissionJunctionClient(s_entity, s_region, s_type) {
     c_type.qs['website-id'] = cfg.siteId;
     return yield client.pagedApiCall();
   });
-  
+
   client.getCommission = co.wrap(function* (dateStart, dateEnd) {
     c_type.qs['start-date'] = dateStart;
     c_type.qs['end-date'] = dateEnd;
@@ -135,7 +135,7 @@ function commissionJunctionClient(s_entity, s_region, s_type) {
 
     return results;
   });
-  
+
   client.pagedApiCall = co.wrap(function* () {
     let perPage = 100;  // max. 100 per API Server
     let page = 0;

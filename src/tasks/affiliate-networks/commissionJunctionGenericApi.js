@@ -12,6 +12,7 @@ const singleRun = require('./support/single-run');
 const querystring = require('querystring');
 const jsonify = require('./api-clients/jsonify-xml-body');
 const cjClient = require('./api-clients/commission-junction');
+const url = require('url');
 
 const merge = require('./support/easy-merge')('advertiser-id', {
   links: 'advertiser-id'
@@ -73,14 +74,26 @@ const CommissionJunctionGenericApi = function(s_region, s_entity) {
   });
 };
 
+const endsWithUrl = /url$/i;
+const startsWithHttp = /^http/;
+
+function extractEmbeddedUrl(s_url) {
+  if (!/url=/i.test(s_url)) return;
+  const parsed = url.parse(s_url);
+  if (!parsed.query) return;
+  const query = querystring.parse(parsed.query);
+  const picked = Object.keys(query).filter(key => endsWithUrl.test(key) && startsWithHttp.test(query[key]))[0];
+  return picked ? query[picked] : null;
+}
+
 function extractTrackingLinks(s_info) {
   const merchant = s_info.merchant;
   const allLinks = s_info.links;
   const textLinks = allLinks.filter(x => x['link-type'] === 'Text Link');
   s_info.links = textLinks; // replace this now
 
-  const pickUrl = url => {
-    s_info.merchant.main_tracking_url = url;
+  const pickUrl = _url => {
+    s_info.merchant.main_tracking_url = _url;
     return s_info;
   };
 
@@ -89,12 +102,20 @@ function extractTrackingLinks(s_info) {
     if (merchant['program-url'] === cur.destination) {
       return pickUrl(cur.clickUrl);
     }
+    let _url = extractEmbeddedUrl(cur.destination);
+    if (_url && merchant['program-url'] === _url) {
+      return pickUrl(cur.clickUrl);
+    }
   }
 
   // not found in text links, try again:
   for (let i = 0; i < allLinks.length; i++) {
     let cur = allLinks[i];
     if (merchant['program-url'] === cur.destination) {
+      return pickUrl(cur.clickUrl);
+    }
+    let _url = extractEmbeddedUrl(cur.destination);
+    if (_url && merchant['program-url'] === _url) {
       return pickUrl(cur.clickUrl);
     }
   }
