@@ -6,7 +6,7 @@ const snsPing = require('./tasks/sns-ping');
 
 function setup(createTask) {
   // all affiliate tasks are handled here:
-  // affiliates.init(createTask);
+  affiliates.init(createTask);
 
   // other miscellaneous tasks
   createTask('TownClock SNS Ping', snsPing.ping, {minute: [0,15,30,45]});
