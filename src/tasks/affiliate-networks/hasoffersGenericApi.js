@@ -54,12 +54,12 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
   this.doApiAffiliateOffers = co.wrap(function* (){
     var url = that.client.url('Affiliate_Offer', 'findAll', {
       'filters[status]': 'active',
-      'filters[payout_type]': 'cpa_percentage'
+      'filters[payout_type][]': ['cpa_percentage', 'cpa_flat', 'cpa_both']
     });
     debug("fetch %s", url);
 
     var response = yield that.client.get(url);
-    var offers = _.pluck(_.values(response.response.data), 'Offer');
+    var offers = that.client.addCurrencies(_.pluck(_.values(response.response.data), 'Offer'));
     return offers;
   });
 

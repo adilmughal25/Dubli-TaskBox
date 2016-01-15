@@ -10,25 +10,30 @@ const API_CFG = {
   ominto: {
     vcommission: {
       api_key: '669ba8e6d46a319e67e21f529cd9f78bd27f99322c6c9c40e0f250588d1e2959',
-      NetworkId: 'vcm'
+      NetworkId: 'vcm',
+      defaultCurrency: 'inr'
     },
     snapdeal: {
       api_key: 'a95b73344703625919998f1bc7c419185207e8566b682faf777e013caef1c438',
-      NetworkId: 'jasper'
+      NetworkId: 'jasper',
+      defaultCurrency: 'inr'
     },
     shopstylers: {
       api_key: '5fae392de6f20a7199d2fe97f4b0e382acafc6d49e01eb84baccebacbc109ba6',
-      NetworkId: 'sscpa'
+      NetworkId: 'sscpa',
+      defaultCurrency: 'myr'
     }
   },
   dubli: {
     bestseller: {
       api_key: '5c540ee164145d74b34cb2fd6d6a47218c4098f6443a0f1eec78649a44922a03',
-      NetworkId: 'bestseller'
+      NetworkId: 'bestseller',
+      defaultCurrency: 'usd'
     },
     vcommission: {
       api_key: 'e487d197537331bdb175649fee124b0e4d6bbde1a2389ecd9ed2bf045192e604',
-      NetworkId: 'vcm'
+      NetworkId: 'vcm',
+      defaultCurrency: 'inr'
     }
   }
 };
@@ -42,7 +47,8 @@ const HasOfferClient = function(s_entity, s_networkName) {
 
   const debug = require('debug')('hasoffer:'+s_entity+':'+s_networkName+':api-client');
 
-  this._credentials = API_CFG[s_entity][s_networkName];
+  this._credentials = _.omit(API_CFG[s_entity][s_networkName], 'defaultCurrency');
+  this._defaultCurrency = API_CFG[s_entity][s_networkName].defaultCurrency;
   this.client = request.defaults({
     baseUrl: API_CFG.url,
     json: true,
@@ -61,7 +67,16 @@ const HasOfferClient = function(s_entity, s_networkName) {
 
     return 'Apiv3/json?' + qs.stringify(args);
   };
-  
+
+  this.addCurrencies = function(a_entries) {
+    return a_entries.map(entry => {
+      if (!entry.currency) {
+        return _.set(entry, 'currency', this._defaultCurrency);
+      }
+      return entry;
+    });
+  };
+
   // expose
   this.get = this.client.get;
 };
