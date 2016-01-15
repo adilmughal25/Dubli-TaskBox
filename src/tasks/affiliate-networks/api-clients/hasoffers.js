@@ -46,6 +46,7 @@ const HasOfferClient = function(s_entity, s_networkName) {
   if (!API_CFG[s_entity][s_networkName]) throw new Error("Unknown HasOffer network `"+s_networkName+"` for entity `"+s_entity+"`! Available accounts: "+Object.keys(API_CFG[s_entity]).join(', '));
 
   const debug = require('debug')('hasoffer:'+s_entity+':'+s_networkName+':api-client');
+  const that = this;
 
   this._credentials = _.omit(API_CFG[s_entity][s_networkName], 'defaultCurrency');
   this._defaultCurrency = API_CFG[s_entity][s_networkName].defaultCurrency;
@@ -71,7 +72,7 @@ const HasOfferClient = function(s_entity, s_networkName) {
   this.addCurrencies = function(a_entries) {
     return a_entries.map(entry => {
       if (!entry.currency) {
-        return _.set(entry, 'currency', this._defaultCurrency);
+        return _.set(entry, 'currency', that._defaultCurrency);
       }
       return entry;
     });
