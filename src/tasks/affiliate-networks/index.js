@@ -180,7 +180,7 @@ const zanoxDubliGlobalApi = zanoxGenericApi('global', 'dubli');
 
 function init(createTask) {
   initializeMerchantImporters(createTask);
-  // initializeCommissionsProcessors(createTask);
+  initializeCommissionsProcessors(createTask);
 
   //WARNING: DUBLI COMMISSIONS DISABLED FOR NOW
   //@TODO: dubli commissions causes wild database build-ups right now since we
