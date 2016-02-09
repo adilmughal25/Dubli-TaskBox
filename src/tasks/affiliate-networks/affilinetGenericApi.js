@@ -78,7 +78,7 @@ function prepareCommission(region, o_obj) {
     outclick_id: o_obj.SubId,
     purchase_amount: o_obj.NetPrice,
     commission_amount: o_obj.PublisherCommission,
-    currency: (region === 'uk' ? 'gbp' : 'euro'),
+    currency: (region === 'uk' ? 'gbp' : 'eur'),
     state: STATE_MAP[o_obj.TransactionStatus],
     effective_date: date
   };
