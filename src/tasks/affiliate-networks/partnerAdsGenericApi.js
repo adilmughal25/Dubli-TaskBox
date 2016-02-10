@@ -24,7 +24,7 @@ const PartnerAdsGenericApi = function(s_entity) {
   this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
   this.client = require('./api-clients/partnerAds')(this.entity);
   this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'partnerads';
-  
+
   /**
    * Retrieve all merchant/program information from PartnerAds.
    * @returns {undefined}
@@ -54,7 +54,7 @@ const PartnerAdsGenericApi = function(s_entity) {
 
     yield sendEvents.sendCommissions(that.eventName, transactions);
   });
-  
+
 };
 
 /**
@@ -74,11 +74,27 @@ function prepareCommission(o_obj) {
     purchase_amount: o_obj.omsaetning,
     commission_amount: o_obj.provision,
     state: 'initiated',
-    effective_date: o_obj.dato + ' ' + o_obj.tidspunkt
+    effective_date: reformatDate(o_obj.dato, o_obj.tidspunkt)
   };
 
   return sale;
 }
+
+// future-proofing since this changes in a more recent lodash
+var padLeft = typeof _.padStart === 'function' ? _.padStart : _.padLeft;
+
+// partnerads has a .dato field that looks like '22-1-2016' and a .tidspunkt field that looks like hh:mm:ss. make a date
+function reformatDate (date, time) {
+
+  var dateParts = date.split(/\s*-\s*/);
+  var dateString = [
+    dateParts[2],
+    padLeft(dateParts[1], 2, 0),
+    padLeft(dateParts[0], 2, 0),
+  ].join('-') + ' ' + time;
+  return new Date(dateString);
+}
+
 
 /**
  * Function to prepare a single cancellation transaction for our data event.
