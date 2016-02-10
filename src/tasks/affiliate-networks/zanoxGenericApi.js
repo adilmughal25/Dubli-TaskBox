@@ -2,7 +2,7 @@
 
 const _ = require('lodash');
 const co = require('co');
-const debug = require('debug')('zanox:processor');
+const _debug = (a,b) => require('debug')(['zanox', 'processor', a, b].join(':'));
 const moment = require('moment');
 const utils = require('ominto-utils');
 const sendEvents = require('./support/send-events');
@@ -24,6 +24,7 @@ const STATE_MAP = {
 };
 
 const ZanoxGenericApi = function(s_region, s_entity) {
+  const debug = _debug(s_region, s_entity);
   if (!(this instanceof ZanoxGenericApi)) {
     debug("instantiating ZanoxGenericApi for: %s-%s", s_entity, s_region);
     return new ZanoxGenericApi(s_region, s_entity);
