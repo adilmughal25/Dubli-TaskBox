@@ -83,7 +83,6 @@ const snapdealApi = hasoffersGenericApi('snapdeal');
 const vcommissionApi = hasoffersGenericApi('vcommission');
 const shopstylers = hasoffersGenericApi('shopstylers');
 const vcommissionDubliApi = hasoffersGenericApi('vcommission', 'dubli');
-const bestsellerDubliApi = hasoffersGenericApi('bestseller', 'dubli');
 
 const linkShareGenericApi = require("./linkShareGenericApi");
 const linkShareApi = linkShareGenericApi();
@@ -338,7 +337,6 @@ function initializeCommissionsDubliProcessors(createTask) {
     "AvantLink DubLi (CA) Commissions": avantLinkDubliCAApi.getCommissionDetails,
     "AvantLink DubLi (US) Commissions": avantLinkDubliUSApi.getCommissionDetails,
     "Belboon DubLi Commissions": belboonDubliApi.getCommissionDetails,
-    "BestSeller DubLi Commissions": bestsellerDubliApi.getCommissionDetails,
     "CommissionFactory DubLi Commissions": commissionfactoryDubliApi.getCommissionDetails,
     "CommissionJunction DubLi (US) Commissions": commissionJunctionDubliUSApi.getCommissionDetails,
     "CommissionJunction DubLi (DE) Commissions": commissionJunctionDubliDEApi.getCommissionDetails,
