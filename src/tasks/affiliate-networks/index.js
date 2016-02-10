@@ -181,11 +181,7 @@ function init(createTask) {
   initializeMerchantImporters(createTask);
   initializeCommissionsProcessors(createTask);
 
-  //WARNING: DUBLI COMMISSIONS DISABLED FOR NOW
-  //@TODO: dubli commissions causes wild database build-ups right now since we
-  //       dont have any outclick data for dubli and this is causing all sorts
-  //       of headaches for people.
-  // initializeCommissionsDubliProcessors(createTask);
+  initializeCommissionsDubliProcessors(createTask);
 }
 
 function initializeMerchantImporters(createTask) {
@@ -289,7 +285,6 @@ function initializeCommissionsProcessors(createTask) {
     "PartnerAds Commissions": partnerAdsApi.getCommissionDetails,
     "PepperJam Commissions": pepperjamApi.getCommissionDetails,
     "PerformanceHorizon Commissions": performanceHorizonApi.getCommissionDetails,
-    // PI still has issues
     "PublicIdeas (ES) Commissions": publicideasESApi.getCommissionDetails,
     "PublicIdeas (FR) Commissions": publicideasFRApi.getCommissionDetails,
     "PublicIdeas (IT) Commissions": publicideasITApi.getCommissionDetails,
