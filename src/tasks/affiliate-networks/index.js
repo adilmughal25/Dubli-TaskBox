@@ -57,7 +57,7 @@ const commissionJunctionUSApi = commissionJunctionGenericApi('us');
 const commissionJunctionEUApi = commissionJunctionGenericApi('eu');
 const commissionJunctionDubliUSApi = commissionJunctionGenericApi('us', 'dubli');
 const commissionJunctionDubliDEApi = commissionJunctionGenericApi('de', 'dubli');
-// const commissionJunctionDubliESApi = commissionJunctionGenericApi('es', 'dubli');
+const commissionJunctionDubliESApi = commissionJunctionGenericApi('es', 'dubli');
 const commissionJunctionDubliGBApi = commissionJunctionGenericApi('gb', 'dubli');
 const commissionJunctionDubliDKApi = commissionJunctionGenericApi('dk', 'dubli');
 const commissionJunctionDubliITApi = commissionJunctionGenericApi('it', 'dubli');
@@ -335,7 +335,7 @@ function initializeCommissionsDubliProcessors(createTask) {
     "CommissionFactory DubLi Commissions": commissionfactoryDubliApi.getCommissionDetails,
     "CommissionJunction DubLi (US) Commissions": commissionJunctionDubliUSApi.getCommissionDetails,
     "CommissionJunction DubLi (DE) Commissions": commissionJunctionDubliDEApi.getCommissionDetails,
-    // "CommissionJunction DubLi (ES) Commissions": commissionJunctionDubliESApi.getCommissionDetails,
+    "CommissionJunction DubLi (ES) Commissions": commissionJunctionDubliESApi.getCommissionDetails,
     "CommissionJunction DubLi (GB) Commissions": commissionJunctionDubliGBApi.getCommissionDetails,
     "CommissionJunction DubLi (DK) Commissions": commissionJunctionDubliDKApi.getCommissionDetails,
     "CommissionJunction DubLi (IT) Commissions": commissionJunctionDubliITApi.getCommissionDetails,
