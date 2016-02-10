@@ -63,7 +63,7 @@ function prepareCommission(region, o_obj) {
     outclick_id: o_obj.UID,
     purchase_amount: o_obj.TransactionValue,
     commission_amount: o_obj.SR,
-    currency: o_obj.Currency,
+    currency: (o_obj.Currency || '').trim(),
     state: isNum.test(o_obj.Paid) ? 'paid' : STATUS_MAP[o_obj.Status],
     effective_date: o_obj.Status === 'Pending' ? new Date(o_obj.TransactionTime) : 'auto',
   };
