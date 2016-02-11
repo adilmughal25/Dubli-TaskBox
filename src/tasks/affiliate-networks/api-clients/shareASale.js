@@ -21,7 +21,10 @@ const ary = x => _.isArray(x) ? x : [x];
 
 const API_CFG = {
   url: 'https://api.shareasale.com/x.cfm',
-  limit: {req:7, sec: 86400}, // api request rate limiter - currently based on API restriction of 200/months
+  // api request rate limiter - used to be based on making 200 req/mo (ie 7/day),
+  // but we're just much more careful about how often we call it now rather than
+  //  having this pause for 3.5 hours (ugh). still limit it somewhat though.
+  limit: {req:1440, sec: 86400}, 
   ominto: {
     token: 'bUqdXM4gsQgiU5h2',
     secret: 'RVz8ts7d7PLcpc6wMMo4es0y0TQqkv1i',

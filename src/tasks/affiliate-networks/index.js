@@ -312,7 +312,7 @@ function initializeCommissionsProcessors(createTask) {
     "Zanox Commissions": zanoxApi.getCommissionDetails,
   });
 
-  createTask('ShareASale Commissions', shareASaleApi.getCommissionDetails, {hour:12, minute:30});   // once a day at 12:30
+  createTask('ShareASale Commissions', shareASaleApi.getCommissionDetails, {hour:12, minute:45, dayOfWeek:[0,4]}); // twice a week. 200 req/mo limit on ShareASale api calls
 
   // disabled for now:
   //createTask("ImpactRadius Product FTP": impactRadiusProductFtp.getProducts, {minute:35});
@@ -375,4 +375,6 @@ function initializeCommissionsDubliProcessors(createTask) {
     "Zanox DubLi (NO) Commissions": zanoxDubliNOApi.getCommissionDetails,
     "Zanox DubLi (Global) Commissions": zanoxDubliGlobalApi.getCommissionDetails,
   });
+
+  createTask('ShareASale Commissions', shareASaleApi.getCommissionDetails, {hour:18, minute:15, dayOfWeek:[1,5]}); // twice a week. 200 req/mo limit on ShareASale api calls
 }
