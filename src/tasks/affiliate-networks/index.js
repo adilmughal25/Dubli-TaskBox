@@ -83,7 +83,6 @@ const snapdealApi = hasoffersGenericApi('snapdeal');
 const vcommissionApi = hasoffersGenericApi('vcommission');
 const shopstylers = hasoffersGenericApi('shopstylers');
 const vcommissionDubliApi = hasoffersGenericApi('vcommission', 'dubli');
-const bestsellerDubliApi = hasoffersGenericApi('bestseller', 'dubli');
 
 const linkShareGenericApi = require("./linkShareGenericApi");
 const linkShareApi = linkShareGenericApi();
@@ -182,11 +181,7 @@ function init(createTask) {
   initializeMerchantImporters(createTask);
   initializeCommissionsProcessors(createTask);
 
-  //WARNING: DUBLI COMMISSIONS DISABLED FOR NOW
-  //@TODO: dubli commissions causes wild database build-ups right now since we
-  //       dont have any outclick data for dubli and this is causing all sorts
-  //       of headaches for people.
-  // initializeCommissionsDubliProcessors(createTask);
+  initializeCommissionsDubliProcessors(createTask);
 }
 
 function initializeMerchantImporters(createTask) {
@@ -290,7 +285,6 @@ function initializeCommissionsProcessors(createTask) {
     "PartnerAds Commissions": partnerAdsApi.getCommissionDetails,
     "PepperJam Commissions": pepperjamApi.getCommissionDetails,
     "PerformanceHorizon Commissions": performanceHorizonApi.getCommissionDetails,
-    // PI still has issues
     "PublicIdeas (ES) Commissions": publicideasESApi.getCommissionDetails,
     "PublicIdeas (FR) Commissions": publicideasFRApi.getCommissionDetails,
     "PublicIdeas (IT) Commissions": publicideasITApi.getCommissionDetails,
@@ -318,7 +312,7 @@ function initializeCommissionsProcessors(createTask) {
     "Zanox Commissions": zanoxApi.getCommissionDetails,
   });
 
-  createTask('ShareASale Commissions', shareASaleApi.getCommissionDetails, {hour:12, minute:30});   // once a day at 12:30
+  createTask('ShareASale Commissions', shareASaleApi.getCommissionDetails, {hour:12, minute:45, dayOfWeek:[0,4]}); // twice a week. 200 req/mo limit on ShareASale api calls
 
   // disabled for now:
   //createTask("ImpactRadius Product FTP": impactRadiusProductFtp.getProducts, {minute:35});
@@ -338,7 +332,6 @@ function initializeCommissionsDubliProcessors(createTask) {
     "AvantLink DubLi (CA) Commissions": avantLinkDubliCAApi.getCommissionDetails,
     "AvantLink DubLi (US) Commissions": avantLinkDubliUSApi.getCommissionDetails,
     "Belboon DubLi Commissions": belboonDubliApi.getCommissionDetails,
-    "BestSeller DubLi Commissions": bestsellerDubliApi.getCommissionDetails,
     "CommissionFactory DubLi Commissions": commissionfactoryDubliApi.getCommissionDetails,
     "CommissionJunction DubLi (US) Commissions": commissionJunctionDubliUSApi.getCommissionDetails,
     "CommissionJunction DubLi (DE) Commissions": commissionJunctionDubliDEApi.getCommissionDetails,
@@ -382,4 +375,6 @@ function initializeCommissionsDubliProcessors(createTask) {
     "Zanox DubLi (NO) Commissions": zanoxDubliNOApi.getCommissionDetails,
     "Zanox DubLi (Global) Commissions": zanoxDubliGlobalApi.getCommissionDetails,
   });
+
+  createTask('ShareASale Commissions', shareASaleApi.getCommissionDetails, {hour:18, minute:15, dayOfWeek:[1,5]}); // twice a week. 200 req/mo limit on ShareASale api calls
 }

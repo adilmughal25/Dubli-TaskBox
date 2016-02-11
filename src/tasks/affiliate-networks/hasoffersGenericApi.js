@@ -96,8 +96,9 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
 
       const response = yield that.client.get(url);
       if (response.response.status == -1) throw new Error("Error in "+s_networkName+" commission processing: "+response.response.errorMessage);
-      results = results.concat(response.response.data.data || []);
-      if ( page >= Number(response.response.data.pageCount)) break;  // value can be "null"
+      if (_.get(response, 'response.errors.publicMessage')) throw new Error("Error in "+s_networkName+" commission processing: " + _.get(response, 'response.errors.publicMessage'));
+      results = results.concat(_.get(response, 'response.data.data') || []);
+      if ( page >= Number(_.get(response, 'response.data.pageCount'))) break;  // value can be "null"
       page += 1;
     }
 
