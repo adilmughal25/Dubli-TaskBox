@@ -2,9 +2,9 @@
 
 const configs = require('../configs.json');
 const bunyan = require('bunyan');
+const path = require('path');
 
 const ftpToS3 = require('./ftp-to-s3');
-const scheduleTasks = require('./schedule-tasks');
 const tasks = require('./tasks');
 
 function init(id) {
@@ -31,9 +31,7 @@ function init(id) {
   // set up ftp server for taskbox
   ftpToS3(log, configs.aws.ftpToS3);
 
-  // The Taskmaster:
-  const createTask = scheduleTasks(log);
-  tasks(createTask);
+  tasks(log);
 }
 
 module.exports = {

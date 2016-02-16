@@ -161,32 +161,17 @@ const zanoxDubliSEApi = zanoxGenericApi('se', 'dubli');
 const zanoxDubliNOApi = zanoxGenericApi('no', 'dubli');
 const zanoxDubliGlobalApi = zanoxGenericApi('global', 'dubli');
 
-/*
- * some thoughts by Rando:
- *
- *   The 24 Hour cycle for merchants and 6 hour cycle for commissions that most
- *   of these tasks stick to is arbitrary and only an optimistic best attempt at
- *   running without too stupid of a delay before things show up in our system.
- *
- *   If a network can't handle that much, just use the main createTask() function
- *   to set up a regular cron-type schedule.
- *
- *   The createGroup() function is just for convenience, to sprinkle a bunch of
- *   tasks around an X-hour period in a shuffled yet deterministic and consistent
- *   order, but they were written quickly and off-hand just to keep me from having
- *   to try to manually manage task cron timings :)
- */
-
-function init(createTask) {
-  initializeMerchantImporters(createTask);
-  initializeCommissionsProcessors(createTask);
-
-  initializeCommissionsDubliProcessors(createTask);
+function init(tasker) {
+  initializeMerchantImporters(tasker);
+  initializeCommissionsProcessors(tasker);
+  initializeCommissionsDubliProcessors(tasker);
 }
 
-function initializeMerchantImporters(createTask) {
+
+function initializeMerchantImporters(tasker) {
   // run each of these every 24 hours
-  createTask.createGroup(24, {
+
+  tasker.createGroup('2d +/- 1d', {
     "APD Performance Merchants": apdPerformanceApi.getMerchants,
     "AdCell Merchants": adCellApi.getMerchants,
     "Admitad Merchants": admitadApi.getMerchants,
@@ -203,7 +188,6 @@ function initializeMerchantImporters(createTask) {
     "Belboon Merchants": belboonApi.getMerchants,
     "CommissionJunction (EU) Merchants": commissionJunctionEUApi.getMerchants,
     "CommissionJunction (US) Merchants": commissionJunctionUSApi.getMerchants,
-    // "ClixGalore Merchants": clixGaloreApi.getMerchants,
     "CommissionFactory Merchants": commissionfactoryApi.getMerchants,
     "ImpactRadius Merchants": impactRadiusApi.getMerchants,
     "LinkShare Merchants": linkShareApi.getMerchants,
@@ -244,13 +228,12 @@ function initializeMerchantImporters(createTask) {
     "Zanox Merchants": zanoxApi.getMerchants
   });
 
-  // also temporarily hacked to be faster
-  createTask('ShareASale Merchants', shareASaleApi.getMerchants, {hour:12, minute:0, dayOfWeek:0 }); // every sunday at 12:00
+  tasker.createTask('ShareASale Merchants', '7d +/- 1d', shareASaleApi.getMerchants);
 }
 
-function initializeCommissionsProcessors(createTask) {
+function initializeCommissionsProcessors(tasker) {
   // run each of these every 6 hours
-  createTask.createGroup(6, {
+  tasker.createGroup('6h +/- 1h', {
     "APD Performance Commissions": apdPerformanceApi.getCommissionDetails,
     "AdCell Commissions": adCellApi.getCommissionDetails,
     "Admitad Commissions": admitadApi.getCommissionDetails,
@@ -312,15 +295,15 @@ function initializeCommissionsProcessors(createTask) {
     "Zanox Commissions": zanoxApi.getCommissionDetails,
   });
 
-  createTask('ShareASale Commissions', shareASaleApi.getCommissionDetails, {hour:12, minute:45, dayOfWeek:[0,4]}); // twice a week. 200 req/mo limit on ShareASale api calls
+  tasker.createTask('ShareASale Commissions', '4d +/- 1d', shareASaleApi.getCommissionDetails);
 
   // disabled for now:
   //createTask("ImpactRadius Product FTP": impactRadiusProductFtp.getProducts, {minute:35});
 }
 
-function initializeCommissionsDubliProcessors(createTask) {
+function initializeCommissionsDubliProcessors(tasker) {
   // run each of these every 24 hours
-  createTask.createGroup(24, {
+  tasker.createGroup('2d +/- 1d', {
     "AdCell DubLi Commissions": adCellDubliApi.getCommissionDetails,
     "Admitad DubLi Commissions": admitadDubliApi.getCommissionDetails,
     "Affili.Net DubLi (DE) Commissions": affilinetDubliDEApi.getCommissionDetails,
@@ -355,7 +338,6 @@ function initializeCommissionsDubliProcessors(createTask) {
     "PerformanceHorizon DubLi-iTunes Commissions": performanceHorizonDubliItunesApi.getCommissionDetails,
     "PerformanceHorizon DubLi-BritishAirways Commissions": performanceHorizonDubliBAApi.getCommissionDetails,
     "PerformanceHorizon DubLi-WoolWorth Commissions": performanceHorizonDubliWWApi.getCommissionDetails,
-    "ShareASale DubLi Commissions": shareASaleDubliApi.getCommissionDetails,
     "TradeTracker DubLi (CH) Commissions": tradetrackerDubliCHApi.getCommissionDetails,
     "TradeTracker DubLi (DE) Commissions": tradetrackerDubliDEApi.getCommissionDetails,
     "TradeTracker DubLi (DK) Commissions": tradetrackerDubliDKApi.getCommissionDetails,
@@ -376,5 +358,5 @@ function initializeCommissionsDubliProcessors(createTask) {
     "Zanox DubLi (Global) Commissions": zanoxDubliGlobalApi.getCommissionDetails,
   });
 
-  createTask('ShareASale Commissions', shareASaleApi.getCommissionDetails, {hour:18, minute:15, dayOfWeek:[1,5]}); // twice a week. 200 req/mo limit on ShareASale api calls
+  tasker.createTask('ShareASale Dubli Commissions', '7d +/- 1d', shareASaleDubliApi.getCommissionDetails);
 }
