@@ -55,7 +55,7 @@ function template() {
 function pretty (date) {
   if (!date) return '--';
   const mdate = moment(date);
-  return mdate.format('MMM D @ h:mm a') + '<br/>(' + mdate.fromNow() + ')';
+  return mdate.format('MMM D h:mma') + '<br/>(' + mdate.fromNow() + ')';
 }
 
 module.exports = startMonitor;
