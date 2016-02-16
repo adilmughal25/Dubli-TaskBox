@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+      table, header {
+        width: 1200px;
+        margin: auto auto 25px auto;
+      }
+      td {
+        padding: 15px;
+        border-left: 1px solid rgba(0,0,0,0.2);
+      }
+      td:last-child {
+        border-right: 1px solid rgba(0,0,0,0.2);
+      }
+      tr {
+        border-bottom: 1px solid rgba(0,0,0,0.5);
+      }
+      tr:first-child {
+        border-top: 1px solid rgba(0,0,0,0.5);
+      }
+      tr:nth-child(even) {
+        background: rgba(0,0,255,0.05);
+      }
+      #filter {
+        padding: 5px;
+        font-size: 14px;
+        height: 40px;
+        line-height: 40px;
+        width: 300px;
+        display: block;
+        border: 1px solid rgba(0,0,0,0.3);
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>TaskBox Task Monitor</h1>
+      <input type="search" placeholder="filter by name" id="filter" incremental>
+    </header>
+
+    <table>
+      <tr><th>task</th><th>status</th><th>next</th><th>last</th><th>last end</th><th>last status</th></tr>
+      {{#each report}}
+      <tr data-id={{id}}><td>{{id}}</td><td>{{status}}</td><td>{{{nextPretty}}}</td><td>{{{lastPretty}}}</td><td>{{{lastEndPretty}}}</td><td>{{lastStatus}}</td></tr>
+      {{/each}}
+    </table>
+    <script>
+      var filter = document.getElementById("filter");
+      filter.addEventListener("search", filterList);
+
+      function filterList(event) {
+        var values = (filter.value || "").split(" ").filter(function(x) { return !!x.length; });
+        var els = document.querySelectorAll("tr");
+        Array.from(els).forEach(function(tr) {
+          var id = tr.getAttribute("data-id");
+          if (id) {
+            if (values.length === 0) {
+              tr.style.display = "table-row";
+              return;
+            }
+            var display = "table-row";
+            values.forEach(function(v) {
+              if (id.indexOf(v) === -1) display = "none";
+            });
+            tr.style.display = display;
+          }
+        });
+      }
+    </script>
+  </body>
+
+</html>
