@@ -47,7 +47,7 @@ function setup(s_region, s_entity) {
     };
     let merchants = merge(results);
 
-    yield sendEvents.sendMerchants(eventName, merchants);
+    return yield sendEvents.sendMerchants(eventName, merchants);
   });
 
   // get commission report
@@ -64,7 +64,7 @@ function setup(s_region, s_entity) {
     transactions = yield clientC.getData({date_begin: startDate, date_end:endDate});
     events = transactions.map(prepareCommission.bind(null, s_region)).filter(exists);
 
-    yield sendEvents.sendCommissions(eventName, events);
+    return yield sendEvents.sendCommissions(eventName, events);
   });
 
   taskCache[eventName] = tasks;

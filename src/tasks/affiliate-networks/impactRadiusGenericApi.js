@@ -44,7 +44,7 @@ function ImpactRadiusGenericApi(s_whitelabel, s_region, s_entity) {
     };
     const merchants = merge(results);
 
-    yield sendEvents.sendMerchants(tasks.eventName, merchants);
+    return yield sendEvents.sendMerchants(tasks.eventName, merchants);
   });
 
   const getCommissionDetails = tasks.getCommissionDetails = singleRun(function* () {
@@ -57,7 +57,7 @@ function ImpactRadiusGenericApi(s_whitelabel, s_region, s_entity) {
       .map(prepareCommission.bind(null, that.region)) // format for kinesis/lambda
       .filter(x => !!x); // so that the prepareCommission can return 'null' to skip one
 
-    yield sendEvents.sendCommissions(tasks.eventName, events);
+    return yield sendEvents.sendCommissions(tasks.eventName, events);
   });
 
   taskCache[_tag] = tasks;

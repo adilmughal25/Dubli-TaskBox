@@ -2,6 +2,9 @@
 <html>
   <head>
     <style>
+      body {
+        position: relative;
+      }
       table, header {
         width: 1200px;
         margin: auto auto 25px auto;
@@ -32,6 +35,37 @@
         border: 1px solid rgba(0,0,0,0.3);
         border-radius: 10px;
       }
+
+      #backdrop, #modal {
+        display: none;
+        position: fixed;
+      }
+      body.hasModal #backdrop, body.hasModal #modal {
+        display: block;
+      }
+      #backdrop {
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.5);
+      }
+      #modal {
+        top: 150px;
+        left: 150px;
+        right: 150px;
+        bottom: 150px;
+        background: white;
+        box-shadow: 0px 2px 4px rgba(0,0,0,0.5);
+        border: 1px solid black;
+        border-radius: 10px;
+        padding: 10px;
+      }
+      #modal-details {
+        position: absolute;
+        top: 100px;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        width: 98%;
+      }
     </style>
   </head>
   <body>
@@ -41,19 +75,62 @@
     </header>
 
     <table>
-      <tr><th>task</th><th>status</th><th>next</th><th>last</th><th>last end</th><th>last status</th></tr>
+      <tr><th>task</th><th>status</th><th>next</th><th>last</th><th>last end</th><th>last elapsed</th><th>last status</th></tr>
       {{#each report}}
-      <tr data-id={{id}}><td>{{id}}</td><td>{{status}}</td><td>{{{nextPretty}}}</td><td>{{{lastPretty}}}</td><td>{{{lastEndPretty}}}</td><td>{{lastStatus}}</td></tr>
+      <tr data-id={{id}} data-last-details="{{lastDetails}}">
+        <td>{{id}}</td>
+        <td>{{status}}</td>
+        <td>{{{nextPretty}}}</td>
+        <td>{{{lastPretty}}}</td>
+        <td>{{{lastEndPretty}}}</td>
+        <td>{{lastElapsed}}</td>
+        <td><a href="#details" class="details-link" data-id="{{id}}">{{lastStatus}}</td>
+      </tr>
       {{/each}}
     </table>
+
+    <div id="backdrop"></div>
+    <div id="modal">
+      <h1 id="modal-task"></h1>
+      <textarea id="modal-details"></textarea>
+    </div>
+
     <script>
       var filter = document.getElementById("filter");
+      var backdrop = document.getElementById("backdrop");
+      var modal = document.getElementById("modal");
+      var modalTask = document.getElementById("modal-task");
+      var modalDeets = document.getElementById("modal-details");
+      var rows = Array.from(document.querySelectorAll("tr"));
+
       filter.addEventListener("search", filterList);
+      backdrop.addEventListener("click", closeModal);
+
+      rows.forEach(function(tr) {
+        var detailsLink = tr.querySelector("a.details-link");
+        var detailsInfo = tr.getAttribute("data-last-details");
+        var detailsId   = tr.getAttribute("data-id");
+        console.log("deets id", detailsId);
+        console.log("deets link", detailsLink);
+        console.log("deets info", detailsInfo);
+        if (!detailsId) return;
+        detailsLink.addEventListener("click", function(event) {
+          event.preventDefault();
+          modalTask.innerText = detailsId + " last run result";
+          modalDeets.innerHTML = detailsInfo;
+          document.body.className = "hasModal";
+        });
+      });
+
+      function closeModal(event) {
+        event.preventDefault();
+        document.body.className = "";
+      }
 
       function filterList(event) {
         var values = (filter.value || "").split(" ").filter(function(x) { return !!x.length; });
         var els = document.querySelectorAll("tr");
-        Array.from(els).forEach(function(tr) {
+        rows.forEach(function(tr) {
           var id = tr.getAttribute("data-id");
           if (id) {
             if (values.length === 0) {
@@ -69,6 +146,7 @@
         });
       }
     </script>
+
   </body>
 
 </html>

@@ -21,10 +21,16 @@ function startMonitor(tasker) {
       response.writeHead(200, {"Content-Type": "text/html"});
       const tpl = template();
       report = report.map(x => {
+        const details = (
+          x.lastStatus === 'error' ? x.lastError :
+          x.lastStatus === 'success' ? x.lastResult :
+          null
+        ) || '[no stored information from last run]';
         return _.extend({}, x, {
+          nextPretty: pretty(x.next),
           lastPretty: pretty(x.last),
           lastEndPretty: pretty(x.lastEnd),
-          nextPretty: pretty(x.next)
+          lastDetails: details
         });
       });
       const html = tpl({ report: report });

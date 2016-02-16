@@ -40,7 +40,7 @@ const OmgPmGenericApi = function(s_region, s_entity) {
     };
     const merchants = merge(results);
 
-    yield sendEvents.sendMerchants(tasks.eventName, merchants);
+    return yield sendEvents.sendMerchants(tasks.eventName, merchants);
   });
 
   tasks.getCommissionDetails = singleRun(function* (){
@@ -49,7 +49,7 @@ const OmgPmGenericApi = function(s_region, s_entity) {
     const commissions = yield tasks.client.getTransactions(start, end);
     const events = commissions.map(prepareCommission.bind(null, tasks.region));
 
-    yield sendEvents.sendCommissions(tasks.eventName, events);
+    return yield sendEvents.sendCommissions(tasks.eventName, events);
   });
 
   taskCache[eventName] = tasks;

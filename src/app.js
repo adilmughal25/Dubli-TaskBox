@@ -62,14 +62,29 @@ function init(id) {
     log.info(task, "Task registered: "+task.id);
   });
 
-/*
-  tasker.start()
-    .then(x => {
-      log.info("Task Manager started!");
-      updateReport();
-    })
-    .catch(e => log.error(e, "Error starting task manager!"));
-    */
+
+  if (process.env.NODE_ENV !== 'dev' || !!process.env.RUN_TASKS_IN_DEV) {
+    tasker.start()
+      .then(x => {
+        log.info("Task Manager started!");
+        updateReport();
+      })
+      .catch(e => log.error(e, "Error starting task manager!"));
+  } else {
+    setTimeout(function(){
+      // set-timeout to allow for all the task registration calls to finish.
+      console.log("+------------------------------------------------+");
+      console.log("|                                                |");
+      console.log("|    SERVER IS RUNNING IN DEVELOPMENT MODE!      |");
+      console.log("|                                                |");
+      console.log("| This means your tasks won't run automatically! |");
+      console.log("| To run a task, use `npm run task [task-name]`  |");
+      console.log("| A list of available tasks is available by      |");
+      console.log("| running the command `npm run task-list`.       |");
+      console.log("|                                                |");
+      console.log("+------------------------------------------------+");
+    }, 2000);
+  }
 }
 
 module.exports = {

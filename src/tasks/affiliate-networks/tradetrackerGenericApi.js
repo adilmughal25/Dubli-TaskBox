@@ -75,7 +75,7 @@ const TradeTrackerGenericApi = function(s_region, s_entity) {
 
     var merchants = merge(results);
 
-    yield sendEvents.sendMerchants(tasks.eventName, merchants);
+    return yield sendEvents.sendMerchants(tasks.eventName, merchants);
   });
 
   // get commission report
@@ -93,7 +93,7 @@ const TradeTrackerGenericApi = function(s_region, s_entity) {
     let transactions = yield tasks.pagedApiCall('getConversionTransactions', 'conversionTransactions.item', args);
     const events = transactions.map(prepareCommission).filter(exists);
 
-    yield sendEvents.sendCommissions(tasks.eventName, events);
+    return yield sendEvents.sendCommissions(tasks.eventName, events);
   });
 
   /**
