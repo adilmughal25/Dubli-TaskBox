@@ -56,7 +56,7 @@ const WebgainsGenericApi = function(s_entity) {
    * @returns {undefined}
    */
   this.getMerchants = singleRun(function*() {
-    that.client = require('./api-clients/webgains')(that.entity);
+    that.client = require('./api')(that.entity);
     let results = yield {
       merchants: that.client.getMerchants(),
       deals: that.client.getOffers(),
@@ -73,7 +73,7 @@ const WebgainsGenericApi = function(s_entity) {
    * @returns {undefined}
    */
   this.getCommissionDetails = singleRun(function* () {
-    that.clientSoap = require('./api-clients/webgainsSoap')(that.entity);
+    that.clientSoap = require('./api-soap')(that.entity);
     yield that.clientSoap.setup(); // setup our soap client
 
     let results = [];

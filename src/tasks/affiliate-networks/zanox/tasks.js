@@ -34,7 +34,7 @@ const ZanoxGenericApi = function(s_region, s_entity) {
 
   this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
   this.region = s_region ? s_region.toLowerCase() : 'global';
-  this.client = require('./api-clients/zanox')(this.entity, this.region);
+  this.client = require('./api')(this.entity, this.region);
   this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'zanox';
   this.eventName += (this.entity === 'ominto' && this.region === 'global') ? '' : '-' + this.region;
 

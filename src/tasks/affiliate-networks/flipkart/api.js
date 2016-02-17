@@ -23,8 +23,6 @@ const API_CFG = {
   }
 };
 
-// require('./src/scripts/api-clients/flipkart')().ordersReport(new Date(Date.now() - (86400 * 1000 * 120)), new Date()).then(x => console.log("ret",x), e => console.log("err",e))
-
 function FlipkartClient(s_entity) {
   if (!(this instanceof FlipkartClient)) return new FlipkartClient(s_entity);
   if (!s_entity) throw new Error("Missing required argument 's_entity'!");

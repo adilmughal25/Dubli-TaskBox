@@ -25,7 +25,7 @@ const PerformanceHorizonGenericApi = function(s_entity) {
   var that = this;
 
   this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
-  this.client = require('./api-clients/performance-horizon')(this.entity);
+  this.client = require('./api')(this.entity);
   this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'performancehorizon';
 
   // doesn't seem to have coupons/deals/links in their api, this api just returns

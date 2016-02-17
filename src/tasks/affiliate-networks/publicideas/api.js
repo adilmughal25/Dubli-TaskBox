@@ -44,8 +44,6 @@ const getDate = d => {
   throw new Error("Not a date: ",d);
 };
 
-//require('./src/scripts/api-clients/publicideas')().getPendingCommissions('2015-05-01','2015-08-17').then(x => console.log("res",x), e=>console.error("err",e))
-
 // for merchants, at least, publicideas only has a very simple xml feed.
 // luckily this feed includes all the details we'd normally grab about
 // merchants/links/deals/coupons/etc

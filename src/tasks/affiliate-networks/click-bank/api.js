@@ -32,5 +32,3 @@ function createClient() {
 }
 
 module.exports = createClient;
-
-// require('./src/scripts/api-clients/clickbank')().get('debug').then(x => global.response=x).catch(e => console.error("error", e));
