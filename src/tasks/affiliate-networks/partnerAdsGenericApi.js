@@ -32,7 +32,7 @@ const PartnerAdsGenericApi = function(s_entity) {
   this.getMerchants = singleRun(function* () {
     const programs = (yield that.client.call('programs', 'partnerprogrammer.program')).map(m => ({merchant:m}));
 
-    yield sendEvents.sendMerchants(that.eventName, programs);
+    return yield sendEvents.sendMerchants(that.eventName, programs);
   });
 
   /**
@@ -52,7 +52,7 @@ const PartnerAdsGenericApi = function(s_entity) {
     // merge it
     const transactions = sales.concat(cancellations);
 
-    yield sendEvents.sendCommissions(that.eventName, transactions);
+    return yield sendEvents.sendCommissions(that.eventName, transactions);
   });
 
 };

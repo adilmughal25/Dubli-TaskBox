@@ -56,7 +56,7 @@ const ZanoxGenericApi = function(s_region, s_entity) {
     // down to just those merchants who we are joined to.
     merchants = onlyValid(merchants, validIds);
 
-    sendEvents.sendMerchants(that.eventName, merchants);
+    return yield sendEvents.sendMerchants(that.eventName, merchants);
   });
 
   this.getCommissionDetails = singleRun(function* () {
@@ -74,7 +74,7 @@ const ZanoxGenericApi = function(s_region, s_entity) {
     const exists = x => !!x;
     const events = all.map(prepareCommission).filter(exists);
 
-    sendEvents.sendCommissions(that.eventName, events);
+    return yield sendEvents.sendCommissions(that.eventName, events);
   });
 
   this.pagedApiCall = co.wrap(function* (method, bodyKey, params, prefix) {

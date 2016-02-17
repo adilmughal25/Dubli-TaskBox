@@ -2,9 +2,11 @@
 
 const configs = require('../configs.json');
 const bunyan = require('bunyan');
+const path = require('path');
+const fs = require('fs');
 
+const monitor = require('./monitor');
 const ftpToS3 = require('./ftp-to-s3');
-const scheduleTasks = require('./schedule-tasks');
 const tasks = require('./tasks');
 
 function init(id) {
@@ -31,9 +33,62 @@ function init(id) {
   // set up ftp server for taskbox
   ftpToS3(log, configs.aws.ftpToS3);
 
-  // The Taskmaster:
-  const createTask = scheduleTasks(log);
-  tasks(createTask);
+  const tasker = tasks(log);
+  monitor(tasker);
+
+  const updateReport = function() {
+    // if (process.env.NODE_ENV === 'dev') return;
+    tasker.report().then(function(data) {
+      const file = process.env.NODE_ENV === 'dev' ?
+        path.resolve(__dirname, '..', 'test/output/run-report.json') :
+        path.resolve(__dirname, '..', 'logs/run-report.json');
+      fs.writeFile(file, JSON.stringify(data), 'utf8');
+    });
+  };
+
+  tasker.on('task-start', (task) => {
+    log.info(task, "Started task: "+task.id);
+    updateReport();
+  });
+  tasker.on('task-error', (task, error) => {
+    const msg = error ? ('stack' in error ? error.stack : error) : "Unknown Error";
+    log.error(task, "Error running "+task.id+": "+error.stack);
+    updateReport();
+  });
+  tasker.on('task-success', (task) => {
+    log.info(task, "Task Finished: "+task.id);
+    updateReport();
+  });
+  tasker.on('task-registered', (task) => {
+    log.info(task, "Task registered: "+task.id);
+  });
+
+
+  if (process.env.NODE_ENV !== 'dev' || !!process.env.RUN_TASKS_IN_DEV) {
+    tasker.start()
+      .then(x => {
+        log.info("Task Manager started!");
+        updateReport();
+      })
+      .catch(e => log.error(e, "Error starting task manager!"));
+  } else {
+    setTimeout(function(){
+      // set-timeout to allow for all the task registration calls to finish.
+      console.log("+----------------------------------------------------------------------------+");
+      console.log("|                                                                            |");
+      console.log("|                   SERVER IS RUNNING IN DEVELOPMENT MODE!                   |");
+      console.log("|                                                                            |");
+      console.log("| This means your tasks won't run automatically! To run a task, use the task |");
+      console.log("| monitoring UI which is reachable at the following url:                     |");
+      console.log("|     http://localhost:8000/                                                 |");
+      console.log("|                                                                            |");
+      console.log("| Alternately, you can use the `npm run task` run script, but you shouldn't  |");
+      console.log("| do this while the taskbox is running (although the only known negative     |");
+      console.log("| effect of this would be your task not updating through the monitoring UI.  |");
+      console.log("|                                                                            |");
+      console.log("+----------------------------------------------------------------------------+");
+    }, 2000);
+  }
 }
 
 module.exports = {

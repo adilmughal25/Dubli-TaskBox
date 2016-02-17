@@ -51,7 +51,7 @@ const AffilinetGenericApi = function(s_region, s_entity) {
     debug("links count: %d", results.links.length);
 
     var merged = merge(results).filter(checkIfActive);
-    yield sendEvents.sendMerchants(that.eventName, merged);
+    return yield sendEvents.sendMerchants(that.eventName, merged);
   });
 
   this.getCommissionDetails = singleRun(function* () {
@@ -64,7 +64,7 @@ const AffilinetGenericApi = function(s_region, s_entity) {
     ];
     const all = Array.prototype.concat.apply([], results);
     const events = all.map(prepareCommission.bind(null, s_region)).filter(exists);
-    yield sendEvents.sendCommissions(that.eventName, events);
+    return yield sendEvents.sendCommissions(that.eventName, events);
   });
 };
 

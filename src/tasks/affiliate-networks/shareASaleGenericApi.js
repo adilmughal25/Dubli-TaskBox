@@ -50,7 +50,7 @@ const ShareASaleGenericApi = function(s_entity) {
 
     const merchants = merge(results);
 
-    yield sendEvents.sendMerchants(that.eventName, merchants);
+    return yield sendEvents.sendMerchants(that.eventName, merchants);
   });
 
   /**
@@ -82,7 +82,7 @@ const ShareASaleGenericApi = function(s_entity) {
     // Now merge them, so ledger overwrites possible existing acitivies
     const transactions = _.values(_.merge({}, activityTransactions, ledgerTransactions)).filter(exists);
 
-    yield sendEvents.sendCommissions(that.eventName, transactions);
+    return yield sendEvents.sendCommissions(that.eventName, transactions);
   });
 };
 

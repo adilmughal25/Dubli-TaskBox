@@ -40,7 +40,7 @@ const GrouponGenericApi = function(s_region, s_entity) {
     let results = yield that.pagedApiCall('getOrders', {startDate: startDate, endDate:endDate}).then(flattenCommissions);
     const events = results.map(prepareCommission).filter(exists);
 
-    yield sendEvents.sendCommissions(that.eventName, events);
+    return yield sendEvents.sendCommissions(that.eventName, events);
   });
 
   /**

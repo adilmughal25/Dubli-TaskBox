@@ -50,7 +50,7 @@ var getMerchants = singleRun(function* () {
     coupons: coupons,
   });
 
-  yield sendEvents.sendMerchants('clixgalore', events);
+  return yield sendEvents.sendMerchants('clixgalore', events);
 });
 
 /**
@@ -70,7 +70,7 @@ var getCommissionDetails = singleRun(function* () {
 
   const events = transactions.map(prepareCommission).filter(exists);
 
-  yield sendEvents.sendCommissions('clixgalore', events);
+  return yield sendEvents.sendCommissions('clixgalore', events);
 });
 
 const STATE_MAP = {

@@ -38,7 +38,7 @@ const PerformanceHorizonGenericApi = function(s_entity) {
       return {merchant:campaign.campaign};
     });
 
-    yield sendEvents.sendMerchants(that.eventName, merchants);
+    return yield sendEvents.sendMerchants(that.eventName, merchants);
   });
 
   this.getCommissionDetails = singleRun(function* () {
@@ -60,7 +60,7 @@ const PerformanceHorizonGenericApi = function(s_entity) {
 
     const events = results.map(extractConversionData).map(prepareCommission);
 
-    yield sendEvents.sendCommissions(that.eventName, events);
+    return yield sendEvents.sendCommissions(that.eventName, events);
   });
 };
 

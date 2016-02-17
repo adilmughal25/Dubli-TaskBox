@@ -113,7 +113,7 @@ const BelboonGenericApi = function(s_entity) {
       promos: commonads,
     });
 
-    yield sendEvents.sendMerchants(that.eventName, events);
+    return yield sendEvents.sendMerchants(that.eventName, events);
   });
 
   this.getCommissionDetails = singleRun(function* () {
@@ -132,7 +132,7 @@ const BelboonGenericApi = function(s_entity) {
       return n.item.reduce( (m,i) => _.extend(m, i), {});
     }).map(prepareCommission);
 
-    yield sendEvents.sendCommissions(that.eventName, events);
+    return yield sendEvents.sendCommissions(that.eventName, events);
   });
 
   /**

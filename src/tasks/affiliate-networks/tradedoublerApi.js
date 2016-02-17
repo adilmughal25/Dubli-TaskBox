@@ -15,7 +15,7 @@ const getMerchants = singleRun(function*() {
   const results = yield client.getMerchants();
   const events = _.values(results.reduce(merchantReduce, {})).map(hasPercentage);
 
-  yield sendEvents.sendMerchants('tradedoubler', events);
+  return yield sendEvents.sendMerchants('tradedoubler', events);
 });
 
 // Elements to filter out from events and keep in merchant

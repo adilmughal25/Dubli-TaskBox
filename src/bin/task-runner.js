@@ -15,11 +15,9 @@ const bunyan = require('bunyan');
 const co = require('co');
 const minimist = require('minimist');
 
-const ALL_TASKS = {};
 const logger = bunyan.createLogger({ name: 'task-runner', serializers: bunyan.stdSerializers });
+const tasker = tasks(logger, true);
 const go = co.wrap(_go);
-
-startup();
 
 go()
   .catch(e => console.log("ERROR", e.stack))
@@ -45,26 +43,18 @@ function help() {
   console.log("     npm run task [task-name]");
 }
 
-function startup() {
-  const _id = n => n.toLowerCase().replace(/\W+/g, '-').replace(/(^-|-$)/g, '');
-  const register = (name, func) => {
-    if (typeof func !== 'function') {
-      console.error("task named "+name+" is not a function :(");
-      process.exit(1);
-    }
-    ALL_TASKS[_id(name)] = {desc:name, handler:func};
-  };
-  register.createGroup = (n, defs) => Object.keys(defs).forEach(n => register(n, defs[n]));
-  tasks(register);
-}
-
 function list(patt) {
   const filt = patt === true ? (id => true) : (id => id.indexOf(patt) > -1);
-  Object.keys(ALL_TASKS)
-    .sort()
-    .filter(filt)
-    .forEach(id => console.log("  " + id));
-  return Promise.resolve();
+  const _debug = require('debug');
+  const orig = _debug.log;
+  _debug.log = function() {};
+  return tasker.report().then(function(taskList) {
+    _debug.log = orig;
+    taskList.map(x => x.id)
+      .sort()
+      .filter(filt)
+      .forEach(id => console.log("  " + id));
+  });
 }
 
 function doError(msg) {
@@ -75,17 +65,10 @@ function doError(msg) {
 }
 
 function run(id) {
-  if (id === true) doError("No task specified!");
-  if (!ALL_TASKS[id]) doError("Task `"+id+"` does not exist!");
-  // if (!id) throw new Error("")
-  const name = ALL_TASKS[id].desc;
-  const ctx = { log: logger, task: name };
-  const fn = ALL_TASKS[id].handler.bind(ctx);
-  const p = (co(fn)
+  return (tasker.run(id)
     .then(result => result && console.log("Result: ", result))
     .catch(error => error && console.error("Error: ", error.stack))
-    .then(() => console.log("task "+name+" ("+id+") completed")));
-  return p;
+    .then(() => console.log("task "+id+" completed")));
 }
 
 // getTasks() is basically just `require('../tasks')`, except that it shuts debug up for a while
