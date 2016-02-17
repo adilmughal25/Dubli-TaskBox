@@ -57,6 +57,7 @@
     "request-promise": "^0.4.2",
     "s3fs": "^2.1.0",
     "soap": "^0.9.1",
+    "taskmatic": "^1.0.10",
     "tough-cookie": "^2.0.0",
     "transform-keys": "0.0.3",
     "xml2js": "^0.4.9",

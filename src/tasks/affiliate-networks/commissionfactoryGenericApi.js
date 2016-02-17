@@ -50,7 +50,7 @@ const CommissionFactoryGernericApi = function(s_entity) {
     };
 
     let merchants = merge(results);
-    yield sendEvents.sendMerchants(that.eventName, merchants);
+    return yield sendEvents.sendMerchants(that.eventName, merchants);
   });
 
   this.getCommissionDetails = singleRun(function* () {
@@ -58,7 +58,7 @@ const CommissionFactoryGernericApi = function(s_entity) {
     const end = moment().toDate();
     const url = getTransactionsUrl(start, end);
     const events = (yield that.client.get(url)).map(prepareCommission);
-    yield sendEvents.sendCommissions(that.eventName, events);
+    return yield sendEvents.sendCommissions(that.eventName, events);
   });
 };
 

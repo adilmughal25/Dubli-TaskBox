@@ -65,7 +65,7 @@ const WebgainsGenericApi = function(s_entity) {
     };
 
     let merged = merge(results).filter(approvedAffiliate);
-    yield sendEvents.sendMerchants(that.eventName, merged);
+    return yield sendEvents.sendMerchants(that.eventName, merged);
   });
 
   /**
@@ -91,7 +91,7 @@ const WebgainsGenericApi = function(s_entity) {
 
     transactions = results.map(prepareCommission).filter(exists);
 
-    yield sendEvents.sendCommissions(that.eventName, transactions);
+    return yield sendEvents.sendCommissions(that.eventName, transactions);
   });
 
   this.doApi = co.wrap(function* (method, args, key) {

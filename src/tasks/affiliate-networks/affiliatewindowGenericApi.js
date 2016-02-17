@@ -21,12 +21,12 @@ const AffiliateWindowGenericApi = function(s_entity) {
   this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
   this.client = require('./api-clients/affiliatewindow')(this.entity);
   this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'affiliatewindow';
-  
+
   this.getMerchants = singleRun(function*() {
     yield that.client.setup();
     var merchants = (yield that.doApiMerchants()).map(m => ({merchant:m}));
     yield that.doApiCashback(merchants);
-    yield sendEvents.sendMerchants(that.eventName, merchants);
+    return yield sendEvents.sendMerchants(that.eventName, merchants);
   });
 
   this.getCommissionDetails = singleRun(function* () {
@@ -49,7 +49,7 @@ const AffiliateWindowGenericApi = function(s_entity) {
 
     const events = _.uniq(results, false, x => x.iId).map(prepareCommission);
 
-    yield sendEvents.sendCommissions(that.eventName, events);
+    return yield sendEvents.sendCommissions(that.eventName, events);
   });
 
   this.doApiMerchants = co.wrap(function* (){

@@ -38,7 +38,7 @@ const AdmitadGenericApi = function(s_entity) {
     let transactions = yield that.pagedApiCall('getStatisticsByAction', 'results', {status_updated_start: startDate, status_updated_end:endDate});
     const events = transactions.map(prepareCommission).filter(exists);
 
-    yield sendEvents.sendCommissions(that.eventName, events);
+    return yield sendEvents.sendCommissions(that.eventName, events);
   });
 
   this.getMerchants = singleRun(function* () {
@@ -77,9 +77,9 @@ const AdmitadGenericApi = function(s_entity) {
 
     // console.error(JSON.stringify(results.links, null, 2));
     // console.error(JSON.stringify(merge(results)));
-    yield sendEvents.sendMerchants(that.eventName, merge(results));
+    return yield sendEvents.sendMerchants(that.eventName, merge(results));
   });
-  
+
   /**
    * Perform paginated api requests to any specified method of api client.
    * @param {String} method - The method of the api to call

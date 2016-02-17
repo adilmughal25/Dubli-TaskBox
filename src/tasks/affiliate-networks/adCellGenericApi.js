@@ -87,7 +87,7 @@ const AdCellGenericApi = function(s_entity) {
     };
 
     merchants = merge(results);
-    yield sendEvents.sendMerchants(that.eventName, merchants);
+    return yield sendEvents.sendMerchants(that.eventName, merchants);
   });
 
   /**
@@ -106,7 +106,7 @@ const AdCellGenericApi = function(s_entity) {
     transactions = yield that.pagedApiCall('getStatisticsByCommission', 'items', {startDate: startDate, endDate:endDate});
     events = transactions.map(that.prepareCommission).filter(exists);
 
-    yield sendEvents.sendCommissions(that.eventName, events);
+    return yield sendEvents.sendCommissions(that.eventName, events);
   });
 
   /**
@@ -172,4 +172,3 @@ const AdCellGenericApi = function(s_entity) {
 };
 
 module.exports = AdCellGenericApi;
-  

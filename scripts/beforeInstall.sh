@@ -28,6 +28,10 @@ mkdir -p ${WWW_ROOT}/logs ${WWW_ROOT}/var
 chown node-app-run:node-app ${WWW_ROOT}/logs
 chown node-app-run:node-app ${WWW_ROOT}/var
 chmod 750 ${WWW_ROOT}
+mkdir -p /var/lib/taskbox-taskdb
+chown node-app-run:node-app /var/lib/taskbox-taskdb
+chmod 750 /var/lib/taskbox-taskdb
+
 
 if [ ! -f ${FTP_ROOT} ]; then
   mkdir -p ${FTP_ROOT}

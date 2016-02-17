@@ -52,7 +52,7 @@ function setup(s_region) {
   const getMerchants = singleRun(function* (){
     const merchantsRaw = yield client.getMerchants();
     const merchants = clean(merchantsRaw);
-    yield sendEvents.sendMerchants('publicideas-'+s_region, merchants);
+    return yield sendEvents.sendMerchants('publicideas-'+s_region, merchants);
   });
 
   const getCommissionDetails = singleRun(function* () {
@@ -62,7 +62,7 @@ function setup(s_region) {
     const validated = yield client.getValidatedCommissions(start, end);
     const all = [].concat(pending, validated);
     const events = all.map(prepareCommission.bind(null, s_region));
-    yield sendEvents.sendCommissions('publicideas-'+s_region, events);
+    return yield sendEvents.sendCommissions('publicideas-'+s_region, events);
   });
 
   const tasks = {

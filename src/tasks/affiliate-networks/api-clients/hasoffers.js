@@ -25,11 +25,6 @@ const API_CFG = {
     }
   },
   dubli: {
-    bestseller: {
-      api_key: '5c540ee164145d74b34cb2fd6d6a47218c4098f6443a0f1eec78649a44922a03',
-      NetworkId: 'bestseller',
-      defaultCurrency: 'usd'
-    },
     vcommission: {
       api_key: 'e487d197537331bdb175649fee124b0e4d6bbde1a2389ecd9ed2bf045192e604',
       NetworkId: 'vcm',

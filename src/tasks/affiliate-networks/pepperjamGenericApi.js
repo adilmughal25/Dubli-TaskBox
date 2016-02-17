@@ -44,7 +44,7 @@ const PepperJamGenericApi = function(s_entity) {
     };
 
     const merchants = merge(results);
-    yield sendEvents.sendMerchants(that.eventName, merchants);
+    return yield sendEvents.sendMerchants(that.eventName, merchants);
   });
 
   this.getCommissionDetails = singleRun(function* () {

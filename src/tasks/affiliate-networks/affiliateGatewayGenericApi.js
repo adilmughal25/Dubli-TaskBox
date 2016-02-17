@@ -40,7 +40,7 @@ function setup(s_region) {
 
     const events = transactions.map(prepareCommission.bind(null, s_region));
 
-    yield sendEvents.sendCommissions('affiliategateway-'+s_region, events);
+    return yield sendEvents.sendCommissions('affiliategateway-'+s_region, events);
   });
 
   taskCache[s_region] = tasks;
