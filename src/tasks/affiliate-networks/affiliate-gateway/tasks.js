@@ -4,9 +4,9 @@ const _ = require('lodash');
 const co = require('co');
 const debug = require('debug')('affiliategateway:processor');
 const utils = require('ominto-utils');
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
-const clientPool = require('./api-clients/affiliategatewaySoap');
+const sendEvents = require('../support/send-events');
+const singleRun = require('../support/single-run');
+const clientPool = require('./api');
 const moment = require('moment');
 
 const taskCache = {};

@@ -12,10 +12,10 @@ const debug = require('debug')('commissionfactory:processor');
 const moment = require('moment');
 const querystring = require('querystring');
 const utils = require('ominto-utils');
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
+const sendEvents = require('../support/send-events');
+const singleRun = require('../support/single-run');
 
-const merge = require('./support/easy-merge')('Id', {
+const merge = require('../support/easy-merge')('Id', {
   coupons: 'MerchantId',
   links: 'MerchantId'
 });
@@ -39,7 +39,7 @@ const CommissionFactoryGernericApi = function(s_entity) {
   var that = this;
 
   this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
-  this.client = require('./api-clients/commissionfactory')(this.entity);
+  this.client = require('./api')(this.entity);
   this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'commissionfactory';
 
   this.getMerchants = singleRun(function*() {

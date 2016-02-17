@@ -5,11 +5,11 @@ const co = require('co');
 const debug = require('debug')('pepperjam:processor');
 const utils = require('ominto-utils');
 const moment = require('moment');
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
+const sendEvents = require('../support/send-events');
+const singleRun = require('../support/single-run');
 
 const exists = x => !!x;
-const merge = require('./support/easy-merge')('id', {
+const merge = require('../support/easy-merge')('id', {
   coupons: 'program_id',
   links: 'program_id',
   generic: 'program_id'
@@ -32,7 +32,7 @@ const PepperJamGenericApi = function(s_entity) {
   var that = this;
 
   this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
-  this.client = require('./api-clients/pepperjam')(this.entity);
+  this.client = require('./api')(this.entity);
   this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'pepperjam';
 
   this.getMerchants = singleRun(function*(){

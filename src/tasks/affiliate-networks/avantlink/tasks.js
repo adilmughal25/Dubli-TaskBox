@@ -18,11 +18,11 @@ const _ = require('lodash');
 const co = require('co');
 const debug = require('debug')('avantlink:processor');
 const utils = require('ominto-utils');
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
-const clientPool = require('./api-clients/avantlink');
+const sendEvents = require('../support/send-events');
+const singleRun = require('../support/single-run');
+const clientPool = require('./api');
 
-const merge = require('./support/easy-merge')('lngMerchantId', {
+const merge = require('../support/easy-merge')('lngMerchantId', {
   promos: 'Merchant_Id' // includes all type of promotions such as text, coupons, ...
 });
 

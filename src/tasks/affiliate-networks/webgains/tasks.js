@@ -9,14 +9,14 @@ const _ = require('lodash');
 const co = require('co');
 const debug = require('debug')('webgains:processor');
 const utils = require('ominto-utils');
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
+const sendEvents = require('../support/send-events');
+const singleRun = require('../support/single-run');
 
 const exists = x => !!x;
 const XmlEntities = require('html-entities').XmlEntities;
 const entities = new XmlEntities();
 
-const merge = require('./support/easy-merge')('id', {
+const merge = require('../support/easy-merge')('id', {
   links: 'programId',
   coupons: 'programId',
   deals: 'program.id',

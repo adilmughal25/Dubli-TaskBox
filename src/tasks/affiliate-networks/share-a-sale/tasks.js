@@ -9,12 +9,12 @@
 const _ = require('lodash');
 const co = require('co');
 const debug = require('debug')('shareasale:processor');
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
+const sendEvents = require('../support/send-events');
+const singleRun = require('../support/single-run');
 
 const ary = x => _.isArray(x) ? x : [x];
 const exists = x => !!x;
-const merge = require('./support/easy-merge')(
+const merge = require('../support/easy-merge')(
   'merchantid',
   {
     cashback: 'merchantid',

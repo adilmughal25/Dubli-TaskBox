@@ -5,13 +5,13 @@ const request = require("request-promise");
 const co = require('co');
 const moment = require('moment');
 const querystring = require('querystring');
-const sendEvents = require('./support/send-events');
+const sendEvents = require('../support/send-events');
 const utils = require('ominto-utils');
 const XmlEntities = require('html-entities').XmlEntities;
 const entities = new XmlEntities();
-const singleRun = require('./support/single-run');
+const singleRun = require('../support/single-run');
 const _check = utils.checkApiResponse;
-const jsonify = require('./api-clients/jsonify-xml-body');
+const jsonify = require('../support/jsonify-xml-body');
 const debug = require('debug')('linkshare:processor');
 
 const LinkShareGenericApi = function(s_region, s_entity) {
@@ -24,7 +24,7 @@ const LinkShareGenericApi = function(s_region, s_entity) {
 
   this.region = s_region || 'global';
   this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
-  this.client = require('./api-clients/linkshare')(this.entity, this.region);
+  this.client = require('./api')(this.entity, this.region);
   this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'linkshare' + (this.region !== 'global' ? '-' + this.region : '');
 
   this.getMerchants = singleRun(function* (){

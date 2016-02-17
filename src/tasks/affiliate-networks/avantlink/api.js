@@ -5,7 +5,7 @@ const debug = require('debug')('avantlink:api-client');
 const denodeify = require('denodeify');
 const querystring = require('querystring');
 const request = require('request-promise');
-const jsonify = require('./jsonify-xml-body');
+const jsonify = require('../support/jsonify-xml-body');
 const limiter = require('ominto-utils').promiseRateLimiter;
 const moment = require('moment');
 

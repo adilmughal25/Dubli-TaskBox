@@ -15,11 +15,11 @@ const _ = require('lodash');
 const co = require('co');
 const debug = require('debug')('belboon:processor');
 const moment = require('moment');
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
-const jsonify = require('./api-clients/jsonify-xml-body');
+const sendEvents = require('../support/send-events');
+const singleRun = require('../support/single-run');
+const jsonify = require('../support/jsonify-xml-body');
 
-const merge = require('./support/easy-merge')('programid', {
+const merge = require('../support/easy-merge')('programid', {
   details:  'programid',
   vouchers: 'programid',
   promos: 'programid',

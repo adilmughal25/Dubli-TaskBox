@@ -10,7 +10,7 @@ const co = require('co');
 const request = require('request-promise');
 const debug = require('debug')('partnerads:api-client');
 const iconv = require('iconv-lite');
-const jsonify = require('./jsonify-xml-body');
+const jsonify = require('../support/jsonify-xml-body');
 const moment = require('moment');
 
 const API_CFG = {

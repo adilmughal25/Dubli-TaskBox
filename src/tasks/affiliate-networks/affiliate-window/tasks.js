@@ -3,8 +3,8 @@
 const _ = require('lodash');
 const co = require('co');
 const debug = require('debug')('affiliatewindow:processor');
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
+const sendEvents = require('../support/send-events');
+const singleRun = require('../support/single-run');
 const moment = require('moment');
 
 // helper
@@ -19,7 +19,7 @@ const AffiliateWindowGenericApi = function(s_entity) {
   var that = this;
 
   this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
-  this.client = require('./api-clients/affiliatewindow')(this.entity);
+  this.client = require('./api')(this.entity);
   this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'affiliatewindow';
 
   this.getMerchants = singleRun(function*() {

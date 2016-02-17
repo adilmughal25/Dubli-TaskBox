@@ -11,7 +11,7 @@ const querystring = require('querystring');
 const request = require('request-promise');
 const url = require('url');
 const zlib = require('zlib');
-const jsonify = require('./jsonify-xml-body');
+const jsonify = require('../support/jsonify-xml-body');
 
 const gunzip = denodeify(zlib.gunzip);
 

@@ -2,7 +2,7 @@
 
 const _ = require('lodash');
 const request = require('request-promise');
-const jsonify = require('./jsonify-xml-body');
+const jsonify = require('../support/jsonify-xml-body');
 const querystring = require('querystring');
 const moment = require('moment');
 const iconv = require('iconv-lite');

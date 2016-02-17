@@ -1,11 +1,11 @@
 "use strict";
 
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
+const sendEvents = require('../support/send-events');
+const singleRun = require('../support/single-run');
 
-const client = require('./api-clients/lomadee')();
+const client = require('./api')();
 
-const merge = require('./support/easy-merge')('advertiserid', {
+const merge = require('../support/easy-merge')('advertiserid', {
   coupons: 'advertiserid'
 });
 

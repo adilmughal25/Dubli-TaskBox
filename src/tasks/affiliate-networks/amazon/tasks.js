@@ -5,10 +5,10 @@ const co = require('co');
 const debug = require('debug')('publicideas:processor');
 const utils = require('ominto-utils');
 const moment = require('moment');
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
+const sendEvents = require('../support/send-events');
+const singleRun = require('../support/single-run');
 
-const client = require('./api-clients/amazon')();
+const client = require('./api')();
 
 //@TODO: We're currently waiting on amazon.in -- Samantha is processing a purchase
 // with a pending return so we can see what those look like in the data (because

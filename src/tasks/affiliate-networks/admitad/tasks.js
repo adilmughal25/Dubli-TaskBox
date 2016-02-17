@@ -3,12 +3,12 @@
 const _ = require('lodash');
 const co = require('co');
 const debug = require('debug')('admitad:processor');
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
+const sendEvents = require('../support/send-events');
+const singleRun = require('../support/single-run');
 const moment = require('moment');
 
 const exists = x => !!x;
-const merge = require('./support/easy-merge')('id', {
+const merge = require('../support/easy-merge')('id', {
   coupons: 'campaign.id',
   links: 'campaign'
 });
@@ -22,7 +22,7 @@ const AdmitadGenericApi = function(s_entity) {
   var that = this;
 
   this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
-  this.client = require('./api-clients/admitad')(this.entity);
+  this.client = require('./api')(this.entity);
   this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'admitad';
 
   /**

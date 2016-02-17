@@ -10,8 +10,8 @@
 const _ = require('lodash');
 const co = require('co');
 const debug = require('debug')('partnerads:processor');
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
+const sendEvents = require('../support/send-events');
+const singleRun = require('../support/single-run');
 
 const PartnerAdsGenericApi = function(s_entity) {
   if (!(this instanceof PartnerAdsGenericApi)) {
@@ -22,7 +22,7 @@ const PartnerAdsGenericApi = function(s_entity) {
   var that = this;
 
   this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
-  this.client = require('./api-clients/partnerAds')(this.entity);
+  this.client = require('./api')(this.entity);
   this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'partnerads';
 
   /**

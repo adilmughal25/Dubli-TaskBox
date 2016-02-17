@@ -4,10 +4,10 @@ const _ = require('lodash');
 const utils = require('ominto-utils');
 const co = require('co');
 const moment = require('moment');
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
+const sendEvents = require('../support/send-events');
+const singleRun = require('../support/single-run');
 
-const merge = require('./support/easy-merge')('id', {
+const merge = require('../support/easy-merge')('id', {
   images: 'offer_id',
 });
 
@@ -24,7 +24,7 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
   var that = this;
 
   this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
-  this.client = require('./api-clients/hasoffers')(this.entity, s_networkName);
+  this.client = require('./api')(this.entity, s_networkName);
   this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + s_networkName;
 
   const debug = require('debug')(this.eventName + ':processor');

@@ -3,10 +3,10 @@
 const _ = require('lodash');
 const debug = require('debug')('omgpm:processor');
 const moment = require('moment');
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
+const sendEvents = require('../support/send-events');
+const singleRun = require('../support/single-run');
 
-const merge = require('./support/easy-merge')('PID', {
+const merge = require('../support/easy-merge')('PID', {
   coupons: 'ProgramId',
 });
 const isNum = /^\d+$/;
@@ -27,7 +27,7 @@ const OmgPmGenericApi = function(s_region, s_entity) {
   if (taskCache[eventName]) return taskCache[eventName];
 
   var tasks = {
-    client: require('./api-clients/omgpm-legacy')(entity, region),
+    client: require('./api')(entity, region),
     region: region,
     entity: entity,
     eventName: eventName,

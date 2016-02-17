@@ -5,7 +5,7 @@ const _ = require('lodash');
 const request = require('request-promise');
 const debug = require('debug')('commission-junction:api-client');
 const limiter = require('ominto-utils').promiseRateLimiter;
-const jsonify = require('./jsonify-xml-body');
+const jsonify = require('../support/jsonify-xml-body');
 
 var runCounter = 0;
 

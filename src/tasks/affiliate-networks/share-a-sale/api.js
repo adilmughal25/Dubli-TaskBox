@@ -15,7 +15,7 @@ const request = require('request-promise');
 const debug = require('debug')('shareasale:api-client');
 const limiter = require('ominto-utils').promiseRateLimiter;
 const crypto = require('crypto');
-const jsonify = require('./jsonify-xml-body');
+const jsonify = require('../support/jsonify-xml-body');
 const moment = require('moment');
 const ary = x => _.isArray(x) ? x : [x];
 

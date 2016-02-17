@@ -2,8 +2,8 @@
 
 const _ = require('lodash');
 const co = require('co');
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
+const sendEvents = require('../support/send-events');
+const singleRun = require('../support/single-run');
 
 const AFFILIATE_PROGRAM_NAME = 'Groupon';
 const STATE_MAP = {
@@ -22,7 +22,7 @@ const GrouponGenericApi = function(s_region, s_entity) {
   var that = this;
 
   this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
-  this.client = require('./api-clients/groupon')(this.entity, s_region);
+  this.client = require('./api')(this.entity, s_region);
   this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'groupon-' + s_region;
 
   const debug = require('debug')(this.eventName + ':processor');

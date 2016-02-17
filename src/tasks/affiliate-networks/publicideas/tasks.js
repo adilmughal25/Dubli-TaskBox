@@ -5,8 +5,8 @@ const co = require('co');
 const debug = require('debug')('publicideas:processor');
 const utils = require('ominto-utils');
 const moment = require('moment');
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
+const sendEvents = require('../support/send-events');
+const singleRun = require('../support/single-run');
 
 const createClient = require('./api-clients/publicideas');
 const ary = x => _.isArray(x) ? x : [x];

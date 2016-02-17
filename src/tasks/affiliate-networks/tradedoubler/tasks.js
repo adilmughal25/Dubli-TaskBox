@@ -3,8 +3,8 @@
 const _ = require('lodash');
 const co = require('co');
 const debug = require('debug')('tradedoubler:processor');
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
+const sendEvents = require('../support/send-events');
+const singleRun = require('../support/single-run');
 const client = require('./api-clients/tradedoubler')();
 
 /**

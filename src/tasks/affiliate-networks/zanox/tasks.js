@@ -5,10 +5,10 @@ const co = require('co');
 const _debug = (a,b) => require('debug')(['zanox', 'processor', a, b].join(':'));
 const moment = require('moment');
 const utils = require('ominto-utils');
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
+const sendEvents = require('../support/send-events');
+const singleRun = require('../support/single-run');
 
-const merge = require('./support/easy-merge')('@id', {
+const merge = require('../support/easy-merge')('@id', {
   admedia: 'program.@id',
   incentives: 'program.@id',
   exclusiveIncentives: 'program.@id'

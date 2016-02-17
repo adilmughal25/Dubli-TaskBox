@@ -4,8 +4,8 @@ const _ = require('lodash');
 const debug = require('debug')('performancehorizon:processor');
 const moment = require('moment');
 const utils = require('ominto-utils');
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
+const sendEvents = require('../support/send-events');
+const singleRun = require('../support/single-run');
 
 const ary = x => !!x ? (_.isArray(x) ? x : [x]) : [];
 

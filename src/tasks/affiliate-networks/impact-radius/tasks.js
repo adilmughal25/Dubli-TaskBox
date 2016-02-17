@@ -3,10 +3,10 @@
 const _ = require('lodash');
 const moment = require('moment');
 const utils = require('ominto-utils');
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
+const sendEvents = require('../support/send-events');
+const singleRun = require('../support/single-run');
 
-const merge = require('./support/easy-merge')('CampaignId', {
+const merge = require('../support/easy-merge')('CampaignId', {
   promoAds: 'CampaignId',
   campaignAds: 'CampaignId'
 });
@@ -31,7 +31,7 @@ function ImpactRadiusGenericApi(s_whitelabel, s_region, s_entity) {
   var that = this;
 
   const tasks = {
-    client: require('./api-clients/impact-radius')(s_whitelabel, that.entity, that.region),
+    client: require('./api')(s_whitelabel, that.entity, that.region),
     eventName: (that.entity !== 'ominto' ? that.entity + '-' : '') + s_whitelabel + '-' + that.region
   };
   const debug = require('debug')(tasks.eventName + ':processor');

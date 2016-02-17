@@ -4,14 +4,14 @@ const _ = require('lodash');
 const co = require('co');
 const debug = require('debug')('tradetracker:processor');
 const utils = require('ominto-utils');
-const sendEvents = require('./support/send-events');
+const sendEvents = require('../support/send-events');
 const clientPool = require('./api-clients/tradetracker');
 const XmlEntities = require('html-entities').XmlEntities;
 const entities = new XmlEntities();
-const singleRun = require('./support/single-run');
+const singleRun = require('../support/single-run');
 const taskCache = {};
 
-const merge = require('./support/easy-merge')('ID', {
+const merge = require('../support/easy-merge')('ID', {
   links: 'campaign.ID',
   vouchers: 'campaign.ID',
   offers: 'campaign.ID'

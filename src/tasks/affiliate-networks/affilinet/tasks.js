@@ -3,11 +3,11 @@
 const _ = require('lodash');
 const co = require('co');
 const utils = require('ominto-utils');
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
+const sendEvents = require('../support/send-events');
+const singleRun = require('../support/single-run');
 const moment = require('moment');
 
-const merge = require('./support/easy-merge')('ProgramId', {
+const merge = require('../support/easy-merge')('ProgramId', {
   links: 'ProgramId',
   coupons: 'ProgramId'
 });
@@ -27,7 +27,7 @@ const AffilinetGenericApi = function(s_region, s_entity) {
   var that = this;
 
   this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
-  this.client = require('./api-clients/affilinet')(this.entity, s_region);
+  this.client = require('./api')(this.entity, s_region);
   this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'affilinet-' + s_region;
 
   const debug = require('debug')(this.eventName + ':processor');

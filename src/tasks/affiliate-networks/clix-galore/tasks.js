@@ -13,13 +13,13 @@
 const _ = require('lodash');
 const co = require('co');
 const debug = require('debug')('clixgalore:processor');
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
-const client = require('./api-clients/clixGalore')();
+const sendEvents = require('../support/send-events');
+const singleRun = require('../support/single-run');
+const client = require('./api')();
 
 const ary = x => x ? (_.isArray(x) ? x : [x]) : [];
 const exists = x => !!x;
-const merge = require('./support/easy-merge')('mid_base64', {
+const merge = require('../support/easy-merge')('mid_base64', {
   banners: 'mid_base64',
   links: 'mid_base64',
   coupons: 'mid_base64',

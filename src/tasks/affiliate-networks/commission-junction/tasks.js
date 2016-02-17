@@ -7,14 +7,14 @@
 const _ = require('lodash');
 const co = require('co');
 const moment = require('moment');
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
+const sendEvents = require('../support/send-events');
+const singleRun = require('../support/single-run');
 const querystring = require('querystring');
-const jsonify = require('./api-clients/jsonify-xml-body');
-const cjClient = require('./api-clients/commission-junction');
+const jsonify = require('../support/jsonify-xml-body');
+const cjClient = require('./api');
 const url = require('url');
 
-const merge = require('./support/easy-merge')('advertiser-id', {
+const merge = require('../support/easy-merge')('advertiser-id', {
   links: 'advertiser-id'
 });
 

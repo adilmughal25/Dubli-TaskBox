@@ -8,7 +8,7 @@ const _ = require('lodash');
 const co = require('co');
 const debug = require('debug')('tradedoubler:api-client');
 const request = require('request-promise');
-const jsonify = require('./jsonify-xml-body');
+const jsonify = require('../support/jsonify-xml-body');
 // debugging the requests || TODO: remove after finishing implementation
 //require('request-promise').debug = true; 
 

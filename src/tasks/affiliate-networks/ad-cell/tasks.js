@@ -3,8 +3,8 @@
 const _ = require('lodash');
 const co = require('co');
 const debug = require('debug')('adcell:processor');
-const sendEvents = require('./support/send-events');
-const singleRun = require('./support/single-run');
+const sendEvents = require('../support/send-events');
+const singleRun = require('../support/single-run');
 
 const STATE_MAP = {
   open: 'initiated',
@@ -12,7 +12,7 @@ const STATE_MAP = {
   accepted: 'confirmed',
 };
 
-var merge = require('./support/easy-merge')(
+var merge = require('../support/easy-merge')(
   'programId',            // the identifier for our merchants
   {
     coupons: 'programId', // the identifier of coupons to match an merchant identifier
@@ -30,7 +30,7 @@ const AdCellGenericApi = function(s_entity) {
   var that = this;
 
   this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
-  this.client = require('./api-clients/adCell')(this.entity);
+  this.client = require('./api')(this.entity);
   this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'adcell';
 
   /**
