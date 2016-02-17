@@ -80,7 +80,7 @@
       <tr data-id={{id}} data-last-details="{{lastDetails}}">
         <td>{{id}}</td>
         <td>{{status}}</td>
-        <td>{{{nextPretty}}}</td>
+        <td>{{{nextPretty}}}<br/><a href="#run-now" class="run-now" data-id="{{id}}">Run Now</a></td>
         <td>{{{lastPretty}}}</td>
         <td>{{{lastEndPretty}}}</td>
         <td>{{lastElapsed}}</td>
@@ -107,18 +107,37 @@
       backdrop.addEventListener("click", closeModal);
 
       rows.forEach(function(tr) {
+        var runLink = tr.querySelector("a.run-now");
         var detailsLink = tr.querySelector("a.details-link");
         var detailsInfo = tr.getAttribute("data-last-details");
-        var detailsId   = tr.getAttribute("data-id");
-        console.log("deets id", detailsId);
-        console.log("deets link", detailsLink);
-        console.log("deets info", detailsInfo);
-        if (!detailsId) return;
+        var taskId = tr.getAttribute("data-id");
+        if (!taskId) return;
         detailsLink.addEventListener("click", function(event) {
           event.preventDefault();
-          modalTask.innerText = detailsId + " last run result";
+          modalTask.innerText = taskId + " last run result";
           modalDeets.innerHTML = detailsInfo;
           document.body.className = "hasModal";
+        });
+        runLink.addEventListener("click", function(event) {
+          event.preventDefault();
+          runLink.style.display = "none";
+          var xhr = new XMLHttpRequest();
+
+          xhr.onreadystatechange = function () {
+            var DONE = 4;
+            var OK = 200;
+            if (xhr.readyState === DONE) {
+              runLink.style.display = "inline";
+              if (xhr.status === OK) {
+                alert("Task was started. refresh the page for new status.");
+              } else {
+                alert("Task run error");
+              }
+            }
+          };
+
+          xhr.open("GET", "/start?"+taskId);
+          xhr.send(null);
         });
       });
 

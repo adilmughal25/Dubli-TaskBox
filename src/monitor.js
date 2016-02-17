@@ -12,6 +12,16 @@ function startMonitor(tasker) {
   // later we could even pretty easily add a button that calls an ajax which triggers tasker.run(taskid)
   // to force a task to run.
   var server = http.createServer(function (request, response) {
+
+    const match = /^\/start\?([a-zA-Z0-9-]+)$/.exec(request.url);
+    if (match) {
+      const taskId = match[1];
+      tasker.run(taskId);
+      response.writeHead(200, {"Content-Type":"application/json"});
+      response.end(JSON.stringify({status:"ok"}));
+      return;
+    }
+
     tasker.report()
     .catch(e => {
       response.writeHead(200, {"Content-Type": "text/plain"});

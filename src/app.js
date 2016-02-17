@@ -73,16 +73,19 @@ function init(id) {
   } else {
     setTimeout(function(){
       // set-timeout to allow for all the task registration calls to finish.
-      console.log("+------------------------------------------------+");
-      console.log("|                                                |");
-      console.log("|    SERVER IS RUNNING IN DEVELOPMENT MODE!      |");
-      console.log("|                                                |");
-      console.log("| This means your tasks won't run automatically! |");
-      console.log("| To run a task, use `npm run task [task-name]`  |");
-      console.log("| A list of available tasks is available by      |");
-      console.log("| running the command `npm run task-list`.       |");
-      console.log("|                                                |");
-      console.log("+------------------------------------------------+");
+      console.log("+----------------------------------------------------------------------------+");
+      console.log("|                                                                            |");
+      console.log("|                   SERVER IS RUNNING IN DEVELOPMENT MODE!                   |");
+      console.log("|                                                                            |");
+      console.log("| This means your tasks won't run automatically! To run a task, use the task |");
+      console.log("| monitoring UI which is reachable at the following url:                     |");
+      console.log("|     http://localhost:8000/                                                 |");
+      console.log("|                                                                            |");
+      console.log("| Alternately, you can use the `npm run task` run script, but you shouldn't  |");
+      console.log("| do this while the taskbox is running (although the only known negative     |");
+      console.log("| effect of this would be your task not updating through the monitoring UI.  |");
+      console.log("|                                                                            |");
+      console.log("+----------------------------------------------------------------------------+");
     }, 2000);
   }
 }
