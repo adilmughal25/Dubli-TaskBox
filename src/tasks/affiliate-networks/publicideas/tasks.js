@@ -8,7 +8,7 @@ const moment = require('moment');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 
-const createClient = require('./api-clients/publicideas');
+const createClient = require('./api');
 const ary = x => _.isArray(x) ? x : [x];
 
 const STATUS_MAP = {
