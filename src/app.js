@@ -51,10 +51,11 @@ function init(id) {
     updateReport();
   });
   tasker.on('task-error', (task, error) => {
+    const msg = error ? ('stack' in error ? error.stack : error) : "Unknown Error";
     log.error(task, "Error running "+task.id+": "+error.stack);
     updateReport();
   });
-  tasker.on('task-done', (task) => {
+  tasker.on('task-success', (task) => {
     log.info(task, "Task Finished: "+task.id);
     updateReport();
   });
