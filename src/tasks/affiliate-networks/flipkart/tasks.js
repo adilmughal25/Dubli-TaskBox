@@ -27,7 +27,7 @@ const FlipkartGenericApi = function(s_entity) {
       results.Approved.map(prepareCommission.bind(null, 'confirmed')),
       results.Disapproved.map(prepareCommission.bind(null, 'cancelled')),
       results.Cancelled.map(prepareCommission.bind(null, 'cancelled')),
-      results.Pending.map(prepareCommission.bind(null, 'pending'))
+      results.Pending.map(prepareCommission.bind(null, 'initiated'))
     );
 
     return yield sendEvents.sendCommissions(that.eventName, events);
