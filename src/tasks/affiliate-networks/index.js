@@ -2,29 +2,29 @@
 
 module.exports = { init: init };
 
-const amazonApi = require('./amazonApi');
-const clixGaloreApi = require("./clixGaloreApi");
-const impactRadiusProductFtp = require("./impactRadiusProductFtp");
-const lomadeeApi = require('./lomadeeApi');
-const tradedoublerApi = require('./tradedoublerApi');
+const amazonApi = require('./amazon/tasks');
+const clixGaloreApi = require("./clix-galore/tasks");
+const impactRadiusProductFtp = require("./impact-radius/ftp-tasks");
+const lomadeeApi = require('./lomadee/tasks');
+const tradedoublerApi = require('./tradedoubler/tasks');
 
-const adCellGenericApi = require('./adCellGenericApi');
+const adCellGenericApi = require('./ad-cell/tasks');
 const adCellApi = adCellGenericApi();
 const adCellDubliApi = adCellGenericApi('dubli');
 
-const admitadGenericApi = require('./admitadGenericApi');
+const admitadGenericApi = require('./admitad/tasks');
 const admitadApi = admitadGenericApi();
 const admitadDubliApi = admitadGenericApi('dubli');
 
-const affiliateGatewayGenericApi = require('./affiliateGatewayGenericApi');
+const affiliateGatewayGenericApi = require('./affiliate-gateway/tasks');
 const affiliateGatewayAsiaApi = affiliateGatewayGenericApi('asia');
 const affiliateGatewaySgApi = affiliateGatewayGenericApi('sg');
 
-const affiliatewindowGenericApi = require('./affiliatewindowGenericApi');
+const affiliatewindowGenericApi = require('./affiliate-window/tasks');
 const affiliatewindowApi = affiliatewindowGenericApi();
 const affiliatewindowDubliApi = affiliatewindowGenericApi('dubli');
 
-const affilinetGenericApi = require('./affilinetGenericApi');
+const affilinetGenericApi = require('./affilinet/tasks');
 const affilinetAustriaApi = affilinetGenericApi('at');
 const affilinetFranceApi = affilinetGenericApi('fr');
 const affilinetGermanyApi = affilinetGenericApi('de');
@@ -38,21 +38,21 @@ const affilinetDubliUKApi = affilinetGenericApi('uk', 'dubli');
 const affilinetDubliATApi = affilinetGenericApi('at', 'dubli');
 const affilinetDubliCHApi = affilinetGenericApi('ch', 'dubli');
 
-const avantLinkGenericApi = require('./avantLinkGenericApi');
+const avantLinkGenericApi = require('./avantlink/tasks');
 const avantLinkCAApi = avantLinkGenericApi('ca');
 const avantLinkUSApi = avantLinkGenericApi('us');
 const avantLinkDubliCAApi = avantLinkGenericApi('ca', 'dubli');
 const avantLinkDubliUSApi = avantLinkGenericApi('us', 'dubli');
 
-const belboonGenericApi = require('./belboonGenericApi');
+const belboonGenericApi = require('./belboon/tasks');
 const belboonApi = belboonGenericApi();
 const belboonDubliApi = belboonGenericApi('dubli');
 
-const commissionfactoryGenericApi = require('./commissionfactoryGenericApi');
+const commissionfactoryGenericApi = require('./commission-factory/tasks');
 const commissionfactoryApi = commissionfactoryGenericApi();
 const commissionfactoryDubliApi = commissionfactoryGenericApi('dubli');
 
-const commissionJunctionGenericApi = require('./commissionJunctionGenericApi');
+const commissionJunctionGenericApi = require('./commission-junction/tasks');
 const commissionJunctionUSApi = commissionJunctionGenericApi('us');
 const commissionJunctionEUApi = commissionJunctionGenericApi('eu');
 const commissionJunctionDubliUSApi = commissionJunctionGenericApi('us', 'dubli');
@@ -62,35 +62,35 @@ const commissionJunctionDubliGBApi = commissionJunctionGenericApi('gb', 'dubli')
 const commissionJunctionDubliDKApi = commissionJunctionGenericApi('dk', 'dubli');
 const commissionJunctionDubliITApi = commissionJunctionGenericApi('it', 'dubli');
 
-const flipkartGenericApi = require('./flipkartGenericApi');
+const flipkartGenericApi = require('./flipkart/tasks');
 const flipkartApi = flipkartGenericApi();
 const flipkartDubliApi = flipkartGenericApi('dubli');
 
-const grouponGenericApi = require('./grouponGenericApi');
+const grouponGenericApi = require('./groupon/tasks');
 const grouponUSApi = grouponGenericApi('us'); //TODO: how about a/the EU account for Ominto?
 const grouponDubliUSApi = grouponGenericApi('us', 'dubli');
 const grouponDubliEUApi = grouponGenericApi('eu', 'dubli');
 
-const impactRadiusGenericApi = require('./impactRadiusGenericApi');
+const impactRadiusGenericApi = require('./impact-radius/tasks');
 const apdPerformanceApi = impactRadiusGenericApi('apdperformance');
 const impactRadiusApi = impactRadiusGenericApi('impactradius');
 const impactRadiusDubliUSApi = impactRadiusGenericApi('impactradius', 'us', 'dubli');
 const impactRadiusDubliCAApi = impactRadiusGenericApi('impactradius', 'ca', 'dubli');
 const dgmDubliAUApi = impactRadiusGenericApi('dgm', 'au', 'dubli');
 
-const hasoffersGenericApi = require('./hasoffersGenericApi');
+const hasoffersGenericApi = require('./hasoffers/tasks');
 const snapdealApi = hasoffersGenericApi('snapdeal');
 const vcommissionApi = hasoffersGenericApi('vcommission');
 const shopstylers = hasoffersGenericApi('shopstylers');
 const vcommissionDubliApi = hasoffersGenericApi('vcommission', 'dubli');
 
-const linkShareGenericApi = require("./linkShareGenericApi");
+const linkShareGenericApi = require("./linkshare/tasks");
 const linkShareApi = linkShareGenericApi();
 const linkShareDubliUSApi = linkShareGenericApi('us', 'dubli');
 const linkShareDubliCAApi = linkShareGenericApi('ca', 'dubli');
 const linkShareDubliGBApi = linkShareGenericApi('gb', 'dubli');
 
-const omgpmGenericApi = require('./omgpmGenericApi');
+const omgpmGenericApi = require('./omgpm/tasks');
 const omgpmIndiaApi = omgpmGenericApi('india');
 const omgpmUKApi = omgpmGenericApi('uk');
 const omgpmAsiaApi = omgpmGenericApi('asia');
@@ -98,30 +98,33 @@ const omgpmBrazilApi = omgpmGenericApi('brazil');
 const omgpmAustraliaApi = omgpmGenericApi('australia');
 const omgpmDubliIndiaApi = omgpmGenericApi('india', 'dubli');
 
-const partnerAdsGenericApi = require('./partnerAdsGenericApi');
+const partnerAdsGenericApi = require('./partner-ads/tasks');
 const partnerAdsApi = partnerAdsGenericApi();
 const partnerAdsDubliApi = partnerAdsGenericApi('dubli');
-const pepperjamGenericApi = require('./pepperjamGenericApi');
+
+const pepperjamGenericApi = require('./pepperjam/tasks');
 const pepperjamApi = pepperjamGenericApi();
 const pepperjamDubliApi = pepperjamGenericApi('dubli');
-const performanceHorizonGenericApi = require('./performanceHorizonGenericApi');
+
+const performanceHorizonGenericApi = require('./performance-horizon/tasks');
 const performanceHorizonApi = performanceHorizonGenericApi();
 const performanceHorizonDubliAppleApi = performanceHorizonGenericApi('dubli_apple');
 const performanceHorizonDubliItunesApi = performanceHorizonGenericApi('dubli_itunes');
 const performanceHorizonDubliBAApi = performanceHorizonGenericApi('dubli_ba');
 const performanceHorizonDubliWWApi = performanceHorizonGenericApi('dubli_ww');
-const publicideasGenericApi = require('./publicideasGenericApi');
+
+const publicideasGenericApi = require('./publicideas/tasks');
 const publicideasESApi = publicideasGenericApi('es');
 const publicideasFRApi = publicideasGenericApi('fr');
 const publicideasITApi = publicideasGenericApi('it');
 const publicideasLATAMApi = publicideasGenericApi('latam');
 const publicideasUKApi = publicideasGenericApi('uk');
 
-const shareASaleGenericApi = require('./shareASaleGenericApi');
+const shareASaleGenericApi = require('./share-a-sale/tasks');
 const shareASaleApi = shareASaleGenericApi();
 const shareASaleDubliApi = shareASaleGenericApi('dubli');
 
-const tradetrackerGenericApi = require('./tradetrackerGenericApi');
+const tradetrackerGenericApi = require('./tradetracker/tasks');
 const tradetrackerATApi = tradetrackerGenericApi('at');
 const tradetrackerBEApi = tradetrackerGenericApi('be');
 const tradetrackerCHApi = tradetrackerGenericApi('ch');
@@ -143,7 +146,7 @@ const tradetrackerDubliDKApi = tradetrackerGenericApi('dk', 'dubli');
 const tradetrackerDubliATApi = tradetrackerGenericApi('at', 'dubli');
 const tradetrackerDubliRUApi = tradetrackerGenericApi('ru', 'dubli');
 
-const webgainsGenericApi = require('./webgainsGenericApi');
+const webgainsGenericApi = require('./webgains/tasks');
 const webgainsApi = webgainsGenericApi();
 const webgainsDubliDEApi = webgainsGenericApi('dubli-de');
 const webgainsDubliDKApi = webgainsGenericApi('dubli-dk');
@@ -151,7 +154,7 @@ const webgainsDubliESApi = webgainsGenericApi('dubli-es');
 const webgainsDubliGBApi = webgainsGenericApi('dubli-gb');
 const webgainsDubliITApi = webgainsGenericApi('dubli-it');
 
-const zanoxGenericApi = require('./zanoxGenericApi');
+const zanoxGenericApi = require('./zanox/tasks');
 const zanoxApi = zanoxGenericApi();
 const zanoxDubliDEApi = zanoxGenericApi('de', 'dubli');
 const zanoxDubliESApi = zanoxGenericApi('es', 'dubli');

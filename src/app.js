@@ -35,7 +35,10 @@ function init(id) {
 
   const tasker = tasks(log);
   monitor(tasker);
+  taskEvents(tasker, log);
+}
 
+function taskEvents (tasker, log) {
   const updateReport = function() {
     // if (process.env.NODE_ENV === 'dev') return;
     tasker.report().then(function(data) {
@@ -45,24 +48,35 @@ function init(id) {
       fs.writeFile(file, JSON.stringify(data), 'utf8');
     });
   };
-
+  const prefix = (t, str) => {
+    if (typeof t === 'string') return '['+t+'] '+str;
+    if (typeof t === 'object' && t.id) return '['+t.id+'] '+str;
+    return str;
+  };
   tasker.on('task-start', (task) => {
-    log.info(task, "Started task: "+task.id);
+    log.info(task,  prefix(task, "Started task"));
     updateReport();
   });
   tasker.on('task-error', (task, error) => {
     const msg = error ? ('stack' in error ? error.stack : error) : "Unknown Error";
-    log.error(task, "Error running "+task.id+": "+error.stack);
+    log.error(task, prefix(task, "Error running task: "+msg));
     updateReport();
   });
   tasker.on('task-success', (task) => {
-    log.info(task, "Task Finished: "+task.id);
+    log.info(task, prefix(task, "Task Finished: "));
+    updateReport();
+  });
+  tasker.on('task-cancelled', (task, reason) => {
+    log.error(task, prefix(task, "Task was cancelled: `"+reason+"`"));
+    updateReport();
+  });
+  tasker.on("task-will-start", (taskId) => {
+    log.info({id: taskId}, prefix(taskId, "Task will start soon"));
     updateReport();
   });
   tasker.on('task-registered', (task) => {
-    log.info(task, "Task registered: "+task.id);
+    log.info(task, prefix(task, "Task registered"));
   });
-
 
   if (process.env.NODE_ENV !== 'dev' || !!process.env.RUN_TASKS_IN_DEV) {
     tasker.start()
