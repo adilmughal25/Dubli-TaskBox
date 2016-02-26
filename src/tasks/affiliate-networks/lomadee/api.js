@@ -126,11 +126,11 @@ function createClient() {
   });
 
   client.getMerchants = co.wrap(function*() {
-    let results = []
+    let results = [];
     let data = yield carefulGet({
       url: 'sellers/lomadee/' + API_TOKEN + '/BR'
     });
-    let sellers = data.sellers || []
+    let sellers = data.sellers || [];
     for (let i = 0; i < sellers.length; i++) {
       results.push(co.wrap(function*(merchant){
         let id = 'merchant#' + merchant.id;
@@ -138,15 +138,22 @@ function createClient() {
         let seller = (yield carefulGet({
           url: 'viewSellerDetails/' + API_TOKEN,
           qs: _.extend({}, baseQuery, {sellerId: merchant.id})
-        })).seller;
+        })).seller || {};
         seller.advertiserid = merchant.advertiserId;
         seller.thumbnail = merchant.thumbnail;
-        seller.link = seller.links.filter(l => l.link.type === 'seller')[0].link;
-        debug('[%s] Creating affiliate link', id);
-        seller.link.lomadee = (yield carefulGet({
-          url: 'createLinks/lomadee/' + API_TOKEN,
-          qs: _.extend({}, baseQuery, {sourceId: SOURCE_ID, link1: seller.link.url})
-        })).lomadeelinks[0].lomadeelink.redirectlink;
+        try {
+          var linkCandidate = (seller.links || []).filter(l => _.get(l, 'link.type') === 'seller');
+          if (linkCandidate && linkCandidate.length) {
+            seller.link = seller.links ? [0].link : null;
+          }
+          debug('[%s] Creating affiliate link', id);
+
+          seller.link.lomadee = _.get(yield carefulGet({
+            url: 'createLinks/lomadee/' + API_TOKEN,
+            qs: _.extend({}, baseQuery, {sourceId: SOURCE_ID, link1: _.get(seller, 'link.url')})
+          }), 'lomadeelinks[0].lomadeelink.redirectlink');
+        } catch (e){}
+
         // seller.offers = yield client.getOffers(seller.id);
         return seller;
       })(sellers[i]));

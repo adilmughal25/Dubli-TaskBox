@@ -99,7 +99,7 @@ function AdmitadClient(s_entity) {
 
   // no limitations knows/documented
   // DEH: Found some. It dies with a 503 if you try to parallelize it fully
-  limiter.request(this.client, 10, 1).debug(debug); 
+  limiter.request(this.client, 4, 1).debug(debug); 
 }
 
 /**
