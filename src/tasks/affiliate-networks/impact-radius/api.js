@@ -121,7 +121,7 @@ function impactRadiusClient(s_whitelabel, s_entity, s_region) {
   client.getMerchants   = ()    => paged(url('Campaigns'), 'Campaigns');
   client.getCampaignAds = ()    => paged(url('Ads', {type:'TEXT_LINK,COUPON'}), 'Ads');
   client.getPromoAds    = ()    => paged(url('PromoAds'), 'PromotionalAds');
-  client.getCommissions = (s,e) => paged(url('Actions',{StartDate:date(s),EndDate:date(e)}), 'Action');
+  client.getCommissions = (s,e) => paged(url('Actions',{StartDate:date(s),EndDate:date(e)}), 'Actions');
 
   _clientCache[_tag] = client;
 
