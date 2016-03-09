@@ -1,17 +1,17 @@
 "use strict";
 
 const co = require('co');
-const wait = require('co-waiter');
-const uuid = require('node-uuid');
+const wait = require('co-waiter'); // not used
+const uuid = require('node-uuid'); // not used
 const utils = require('ominto-utils');
 const prettyMs = require('pretty-ms');
 const o_configs = require('../../../../configs');
 const denodeify = require('denodeify');
 const gzip = denodeify(require('zlib').gzip);
-const _check = utils.checkApiResponse;
+const _check = utils.checkApiResponse; // not used
 
-const createEnvelope = utils.createEnvelope;
-const dataService = utils.getDataClient(o_configs.data_api.internalUrl, o_configs.data_api.auth);
+const createEnvelope = utils.createEnvelope; // not used
+const dataService = utils.getDataClient(o_configs.data_api.internalUrl, o_configs.data_api.auth); // not used
 
 const storePayloadInRedis = require('./store-payload-in-redis');
 const kinesisPut = require('./direct-kinesis-put');
