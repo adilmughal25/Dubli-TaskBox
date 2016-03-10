@@ -66,7 +66,8 @@ const ShareASaleGenericApi = function(s_entity) {
     let params = {dateStart: startDate, dateEnd: endDate};
 
     // get activities first - format/transform/clean them
-    response = yield that.client.getActivityDetails();
+    response = yield that.client.getActivityDetails(params);
+
     let activityTransactions = ary(response).map(transformActivity).filter(exists);
     activityTransactions = _.transform(activityTransactions, function(res, item, key) {
       res[item.transaction_id] = item;
