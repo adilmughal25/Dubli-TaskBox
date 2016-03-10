@@ -12,12 +12,13 @@ const LS_PREAUTH = {
   Authorization: "Basic YkxnOXFicVRzZWdDQ0VPTE5NN2dieHV0eWFvYTpKRWZTcEVPMldyZWhnRlB0MHJCMXd2MHU1REVh"
 };
 
+//TODO These should probably be moved to a config file
 const API_AUTH_FORMS = {
   ominto: {
     global: {
       grant_type: 'password',
       username: 'Ominto',
-      password: 'Mints098',
+      password: 'M135Inty',
       scope: 3239617
     },
   },
