@@ -163,15 +163,16 @@ function ShareASaleClient(s_entity) {
 ShareASaleClient.prototype.getByAction = co.wrap(function* (actionVerb, params) {
   params = params || {};
   debug('getByAction %s with params %o', actionVerb, params);
+  
   const apiCfg = API_TYPES[actionVerb];
 	let arg = {
     headers: this.getCustomHeaders(apiCfg.params.action),
-    qs: _.merge(apiCfg.params, params),
+    qs: _.merge(apiCfg.params, params, {'affiliateId': this.cfg.siteId, 'token' : this.cfg.token, 'secret': this.cfg.secret, 'XMLFormat':1}),
   };
 
   let response = {};
 
-  if (process.env.NODE_ENV === 'Adev') {
+  if (process.env.NODE_ENV === 'dev') {
     // for testing we do not perform live api requests - too low request limit
     response = yield devApiResponse(actionVerb).then(jsonify);
   } else {
