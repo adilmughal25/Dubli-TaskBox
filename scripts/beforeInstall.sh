@@ -39,7 +39,7 @@ fi
 chown -R node-app-run:node-app ${FTP_ROOT}
 
 # claim our IP address
-ec2-associate-address -i $AWS_INSTANCE_ID '50.200.40.245'
+ec2-associate-address -i $AWS_INSTANCE_ID '52.200.40.245'
 
 #AWS Cloudwatch Logs -- this is the "default" that doesn't run under upstart
 service awslogs stop
