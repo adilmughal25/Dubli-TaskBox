@@ -16,7 +16,7 @@ general:
     - "./coverage"
 deployment:
   production:
-    branch: prod
+    branch: dev
     codedeploy:
       taskbox:
-        deployment_group: prod-taskbox
+        deployment_group: dev-taskbox
