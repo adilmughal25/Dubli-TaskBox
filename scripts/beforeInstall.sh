@@ -22,6 +22,8 @@ else
 fi
 
 # clean up www-root
+cd ${WWW_ROOT}
+mkdir -p test
 rm -rf ${WWW_ROOT}/* 2> /dev/null
 chown node-app-files:node-app ${WWW_ROOT}
 mkdir -p ${WWW_ROOT}/logs ${WWW_ROOT}/var
