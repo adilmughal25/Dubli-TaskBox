@@ -172,7 +172,7 @@ ShareASaleClient.prototype.getByAction = co.wrap(function* (actionVerb, params) 
 
   let response = {};
 
-  if (process.env.NODE_ENV === 'dev') {
+  if (process.env.NODE_ENV === 'dev') { //TODO Update env for dev
     // for testing we do not perform live api requests - too low request limit
     response = yield devApiResponse(actionVerb).then(jsonify);
   } else {

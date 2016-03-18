@@ -13,7 +13,7 @@ const kinesis = new AWS.Kinesis({
 
 const env = o_configs.env;
 
-if (env === 'dev') {
+if (env === 'test') { //TODO Update for env.
   kinesis.$putRecord = () => new Promise(resolve => resolve());
 } else {
   kinesis.$putRecord = denodeify(kinesis.putRecord.bind(kinesis));
