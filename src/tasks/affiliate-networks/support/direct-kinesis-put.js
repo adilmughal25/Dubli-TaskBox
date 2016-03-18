@@ -23,7 +23,7 @@ function directKinesisPut(s_streamName, s_streamType, o_payload, o_flags, s_task
   const a_trigger = utils.createTrigger(null, null, null, 'taskbox', s_taskName, null, null);
   const envelope = utils.createEnvelope(s_streamType, {}, o_payload, o_flags, a_trigger);
   const stream = env + "-" + s_streamName;
-  debug("Sending kinesis event %s -> %s (%s)", s_streamName, s_streamType, s_taskName);
+  debug("Sending kinesis event %s -> %s (%s)", s_streamName, s_streamType, s_taskName, o_configs);
   return kinesis.$putRecord({
     StreamName: stream,
     PartitionKey: envelope.id || uuid.v4(),
