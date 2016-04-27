@@ -15,6 +15,16 @@ general:
     - "./docs"
     - "./coverage"
 deployment:
+  dev:
+    branch: dev
+    codedeploy:
+      taskbox:
+        deployment_group: dev-taskbox
+  staging:
+    branch: master
+    codedeploy:
+      taskbox:
+        deployment_group: stage-taskbox
   production:
     branch: prod
     codedeploy:

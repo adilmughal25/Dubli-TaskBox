@@ -25,7 +25,7 @@ function startMonitor(tasker) {
     tasker.report()
     .catch(e => {
       response.writeHead(200, {"Content-Type": "text/plain"});
-      response.end("Received Error "+e+"\n");
+      response.end("Received Error "+e+"\n" + " " + e.stack + "\n" );
     })
     .then(function(report) {
       response.writeHead(200, {"Content-Type": "text/html"});

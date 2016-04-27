@@ -93,7 +93,7 @@ var send = co.wrap(function* (s_myName, s_streamName, s_streamType, s_taskName, 
 
 
 
-var DEV_SAVE_MERCHANTS = (process.env.NODE_ENV === 'dev' && process.env.SAVE_MERCHANTS);
+var DEV_SAVE_MERCHANTS = (process.env.NODE_ENV === 'test' && process.env.SAVE_MERCHANTS);
 function devSaveMerchants(s_which, a_items) {
   if (!DEV_SAVE_MERCHANTS) return;
   var debug = _debug(s_which);
@@ -105,7 +105,7 @@ function devSaveMerchants(s_which, a_items) {
   console.log("\n\n  -> SAVED "+f+'\n');
 }
 
-var DEV_SAVE_COMMISSIONS = (process.env.NODE_ENV === 'dev' && process.env.SAVE_COMMISSIONS);
+var DEV_SAVE_COMMISSIONS = (process.env.NODE_ENV === 'test' && process.env.SAVE_COMMISSIONS);
 function devSaveCommissions(s_which, a_items) {
   if (!DEV_SAVE_COMMISSIONS) return;
   var debug = _debug(s_which);

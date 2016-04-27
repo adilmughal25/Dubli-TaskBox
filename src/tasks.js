@@ -1,7 +1,7 @@
 "use strict";
 
 const _ = require('lodash');
-const configs = require('../configs.json');
+const configs = require('../configs.json'); //Not used
 const affiliates = require('./tasks/affiliate-networks/index');
 const snsPing = require('./tasks/sns-ping');
 const TaskMatic = require('taskmatic');
@@ -22,7 +22,7 @@ function setup(log) {
 }
 
 function setupTaskManager(log) {
-  const db = process.env.NODE_ENV === 'dev' ? path.resolve(__dirname, '..', 'test/taskdb') : '/var/lib/taskbox-taskdb';
+  const db = process.env.NODE_ENV === 'test' ? path.resolve(__dirname, '..', 'test/taskdb') : '/var/lib/taskbox-taskdb'; //TODO Update for dev env.
   const tasker = new TaskMatic({
     dbPath: db,
     noDebug: true

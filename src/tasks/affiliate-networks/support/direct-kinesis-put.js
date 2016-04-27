@@ -13,7 +13,7 @@ const kinesis = new AWS.Kinesis({
 
 const env = o_configs.env;
 
-if (env === 'dev') {
+if (env === 'test') { //TODO Update for env.
   kinesis.$putRecord = () => new Promise(resolve => resolve());
 } else {
   kinesis.$putRecord = denodeify(kinesis.putRecord.bind(kinesis));
@@ -23,7 +23,7 @@ function directKinesisPut(s_streamName, s_streamType, o_payload, o_flags, s_task
   const a_trigger = utils.createTrigger(null, null, null, 'taskbox', s_taskName, null, null);
   const envelope = utils.createEnvelope(s_streamType, {}, o_payload, o_flags, a_trigger);
   const stream = env + "-" + s_streamName;
-  debug("Sending kinesis event %s -> %s (%s)", s_streamName, s_streamType, s_taskName);
+  debug("Sending kinesis event %s -> %s (%s)", s_streamName, s_streamType, s_taskName, o_configs);
   return kinesis.$putRecord({
     StreamName: stream,
     PartitionKey: envelope.id || uuid.v4(),

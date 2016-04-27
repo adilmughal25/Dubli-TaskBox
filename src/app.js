@@ -41,8 +41,8 @@ function init(id) {
 function taskEvents (tasker, log) {
   const updateReport = function() {
     // if (process.env.NODE_ENV === 'dev') return;
-    tasker.report().then(function(data) {
-      const file = process.env.NODE_ENV === 'dev' ?
+    tasker.report().then(function(data) { 
+      const file = process.env.NODE_ENV === 'test' ?
         path.resolve(__dirname, '..', 'test/output/run-report.json') :
         path.resolve(__dirname, '..', 'logs/run-report.json');
       fs.writeFile(file, JSON.stringify(data), 'utf8');
@@ -78,7 +78,7 @@ function taskEvents (tasker, log) {
     log.info(task, prefix(task, "Task registered"));
   });
 
-  if (process.env.NODE_ENV !== 'dev' || !!process.env.RUN_TASKS_IN_DEV) {
+  if (process.env.NODE_ENV !== 'test' || !!process.env.RUN_TASKS_IN_DEV) { //TODO Update env for dev.
     tasker.start()
       .then(x => {
         log.info("Task Manager started!");

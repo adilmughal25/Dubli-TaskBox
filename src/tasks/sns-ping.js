@@ -7,7 +7,7 @@ const denodeify = require('denodeify');
 const AWS = require('aws-sdk');
 const sns = new AWS.SNS();
 const snsPub = denodeify(sns.publish.bind(sns));
-const isDev = process.env.NODE_ENV === 'dev';
+const isDev = process.env.NODE_ENV === 'test';
 
 function* ping() {
   const params = {
