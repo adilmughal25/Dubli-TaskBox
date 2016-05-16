@@ -166,8 +166,8 @@ const zanoxDubliGlobalApi = zanoxGenericApi('global', 'dubli');
 
 function init(tasker) {
   initializeMerchantImporters(tasker);
-  //initializeCommissionsProcessors(tasker);
-  //initializeCommissionsDubliProcessors(tasker);
+  initializeCommissionsProcessors(tasker);
+  initializeCommissionsDubliProcessors(tasker);
 }
 
 
