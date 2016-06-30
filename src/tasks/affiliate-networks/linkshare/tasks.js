@@ -133,16 +133,20 @@ const LinkShareGenericApi = function(s_region, s_entity) {
 };
 
 function prepareCommission(o_obj) {
+
   const commission = {};
-  const isEvent = o_obj.is_event === "Y";
-  commission.outclick_id = o_obj.u1;
-  commission.transaction_id = o_obj.etransaction_id;
-  commission.purchase_amount = o_obj.sale_amount;
-  commission.commission_amount = o_obj.commissions;
-  commission.currency = o_obj.currency;
-  commission.state = isEvent ? 'initiated' : 'confirmed';
-  commission.effective_date = o_obj.process_date;
-  return commission;
+
+  if(o_obj.is_event === "N"){
+    const isEvent = o_obj.is_event === "Y";
+    commission.outclick_id = o_obj.u1;
+    commission.transaction_id = o_obj.etransaction_id;
+    commission.purchase_amount = o_obj.sale_amount;
+    commission.commission_amount = o_obj.commissions;
+    commission.currency = o_obj.currency;
+    commission.state = isEvent ? 'initiated' : 'confirmed';
+    commission.effective_date = o_obj.process_date;
+    return commission;
+  }
 }
 
 function sendMerchantsToEventHub(merchants) {
