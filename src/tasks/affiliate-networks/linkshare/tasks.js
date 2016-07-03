@@ -135,15 +135,18 @@ const LinkShareGenericApi = function(s_region, s_entity) {
 function prepareCommission(o_obj) {
 
   const commission = {};
-
+  // Only confirmed transaction from linkshare are included in the transactions table,
+  // as we get different source_transaction_id for each transactions status change
+  // (is_event = N - confirmed, is_event = Y = initiated), which causes a bug.
   if(o_obj.is_event === "N"){
-    const isEvent = o_obj.is_event === "Y";
+    //const isEvent = o_obj.is_event === "Y"; // old code
     commission.outclick_id = o_obj.u1;
     commission.transaction_id = o_obj.etransaction_id;
     commission.purchase_amount = o_obj.sale_amount;
     commission.commission_amount = o_obj.commissions;
     commission.currency = o_obj.currency;
-    commission.state = isEvent ? 'initiated' : 'confirmed';
+    //commission.state = isEvent ? 'initiated' : 'confirmed'; // old code
+    commission.state = 'paid';
     commission.effective_date = o_obj.process_date;
     return commission;
   }
