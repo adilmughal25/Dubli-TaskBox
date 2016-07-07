@@ -132,31 +132,42 @@ function createClient() {
     });
     let sellers = data.sellers || [];
     for (let i = 0; i < sellers.length; i++) {
-      results.push(co.wrap(function*(merchant){
-        let id = 'merchant#' + merchant.id;
-        debug('[%s] Getting merchant details', id);
-        let seller = (yield carefulGet({
-          url: 'viewSellerDetails/' + API_TOKEN,
-          qs: _.extend({}, baseQuery, {sellerId: merchant.id})
-        })).seller || {};
-        seller.advertiserid = merchant.advertiserId;
-        seller.thumbnail = merchant.thumbnail;
-        try {
-          var linkCandidate = (seller.links || []).filter(l => _.get(l, 'link.type') === 'seller');
-          if (linkCandidate && linkCandidate.length) {
-            seller.link = seller.links ? [0].link : null;
-          }
-          debug('[%s] Creating affiliate link', id);
+      // The external API gets merchant with id = 0, which on subsequent api call
+      // gets incorrect data.
+      // TODO: clarify with lomadee about this!!!
+      if(sellers[i].id != 0){
+        results.push(co.wrap(function*(merchant){
+          let id = 'merchant#' + merchant.id;
+          debug('[%s] Getting merchant details', id);
 
-          seller.link.lomadee = _.get(yield carefulGet({
-            url: 'createLinks/lomadee/' + API_TOKEN,
-            qs: _.extend({}, baseQuery, {sourceId: SOURCE_ID, link1: _.get(seller, 'link.url')})
-          }), 'lomadeelinks[0].lomadeelink.redirectlink');
-        } catch (e){}
+          // get merchant information
+          let seller = (yield carefulGet({
+            url: 'viewSellerDetails/' + API_TOKEN,
+            qs: _.extend({}, baseQuery, {sellerId: merchant.id})
+          })).seller || {};
+          seller.advertiserid = merchant.advertiserId;
+          seller.thumbnail = merchant.thumbnail;
+          try {
+            // check for additional links
+            var linkCandidate = (seller.links || []).filter(l => _.get(l, 'link.type') === 'seller');
+            if (linkCandidate && linkCandidate.length) {
+              seller.link = seller.links ? [0].link : null;
+            }
+            debug('[%s] Creating affiliate link', id);
 
-        // seller.offers = yield client.getOffers(seller.id);
-        return seller;
-      })(sellers[i]));
+            // get the redirectUrl for the merchant using the displayUrl [deep linking]
+            var redirectUrl = _.get(yield carefulGet({
+              url: 'createLinks/lomadee/' + API_TOKEN,
+              qs: _.extend({}, baseQuery, {sourceId: SOURCE_ID, link1: _.get(seller.links[0], 'link.url')})
+            }), 'lomadeelinks[0].lomadeelink.redirectlink');
+
+            seller.redirectUrl = redirectUrl;
+          } catch (e){}
+
+          // seller.offers = yield client.getOffers(seller.id);
+          return seller;
+        })(sellers[i]));
+      }
     }
     return yield Promise.all(results);
   });
