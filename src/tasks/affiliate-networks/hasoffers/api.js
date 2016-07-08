@@ -5,6 +5,10 @@ const request = require('request-promise');
 const qs = require('querystring');
 const limiter = require('ominto-utils').promiseRateLimiter;
 
+/*
+arabyads : https://api.hasoffers.com/v3/Affiliate_Affiliate.json?Method=getAccountManager&api_key=MY_API_KEY&NetworkId=SAMPLE
+*/
+
 const API_CFG = {
   url: 'https://api.hasoffers.com/',
   ominto: {
@@ -21,6 +25,11 @@ const API_CFG = {
     shopstylers: {
       api_key: '5fae392de6f20a7199d2fe97f4b0e382acafc6d49e01eb84baccebacbc109ba6',
       NetworkId: 'sscpa',
+      defaultCurrency: 'myr'
+    },
+    arabyads: {
+      api_key: '2f4b194614629ed6fdb455104523d571b4d30f4b8df95eb89b8efbd12ce664c8',
+      NetworkId: 'arabyads',
       defaultCurrency: 'myr'
     }
   },

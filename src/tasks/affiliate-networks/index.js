@@ -79,6 +79,7 @@ const impactRadiusDubliCAApi = impactRadiusGenericApi('impactradius', 'ca', 'dub
 const dgmDubliAUApi = impactRadiusGenericApi('dgm', 'au', 'dubli');
 
 const hasoffersGenericApi = require('./hasoffers/tasks');
+const arabyadsApi = hasoffersGenericApi('arabyads');
 const snapdealApi = hasoffersGenericApi('snapdeal');
 const vcommissionApi = hasoffersGenericApi('vcommission');
 const shopstylers = hasoffersGenericApi('shopstylers');
@@ -186,6 +187,7 @@ function initializeMerchantImporters(tasker) {
     "Affili.Net (Switzerland) Merchants": affilinetSwitzerlandApi.getMerchants,
     "Affili.Net (UK) Merchants": affilinetUKApi.getMerchants,
     "AffiliateWindow Merchants": affiliatewindowApi.getMerchants,
+    "ArabyAds Merchants" : arabyadsApi.getMerchants,
     "AvantLink (CA) Merchants": avantLinkCAApi.getMerchants,
     "AvantLink (US) Merchants": avantLinkUSApi.getMerchants,
     "Belboon Merchants": belboonApi.getMerchants,
@@ -251,6 +253,7 @@ function initializeCommissionsProcessors(tasker) {
     "Affiliate Gateway (SG) Commissions": affiliateGatewaySgApi.getCommissionDetails,
     "AffiliateWindow Commissions": affiliatewindowApi.getCommissionDetails,
     // "Amazon (IN) Commissions": amazonApi.getCommissionDetails, // problems w/ amazon.in
+    "ArabyAds Commissions" : arabyadsApi.getCommissionDetails,
     "AvantLink (CA) Commissions": avantLinkCAApi.getCommissionDetails,
     "AvantLink (US) Commissions": avantLinkUSApi.getCommissionDetails,
     "Belboon Commissions": belboonApi.getCommissionDetails,
