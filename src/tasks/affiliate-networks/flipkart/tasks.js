@@ -19,7 +19,7 @@ const FlipkartGenericApi = function(s_entity) {
   this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'flipkart';
 
   this.getCommissionDetails = singleRun(function* () {
-    const start = moment().subtract(75, 'days').format('YYYY-MM-DD');
+    const start = moment().subtract(90, 'days').format('YYYY-MM-DD');
     const end = moment().format('YYYY-MM-DD');
     const results = yield that.client.ordersReport(start, end);
 

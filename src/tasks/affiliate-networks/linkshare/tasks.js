@@ -108,7 +108,7 @@ const LinkShareGenericApi = function(s_region, s_entity) {
   this.getCommissionDetails = singleRun(function*(){
     let page = 1;
     let commissions = [];
-    const startTime = moment().subtract(60, 'days').toDate();
+    const startTime = moment().subtract(90, 'days').toDate();
     const endTime = new Date(Date.now() - (60 * 1000));
 
     while (true) {

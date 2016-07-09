@@ -97,7 +97,7 @@ const AdCellGenericApi = function(s_entity) {
   this.getCommissionDetails = singleRun(function* () {
     let transactions = [],
         events = [],
-        startDate = new Date(Date.now() - (30 * 86400 * 1000)),
+        startDate = new Date(Date.now() - (90 * 86400 * 1000)),
         endDate = new Date(Date.now() - (60 * 1000));
     const exists = x => !!x;
 

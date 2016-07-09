@@ -40,7 +40,7 @@ const PartnerAdsGenericApi = function(s_entity) {
    * @returns {undefined}
    */
   this.getCommissionDetails = singleRun(function* () {
-    const startDate = new Date(Date.now() - (30 * 86400 * 1000));
+    const startDate = new Date(Date.now() - (90 * 86400 * 1000));
     const endDate = new Date(Date.now() - (60 * 1000));
 
     // get all sales/leads

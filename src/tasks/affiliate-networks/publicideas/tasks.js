@@ -56,7 +56,7 @@ function setup(s_region) {
   });
 
   const getCommissionDetails = singleRun(function* () {
-    const start = moment().subtract(75, 'days').toDate();
+    const start = moment().subtract(90, 'days').toDate();
     const end = new Date();
     const pending = yield client.getPendingCommissions(start, end);
     const validated = yield client.getValidatedCommissions(start, end);

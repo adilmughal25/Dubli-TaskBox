@@ -32,7 +32,7 @@ const AffiliateWindowGenericApi = function(s_entity) {
   this.getCommissionDetails = singleRun(function* () {
     yield that.client.setup();
     const endDate = new Date(Date.now() - (60 * 1000));
-    const startDate = moment().subtract(75, 'days').toDate();
+    const startDate = moment().subtract(90, 'days').toDate();
     const transactionRanges = getRanges(startDate, endDate);
     const validationRanges = getRanges(startDate, endDate);
     let results = [];

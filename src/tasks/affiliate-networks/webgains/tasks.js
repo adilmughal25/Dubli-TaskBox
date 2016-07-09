@@ -78,7 +78,7 @@ const WebgainsGenericApi = function(s_entity) {
 
     let results = [];
     let transactions = [];
-    const startDate = new Date(Date.now() - (14 * 86400 * 1000));
+    const startDate = new Date(Date.now() - (90 * 86400 * 1000));
     const endDate = new Date(Date.now() - (60 * 1000));
 
     results = yield that.doApi('getFullEarningsWithCurrency', {

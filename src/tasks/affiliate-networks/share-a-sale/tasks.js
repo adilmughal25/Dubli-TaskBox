@@ -61,7 +61,7 @@ const ShareASaleGenericApi = function(s_entity) {
    */
   this.getCommissionDetails = singleRun(function*() {
     let response = {};
-    let startDate = new Date(Date.now() - (30 * 86400 * 1000));
+    let startDate = new Date(Date.now() - (90 * 86400 * 1000));
     let endDate = new Date(Date.now() - (60 * 1000));
     let params = {dateStart: startDate, dateEnd: endDate};
 

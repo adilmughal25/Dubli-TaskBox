@@ -57,7 +57,7 @@ const CommissionJunctionGenericApi = function(s_region, s_entity) {
   this.getCommissionDetails = co.wrap(function* () {
     const clientC = cjClient(that.entity, that.region, 'commissions');
     const currency = CURRENCY_MAP[that.region];
-    const periods = commissionPeriods(31, 3); // three 31-day periods
+    const periods = commissionPeriods(90, 3); // three 31-day periods
     let all = [];
 
     for (let i = 0; i < periods.length; i++) {

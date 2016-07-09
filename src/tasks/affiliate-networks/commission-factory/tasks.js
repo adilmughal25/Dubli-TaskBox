@@ -54,7 +54,7 @@ const CommissionFactoryGernericApi = function(s_entity) {
   });
 
   this.getCommissionDetails = singleRun(function* () {
-    const start = moment().subtract(75, 'days').toDate();
+    const start = moment().subtract(90, 'days').toDate();
     const end = moment().toDate();
     const url = getTransactionsUrl(start, end);
     const events = (yield that.client.get(url)).map(prepareCommission);

@@ -55,7 +55,7 @@ function setup(s_region, s_entity) {
     let clientC = clientPool.getClient(entity, s_region, 'commissions');
     let transactions = [];
     let events = [];
-    let startDate = new Date(Date.now() - (30 * 86400 * 1000));
+    let startDate = new Date(Date.now() - (90 * 86400 * 1000));
     let endDate = new Date(Date.now() - (60 * 1000));
     const exists = x => !!x;
 

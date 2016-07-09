@@ -32,7 +32,7 @@ const GrouponGenericApi = function(s_region, s_entity) {
    * @returns {undefined}
    */
   this.getCommissionDetails = singleRun(function* () {
-    const startDate = new Date(Date.now() - (30 * 86400 * 1000));
+    const startDate = new Date(Date.now() - (90 * 86400 * 1000));
     const endDate = new Date(Date.now() - (60 * 1000));
 
     debug("fetching all transactions between %s and %s", startDate, endDate);

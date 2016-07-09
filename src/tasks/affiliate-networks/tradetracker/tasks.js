@@ -81,7 +81,7 @@ const TradeTrackerGenericApi = function(s_region, s_entity) {
   // get commission report
   tasks.getCommissionDetails = singleRun(function* () {
     tasks.client = yield clientPool.getClient(tasks.entity, tasks.region);
-    const startDate = new Date(Date.now() - (30 * 86400 * 1000));
+    const startDate = new Date(Date.now() - (90 * 86400 * 1000));
     const endDate = new Date(Date.now() - (60 * 1000));
     let args = _.merge(CONVERSIONTRANS_ARGS, {options:{
       registrationDateFrom: dateFormat(startDate),

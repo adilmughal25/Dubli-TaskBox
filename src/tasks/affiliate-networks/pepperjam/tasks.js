@@ -48,7 +48,7 @@ const PepperJamGenericApi = function(s_entity) {
   });
 
   this.getCommissionDetails = singleRun(function* () {
-    const startDate = moment().subtract(30, 'days').format('YYYY-MM-DD');
+    const startDate = moment().subtract(90, 'days').format('YYYY-MM-DD');
     const endDate = moment().format('YYYY-MM-DD');
     const results = yield that.client.getPaginated('/publisher/report/transaction-details', {startDate:startDate, endDate:endDate});
     const events = results.map(prepareCommission).filter(exists);

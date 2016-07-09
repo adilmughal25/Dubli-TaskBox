@@ -59,7 +59,7 @@ var getMerchants = singleRun(function* () {
  */
 var getCommissionDetails = singleRun(function* () {
   let transactions = [], response = [];
-  const startDate = new Date(Date.now() - (30 * 86400 * 1000));
+  const startDate = new Date(Date.now() - (90 * 86400 * 1000));
   const endDate = new Date(Date.now() - (60 * 1000));
 
   transactions = [].concat(

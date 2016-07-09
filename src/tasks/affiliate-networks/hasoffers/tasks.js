@@ -80,7 +80,7 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
     .map(f => 'Stat.'+f);
 
   this.getCommissionDetails = co.wrap(function* () {
-    const start = moment().subtract(30, 'days').format('YYYY-MM-DD');
+    const start = moment().subtract(90, 'days').format('YYYY-MM-DD');
     const end = moment().format('YYYY-MM-DD');
     let results = [];
     let page = 1;

@@ -48,7 +48,7 @@ function ImpactRadiusGenericApi(s_whitelabel, s_region, s_entity) {
   });
 
   const getCommissionDetails = tasks.getCommissionDetails = singleRun(function* () {
-    const startTime = moment().subtract(60, 'days').toDate();
+    const startTime = moment().subtract(90, 'days').toDate();
     const endTime = new Date(Date.now() - (60 * 1000)); //
     debug("fetching all events between %s and %s", startTime, endTime);
 

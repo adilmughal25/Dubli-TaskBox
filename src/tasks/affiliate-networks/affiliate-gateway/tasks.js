@@ -19,7 +19,7 @@ function setup(s_region) {
   // get commission report
   tasks.getCommissionDetails = singleRun(function* () {
     const client = yield clientPool.getClient(s_region);
-    const startDate = new Date(Date.now() - (30 * 86400 * 1000));
+    const startDate = new Date(Date.now() - (90 * 86400 * 1000));
     const endDate = new Date(Date.now() - (60 * 1000));
 
     debug("fetching all transactions between %s and %s", startDate, endDate);

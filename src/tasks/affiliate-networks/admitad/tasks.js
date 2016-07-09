@@ -30,7 +30,7 @@ const AdmitadGenericApi = function(s_entity) {
    * @returns {undefined}
    */
   this.getCommissionDetails = singleRun(function* () {
-    let startDate = new Date(Date.now() - (30 * 86400 * 1000));
+    let startDate = new Date(Date.now() - (90 * 86400 * 1000));
     let endDate = new Date(Date.now() - (60 * 1000));
 
     debug("fetching all transactions between %s and %s", startDate, endDate);
