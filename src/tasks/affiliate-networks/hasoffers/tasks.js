@@ -36,6 +36,8 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
     };
 
     yield that.doApiGetAllTrackingLinks(results.merchants);
+    // get country information - by doing a subsequent api call
+    yield that.getTargetCountries(results.merchants);
     var merged = merge(results);
     return yield sendEvents.sendMerchants(that.eventName, merged);
   });
@@ -104,6 +106,27 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
 
     const events = results.map(prepareCommission);
     return yield sendEvents.sendCommissions(that.eventName, events);
+  });
+
+  // to get the countries information for the merchant
+  this.getTargetCountries = co.wrap(function* (merchants){
+    for (var i = 0; i < merchants.length; i++) {
+      var merchant = merchants[i];
+      var url = that.client.url('Affiliate_Offer', 'getTargetCountries', {
+        'ids[]':merchant.id
+      });
+      debug(">> fetch %s", url);
+
+      var countries = [];
+      var response = yield that.client.get(url);
+      var countriesMetaData = response.response.data[0].countries || [];
+      for (var country in countriesMetaData) {
+        if (countriesMetaData.hasOwnProperty(country)) {
+          countries.push(countriesMetaData[country].code.toLowerCase());
+        }
+      }
+      merchant.country = countries || [];
+    }
   });
 };
 
