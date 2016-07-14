@@ -5,10 +5,6 @@ const request = require('request-promise');
 const qs = require('querystring');
 const limiter = require('ominto-utils').promiseRateLimiter;
 
-/*
-arabyads : https://api.hasoffers.com/v3/Affiliate_Affiliate.json?Method=getAccountManager&api_key=MY_API_KEY&NetworkId=SAMPLE
-*/
-
 const API_CFG = {
   url: 'https://api.hasoffers.com/',
   ominto: {

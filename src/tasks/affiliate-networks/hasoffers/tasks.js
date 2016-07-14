@@ -38,6 +38,9 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
     yield that.doApiGetAllTrackingLinks(results.merchants);
     // get country information - by doing a subsequent api call
     yield that.getTargetCountries(results.merchants);
+    // get category information - by doing a subsequent api call
+    yield that.getTargetCategories(results.merchants);
+
     var merged = merge(results);
     return yield sendEvents.sendMerchants(that.eventName, merged);
   });
@@ -45,7 +48,9 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
   this.doApiGetAllTrackingLinks  = co.wrap(function* (merchants) {
     for (var i = 0; i < merchants.length; i++) {
       var merchant = merchants[i];
-      var url = that.client.url('Affiliate_Offer', 'generateTrackingLink', {offer_id:merchant.id});
+      var url = that.client.url('Affiliate_Offer', 'generateTrackingLink', {
+        offer_id:merchant.id
+      });
       debug("fetch %s", url);
 
       var response = yield that.client.get(url);
@@ -126,6 +131,19 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
         }
       }
       merchant.country = countries || [];
+    }
+  });
+
+  // to get the categories information for the merchant
+  this.getTargetCategories = co.wrap(function* (merchants){
+    for (var i = 0; i < merchants.length; i++) {
+      var merchant = merchants[i];
+      var url = that.client.url('Affiliate_Offer', 'getCategories', {
+        'ids[]':merchant.id
+      });
+      debug(">> fetch %s", url);
+      var response = yield that.client.get(url);
+      merchant.categories = response.response.data[0].categories || [];
     }
   });
 };
