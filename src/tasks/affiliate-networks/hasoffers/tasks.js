@@ -126,10 +126,12 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
 
       var countries = [];
       var response = yield that.client.get(url);
-      var countriesMetaData = response.response.data[0].countries || [];
-      for (var country in countriesMetaData) {
-        if (countriesMetaData.hasOwnProperty(country)) {
-          countries.push(countriesMetaData[country].code.toLowerCase());
+      if (response && response.response && response.response.data[0] && response.response.data[0].countries) {
+        var countriesMetaData = response.response.data[0].countries || [];
+        for (var country in countriesMetaData) {
+          if (countriesMetaData.hasOwnProperty(country)) {
+            countries.push(countriesMetaData[country].code.toLowerCase());
+          }
         }
       }
       merchant.country = countries || [];
@@ -150,7 +152,11 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
       });
       debug(">> fetch %s", url);
       var response = yield that.client.get(url);
-      merchant.categories = response.response.data[0].categories || [];
+      var categories = [];
+      if (response && response.response && response.response.data[0] && response.response.data[0].categories) {
+        categories = response.response.data[0].categories || [];
+      }
+      merchant.categories = categories;
     }
   });
 };
