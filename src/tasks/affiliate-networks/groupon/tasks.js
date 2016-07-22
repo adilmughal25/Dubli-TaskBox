@@ -100,6 +100,7 @@ function prepareCommission(o_obj) {
   let event = {
     affiliate_name: AFFILIATE_PROGRAM_NAME + (o_obj.item[0].DealListName==='unknown' ? '' : (' -' + o_obj.item[0].DealListName)),
     transaction_id: o_obj.item[0].BillingId,
+    order_id: o_obj.item[0].BillingId,
     outclick_id: o_obj.item[0].Sid,
     currency: o_obj.item[0].Currency,
     purchase_amount: o_obj.item.SaleGrossAmount,

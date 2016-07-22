@@ -71,6 +71,7 @@ function extractConversionData(d) {
 function prepareCommission(o_obj) {
   const event = {
     transaction_id: o_obj.conversion_id,
+    order_id: o_obj.conversion_id,
     outclick_id: o_obj.click.publisher_reference,
     purchase_amount: o_obj.conversion_value.value,
     commission_amount: o_obj.conversion_value.publisher_commission,

@@ -71,6 +71,7 @@ function prepareCommission(region, o_obj) {
   var event = {
     affiliate_name: o_obj.ProgramName, // MerchantName or ProgramName
     transaction_id: o_obj.TransactionId,
+    order_id: o_obj.TransactionId,
     outclick_id: (o_obj.AffiliateSubId || ''),  // is an optional element
     currency: CURRENCY_MAP[region],
     purchase_amount: Number(o_obj.OrderAmount),

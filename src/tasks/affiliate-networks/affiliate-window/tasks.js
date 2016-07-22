@@ -109,6 +109,7 @@ const DATE_MAP = {
 function prepareCommission(o_obj) {
   const event = {
     transaction_id: o_obj.iId,
+    order_id: o_obj.iId,
     outclick_id: o_obj.sClickref,
     currency: o_obj.mCommissionAmount.sCurrency,
     purchase_amount: o_obj.mSaleAmount.dAmount,

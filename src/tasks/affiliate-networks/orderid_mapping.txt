@@ -1,0 +1,680 @@
+Following are the responses that we receive by making api calls to the affiliates.
+Field Mapping :
+Our Field : Thier Field
+
+/---------------------------------------------------------------/
+	adcell
+	transaction_id 	:	commissionId
+	order_id 		:	commissionId
+/---------------------------------------------------------------/
+{ commissionId: '9032328',
+  createTime: '2016-07-14 22:01:30',
+  changeTime: '',
+  programId: '3721',
+  programName: 'Neocreo',
+  eventId: '4651',
+  eventName: 'Verkauf',
+  eventType: 'SALE',
+  subId: 'a9134bf049f811e681dfe3c99d1d53fb44a1f2',
+  totalShoppingCart: '52.3400',
+  totalCommission: '5.2340',
+  referer: 'kein Referrer vorhanden',
+  promotionId: '106215',
+  status: 'open',
+  changeNote: ''
+ }
+/---------------------------------------------------------------/
+
+/---------------------------------------------------------------/
+	admitad
+	transaction_id 	:	action_id
+	order_id 		:	order_id
+/---------------------------------------------------------------/
+{ comment: null,
+  click_user_ip: '5.18.42.31',
+  currency: 'RUB',
+  website_name: 'Ominto',
+  status_updated: '2016-07-15 06:29:15',
+  id: 59754420,
+  advcampaign_id: 3625,
+  subid1: null,
+  subid3: null,
+  subid2: null,
+  subid4: null,
+  click_user_referer: 'https://dubli.com/ru/ru/m/groupon-1/',
+  click_date: '2016-07-15 04:48:28',
+  action_id: 59754420,
+  status: 'pending',
+  order_id: '38463671',
+  cart: null,
+  conversion_time: 6047,
+  paid: 0,
+  payment: 0,
+  advcampaign_name: 'Groupon RU',
+  tariff_id: 1418,
+  keyword: null,
+  closing_date: '2016-07-23',
+  positions:
+   [ { tariff_id: 1418,
+       rate: '0.00',
+       id: 63862123,
+       product_url: '',
+       amount: null,
+       percentage: false,
+       datetime: '2016-07-15 06:29:15',
+       payment: '0.00' } ],
+  subid: null,
+  action_date: '2016-07-15 06:29:15',
+  processed: 0,
+  action_type: 'lead',
+  action: 'Регистрация'
+}
+/---------------------------------------------------------------/
+
+/---------------------------------------------------------------/
+	affiliate-gateway
+	transaction_id 	:	TransactionId
+	order_id 		:	TransactionId
+/---------------------------------------------------------------/
+{ Error:
+   [ { attributes: { code: '1003' },
+       '$value': 'Access denied to SOAP API.'
+     }
+   ]
+}
+/---------------------------------------------------------------/
+
+/---------------------------------------------------------------/
+	affiliatewindow - http://wiki.affiliatewindow.com/index.php/Affiliate_Service_API_v4#getTransaction
+	transaction_id 	:	iId
+	order_id 		:	iId
+/---------------------------------------------------------------/
+{ iId: '215169247',
+  sStatus: 'declined',
+  sType: 'normal',
+  sIp: '223.219.217.173',
+  bPaid: 'false',
+  iPaymentId: '0',
+  sDeclinedReason: 'cancelled',
+  iMerchantId: '3604',
+  mSaleAmount: { dAmount: '277.08', sCurrency: 'GBP' },
+  mCommissionAmount: { dAmount: '22.17', sCurrency: 'GBP' },
+  dClickDate: '2016-05-27T12:03:21+00:00',
+  dTransactionDate: '2016-05-27T12:08:42+00:00',
+  dValidationDate: '2016-06-16T11:14:16+00:00',
+  sClickref: '2c87add0240311e68e18319a2e91940e1',
+  aTransactionParts:
+   { TransactionPart:
+      { sCommissionGroupName: 'CLOTHING',
+        mSaleAmount: { dAmount: '277.08', sCurrency: 'GBP' },
+        mCommissionAmount: { dAmount: '22.17', sCurrency: 'GBP' },
+        iCommission: '8',
+        sCommissionType: 'percentage'
+      }
+   }
+}
+/---------------------------------------------------------------/
+
+/---------------------------------------------------------------/
+	affili-net - http://publisher.affili.net/HtmlContent/de/downloads/Web%20Services/Documentation_GetTransactions.pdf
+	transaction_id 	:	TransactionId
+	order_id 		:	TransactionId
+/---------------------------------------------------------------/
+{ BasketInfo:
+   { BasketId: '271764056',
+     OpenBasketItemCount: '2',
+     RegisteredNetPrice: '83.32',
+     TotalBasketItemCount: '2' },
+  CancellationReason: { '$': { nil: 'true' } },
+  CheckDate: { '$': { nil: 'true' } },
+  ClickDate: '2016-06-30T20:10:12',
+  CreativeInfo: { CreativeNumber: '3', CreativeType: 'Text' },
+  NetPrice: '83.32',
+  ProgramId: '14141',
+  ProgramTitle: 'Tonersupermarkt',
+  PublisherCommission: '8.33',
+  RateInfo: { '$': { nil: 'true' } },
+  RegistrationDate: '2016-06-30T20:35:20',
+  SubId: 'e52531503eed11e6a7035704eec1ce9b25629d',
+  TrackingMethod: 'PostClick',
+  TransactionId: '260522666',
+  TransactionStatus: 'Open'
+ }
+/---------------------------------------------------------------/
+
+/---------------------------------------------------------------/
+	avantlink
+	transaction_id 	:	Order_Id
+	order_id 		:	Order_Id
+/---------------------------------------------------------------/
+{ Merchant: 'Book Outlet',
+  Website: 'Ominto, Inc',
+  Tool_Name: 'Custom Link',
+  Campaign_Product_Link: '',
+  Custom_Tracking_Code: '',
+  Order_Id: '3Q35Y3ZS2842A3N',
+  Transaction_Amount: '$12.38',
+  Base_Commission: '$1.24',
+  Incentive_Commission: '$0.00',
+  Total_Commission: '$1.24',
+  Transaction_Type: 'SALE',
+  Transaction_Date: '2016-07-18 17:17:26',
+  Last_Click_Through: '2016-07-18 17:18:02',
+  Mobile_Order: 'No',
+  New_Customer: 'No',
+  Item_Count: '2',
+  AvantLink_Transaction_Id: 'SALE-22904859',
+  Merchant_Id: '12967'
+}
+/---------------------------------------------------------------/
+
+/---------------------------------------------------------------/
+	belboon - https://www.belboon.com/wp-content/uploads/2016/02/EN_Publisher_Handbook_Webservices_Account_V1_0.pdf
+	transaction_id 	:	eventid
+	order_id 		:	eventid
+/---------------------------------------------------------------/
+{ eventid: '682558627', // transaction_id
+  programid: '482',
+  programname: 'English-Book-Service.de - B&uuml;cher in englischer Sprache',
+  platformid: '598628',
+  platformname: 'Ominto',
+  eventstatus: 'PENDING',
+  eventdate: '2016-05-10 15:17:47',
+  lastchangedate: '2016-07-10 05:45:02',
+  eventtype: 'SALE',
+  ordercode: '38754',
+  eventcurrency: 'EUR',
+  eventcommission: '0.81',
+  eventcondition: 'SALE',
+  netvalue: '10.11',
+  eventinfo: 'customer_name=Aseil Seily&amp;kdnr=19039',
+  subid: 'subid=a08450e016b011e69a138b230490a6c22559c6/+afsrc=1'
+}
+/---------------------------------------------------------------/
+
+/---------------------------------------------------------------/
+	commissionfactory - http://dev.commissionfactory.com/V1/Merchant/Functions/GetTransactions/
+	transaction_id 	:	Id
+	order_id 		:	OrderId
+/---------------------------------------------------------------/
+{ Id: 1580135,
+  DateCreated: '2016-07-17T19:10:05.993',
+  DateModified: '2016-07-17T19:10:05.993',
+  MerchantId: 25988,
+  MerchantName: 'Menulog Australia',
+  MerchantAvatarUrl: 'http://c.cfjump.com/Avatars/860016D8-64C0-4405-84E9-075A33092DDD.png',
+  TrafficType: 'Website',
+  TrafficSource: 'https://dubli.com/au/en/m/menulog-au/',
+  CreativeType: 'Text Link',
+  CreativeId: null,
+  CreativeName: null,
+  CustomerIpAddress: '101.191.139.211',
+  CustomerCountryCode: 'AUS',
+  CustomerCountryName: 'Australia',
+  OrderId: 'ZPQMN79',
+  UniqueId: '286c80604bfc11e6b8281de285f1e126256b0d',
+  TrackingMethod: 'Cookie',
+  SaleValue: 56.6,
+  Commission: 1.7,
+  ReportedCurrencyCode: null,
+  ReportedCurrencyName: null,
+  ReportedSaleValue: null,
+  CustomerIpBlacklisted: false,
+  TrafficSourceApproved: null,
+  Status: 'Pending',
+  VoidReason: null
+}
+/---------------------------------------------------------------/
+
+/---------------------------------------------------------------/
+	commissionjunction - https://cjcommunity.force.com/s/article/4777175
+	transaction_id 	:	commission-id
+	order_id 		:	commission-id
+/---------------------------------------------------------------/
+{ 'action-status': 'new',
+  'action-type': 'advanced sale',
+  aid: '10523876',
+  'commission-id': '2015557965',
+  country: 'IN',
+  'event-date': '2016-07-12T20:19:55-0700',
+  'locking-date': '2016-08-10',
+  'order-id': '999947607',
+  original: 'true',
+  'original-action-id': '1737350454',
+  'posting-date': '2016-07-12T21:01:05-0700',
+  'website-id': '7811975',
+  'action-tracker-id': '360894',
+  'action-tracker-name': 'GoDaddy.com - Repeat Customer',
+  cid: '1513033',
+  'advertiser-name': 'GoDaddy.com',
+  'commission-amount': '1.04',
+  'order-discount': '0.00',
+  sid: '2f999a0048a811e681dfe3c99d1d53fb26b62d',
+  'sale-amount': '10.41'
+}
+/---------------------------------------------------------------/
+
+/---------------------------------------------------------------/
+	flipkart - https://affiliate.flipkart.com/api-docs/af_report_ref.html#orders-report-api
+	transaction_id 	:	affiliateOrderItemId
+	order_id 		:	affiliateOrderItemId
+/---------------------------------------------------------------/
+{ price: 1,
+  category: 'Mobile Accessories',
+  title: 'LeEco LePDH401IN Headphones',
+  productId: 'ACCEJGVTMJSQ9VDM',
+  quantity: 1,
+  sales: { amount: 0, currency: 'INR' },
+  status: 'tentative',
+  affiliateOrderItemId: '35111890',
+  orderDate: '28-06-2016 12:17:19',
+  commissionRate: 3,
+  tentativeCommission: { amount: 0, currency: 'INR' },
+  affExtParam1: '55e980103cfc11e697c8c7a5d3903c8d26645d',
+  affExtParam2: '',
+  salesChannel: 'WEBSITE',
+  customerType: 'EXISTING'
+}
+/---------------------------------------------------------------/
+
+/---------------------------------------------------------------/
+	groupon - http://partner-api.groupon.com/help/reporting-version-2-order-api
+	transaction_id 	:	BillingId
+	order_id 		:	BillingId
+/---------------------------------------------------------------/
+no data
+/---------------------------------------------------------------/
+
+/---------------------------------------------------------------/
+	hasoffers - http://developers.hasoffers.com/#/affiliate/controller/Affiliate_Report/method/getConversions
+				http://developers.hasoffers.com/#/affiliate/model/StatReport
+	transaction_id 	:	id
+	order_id 		:	id
+/---------------------------------------------------------------/
+{ Stat:
+   { affiliate_info1: '0016cac01cb911e6a5407d27a4aea1e227573f',
+     id: '56895724',
+     currency: 'INR',
+     approved_payout: '35.000000',
+     sale_amount: '189.000000',
+     'sale_amount@INR': '189.00000',
+     datetime: '2016-05-18 10:58:10',
+     conversion_status: 'approved'
+   }
+}
+/---------------------------------------------------------------/
+
+/---------------------------------------------------------------/
+	impactradius - http://dev.impactradius.com/display/api/Conversions
+	transaction_id 	:	Id
+	order_id 		:	Id
+/---------------------------------------------------------------/
+{ Id: '2092.3079.81784',
+  CampaignId: '2092',
+  CampaignName: 'Target',
+  ActionTrackerId: '4666',
+  ActionTrackerName: 'Sale',
+  State: 'PENDING',
+  AdId: '81938',
+  Payout: '0.12',
+  DeltaPayout: '0.12',
+  IntendedPayout: '0.12',
+  Amount: '11.99',
+  DeltaAmount: '11.99',
+  IntendedAmount: '11.99',
+  Currency: 'USD',
+  ReferringDate: '2016-06-07T01:48:52-04:00',
+  EventDate: '2016-06-07T01:52:29-04:00',
+  CreationDate: '2016-06-07T01:59:13-04:00',
+  LockingDate: '2016-08-15T03:00:00-04:00',
+  ClearedDate: '',
+  ReferringType: 'CLICK_COOKIE',
+  ReferringDomain: '',
+  PromoCode: '',
+  Oid: '',
+  CustomerArea: '0',
+  CustomerCity: 'Panagyurishte',
+  CustomerRegion: '48',
+  CustomerCountry: 'BG',
+  SubId1: 'd34208002c7311e6a542ddb17b8fb44426a7c3',
+  SubId2: '',
+  SubId3: '',
+  SharedId: '',
+  Uri: '/Mediapartners/IRDHLqHpQY79155520ngJ28D9dMGTVZJA1/Actions/2092.3079.81784.json'
+}
+/---------------------------------------------------------------/
+
+/---------------------------------------------------------------/
+	linkshare
+	transaction_id 	:	etransaction_id
+	order_id 		:	order_id
+/---------------------------------------------------------------/
+{ etransaction_id: 'B34F1A4D247B10967BE730DA368E6007',
+  advertiser_id: 40728,
+  sid: 3239617,
+  order_id: 'CAR19485480',
+  offer_id: '399988',
+  sku_number: '888767684660',
+  sale_amount: 14.4,
+  quantity: 1,
+  commissions: 0.432,
+  process_date: 'Tue Jul 05 2016 01:26:35 GMT+0000 (UTC)',
+  transaction_date: 'Tue Jul 05 2016 01:26:00 GMT+0000 (UTC)',
+  transaction_type: 'realtime',
+  product_name: '3-Piece Babysoft Cardigan Set',
+  u1: '077627503da911e6a9fadd12e4c623e423af3a',
+  currency: 'USD',
+  is_event: 'Y'
+}
+/---------------------------------------------------------------/
+
+/---------------------------------------------------------------/
+	lomadee
+	transaction_id 	:
+	order_id 		:
+/---------------------------------------------------------------/
+no commission code
+/---------------------------------------------------------------/
+
+/---------------------------------------------------------------/
+	omgpm - https://kb.optimisemedia.com/?article=omg-network-api-affiliate#TransactionsOverview
+	transaction_id 	:	TransactionID
+	order_id 		:	MerchantRef
+/---------------------------------------------------------------/
+{ Row: '1',
+  ClickTime: '2016-05-11T05:07:17',
+  TransactionTime: '2016-05-11T05:14:58',
+  TransactionID: '48423303',
+  MerchantRef: '320453496',
+  UID: 'ef8162a0172d11e680eed72a503faf7a26faf3',
+  MID: '360451',
+  Merchant: 'Expedia MY',
+  PID: '9815',
+  Product: 'Expedia MY Hotels',
+  SR: '7.61',
+  VR: '7.61',
+  NVR: '7.61',
+  Status: 'Validated',
+  Paid: '',
+  Completed: '2016-05-31T00:00:00',
+  UKey: '461490511551458ef8162a0172d11e680eed72a503faf7a26faf3',
+  TransactionValue: '95.16',
+  Ex1: '',
+  Ex2: '',
+  Ex3: '',
+  Ex4: '',
+  Ex5: '',
+  LastUpdated: '2016-07-01T01:14:47.533',
+  Currency: 'USD '
+}
+/---------------------------------------------------------------/
+
+/---------------------------------------------------------------/
+	partnerads - http://www.partner-ads.com/dk/programoversigt_xml.php?key=53456144231849860441
+	transaction_id 	:	programid-ordrenr
+	order_id 		:	ordrenr
+/---------------------------------------------------------------/
+{ type: 'salg',
+  programid: '492',
+  program: 'Batteribyen.dk',
+  dato: '19-7-2016',
+  tidspunkt: '21:43:56',
+  ordrenr: '400524987',
+  varenr: '',
+  omsaetning: '846.16',
+  provision: '16.92',
+  url: '',
+  uid: '2a65cbb04de611e681dfe3c99d1d53fb24647f',
+  uid2: ''
+}
+/---------------------------------------------------------------/
+
+/---------------------------------------------------------------/
+	pepperjam - http://help.pepperjamnetwork.com/advertiser/api?version=20120402
+	transaction_id 	:	transaction_id
+	order_id 		:	order_id
+/---------------------------------------------------------------/
+{ transaction_id: '58555559',
+  order_id: 'WEB857158533',
+  creative_type: 'generic',
+  commission: '0.00',
+  sale_amount: '156.00',
+  type: 'sale',
+  date: '2016-06-21 16:41:00',
+  status: 'pending',
+  new_to_file: 'No',
+  sub_type: '',
+  sid: '85e2f0a037f011e6b3074fe20b12cd3744ab5b',
+  program_name: 'Grainger',
+  program_id: '5943'
+}
+/---------------------------------------------------------------/
+
+/---------------------------------------------------------------/
+	performancehorizon - http://docs.performancehorizon.apiary.io/#reference/granular-reporting/list-all-conversions-generated-by-publisher/list-all-conversions-generated-by-publisher
+	transaction_id 	:	conversion_id
+	order_id 		:	conversion_id
+/---------------------------------------------------------------/
+{ conversion_id: '1101l22925285',
+  publisher_id: '1101l317',
+  conversion_time: '2016-07-02 07:26:21',
+  campaign_id: '1100l7',
+  creative_type: 0,
+  creative_id: 0,
+  specific_creative_id: 0,
+  currency: 'USD',
+  publisher_reference: 'e274d380404f11e6b8281de285f1e126244bb0?afsrc=1',
+  advertiser_reference: '',
+  conversion_reference: 1394537418,
+  customer_type: '',
+  referer_ip: '212.34.20.117',
+  source_referer: '',
+  last_modified: '2016-07-02 07:26:21',
+  conversion_type: 1,
+  country: 'US',
+  customer_reference: 760788499,
+  ref_device_id: 2,
+  ref_partnership_model_id: 2,
+  ref_traffic_source_id: 3,
+  ref_conversion_metric_id: 2,
+  ref_user_context_id: 2,
+  publisher_name: 'ominto1',
+  campaign_title: 'Expedia US',
+  conversion_items:
+   [ { conversion_item_id: '1011l23719188',
+       sku: 'WY',
+       category: 'flight',
+       item_value: 330,
+       item_publisher_commission: 2.25,
+       item_status: 'pending',
+       last_update: '2016-07-02 07:26:21',
+       publisher_self_bill_id: null,
+       approved_at: null,
+       item_status_id: 1,
+       reject_reason: null,
+       meta_data:
+        { check_in_date: '2016-08-03',
+          check_out_date: '2016-12-29',
+          origin: 'DOH',
+          dest: 'KUL',
+          activity_name: '',
+          coupon_amount: '',
+          device: 'Windows NT 6.3; WOW64',
+          device_type: 'Desktop',
+          hotel_type: '',
+          itinerary_number: 1139453741883,
+          taxes_and_fees: 207.8,
+          net_value: 330,
+          flight_type: 'NON_LCC',
+          flight_int_dom: 'INTERNATIONAL',
+          gross_value: 537.8 },
+       voucher_codes: [],
+       payable: false } ],
+  conversion_value:
+   { conversion_status: 'pending',
+     value: 330,
+     publisher_commission: 2.25 },
+  ref_device: 'Desktop',
+  ref_partnership_model: 'CPA',
+  ref_traffic_source: 'Affiliate',
+  ref_conversion_metric: 'Standard',
+  ref_user_context: 'Web',
+  click:
+   { campaign_id: '1100l7',
+     publisher_id: '1101l317',
+     type: 'standard',
+     status: 'nibbled',
+     set_time: '2016-07-02 07:24:06',
+     set_ip: '212.34.20.117',
+     last_used: 1467462381,
+     last_ip: '212.34.20.117',
+     publisher_reference: 'e274d380404f11e6b8281de285f1e126244bb0?afsrc=1',
+     referer: '',
+     creative_id: 0,
+     creative_type: 0,
+     specific_creative_id: 0,
+     ref_device_id: 2,
+     ref_traffic_source_id: 3,
+     ref_device: 'Desktop',
+     ref_traffic_source: 'Affiliate' },
+  meta_data:
+   { customer_facing_id: 1139453741883,
+     custom_ref_1: 1139453741883 },
+  was_disputed: false,
+  conversion_lag: 135
+}
+/---------------------------------------------------------------/
+
+/---------------------------------------------------------------/
+	publicideas
+	transaction_id 	:	id
+	order_id 		:	id
+/---------------------------------------------------------------/
+{ id: '76107276079180_17412309',
+  cashBack: '',
+  dateAction: '2016-06-14 19:08:35',
+  dateValid: '',
+  statut: '1',
+  type: '3',
+  montantRem: '7.000%',
+  montantCom: '4.2147',
+  montantVente: '60.21',
+  comID: '461127',
+  idRem: '461127',
+  title: 'Venda'
+}
+/---------------------------------------------------------------/
+
+/---------------------------------------------------------------/
+	shareasale - https://account.shareasale.com/a-apimanager.cfm > Ledger Report
+	transaction_id 	:	transid
+	order_id 		:	ordernumber
+/---------------------------------------------------------------/
+{ ledgerid: 'T-66204755',
+  dt: '2015-08-30 23:25:36.0',
+  action: 'Transaction Created',
+  transid: '66204755',
+  transtype: 'Sale',
+  impact: '1.23',
+  afftrack: 'TCTf-20bwtX',
+  comment: 'Sale - 21-2465-2148424368',
+  merchantid: '7124',
+  storeid: '',
+  orderimpact: '24.65',
+  ordernumber: '21-2465-2148424368',
+  merchantorganization: 'Fanatics.com',
+  merchantwww: 'www.fanatics.com/partnerid/2465/source/share-a-sale',
+  storename: '',
+  storewww: ''
+}
+/---------------------------------------------------------------/
+
+/---------------------------------------------------------------/
+	tradedoubler
+	transaction_id 	:
+	order_id 		:
+/---------------------------------------------------------------/
+no commissions code
+/---------------------------------------------------------------/
+
+/---------------------------------------------------------------/
+	tradetracker - https://affiliate.tradetracker.com/webService/index/type/ConversionTransactions
+	transaction_id 	:	ID
+	order_id 		:	ID
+/---------------------------------------------------------------/
+{ ID: '2630118146',
+  campaign:
+   { ID: '19880',
+     name: 'Ali Express',
+     URL: 'http://www.aliexpress.com' },
+  campaignProduct: { ID: '29359', name: 'Generelt' },
+  reference: 'e515272041df11e68f8def265c4e9c9126f366',
+  transactionType: 'sale',
+  transactionStatus: 'pending',
+  currency: 'DKK',
+  commission: '1.555',
+  orderAmount: '23.38',
+  IP: '52.50.42.90',
+  registrationDate: Tue Jul 05 2016 08:34:40 GMT-0600 (UTC),
+  clickToConversion: 'P1DT2H42M40.309959S',
+  originatingClickDate: Mon Jul 04 2016 05:52:00 GMT-0600 (UTC),
+  paidOut: { '$value': false },
+  countryCode: 'US'
+}
+/---------------------------------------------------------------/
+
+/---------------------------------------------------------------/
+	webgains - http://ws.webgains.com/aws.php > getFullEarningsWithCurrency
+	transaction_id 	:	transactionID
+	order_id 		:	transactionID
+/---------------------------------------------------------------/
+{ transactionID: 92690535,
+  affiliateID: 80577,
+  campaignName: 'http://www.ominto.com',
+  campaignID: 177143,
+  date: Fri Jul 15 2016 19:43:55 GMT-0500 (UTC),
+  validationDate: Fri Jul 15 2016 19:43:55 GMT-0500 (UTC),
+  delayedUntilDate: {},
+  programName: 'Aliexpress UK',
+  programID: 9271,
+  linkID: '0',
+  eventID: 15095,
+  commission: '0.21',
+  saleValue: '3.61',
+  status: 'delayed',
+  paymentStatus: 'notcleared',
+  changeReason: 'Pre-release or advance order',
+  clickRef: 'ca9f3fd046e811e6b8281de285f1e126271392',
+  clickthroughTime: Wed Dec 31 1969 13:00:00 GMT-0600 (UTC),
+  landingPage: 'http://s.click.aliexpress.com/e/faAFfIRaf=177143&dp=-B1ECEKfJqg.GddnDdcpO1iDoQNyuGnzDkI1q3faVr3j&cn=9271&cv=15095',
+  currency: 'GBP'
+}
+/---------------------------------------------------------------/
+
+/---------------------------------------------------------------/
+	zanox - https://developer.zanox.com/web/guest/publisher-api-2011/get-sales-date
+	transaction_id 	:	transaction_id
+	order_id 		:	transaction_id
+/---------------------------------------------------------------/
+{ '@id': '499be516-1f1f-432e-a28f-78eb1b469977', // transaction_id
+  reviewState: 'open',
+  trackingDate: '2016-07-21T04:42:53.260+02:00',
+  modifiedDate: '2016-07-21T04:42:54.163+02:00',
+  clickDate: '2016-07-21T04:34:05.907+02:00',
+  adspace: { '@id': '2067070', '$': 'Ominto' },
+  admedium: { '@id': '1098553', '$': 'Link to Homepage' },
+  program: { '@id': '16346', '$': 'Hotels.com DK' },
+  clickId: 2191035815562683400,
+  clickInId: 0,
+  amount: 427.6,
+  commission: 38.48,
+  currency: 'EUR',
+  gpps:
+   { gpp:
+      [ { '@id': 'zpar0',
+          '$': '8d0d02a04eeb11e684e18d9bf8c14886254d14' },
+        { '@id': 'zpar9', '$': '05523FA4A5AB834CA23D' } ] },
+  reviewNote: 'undefined|0|8087688776894|8087688776894, 8087688776894-1, 8087688776894-2|1261941|230066|2Home Stockholm South|3.5|2016-10-14|2016-10-16|3|HC|Returning Visitor|6||486.03|HCOM_DK|Mob :: TabWeb|aff.hcom.DK.003.003.2179510|false|86|2|0',
+  trackingCategory: { '@id': '90074', '$': 'Hotels' }
+}
+/---------------------------------------------------------------/

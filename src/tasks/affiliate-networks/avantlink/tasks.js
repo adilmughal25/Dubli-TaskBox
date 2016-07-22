@@ -119,6 +119,7 @@ function prepareCommission(region, o_obj) {
   var event = {
     affiliate_name: o_obj.Merchant,
     transaction_id: o_obj.Order_Id,
+    order_id: o_obj.Order_Id,
     outclick_id: o_obj.Custom_Tracking_Code,
     currency: CURRENCY_MAP[region],
     purchase_amount: o_obj.Transaction_Amount.replace(amountPregPattern, ''),

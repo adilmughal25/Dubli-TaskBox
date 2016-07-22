@@ -143,6 +143,7 @@ function findSubId(o_obj) {
 function prepareCommission(o_obj) {
   const event = {
     transaction_id: _.get(o_obj, '@id'),
+    order_id: _.get(o_obj, '@id'),
     outclick_id: findSubId(o_obj),
     purchase_amount: o_obj.amount,
     commission_amount: o_obj.commission,

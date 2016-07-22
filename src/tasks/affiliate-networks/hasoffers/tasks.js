@@ -111,6 +111,7 @@ function prepareCommission(o_obj) {
   const S = o_obj.Stat;
   const event = {
     transaction_id: S.id,
+    order_id: S.id,
     outclick_id: S.affiliate_info1,
     purchase_amount: S.sale_amount,
     commission_amount: S.approved_payout,

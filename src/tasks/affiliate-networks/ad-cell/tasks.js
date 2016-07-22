@@ -160,6 +160,7 @@ const AdCellGenericApi = function(s_entity) {
     var event = {
       affiliate_name: o_obj.programName,
       transaction_id: o_obj.commissionId,
+      order_id: o_obj.commissionId,
       outclick_id: o_obj.subId,
       currency: 'eur',
       purchase_amount: o_obj.totalShoppingCart,

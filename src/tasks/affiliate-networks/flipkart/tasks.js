@@ -37,6 +37,7 @@ const FlipkartGenericApi = function(s_entity) {
 function prepareCommission(status, o_obj) {
   const event = {
     transaction_id: o_obj.affiliateOrderItemId,
+    order_id: o_obj.affiliateOrderItemId,
     outclick_id: o_obj.affExtParam1,
     commission_amount: o_obj.tentativeCommission.amount,
     purchase_amount: o_obj.sales.amount,

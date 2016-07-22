@@ -142,6 +142,7 @@ function prepareCommission(o_obj) {
     //const isEvent = o_obj.is_event === "Y"; // old code
     commission.outclick_id = o_obj.u1;
     commission.transaction_id = o_obj.etransaction_id;
+    commission.order_id = o_obj.order_id;
     commission.purchase_amount = o_obj.sale_amount;
     commission.commission_amount = o_obj.commissions;
     commission.currency = o_obj.currency;

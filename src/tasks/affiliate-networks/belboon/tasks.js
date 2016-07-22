@@ -204,6 +204,7 @@ function prepareCommission(o_obj) {
   const event = {
     affiliate_name: o_obj.programname,
     transaction_id: o_obj.eventid,
+    order_id: o_obj.eventid,
     outclick_id: o_obj.subid,
     currency: o_obj.eventcurrency.toLowerCase(),
     purchase_amount: o_obj.netvalue,

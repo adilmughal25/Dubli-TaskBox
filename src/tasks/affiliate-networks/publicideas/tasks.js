@@ -36,6 +36,7 @@ function clean(merchants) {
 function prepareCommission(s_region, o_obj) {
   const event = {
     transaction_id: o_obj.id,
+    order_id: obj.id,
     outclick_id: o_obj.cashBack,
     purchase_amount: o_obj.montantVente,
     commission_amount: o_obj.montantCom,

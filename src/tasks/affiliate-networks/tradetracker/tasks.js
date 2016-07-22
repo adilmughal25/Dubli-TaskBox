@@ -177,6 +177,7 @@ function prepareCommission(o_obj) {
   var event = {
     affiliate_name: o_obj.campaign.name,
     transaction_id: o_obj.ID,
+    order_id: o_obj.ID,
     outclick_id: o_obj.reference,
     currency: o_obj.currency.toLowerCase(),
     purchase_amount: o_obj.orderAmount,

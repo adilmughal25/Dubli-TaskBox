@@ -60,6 +60,7 @@ const OmgPmGenericApi = function(s_region, s_entity) {
 function prepareCommission(region, o_obj) {
   const event = {
     transaction_id: o_obj.TransactionID,
+    order_id: o_obj.MerchantRef,
     outclick_id: o_obj.UID,
     purchase_amount: o_obj.TransactionValue,
     commission_amount: o_obj.SR,

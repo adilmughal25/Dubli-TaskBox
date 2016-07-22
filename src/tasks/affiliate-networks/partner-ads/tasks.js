@@ -69,6 +69,7 @@ function prepareCommission(o_obj) {
   var sale = {
     affiliate_name: o_obj.program,
     transaction_id: transactionId,
+    order_id: o_obj.ordrenr,
     outclick_id: o_obj.uid,
     currency: 'dkk',
     purchase_amount: o_obj.omsaetning,
@@ -108,6 +109,7 @@ function prepareCancellations(o_obj) {
   var sale = {
     affiliate_name: o_obj.program,
     transaction_id: transactionId,
+    order_id: o_obj.ordrenr,
     //outclick_id: null,    // not provided on cancellations
     currency: 'dkk',
     //purchase_amount: null,  // not provided on cancellations

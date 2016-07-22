@@ -72,6 +72,7 @@ function getTransactionsUrl(start, end) {
 function prepareCommission(o_obj) {
   const event = {
     transaction_id: o_obj.Id,
+    order_id: o_obj.OrderId,
     outclick_id: o_obj.UniqueId,
     purchase_amount: o_obj.SaleValue,
     commission_amount: o_obj.Commission,

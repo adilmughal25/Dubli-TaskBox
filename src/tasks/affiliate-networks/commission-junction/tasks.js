@@ -21,7 +21,6 @@ const merge = require('../support/easy-merge')('advertiser-id', {
 const CURRENCY_MAP = {
   us: 'usd',
   eu: 'eur',
-
   de: 'eur',
   es: 'eur',
   gb: 'gbp',
@@ -139,6 +138,7 @@ function extractTrackingLinks(s_info) {
 function prepareCommission(currency, item) {
   const event = {
     transaction_id: item['commission-id'],
+    order_id: item['order-id'],
     outclick_id: item.sid,
     currency: currency,
     purchase_amount: item['sale-amount'],

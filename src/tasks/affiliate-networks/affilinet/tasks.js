@@ -75,6 +75,7 @@ function prepareCommission(region, o_obj) {
   }
   const event = {
     transaction_id: o_obj.TransactionId,
+    order_id: o_obj.TransactionId,
     outclick_id: o_obj.SubId,
     purchase_amount: o_obj.NetPrice,
     commission_amount: o_obj.PublisherCommission,

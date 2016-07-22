@@ -65,9 +65,13 @@ function ImpactRadiusGenericApi(s_whitelabel, s_region, s_entity) {
   return tasks;
 }
 
+// As per the impact-radius documentation, 'Oid' field is populated with order_id,
+// but when cross-verified with the data that we are receiving, this field is empty.
+// Adding the transaction_id as the order_id for now.
 function prepareCommission(region, o_irAction) {
   var o_event = {};
   o_event.transaction_id = o_irAction.Id;
+  o_event.order_id = o_irAction.Id;
   o_event.outclick_id = o_irAction.SubId1;
   o_event.purchase_amount = o_irAction.IntendedAmount;
   o_event.commission_amount = o_irAction.IntendedPayout;

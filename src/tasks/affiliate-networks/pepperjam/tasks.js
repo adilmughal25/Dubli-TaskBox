@@ -59,6 +59,7 @@ const PepperJamGenericApi = function(s_entity) {
 function prepareCommission(o_obj) {
   const event = {
     transaction_id: o_obj.transaction_id,
+    order_id: o_obj.order_id,
     outclick_id: o_obj.sid,
     currency: 'usd',
     purchase_amount: o_obj.sale_amount,

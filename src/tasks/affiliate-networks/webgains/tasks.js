@@ -124,6 +124,7 @@ function prepareCommission(o_obj) {
   let event = {
     affiliate_name: o_obj.programName,
     transaction_id: o_obj.transactionID,
+    order_id: o_obj.transactionID,
     outclick_id: o_obj.clickRef,
     currency: o_obj.currency,
     purchase_amount: o_obj.saleValue,

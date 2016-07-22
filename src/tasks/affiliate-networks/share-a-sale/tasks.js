@@ -131,6 +131,7 @@ function transformLedger (o_obj) {
   var event = {
     affiliate_name: o_obj.merchantorganization,
     transaction_id: o_obj.transid,
+    order_id: o_obj.ordernumber,
     outclick_id: _.trim(o_obj.afftrack),
     currency: AFFILIATE_CURRENCY,
     purchase_amount: purchase_amount,
