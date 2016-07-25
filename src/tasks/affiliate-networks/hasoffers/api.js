@@ -26,7 +26,7 @@ const API_CFG = {
     arabyads: {
       api_key: '2f4b194614629ed6fdb455104523d571b4d30f4b8df95eb89b8efbd12ce664c8',
       NetworkId: 'arabyads',
-      defaultCurrency: 'myr'
+      defaultCurrency: 'usd'
     }
   },
   dubli: {
