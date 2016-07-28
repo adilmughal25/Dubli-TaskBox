@@ -59,9 +59,12 @@ const ZanoxGenericApi = function(s_region, s_entity) {
     return yield sendEvents.sendMerchants(that.eventName, merchants);
   });
 
+  // changing the number of days for commissions api from 90 days to 30 days,
+  // as the volume of api calls made is huge and zanox has raised a concern with the same.
+  // please do not change this back to 90 days without approval.
   this.getCommissionDetails = singleRun(function* () {
     const queue = [];
-    const days = 90;
+    const days = 30;
     const add = (date, type) => queue.push(that.pagedApiCall('$getAllSalesOfDate', 'saleItems.saleItem', {datetype: type}, [date]));
     for (let i = 0; i < days; i++) {
       let date = moment().subtract(i, 'days').format('YYYY-MM-DD');
