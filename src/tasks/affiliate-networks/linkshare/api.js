@@ -182,7 +182,7 @@ function makeQueue(s_type) {
     case 'custom-reports':
     case 'advanced-reports':
       // these are all silver level
-      return limiter(5, 120);
+      return limiter(5, 180); // changing 5 calls/120 secs to 5 calls/180 secs
 
     case 'events':
       // platinum level
