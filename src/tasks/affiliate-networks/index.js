@@ -6,7 +6,28 @@ const amazonApi = require('./amazon/tasks');
 const clixGaloreApi = require("./clix-galore/tasks");
 const impactRadiusProductFtp = require("./impact-radius/ftp-tasks");
 const lomadeeApi = require('./lomadee/tasks');
-const tradedoublerApi = require('./tradedoubler/tasks');
+
+const tradedoublerGenericApi = require('./tradedoubler/tasks');
+const tradedoublerApi = tradedoublerGenericApi();
+const tradedoublerGermanyApi = tradedoublerGenericApi('de');
+const tradedoublerAustriaApi = tradedoublerGenericApi('at');
+const tradedoublerBelgiumApi = tradedoublerGenericApi('be');
+const tradedoublerDenmarkApi = tradedoublerGenericApi('dk');
+const tradedoublerFinnlandApi = tradedoublerGenericApi('fi');
+const tradedoublerFranceApi = tradedoublerGenericApi('fr');
+const tradedoublerIrelandApi = tradedoublerGenericApi('ie');
+const tradedoublerItalyApi = tradedoublerGenericApi('it');
+const tradedoublerLithuaniaApi = tradedoublerGenericApi('lt');
+const tradedoublerNetherlandsApi = tradedoublerGenericApi('nl');
+const tradedoublerNorwayApi = tradedoublerGenericApi('no');
+const tradedoublerPolandApi = tradedoublerGenericApi('pl');
+const tradedoublerPortugalApi = tradedoublerGenericApi('pt');
+const tradedoublerRussiaApi = tradedoublerGenericApi('ru');
+const tradedoublerSpainApi = tradedoublerGenericApi('es');
+const tradedoublerSwedenApi = tradedoublerGenericApi('se');
+const tradedoublerSwitzerlandApi = tradedoublerGenericApi('ch');
+const tradedoublerEnglandApi = tradedoublerGenericApi('gb');
+const tradedoublerBrazilApi = tradedoublerGenericApi('br');
 
 const adCellGenericApi = require('./ad-cell/tasks');
 const adCellApi = adCellGenericApi();
@@ -211,7 +232,25 @@ function initializeMerchantImporters(tasker) {
     "PublicIdeas (UK) Merchants": publicideasUKApi.getMerchants,
     "ShopStylers Merchants": shopstylers.getMerchants,
     "SnapDeal Merchants": snapdealApi.getMerchants,
-    "TradeDoubler Merchants": tradedoublerApi.getMerchants,
+    "TradeDoubler (AT) Merchants": tradedoublerAustriaApi.getMerchants,
+    "TradeDoubler (BE) Merchants": tradedoublerBelgiumApi.getMerchants,
+    "TradeDoubler (DK) Merchants": tradedoublerDenmarkApi.getMerchants,
+    "TradeDoubler (FI) Merchants": tradedoublerFinnlandApi.getMerchants,
+    "TradeDoubler (FR) Merchants": tradedoublerFranceApi.getMerchants,
+    "TradeDoubler (IE) Merchants": tradedoublerIrelandApi.getMerchants,
+    "TradeDoubler (IT) Merchants": tradedoublerItalyApi.getMerchants,
+    "TradeDoubler (DE) Merchants": tradedoublerGermanyApi.getMerchants,
+    "TradeDoubler (LT) Merchants": tradedoublerLithuaniaApi.getMerchants,
+    "TradeDoubler (NL) Merchants": tradedoublerNetherlandsApi.getMerchants,
+    "TradeDoubler (NO) Merchants": tradedoublerNorwayApi.getMerchants,
+    "TradeDoubler (PL) Merchants": tradedoublerPolandApi.getMerchants,
+    "TradeDoubler (PT) Merchants": tradedoublerPortugalApi.getMerchants,
+    "TradeDoubler (RU) Merchants": tradedoublerRussiaApi.getMerchants,
+    "TradeDoubler (ES) Merchants": tradedoublerSpainApi.getMerchants,
+    "TradeDoubler (SE) Merchants": tradedoublerSwedenApi.getMerchants,
+    "TradeDoubler (CH) Merchants": tradedoublerSwitzerlandApi.getMerchants,
+    "TradeDoubler (GB) Merchants": tradedoublerEnglandApi.getMerchants,
+    "TradeDoubler (BR) Merchants": tradedoublerBrazilApi.getMerchants,
     "TradeTracker (AT) Merchants": tradetrackerATApi.getMerchants,
     "TradeTracker (BE) Merchants": tradetrackerBEApi.getMerchants,
     "TradeTracker (CH) Merchants": tradetrackerCHApi.getMerchants,
@@ -280,6 +319,7 @@ function initializeCommissionsProcessors(tasker) {
     "PublicIdeas (UK) Commissions": publicideasUKApi.getCommissionDetails,
     "ShopStylers Commissions": shopstylers.getCommissionDetails,
     "SnapDeal Commissions": snapdealApi.getCommissionDetails,
+    "TradeDoubler Commissions": tradedoublerApi.getCommissionDetails,
     "TradeTracker (AT) Commissions": tradetrackerATApi.getCommissionDetails,
     "TradeTracker (BE) Commissions": tradetrackerBEApi.getCommissionDetails,
     "TradeTracker (CH) Commissions": tradetrackerCHApi.getCommissionDetails,
