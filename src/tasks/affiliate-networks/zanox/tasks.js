@@ -9,7 +9,7 @@ const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 
 const merge = require('../support/easy-merge')('@id', {
-  admedia: 'program.@id',
+ // admedia: 'program.@id',
   incentives: 'program.@id',
   exclusiveIncentives: 'program.@id'
 });
@@ -44,11 +44,11 @@ const ZanoxGenericApi = function(s_region, s_entity) {
     let validIds = _.pluck(joined, 'program.@id').reduce((m,i) => _.set(m,i,1), {});
     const results = yield {
       merchants: that.pagedApiCall('$getPrograms', 'programItems.programItem', {'partnership':'DIRECT'}),
-      admedia: that.pagedApiCall('$getAdmedia', 'admediumItems.admediumItem', {'admediumtype':'text','partnership':'direct'}),
+      //admedia: that.pagedApiCall('$getAdmedia', 'admediumItems.admediumItem', {'admediumtype':'text','partnership':'direct'}),
       incentives: that.apiCall('$getIncentives', 'incentiveItems.incentiveItem', {'incentiveType':'coupons'}),
       exclusiveIncentives: that.apiCall('$getExclusiveIncentives', 'incentiveItems.incentiveItem', {'incentiveType':'coupons'}),
     };
-    // require('fs').writeFileSync('erf.json', JSON.stringify(results));
+    require('fs').writeFileSync('erf.json', JSON.stringify(results));
     let merchants = merge(results);
 
     // sadly, zanox doesn't let us clamp any of the above 4 api calls to only
