@@ -37,7 +37,7 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
 
     yield that.doApiGetAllTrackingLinks(results.merchants);
     // get country information - by doing a subsequent api call
-    yield that.getTargetCountries(results.merchants);
+    yield that.getTargetCountries(results.merchants, s_networkName);
     // get category information - by doing a subsequent api call
     yield that.getTargetCategories(results.merchants);
 
@@ -59,7 +59,9 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
   });
 
   this.doApiAffiliateOffers = co.wrap(function* (){
-    var url = that.client.url('Affiliate_Offer', 'findAll', {
+    // changing function to fetch merchants from 'findAll' to 'tofindMyOffers'.
+    // this will only fetch approved merchants instead of all merchants from the affiliate
+    var url = that.client.url('Affiliate_Offer', 'findMyOffers', {
       'filters[status]': 'active',
       'filters[payout_type][]': ['cpa_percentage', 'cpa_flat', 'cpa_both']
     });
@@ -114,7 +116,7 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
   });
 
   // to get the countries information for the merchant
-  this.getTargetCountries = co.wrap(function* (merchants){
+  this.getTargetCountries = co.wrap(function* (merchants, affiliate){
     for (var i = 0; i < merchants.length; i++) {
       var merchant = merchants[i];
       var url = that.client.url('Affiliate_Offer', 'getTargetCountries', {
@@ -131,6 +133,11 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
         }
       }
       merchant.country = countries || [];
+
+      // if no region is fetch then default it
+      if(merchant.country.length == 0){
+        merchant.country = defaultCountry(affiliate);
+      }
     }
   });
 
@@ -161,6 +168,28 @@ function prepareCommission(o_obj) {
     effective_date: S.conversion_status === 'pending' ? new Date(S.datetime) : 'auto'
   };
   return event;
+}
+
+// if the merchant country is empty, then default it to country based of the affiliate
+// Bug 103 (comments) has the description
+function defaultCountry(affiliate){
+  var defaultCountry = [];
+
+  // default country is set based of majority country counts of merchants for this affiliate
+  switch(affiliate) {
+    case 'arabyads':
+        defaultCountry = ["ae"];
+        break;
+    case 'vcommission':
+        defaultCountry = ["in"];
+        break;
+    case 'shopstylers':
+        defaultCountry = ["my"];
+        break;
+    default:
+        break;
+  }
+  return defaultCountry;
 }
 
 module.exports = HasOffersGenericApi;
