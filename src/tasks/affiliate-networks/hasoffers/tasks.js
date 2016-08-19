@@ -59,9 +59,9 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
   });
 
   this.doApiAffiliateOffers = co.wrap(function* (){
-    // changing function to fetch merchants from 'findAll' to 'tofindMyOffers'.
+    // changing function to fetch merchants from 'findAll/tofindMyOffers' to 'findMyApprovedOffers'.
     // this will only fetch approved merchants instead of all merchants from the affiliate
-    var url = that.client.url('Affiliate_Offer', 'findMyOffers', {
+    var url = that.client.url('Affiliate_Offer', 'findMyApprovedOffers', {
       'filters[status]': 'active',
       'filters[payout_type][]': ['cpa_percentage', 'cpa_flat', 'cpa_both']
     });
