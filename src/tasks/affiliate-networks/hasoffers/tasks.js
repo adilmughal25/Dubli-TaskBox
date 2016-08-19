@@ -130,7 +130,12 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
         var countriesMetaData = response.response.data[0].countries || [];
         for (var country in countriesMetaData) {
           if (countriesMetaData.hasOwnProperty(country)) {
-            countries.push(countriesMetaData[country].code.toLowerCase());
+            // in our application we dont have uk, hence converted to gb
+            if (countriesMetaData[country].code.toLowerCase() === "uk"){
+              countries.push("gb");
+            }
+            else
+              countries.push(countriesMetaData[country].code.toLowerCase());
           }
         }
       }
