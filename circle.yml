@@ -21,7 +21,7 @@ deployment:
       taskbox:
         deployment_group: dev-taskbox
   staging:
-    branch: master
+    branch: stage
     codedeploy:
       taskbox:
         deployment_group: stage-taskbox
