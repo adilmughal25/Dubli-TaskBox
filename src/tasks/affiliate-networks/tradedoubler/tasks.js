@@ -40,27 +40,17 @@ const TradedoublerGenericApi = function(s_region, s_entity) {
       merchants: that.client.apiCall('merchants'),
       coupons: that.client.apiCall('coupons')
     };
-
-    // is this still needed? no merchants with a fixed cashback?
-    results.merchants = filterHasPercentage(results.merchants);
     const merged = merge(results);
-
     return yield sendEvents.sendMerchants(that.eventName, merged);
   });
 
   /**
    * Retrieve all commissions / claims information from tradedoubler
-   * @TODO: this returns an always empty array atm
    * @type {Function}
      */
   this.getCommissionDetails = singleRun(function* () {
     const response = yield that.client.apiCall('commissions');
-    let results = [];
-
-    // add it to result, in case of empty data
-    results = results.concat(response || []);
-
-    return yield sendEvents.sendCommissions(that.eventName, results);
+    return yield sendEvents.sendCommissions(that.eventName, response);
   });
 
 };
@@ -68,15 +58,5 @@ const TradedoublerGenericApi = function(s_region, s_entity) {
 // Elements to filter out from events and keep in merchant
 // const mFilter = ['siteName', 'affiliateId', 'programName', 'currentStatusExcel', 'programId', 'applicationDate', 'status', 'coupons'];
 
-/**
- * Filter out any commissions without a percentage structure.
- * (No fixed commissions supported yet)
- * @param {Object} merchants  The individual merchant object
- * @returns {Object}  Filtered merchant
- */
-function filterHasPercentage (merchants) {
-  merchants = merchants.filter(e => Number(e.programTariffPercentage) > 0);
-  return merchants;
-}
 
 module.exports = TradedoublerGenericApi;

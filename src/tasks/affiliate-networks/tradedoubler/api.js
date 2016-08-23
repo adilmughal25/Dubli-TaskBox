@@ -191,10 +191,11 @@ const Tradedoubler = function(s_region, s_entity) {
 
     requestParams.url = apiMethod + '.json';
     const client = getTradedoublerClient(requestParams);
-    return client.get().then(
-        response => {
-          return response;
-        });
+    return client.get()
+        .then(
+          response => {
+            return response && response.length > 0 ? response : [];
+          });
   };
 
 
@@ -213,7 +214,8 @@ const Tradedoubler = function(s_region, s_entity) {
           return (response.indexOf("<?xml") != -1 ? jsonify(response) : '');
         })
         .then((response) => {
-          return _.get(response, 'report.matrix[1].rows.row', []);
+          let merchants = _.get(response, 'report.matrix[1].rows.row', []);
+          return merchants;
         });
   };
 
@@ -222,7 +224,10 @@ const Tradedoubler = function(s_region, s_entity) {
    * @returns {Promise.<TResult>}
    */
   const getCommissions = () => {
-    let requestParams = { qs: API_PARAMS_COMMISSIONS };
+    const affiliateIdFilter = { affiliateId: _.get(API_CFG, 'affiliateData.' + that.entity + '.' + that.region + '.affiliateId') };
+    let requestParams = {
+      qs: _.extend(API_PARAMS_COMMISSIONS, affiliateIdFilter)
+    };
     requestParams.qs.startDate = moment().subtract(90, 'days').format('MM/DD/YYYY');
     requestParams.qs.endDate = moment().format('MM/DD/YYYY');
     debug("getting commissions from report api for duration - " + requestParams.qs.startDate + " to " + requestParams.qs.endDate);
