@@ -35,6 +35,10 @@ const FlipkartGenericApi = function(s_entity) {
 };
 
 function prepareCommission(status, o_obj) {
+
+  // https://affiliate.flipkart.com/api-docs/af_report_ref.html#request-and-response-details
+  // flipkart send us only one date, ie the order date
+
   const event = {
     transaction_id: o_obj.affiliateOrderItemId,
     order_id: o_obj.affiliateOrderItemId,

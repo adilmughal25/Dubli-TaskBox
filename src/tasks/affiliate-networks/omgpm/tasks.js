@@ -58,6 +58,18 @@ const OmgPmGenericApi = function(s_region, s_entity) {
 };
 
 function prepareCommission(region, o_obj) {
+
+  // https://kb.optimisemedia.com/?article=omg-network-api-affiliate#TransactionsOverview
+  // using auto as date when a transactions status is "Validated" or "Rejected"
+  // added a bug. hence using "o_obj.LastUpdated" for "Validated" transactions &
+  // "Rejected" transactions instead. (check STATUS_MAP for statuses)
+
+  var _date = 'auto';
+  if(o_obj.Status === 'Pending')
+    _date = new Date(o_obj.TransactionTime);
+  else if(o_obj.Status === 'Validated' || o_obj.Status === 'Rejected')
+    _date = new Date(o_obj.LastUpdated);
+
   const event = {
     transaction_id: o_obj.TransactionID,
     order_id: o_obj.MerchantRef,
@@ -66,7 +78,8 @@ function prepareCommission(region, o_obj) {
     commission_amount: o_obj.SR,
     currency: (o_obj.Currency || '').trim(),
     state: isNum.test(o_obj.Paid) ? 'paid' : STATUS_MAP[o_obj.Status],
-    effective_date: o_obj.Status === 'Pending' ? new Date(o_obj.TransactionTime) : 'auto',
+    // effective_date: o_obj.Status === 'Pending' ? new Date(o_obj.TransactionTime) : 'auto',
+    effective_date: _date
   };
 
   return event;

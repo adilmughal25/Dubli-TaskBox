@@ -181,6 +181,16 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
 };
 
 function prepareCommission(o_obj) {
+
+  // old api
+  // http://developers.hasoffers.com/#/affiliate/controller/Affiliate_Report/method/getConversions
+  // http://developers.hasoffers.com/#/affiliate/model/StatReport
+
+  // new api
+  // https://developers.tune.com/affiliate/affiliate_report-getconversions/
+
+  // using auto as date for a transactions added a bug. hence using "o_obj.Stat.datetime"
+  // for all transactions instead. (check STATUS_MAP for statuses)
   const S = o_obj.Stat;
   const event = {
     transaction_id: S.id,
@@ -191,7 +201,8 @@ function prepareCommission(o_obj) {
     commission_amount: S.payout,
     currency: S.currency,
     state: STATUS_MAP[S.conversion_status],
-    effective_date: S.conversion_status === 'pending' ? new Date(S.datetime) : 'auto'
+    // effective_date: S.conversion_status === 'pending' ? new Date(S.datetime) : 'auto'
+    effective_date: new Date(S.datetime)
   };
   return event;
 }

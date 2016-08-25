@@ -69,6 +69,23 @@ function extractConversionData(d) {
 }
 
 function prepareCommission(o_obj) {
+
+  // http://docs.performancehorizon.apiary.io/#reference/export-reporting/export-conversions/export-conversions
+  // perviously the effective_date had the initial date i.e. if the status was pending,
+  // else it was set to auto. this added a bug, i.e. when an travel related transaction for
+  // merchant like expedia was approved, because the date was set to auto, the actual
+  // date of approval(confirmed) gets updated to current date. hence using "conversion_items[0].approved_at"
+  // for approved transactions & mixed transactions and "conversion_items[0].last_update"
+  // for rejected transactions instead. (check STATUS_MAP for statuses)
+
+  var _date = 'auto';
+  if(o_obj.conversion_value.conversion_status === 'pending')
+    _date = new Date(o_obj.conversion_time);
+  else if(o_obj.conversion_value.conversion_status === 'approved' || o_obj.conversion_value.conversion_status === 'mixed')
+    _date = new Date(o_obj.conversion_items[0].approved_at);
+  else if(o_obj.conversion_value.conversion_status === 'rejected')
+    _date = new Date(o_obj.conversion_items[0].last_update);
+
   const event = {
     transaction_id: o_obj.conversion_id,
     order_id: o_obj.conversion_id,
@@ -77,7 +94,8 @@ function prepareCommission(o_obj) {
     commission_amount: o_obj.conversion_value.publisher_commission,
     currency: o_obj.currency,
     state: STATUS_MAP[o_obj.conversion_value.conversion_status],
-    effective_date: o_obj.conversion_value.conversion_status === 'pending' ? new Date(o_obj.conversion_time) : 'auto'
+    // effective_date: o_obj.conversion_value.conversion_status === 'pending' ? new Date(o_obj.conversion_time) : 'auto'
+    effective_date: _date
   };
   return event;
 }

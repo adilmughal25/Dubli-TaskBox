@@ -92,6 +92,10 @@ const GrouponGenericApi = function(s_region, s_entity) {
  * @returns {Object}
  */
 function prepareCommission(o_obj) {
+
+  // https://partner-api.groupon.com/help/reporting-version-2-order-api
+  // need a sample response to get the effective_date field populated
+
   if (o_obj.item[0].Status === 'INVALID') {
     // invalid tracked sale - to be ignored completly
     return;

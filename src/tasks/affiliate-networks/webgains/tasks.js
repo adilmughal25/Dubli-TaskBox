@@ -123,6 +123,10 @@ function approvedAffiliate(item) {
  * @returns {Object}
  */
 function prepareCommission(o_obj) {
+
+  // using auto as date for a transactions added a bug. hence using "o_obj.validationDate"
+  // for all transactions instead. (check STATUS_MAP for statuses)
+
   let status = o_obj.status + '_' + o_obj.paymentStatus;
   let event = {
     affiliate_name: o_obj.programName,
@@ -133,7 +137,8 @@ function prepareCommission(o_obj) {
     purchase_amount: o_obj.saleValue,
     commission_amount: o_obj.commission,
     state: STATE_MAP[status],
-    effective_date: 'auto'
+    // effective_date: 'auto'
+    effective_date: new Date(o_obj.validationDate)
   };
   return event;
 }

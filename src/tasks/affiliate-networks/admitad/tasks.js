@@ -122,14 +122,20 @@ const AdmitadGenericApi = function(s_entity) {
   });
 };
 
+// pending/approved/declined/approved_but_stalled - on hold/confirmed/declined/confirmed but delayed
 const STATE_MAP = {
+
+  'approved_but_stalled': 'initiated',
+  'approved_but_stalled - waiting': 'initiated', // docu says it exists but i doubt the syntax (Not sure about this)
   'pending':    'initiated',
+
   'approved':   'confirmed',
-  'approved_but_stalled - waiting': 'initiated',  // docu says it exists but i doubt the syntax
   'confirmed':  'confirmed',
-  'confirmed, but detained': 'confirmed',         // docu says it exists but i doubt the syntax
+  'confirmed but delayed' :  'confirmed',
+  'confirmed, but detained': 'confirmed', // docu says it exists but i doubt the syntax(Not sure about this)
+
   'declined':   'cancelled',
-  'rejected':   'cancelled',
+  'rejected':   'cancelled'
 };
 
 /**
@@ -138,6 +144,18 @@ const STATE_MAP = {
  * @returns {Object}
  */
 function prepareCommission(o_obj) {
+
+  // https://developers.admitad.com/en/doc/api_en/methods/statistics/statistics-actions/
+  // using auto as date when a transactions status is in confirmed (internal state) &
+  // cancelled (internal state) added a bug. hence using "o_obj.closing_date" for all
+  // other transactions instead. (check STATUS_MAP for statuses)
+
+  var _date = 'auto';
+  if(o_obj.status === 'pending' || o_obj.status === 'approved_but_stalled' || o_obj.status === 'approved_but_stalled - waiting')
+    _date = new Date(o_obj.action_date);
+  else // this is for all other status - approved/declined/approved_but_stalled - on hold/confirmed/declined/confirmed but delayed
+    _date = new Date(o_obj.closing_date);
+
   let event = {
     affiliate_name: o_obj.advcampaign_name,
     transaction_id: o_obj.action_id,
@@ -147,7 +165,8 @@ function prepareCommission(o_obj) {
     purchase_amount: o_obj.cart,
     commission_amount: o_obj.payment,
     state: STATE_MAP[o_obj.status],
-    effective_date: 'auto'
+    //effective_date: 'auto'
+    effective_date: _date
   };
   return event;
 }
