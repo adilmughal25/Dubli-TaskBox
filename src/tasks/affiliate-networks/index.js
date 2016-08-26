@@ -169,8 +169,12 @@ function init(tasker) {
   initializeMerchantImporters(tasker);
   initializeCommissionsProcessors(tasker);
   initializeCommissionsDubliProcessors(tasker);
+  initializeNotificationProcessor(tasker);
 }
 
+function initializeNotificationProcessor(tasker) {
+  tasker.createTask('Taskbox Notifications', '2d +/- 1d', require('./notification').generateP);
+}
 
 function initializeMerchantImporters(tasker) {
   // run each of these every 24 hours
