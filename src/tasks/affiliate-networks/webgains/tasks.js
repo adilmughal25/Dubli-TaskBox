@@ -98,7 +98,10 @@ const WebgainsGenericApi = function(s_entity) {
     let results = yield that.clientSoap[method](args)
       .then(extractAry(key))
       .then(resp => rinse(resp))
-    ;
+      .catch((e) => {
+        e.stack = e.body + ' (' +e.stack + ')'
+        throw e;
+      });
 
     return results || [];
   });
