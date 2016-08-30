@@ -149,11 +149,6 @@ const tradetrackerDubliRUApi = tradetrackerGenericApi('ru', 'dubli');
 
 const webgainsGenericApi = require('./webgains/tasks');
 const webgainsApi = webgainsGenericApi();
-const webgainsDubliDEApi = webgainsGenericApi('dubli-de');
-const webgainsDubliDKApi = webgainsGenericApi('dubli-dk');
-const webgainsDubliESApi = webgainsGenericApi('dubli-es');
-const webgainsDubliGBApi = webgainsGenericApi('dubli-gb');
-const webgainsDubliITApi = webgainsGenericApi('dubli-it');
 
 const zanoxGenericApi = require('./zanox/tasks');
 const zanoxApi = zanoxGenericApi();
@@ -354,11 +349,6 @@ function initializeCommissionsDubliProcessors(tasker) {
     "TradeTracker DubLi (AT) Commissions": tradetrackerDubliATApi.getCommissionDetails,
     "TradeTracker DubLi (RU) Commissions": tradetrackerDubliRUApi.getCommissionDetails,
     "VCommission DubLi Commissions": vcommissionDubliApi.getCommissionDetails,
-    "Webgains DubLi (DE) Commissions": webgainsDubliDEApi.getCommissionDetails,
-    "Webgains DubLi (DK) Commissions": webgainsDubliDKApi.getCommissionDetails,
-    "Webgains DubLi (ES) Commissions": webgainsDubliESApi.getCommissionDetails,
-    "Webgains DubLi (GB) Commissions": webgainsDubliGBApi.getCommissionDetails,
-    "Webgains DubLi (IT) Commissions": webgainsDubliITApi.getCommissionDetails,
     "Zanox DubLi (DE) Commissions": zanoxDubliDEApi.getCommissionDetails,
     "Zanox DubLi (ES) Commissions": zanoxDubliESApi.getCommissionDetails,
     "Zanox DubLi (AU) Commissions": zanoxDubliAUApi.getCommissionDetails,
