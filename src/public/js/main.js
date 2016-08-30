@@ -118,7 +118,7 @@ fields: [
           pageSize: 5,
           rowClick: (args) => {
             $('#myModalLabel').html('Run Details - <i>' + args.item.id + '</i>');
-            args.item.lastError && $('#modalLastError').html('<i>'+args.item.lastError+'<i>');
+            args.item.lastError ? $('#modalLastError').html('<i>'+args.item.lastError+'<i>') : $('#modalLastError').html('');
             const lastResult = args.item.lastResult && JSON.parse(args.item.lastResult);
             if(args.item.lastResult) {
               $('#modalTimeSpentSaving').html(lastResult.timeSpentSaving);
