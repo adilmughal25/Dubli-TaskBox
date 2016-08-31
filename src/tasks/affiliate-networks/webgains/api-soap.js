@@ -23,33 +23,8 @@ const API_SERVICE_WSDL = 'http://ws.webgains.com/aws.php?wsdl';
 const API_CFG = {
   ominto: {
     user: 'merchants@ominto.com',
-    pass: 'Minty789',
+    pass: 'Ominto2016',
     siteId: 177143
-  },
-  dubli_de: {
-    user: 'mall@dubli.com',
-    pass: 'cashback6750',
-    siteId: 75700
-  },
-  dubli_dk: {
-    user: 'mall@dubli.com',
-    pass: 'cashback6750',
-    siteId: 75705
-  },
-  dubli_es: {
-    user: 'mall@dubli.com',
-    pass: 'cashback6750',
-    siteId: 75701
-  },
-  dubli_gb: {
-    user: 'mall@dubli.com',
-    pass: 'cashback6750',
-    siteId: 135949
-  },
-  dubli_it: {
-    user: 'mall@dubli.com',
-    pass: 'cashback6750',
-    siteId: 151309
   },
 };
 

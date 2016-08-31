@@ -145,7 +145,11 @@ const TradeTrackerGenericApi = function(s_region, s_entity) {
   tasks.doApi = co.wrap(function* (method, args, key) {
     var results = yield tasks.client[method](args)
     .then(extractAry(key))
-    .then(resp => rinse(resp));
+    .then(resp => rinse(resp))
+    .catch((e) => {
+      e.stack = e.body + ' (' +e.stack + ')'
+      throw e;
+    });
 
     return results || [];
   });

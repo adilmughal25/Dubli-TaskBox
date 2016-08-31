@@ -116,6 +116,12 @@ const CURRENCY_MAP = {
  */
 const amountPregPattern = /([^0-9\\.])/gi;  // to clean amounts like "($123.45)", "$432.12", ...
 function prepareCommission(region, o_obj) {
+
+  // http://classic.avantlink.com/api.php?help=1&module=AffiliateReport
+  // 8 - Sales/Commissions (Detail)
+  // using auto as date for a transactions added a bug. hence using "o_obj.Transaction_Date"
+  // for all transactions instead. (check STATUS_MAP for statuses)
+
   var event = {
     affiliate_name: o_obj.Merchant,
     transaction_id: o_obj.Order_Id,
@@ -125,7 +131,8 @@ function prepareCommission(region, o_obj) {
     purchase_amount: o_obj.Transaction_Amount.replace(amountPregPattern, ''),
     commission_amount: o_obj.Total_Commission.replace(amountPregPattern, ''),
     state: STATE_MAP[o_obj.Transaction_Type.toLowerCase()],
-    effective_date: 'auto'
+    //effective_date: 'auto'
+    effective_date: new Date(o_obj.Transaction_Date)
   };
   return event;
 }

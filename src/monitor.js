@@ -1,66 +1,68 @@
 "use strict";
 
-const http = require('http');
+const config = require('./../configs.json').notification;
 const _ = require('lodash');
 const path = require('path');
 const Handlebars = require('handlebars');
 const fs = require('fs');
 const moment = require('moment');
+const serve = require('koa-static');
+const koa = require('koa');
+const route = require('koa-route');
+const app = koa();
+const notification = require('./tasks/affiliate-networks/notification');
 
 function startMonitor(tasker) {
-  // this will be made prettier soon, but for now even just having this status report will be good
-  // later we could even pretty easily add a button that calls an ajax which triggers tasker.run(taskid)
-  // to force a task to run.
-  var server = http.createServer(function (request, response) {
 
-    const match = /^\/start\?([a-zA-Z0-9-]+)$/.exec(request.url);
-    if (match) {
-      const taskId = match[1];
-      tasker.run(taskId);
-      response.writeHead(200, {"Content-Type":"application/json"});
-      response.end(JSON.stringify({status:"ok"}));
-      return;
-    }
 
-    tasker.report()
-    .catch(e => {
-      response.writeHead(200, {"Content-Type": "text/plain"});
-      response.end("Received Error "+e+"\n" + " " + e.stack + "\n" );
-    })
-    .then(function(report) {
-      response.writeHead(200, {"Content-Type": "text/html"});
-      const tpl = template();
-      report = report.map(x => {
-        const details = (
-          x.lastStatus === 'error' ? x.lastError :
-          x.lastStatus === 'success' ? x.lastResult :
-          null
-        ) || '[no stored information from last run]';
-        return _.extend({}, x, {
-          nextPretty: pretty(x.next),
-          lastPretty: pretty(x.last),
-          lastEndPretty: pretty(x.lastEnd),
-          lastDetails: details
+  app.use(serve(__dirname + '/public'));
+  app.use(serve(config.path_data));
+  app.use(route.get('/data.js', function *(){
+    this.body = yield notification.generate(tasker);
+  }));
+  app.use(route.get('/start', function *(){
+    this.body = startTask(tasker, this.request.querystring)
+  }));
+  app.use(route.get('/',  function *(){
+    this.body = yield defaultReport(tasker, this.response)
+  }));
+
+  app.listen(8000);
+}
+
+
+const template = Handlebars.compile(fs.readFileSync(path.join(__dirname, 'monitor.hbs'), 'utf8'));
+
+const defaultReport = function * (tasker, response) {
+  try{
+    const report = yield tasker.report();
+    response.type = 'text/html';
+    const transformedReport = report.map(x => {
+          const details = (
+            x.lastStatus === 'error' ? x.lastError :
+            x.lastStatus === 'success' ? x.lastResult :
+            null
+          ) || '[no stored information from last run]';
+          return _.extend({}, x, {
+            nextPretty: pretty(x.next),
+            lastPretty: pretty(x.last),
+            lastEndPretty: pretty(x.lastEnd),
+            lastDetails: details
+          });
         });
-      });
-      const html = tpl({ report: report });
-      response.end(html);
-    });
-  });
-
-  // Listen on port 8000, IP defaults to 127.0.0.1
-  server.listen(8000);
-}
-
-let compiledTemplate;
-function template() {
-
-  if (!compiledTemplate) {
-    let t = fs.readFileSync(path.join(__dirname, 'monitor.hbs'), 'utf8');
-    compiledTemplate = Handlebars.compile(t);
+        
+        const html = template({ report: report });
+        return html;
+  } catch(e) {
+    response.type = 'text/plain';
+    return "Received Error "+e+"\n" + " " + e.stack + "\n";
   }
-  return compiledTemplate;
 }
+
+const startTask = function (tasker, taskId) {
+    tasker.run(taskId);
+    return JSON.stringify({status:"ok"});
+  }
 
 function pretty (date) {
   if (!date) return '--';

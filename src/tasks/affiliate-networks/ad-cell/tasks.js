@@ -157,6 +157,18 @@ const AdCellGenericApi = function(s_entity) {
    * @returns {Object}
    */
   this.prepareCommission = function(o_obj) {
+
+    // https://www.adcell.de/api/v2/#&controller=Affiliate_Statistic&apiCall=affiliate_statistic_byCommission
+    // using auto as date for a transactions added a bug. hence using "o_obj.createTime"
+    // for "open"transactions, "o_obj.changeTime" for "accepted" transactions &
+    // "cancelled" transactions instead. (check STATUS_MAP for statuses)
+
+    var _date = 'auto';
+    if(o_obj.status === 'open')
+      _date = new Date(o_obj.createTime);
+    else if(o_obj.status === 'accepted' || o_obj.status === 'cancelled')
+      _date = new Date(o_obj.changeTime);
+
     var event = {
       affiliate_name: o_obj.programName,
       transaction_id: o_obj.commissionId,
@@ -166,7 +178,8 @@ const AdCellGenericApi = function(s_entity) {
       purchase_amount: o_obj.totalShoppingCart,
       commission_amount: o_obj.totalCommission,
       state: STATE_MAP[o_obj.status],
-      effective_date: (o_obj.changeTime !== '' ? new Date(o_obj.changeTime) : 'auto')
+      //effective_date: (o_obj.changeTime !== '' ? new Date(o_obj.changeTime) : 'auto')
+      effective_date: _date
     };
     return event;
   };

@@ -67,7 +67,6 @@ const ShareASaleGenericApi = function(s_entity) {
 
     // get activities first - format/transform/clean them
     response = yield that.client.getActivityDetails(params);
-
     let activityTransactions = ary(response).map(transformActivity).filter(exists);
     activityTransactions = _.transform(activityTransactions, function(res, item, key) {
       res[item.transaction_id] = item;
@@ -93,17 +92,26 @@ const ShareASaleGenericApi = function(s_entity) {
  * @returns {Object}
  */
 function transformActivity (o_obj) {
+
+  // https://account.shareasale.com/a-apimanager.cfm
+  // need more info on this as the api documentation doesnt describe the senarions
+  // date fields - transdate, pendingdate, reversaldate, clickdate, lockdate, paiddate
+  // using auto as date for a transactions added a bug. hence using "o_obj.transdate"
+  // for all transactions instead. (check STATUS_MAP for statuses)
+
   let voided = Number(o_obj.voided) === 1;
 
   var event = {
     affiliate_name: o_obj.merchantorganization,
     transaction_id: o_obj.transid,
+    order_id: o_obj.ordernumber,
     outclick_id: _.trim(o_obj.affcomment),
     currency: AFFILIATE_CURRENCY,
     purchase_amount: Number(o_obj.transamount),
     commission_amount: Number(o_obj.commission),
     state: voided ? 'cancelled' : 'initiated',
-    effective_date: 'auto'
+    //effective_date: 'auto'
+    effective_date: new Date(o_obj.transdate)
   };
 
   return event;
@@ -116,6 +124,11 @@ function transformActivity (o_obj) {
  * @returns {Object}
  */
 function transformLedger (o_obj) {
+
+  // https://account.shareasale.com/a-apimanager.cfm
+  // using auto as date for a transactions added a bug. hence using "o_obj.dt"
+  // for all transactions instead. (check STATUS_MAP for statuses)
+
   if(o_obj.transtype.toLowerCase() === 'affiliate payment') return;
 
   let status = 'confirmed',
@@ -137,7 +150,8 @@ function transformLedger (o_obj) {
     purchase_amount: purchase_amount,
     commission_amount: commission_amount,
     state: status,
-    effective_date: 'auto'
+    //effective_date: 'auto'
+    effective_date: new Date(o_obj.dt)
   };
 
   return event;

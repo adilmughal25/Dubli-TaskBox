@@ -84,7 +84,19 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
     return images;
   });
 
+
+  /*
+  https://api.hasoffers.com/Apiv3/json?NetworkId=arabyads&Target=Affiliate_Report&Method=getConversions&api_key=2f4b194614629ed6fdb455104523d571b4d30f4b8df95eb89b8efbd12ce664c8&fields%5B%5D=Stat.approved_payout&fields%5B%5D=Stat.affiliate_info1&fields%5B%5D=Stat.id&fields%5B%5D=Stat.currency&fields%5B%5D=Stat.sale_amount&fields%5B%5D=Stat.datetime&fields%5B%5D=Stat.conversion_status&limit=1000&page=1&data_start=2016-08-17&data_end=2016-08-17
   const commFields = 'affiliate_info1 id currency approved_payout sale_amount datetime conversion_status'
+    .split(' ')
+    .map(f => 'Stat.'+f);
+  */
+  // changing the field 'approved_payout' to 'payout' as per the conversation with
+  // hasoffers/tune support team. According to the support team - "Stat.approved_payout
+  // it is intended to aggregate the sum of payouts, and not for querying individual conversions.
+  // When querying for individual conversions, we advise that you use Stat.payout to be able
+  // to use Stat.currency."
+  const commFields = 'affiliate_info1 id currency payout sale_amount datetime conversion_status'
     .split(' ')
     .map(f => 'Stat.'+f);
 
@@ -102,6 +114,8 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
         'limit': 1000,
         'page': page
       });
+
+      debug("fetch %s", url);
 
       const response = yield that.client.get(url);
       if (response.response.status == -1) throw new Error("Error in "+s_networkName+" commission processing: "+response.response.errorMessage);
@@ -167,16 +181,28 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
 };
 
 function prepareCommission(o_obj) {
+
+  // old api
+  // http://developers.hasoffers.com/#/affiliate/controller/Affiliate_Report/method/getConversions
+  // http://developers.hasoffers.com/#/affiliate/model/StatReport
+
+  // new api
+  // https://developers.tune.com/affiliate/affiliate_report-getconversions/
+
+  // using auto as date for a transactions added a bug. hence using "o_obj.Stat.datetime"
+  // for all transactions instead. (check STATUS_MAP for statuses)
   const S = o_obj.Stat;
   const event = {
     transaction_id: S.id,
     order_id: S.id,
     outclick_id: S.affiliate_info1,
     purchase_amount: S.sale_amount,
-    commission_amount: S.approved_payout,
+    //commission_amount: S.approved_payout,
+    commission_amount: S.payout,
     currency: S.currency,
     state: STATUS_MAP[S.conversion_status],
-    effective_date: S.conversion_status === 'pending' ? new Date(S.datetime) : 'auto'
+    // effective_date: S.conversion_status === 'pending' ? new Date(S.datetime) : 'auto'
+    effective_date: new Date(S.datetime)
   };
   return event;
 }

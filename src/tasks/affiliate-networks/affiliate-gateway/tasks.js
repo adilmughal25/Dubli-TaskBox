@@ -68,6 +68,12 @@ const CURRENCY_MAP = {
  * @returns {Object}
  */
 function prepareCommission(region, o_obj) {
+
+  // https://www.tagadmin.asia/ws/AffiliateSOAP.wsdl
+  // https://www.tagadmin.sg/ws/AffiliateSOAP.wsdl
+  // using auto as date for a transactions added a bug. hence using "o_obj.TransactionDateTime"
+  // for all transactions instead. (check STATUS_MAP for statuses)
+
   var event = {
     affiliate_name: o_obj.ProgramName, // MerchantName or ProgramName
     transaction_id: o_obj.TransactionId,
@@ -77,7 +83,8 @@ function prepareCommission(region, o_obj) {
     purchase_amount: Number(o_obj.OrderAmount),
     commission_amount: Number(o_obj.AffiliateCommissionAmount),
     state: STATE_MAP[o_obj.ApprovalStatusId],   // .. or string representation from "ApprovalStatus"
-    effective_date: 'auto'
+    //effective_date: 'auto'
+    effective_date: new Date(o_obj.TransactionDateTime)
   };
 
   return event;
