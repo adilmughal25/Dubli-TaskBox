@@ -180,6 +180,7 @@ const zanoxDubliDKApi = zanoxGenericApi('dk', 'dubli');
 const zanoxDubliSEApi = zanoxGenericApi('se', 'dubli');
 const zanoxDubliNOApi = zanoxGenericApi('no', 'dubli');
 const zanoxDubliGlobalApi = zanoxGenericApi('global', 'dubli');
+const shooglooApi = require('./shoogloo/tasks');
 
 function init(tasker) {
   initializeMerchantImporters(tasker);
@@ -268,7 +269,8 @@ function initializeMerchantImporters(tasker) {
     "TradeTracker (SE) Merchants": tradetrackerSEApi.getMerchants,
     "VCommission Merchants": vcommissionApi.getMerchants,
     "Webgains Merchants": webgainsApi.getMerchants,
-    "Zanox Merchants": zanoxApi.getMerchants
+    "Zanox Merchants": zanoxApi.getMerchants,
+    "Shoogloo Merchants": shooglooApi().getMerchants
   });
 
   tasker.createTask('ShareASale Merchants', '7d +/- 1d', shareASaleApi.getMerchants);
@@ -414,6 +416,7 @@ function initializeCommissionsDubliProcessors(tasker) {
     "Zanox DubLi (SE) Commissions": zanoxDubliSEApi.getCommissionDetails,
     "Zanox DubLi (NO) Commissions": zanoxDubliNOApi.getCommissionDetails,
     "Zanox DubLi (Global) Commissions": zanoxDubliGlobalApi.getCommissionDetails,
+    "Shoogloo Commissions": shooglooApi().getCommissionDetails
   });
 
   tasker.createTask('ShareASale Dubli Commissions', '7d +/- 1d', shareASaleDubliApi.getCommissionDetails);
