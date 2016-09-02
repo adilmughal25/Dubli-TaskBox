@@ -63,7 +63,7 @@ const TradeTrackerGenericApi = function(s_region, s_entity) {
     eventName: this.eventName
   };
 
-  tasks.getMerchants = singleRun(function*(){
+  const getMerchantsOps = function*(){
     tasks.client = yield clientPool.getClient(tasks.entity, tasks.region);
 
     var results = yield {
@@ -73,9 +73,20 @@ const TradeTrackerGenericApi = function(s_region, s_entity) {
       vouchers: tasks.doApi('getMaterialIncentiveVoucherItems', MATERIAL_ARGS, 'materialItems.item').then(extractUrl)
     };
 
-    var merchants = merge(results);
+    const merchants =  merge(results);
+    return sendEvents.sendMerchants(tasks.eventName, merchants);
+  }
 
-    return yield sendEvents.sendMerchants(tasks.eventName, merchants);
+  tasks.getMerchants = singleRun(function*(){
+    try{
+      return yield getMerchantsOps();
+    } catch(e) {
+      if(e.message.indexOf('Not yet authenticated') != -1) {
+        clientPool.activeClients[tasks.entity + '-' + tasks.region] = undefined;
+        return yield getMerchantsOps();
+      }
+      throw e;
+    }
   });
 
   // get commission report
