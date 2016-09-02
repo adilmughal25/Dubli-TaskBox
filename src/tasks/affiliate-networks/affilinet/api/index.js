@@ -103,9 +103,9 @@ const AffiliNet = function(s_entity, s_accountId) {
   _cache[_tag] = this;
 };
 
-AffiliNet.prototype.ensureLoggedIn = co.wrap(function*() {
+AffiliNet.prototype.ensureLoggedIn = co.wrap(function*(force) {
   var now = new Date();
-  if (this._expires < now) {
+  if (force || this._expires < now) {
     this.debug("Login required! token expired at %s!", this._expires);
     var loginResp = yield this.login$(this._credentials);
     this._token = loginResp.CredentialToken;
@@ -184,26 +184,46 @@ _.pairs(CALL_DEFS).forEach(function(item) {
   var defs = item[1];
   var special = /\$$/.test(name);
   var template = defs.template;
+
+  function* call (args, client) {
+        var body = template(args);
+        var postArgs = {
+          url: defs.url,
+          body: body,
+          headers: {
+            'Content-Type': 'text/xml; charset=utf-8',
+            'SOAPAction': defs.action
+          },
+          resolveWithFullResponse: true
+        };
+        var promise = client.post(postArgs).then(jsonify).then(rinse);
+        if (defs.extract) promise = promise.then(x => _.get(x, defs.extract));
+        if (defs.toArray) promise = promise.then(x => ary(x));
+        return yield promise;
+      }
+
   AffiliNet.prototype[name] = co.wrap(function*(args) {
-    if (!special) {
-      yield this.ensureLoggedIn();
-      args = _.extend({}, defs.defaults, args, {token:this._token});
-    }
-    var body = template(args);
-    var postArgs = {
-      url: defs.url,
-      body: body,
-      headers: {
-        'Content-Type': 'text/xml; charset=utf-8',
-        'SOAPAction': defs.action
-      },
-      resolveWithFullResponse: true
-    };
-    this.debug("[%s] POST\n    url    : %s\n    action : %s\n    args   : %j", name, defs.url, defs.action, args);
-    var promise = this._client.post(postArgs).then(jsonify).then(rinse);
-    if (defs.extract) promise = promise.then(x => _.get(x, defs.extract));
-    if (defs.toArray) promise = promise.then(x => ary(x));
-    return yield promise;
+
+      if (!special) {
+        yield this.ensureLoggedIn();
+        this._token = '7b78130a-8ec2-4583-97bd-d15659bbb281'
+        args = _.extend({}, defs.defaults, args, {token:this._token});
+      }
+      this.debug("[%s] POST\n    url    : %s\n    action : %s\n    args   : %j", name, defs.url, defs.action, args);
+      try{
+        return yield call(args, this._client);
+      } catch(e) {
+        
+        if(e.message.indexOf('The CredentialToken is invalid') != -1) {
+          yield this.ensureLoggedIn(true);
+          args.token = this._token;
+          return yield call(args, this._client);
+        } else {
+          throw e;
+        }
+
+      } 
+    
   });
 });
 
