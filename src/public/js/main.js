@@ -7,13 +7,33 @@ function getParameterByName(name, url) {
         if (!results[2]) return '';
         return decodeURIComponent(results[2].replace(/\+/g, " "));
     }
-    var script = document.createElement('script');
-    script.src = getParameterByName('date') ? "./data-" + getParameterByName('date') + '.js' : 'data.js';
-    script.onload = function () {
-        init();
-    };
-document.head.appendChild(script);
-function init() {
+    $.getJSON('availableReports', function(data) {
+
+        var script = document.createElement('script');
+        var currentDate = getParameterByName('date');
+        script.src = (currentDate) ? "./data-" + currentDate + '.js' : 'data.js';
+        script.onload = function () {
+            init(currentDate);
+        };
+        document.head.appendChild(script);
+        var selectText = currentDate?currentDate:'Current';
+        $('.dropdown-toggle').html(selectText+' <span class="caret"></span>');
+        currentDate && $(".dropdown-menu").append('<li><a href="report.html">Current</a></li>');
+        if(currentDate) {
+          data.splice(data.indexOf('data-'+currentDate+'.js'), 1);
+        }
+        _.map(data, (date) => {
+            var reportDate = date.match(/data-(.*)\.js/)[1];
+            $(".dropdown-menu").append('<li><a href="report.html?date='+reportDate+'">'+ reportDate +'</a></li>');
+        });
+      });
+    
+$.getJSON('configs.json', function(data) {
+    $("#title").text(data.env.toUpperCase());
+});
+
+function init(currentReportDate) {
+      
       const groupByLastSatus = _.groupBy(data, 'lastStatus');
       const chartData = _.reduce(_.keys(groupByLastSatus), function(memo, item) {
         const memoItem = [];
@@ -26,13 +46,17 @@ function init() {
       google.charts.load("current", {packages:["corechart"]});
       google.charts.setOnLoadCallback(drawChart);
       function drawChart() {
-        var donutData = google.visualization.arrayToDataTable(chartData);
-
-        var options = {
+        const donutData = google.visualization.arrayToDataTable(chartData);
+        const options = {
           title: 'Taskbox Status',
-          pieHole: 0.4
+          pieHole: 0.4,
+          slices: {}
         };
-
+        const successIndex = Object.keys(groupByLastSatus).indexOf('success');
+        const errorIndex = Object.keys(groupByLastSatus).indexOf('error');
+        options.slices[successIndex] = {color : 'green'};
+        options.slices[errorIndex] = {color : 'red'};
+        
         var errorChartOptions = {
           title: 'Taskbox Errors',
           pieHole: 0.4
