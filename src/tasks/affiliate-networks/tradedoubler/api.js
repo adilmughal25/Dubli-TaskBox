@@ -48,6 +48,7 @@ const API_CFG = {
       ch: { voucherKey: '59EFF0B87382DB3A8D59EBD174B6C5691AECCF65', affiliateId: '2511415' },
       gb: { voucherKey: 'E4A255E27533E19A71DC816EBEA318F313DA0EFE', affiliateId: '2511416' },
       br: { voucherKey: '9F43FE1AAE6FD365BB8AE2AC23DDE2EA55459640', affiliateId: '2511417' },
+      flyDubai: {voucherKey: '8AD74DC5E474E552FF9010F52A8D64FE07612D59', affiliateId: '2822140'}
     }
   }
 };
