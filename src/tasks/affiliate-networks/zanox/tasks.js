@@ -103,9 +103,9 @@ const ZanoxGenericApi = function(s_region, s_entity) {
 
       let items = _.get(response, bodyKey) || [];
       results = results.concat(items);
-      total = response.total;
+      total = response.total || 0;
 
-      if (++page * perPage >= response.total) break;
+      if (++page * perPage >= total) break;
     }
     const end = Date.now();
 
