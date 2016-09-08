@@ -70,6 +70,19 @@ function getTransactionsUrl(start, end) {
 }
 
 function prepareCommission(o_obj) {
+
+  // http://dev.commissionfactory.com/V1/Affiliate/Types/Transaction/
+  // using auto as date when a transactions status is "Approved" or "Void" added a bug.
+  // hence using "o_obj.DateModified" for "Approved" transactions & "Void" transactions
+  // instead. (check STATUS_MAP for statuses)
+  // also changed the state(status) field for incoming transactions
+
+  var _date = 'auto';
+  if(o_obj.Status === 'Pending')
+    _date = new Date(o_obj.DateCreated);
+  else if(o_obj.Status === 'Approved' || o_obj.Status === 'Void')
+    _date = new Date(o_obj.DateModified);
+
   const event = {
     transaction_id: o_obj.Id,
     order_id: o_obj.OrderId,
@@ -77,8 +90,10 @@ function prepareCommission(o_obj) {
     purchase_amount: o_obj.SaleValue,
     commission_amount: o_obj.Commission,
     currency: (o_obj.ReportedCurrencyCode===null) ? 'aud' : o_obj.ReportedCurrencyCode, // TODO: double check with CF always aud or have them fix their api.
-    state: STATUS_MAP[o_obj.TransactionStatus],
-    date: o_obj.TransactionStatus === 'Pending' ? new Date(o_obj.DateCreated) : "auto"
+    //state: STATUS_MAP[o_obj.TransactionStatus],
+    //date: o_obj.TransactionStatus === 'Pending' ? new Date(o_obj.DateCreated) : "auto"
+    state: STATUS_MAP[o_obj.Status],
+    effective_date: _date
   };
   return event;
 }
