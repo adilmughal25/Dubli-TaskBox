@@ -1,7 +1,7 @@
 "use strict";
 
 const denodeify = require('denodeify');
-const zanox_req = require('zanox_js');
+const zanox_req = require('./zanox');
 const debug = require('debug')('adcell:api-client');
 
 const API_CFG = {
