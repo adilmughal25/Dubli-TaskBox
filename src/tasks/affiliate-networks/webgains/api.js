@@ -46,16 +46,18 @@ function WebgainsClient(s_entity) {
 
 // http://api.webgains.com/2.0/programs?key=96069aeda4817545eb3ad17641e68899&programsjoined=1
 WebgainsClient.prototype.getMerchants = co.wrap(function* () {
-  let that = this;
-  let body = yield this.client.get({
+  const that = this;
+  const body = yield this.client.get({
     url: 'programs',
     qs: {
       key: that.cfg.key,
-      programsjoined: 1
+      programsjoined: 1,
+      campaignId: that.cfg.campaignId
     }
   });
-
-  return body || [];
+  const programs = body || [];
+  const livePrograms = programs.filter(program => program.status === 'live');
+  return livePrograms;
 });
 
 // http://api.webgains.com/2.0/vouchers?key=96069aeda4817545eb3ad17641e68899&joined=1
