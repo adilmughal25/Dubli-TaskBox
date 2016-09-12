@@ -48,7 +48,9 @@ const API_CFG = {
       ch: { voucherKey: '59EFF0B87382DB3A8D59EBD174B6C5691AECCF65', affiliateId: '2511415' },
       gb: { voucherKey: 'E4A255E27533E19A71DC816EBEA318F313DA0EFE', affiliateId: '2511416' },
       br: { voucherKey: '9F43FE1AAE6FD365BB8AE2AC23DDE2EA55459640', affiliateId: '2511417' },
-      flyDubai: {voucherKey: '8AD74DC5E474E552FF9010F52A8D64FE07612D59', affiliateId: '2822140'}
+      flyDubai: {voucherKey: '5023327B3995A455E4F89C14FB5C49FDC8B1BCFD', affiliateId: '2822140', overrides: {
+        key: '23772cd706987befac6368959d5958ff'
+      }}
     }
   }
 };
@@ -208,8 +210,9 @@ const Tradedoubler = function(s_region, s_entity) {
    */
   const getMerchants = () => {
     const affiliateIdFilter = { affiliateId: _.get(API_CFG, 'affiliateData.' + that.entity + '.' + that.region + '.affiliateId') };
+    const overrides = _.get(API_CFG, ['affiliateData', that.entity, that.region, 'overrides']);
     const requestParams = {
-      qs: _.extend(API_PARAMS_MERCHANTS, affiliateIdFilter)
+      qs: _.extend(API_PARAMS_MERCHANTS, affiliateIdFilter, overrides)
     };
     const client = getTradedoublerClient(requestParams);
     return client.get()
