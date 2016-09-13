@@ -221,7 +221,7 @@ const Tradedoubler = function(s_region, s_entity) {
         })
         .then((response) => {
           let merchants = _.get(response, 'report.matrix[1].rows.row', []);
-          return merchants.map((merchant) => {merchant.region = overrides.region; return merchant });
+          return merchants.map((merchant) => {merchant.region = overrides && overrides.region; return merchant });
         });
   };
 
