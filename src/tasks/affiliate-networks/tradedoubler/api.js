@@ -49,7 +49,7 @@ const API_CFG = {
       gb: { voucherKey: 'E4A255E27533E19A71DC816EBEA318F313DA0EFE', affiliateId: '2511416' },
       br: { voucherKey: '9F43FE1AAE6FD365BB8AE2AC23DDE2EA55459640', affiliateId: '2511417' },
       flyDubai: {voucherKey: '5023327B3995A455E4F89C14FB5C49FDC8B1BCFD', affiliateId: '2822140', overrides: {
-        key: '23772cd706987befac6368959d5958ff'
+        key: '23772cd706987befac6368959d5958ff', region: 'ae'
       }}
     }
   }
@@ -221,7 +221,7 @@ const Tradedoubler = function(s_region, s_entity) {
         })
         .then((response) => {
           let merchants = _.get(response, 'report.matrix[1].rows.row', []);
-          return merchants;
+          return merchants.map((merchant) => {merchant.region = overrides.region; return merchant });
         });
   };
 
