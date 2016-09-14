@@ -1,59 +1,62 @@
-"use strict";
+'use strict';
 
 const _ = require('lodash');
 const co = require('co');
 const debug = require('debug')('tradedoubler:processor');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
-const client = require('./api')();
-
-/**
- * Retrieve all merchant/program information from tradedoubler including there commissions.
- * @returns {undefined}
- */
-const getMerchants = singleRun(function*() {
-  const results = yield client.getMerchants();
-  const events = _.values(results.reduce(merchantReduce, {})).map(hasPercentage);
-
-  return yield sendEvents.sendMerchants('tradedoubler', events);
+const merge = require('../support/easy-merge')('programId', {
+  coupons: 'programId'
 });
 
-// Elements to filter out from events and keep in merchant
-const mFilter = ['siteName','affiliateId','programName','currentStatusExcel','programId','applicationDate','status'];
-
 /**
- * Reduces our xml2js response from tradedoubler to the most necessary data.
- * @param {Object} merchants  The resulting filtered merchants object
- * @param {Object} item The individual object to iterate through
- * @returns {Object}
+ * Retrieve a generic Tradedoubler API client by setting region and entity dynamically
+ * @param s_region country code
+ * @param s_entity customer name, default 'ominto'
+ * @returns {TradedoublerGenericApi}
+ * @constructor
  */
-var merchantReduce = function(merchants, item) {
-  const cleanedMerchant = _.omit(item, (val, key) => { return _.indexOf(mFilter, key)  === -1;});
-  const cleanedItem = _.pick(item, (val, key) => { return _.indexOf(mFilter, key)  === -1;});
-
-  if (merchants[item.programId] === undefined) {
-    merchants[item.programId] = _.extend({}, {
-      merchant: cleanedMerchant,
-      events:[]
-    });
+const TradedoublerGenericApi = function(s_region, s_entity) {
+  if (!(this instanceof TradedoublerGenericApi)) {
+    debug('instantiating TradedoublerGenericApi for: %s', s_entity);
+    return new TradedoublerGenericApi(s_region, s_entity);
   }
 
-  merchants[item.programId].events.push(cleanedItem);
+  var that = this;
 
-  return merchants;
+  this.region = s_region || 'global';
+  this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
+  this.client = require('./api')(this.region, this.entity);
+  this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'tradedoubler' +
+      (this.region !== 'global' ? '-' + this.region : '');
+
+  /**
+   * Retrieve all merchant + voucher information from tradedoubler. This does not include commissions
+   * @returns {undefined}
+   */
+  this.getMerchants = singleRun(function * () {
+    debug('running get merchants with %s', that.region);
+    const results = yield {
+      merchants: that.client.apiCall('merchants'),
+      coupons: that.client.apiCall('coupons')
+    };
+    const merged = merge(results);
+    return yield sendEvents.sendMerchants(that.eventName, merged);
+  });
+
+  /**
+   * Retrieve all commissions / claims information from tradedoubler
+   * @type {Function}
+     */
+  this.getCommissionDetails = singleRun(function* () {
+    const response = yield that.client.apiCall('commissions');
+    return yield sendEvents.sendCommissions(that.eventName, response);
+  });
+
 };
 
-/**
- * Filter out any commissions without a percentage structure.
- * (No fixed commissions supported yet)
- * @param {Object} merchants  The individual merchant object
- * @returns {Object}  Filtered merchant
- */
-function hasPercentage(merchant) {
-  merchant.events = merchant.events.filter(e =>  Number(e.programTariffPercentage) > 0);
-  return merchant;
-}
+// Elements to filter out from events and keep in merchant
+// const mFilter = ['siteName', 'affiliateId', 'programName', 'currentStatusExcel', 'programId', 'applicationDate', 'status', 'coupons'];
 
-module.exports = {
-  getMerchants: getMerchants
-};
+
+module.exports = TradedoublerGenericApi;

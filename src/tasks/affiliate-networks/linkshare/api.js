@@ -18,7 +18,7 @@ const API_AUTH_FORMS = {
     global: {
       grant_type: 'password',
       username: 'Ominto',
-      password: 'M135Inty',
+      password: 'Ominto2016',
       scope: 3239617
     },
   },
