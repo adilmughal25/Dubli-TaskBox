@@ -81,7 +81,8 @@ const TradeTrackerGenericApi = function(s_region, s_entity) {
     try{
       return yield getMerchantsOps();
     } catch(e) {
-      if(e.message.indexOf('Not yet authenticated') != -1) {
+      const errorBody = _.get(e, ['body'], '');
+      if(errorBody.indexOf('Not yet authenticated') != -1) {
         clientPool.activeClients[tasks.entity + '-' + tasks.region] = undefined;
         return yield getMerchantsOps();
       }
