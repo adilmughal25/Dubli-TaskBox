@@ -91,7 +91,7 @@ const TradeTrackerGenericApi = function(s_region, s_entity) {
   });
 
   // get commission report
-  tasks.getCommissionDetailsOps = function* () {
+  const getCommissionDetailsOps = function* () {
     tasks.client = yield clientPool
       .getClient(tasks.entity, tasks.region);
     const startDate = new Date(Date.now() - (90 * 86400 * 1000));
