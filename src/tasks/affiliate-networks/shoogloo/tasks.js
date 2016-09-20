@@ -30,7 +30,20 @@ const ShooglooGenericApi = function() {
     return new ShooglooGenericApi();
   }
 
-  var that = this;
+  const that = this;
+  that.clientSoap = require('./api')();
+
+  const getOfferFeedReq = {
+      api_key: that.clientSoap.cfg.api_key,
+      affiliate_id: that.clientSoap.cfg.affiliate_id,
+      media_type_category_id: 0,
+      vertical_category_id: 0,
+      vertical_id: 0,
+      offer_status_id: 0,
+      tag_id: 0,
+      start_at_row: 1,
+      row_limit: 0
+    }
 
   this.eventName = 'shoogloo';
 
@@ -42,67 +55,75 @@ const ShooglooGenericApi = function() {
     }, 'GetCampaignResult.campaign.creatives.creative_info');
   }
 
-  this.getMerchants = singleRun(function* () {
-    debug("getMerchants");
-    that.clientSoap = require('./api')();
-    yield that.clientSoap.setup('offers'); // setup our soap client
-    // const verticals = yield that.doApi('GetVerticals', {
-    //   api_key: that.clientSoap.cfg.api_key,
-    //   affiliate_id: that.clientSoap.cfg.affiliate_id}, 'GetVerticalsResult.verticals.vertical');
-    //    const keyByVerticalNames = _.indexBy(verticals, 'vertical_name');
-
-    const offers = yield that.doApi('OfferFeed', {
-      api_key: that.clientSoap.cfg.api_key,
-      affiliate_id: that.clientSoap.cfg.affiliate_id,
-      media_type_category_id: 0,
-      vertical_category_id: 0,
-      vertical_id: 0,
-      offer_status_id: 0,
-      tag_id: 0,
-      start_at_row: 1,
-      row_limit: 0
-
-    }, 'OfferFeedResult.offers.offer');
-    
-    const activeOffers = offers.filter((offer) => offer.offer_status.status_id === '1');
-    let offerWithCreative = [];
-    for(var offer of activeOffers) {
-      const creativeInfos = yield that.doApi('GetCampaign', {
-        api_key: that.clientSoap.cfg.api_key,
-        affiliate_id: that.clientSoap.cfg.affiliate_id,
-        campaign_id: offer.campaign_id
-      }, 'GetCampaignResult.campaign.creatives.creative_info');
-      if(creativeInfos)
-        offerWithCreative = offerWithCreative.concat(creativeInfos.map((creativeInfo) => {
-          creativeInfo.offer_id = offer.offer_id;
-          creativeInfo.offer_name = offer.offer_name;
-          creativeInfo.category = offer.vertical_name;
-          creativeInfo.status = offer.offer_status.status_name;
-          creativeInfo.payout = offer.payout;
-          creativeInfo.thumbnail_image_url = offer.thumbnail_image_url;
-          creativeInfo.description = offer.description;
-          creativeInfo.payout = offer.payout;
-          creativeInfo.price_format = offer.price_format;
-          creativeInfo.allowed_countries = offer.allowed_countries;
-          creativeInfo.merchant = {
+  this.prepareMerchant = function(offer, link) {
+    return {
+          cashback : [{
             affiliate_id: that.clientSoap.cfg.affiliate_id,
-            display_url: offer.thumbnail_image_url,
-            name : offer.offer_name,
-            description: offer.description
-          };
-          creativeInfo.cashback = [{
-            affiliate_id: that.clientSoap.cfg.affiliate_id,
-            display_url: offer.thumbnail_image_url,
+            display_url: offer.preview_link,
             name : offer.offer_name,
             description: offer.description,
-          }];
-          return creativeInfo;
-        }));
+            rate: offer.payout
+          }],
+          merchant : {
+            affiliate_id: that.clientSoap.cfg.affiliate_id,
+            display_url: offer.preview_link,
+            logo: offer.thumbnail_image_url,
+            name : offer.offer_name,
+            description: offer.description
+          },
+          unique_link : link.unique_link,
+          offer_id : offer.offer_id,
+          offer_name : offer.offer_name,
+          category : offer.vertical_name,
+          status : offer.offer_status.status_name,
+          payout : offer.payout,
+          thumbnail_image_url : offer.thumbnail_image_url,
+          description : offer.description,
+          price_format : offer.price_format,
+          allowed_countries : offer.allowed_countries || {
+            country: [{
+              country_code :  "AE",
+              country_name : "UAE"
+            }
+            ]
+          }
+        };
+  }
+
+  this.getMerchants = singleRun(function* () {
+    
+    const api_key = that.clientSoap.cfg.api_key;
+    const affiliate_id = that.clientSoap.cfg.affiliate_id;
+    yield that.clientSoap.setup('offers'); // setup our soap client
+
+    const offers = yield that.doApi('OfferFeed', getOfferFeedReq, 'OfferFeedResult.offers.offer');
+    const activeOffers = offers.filter((offer) => offer.offer_status.status_id === '1');
+
+    const addOfferForRegion = (offer, creativeInfos, offerWithCreative, searchTerm, countryCode, countryName) => {
+          const uaeOffer = _.cloneDeep(offer);
+          uaeOffer.allowed_countries = { country: [{country_code :  countryCode,country_name : countryName}]};
+          const regionCreatives = creativeInfos.filter(creativeInfo => creativeInfo.creative_name.indexOf(searchTerm) !== -1);
+          regionCreatives && regionCreatives[0] && offerWithCreative.push(that.prepareMerchant(uaeOffer, regionCreatives[0]));
+      };
+
+    const offerWithCreative = [];
+
+    for(var offer of activeOffers) {
+      const getCampaignRequestParams = { api_key: api_key, affiliate_id: affiliate_id, campaign_id: offer.campaign_id};
+      const getCampaignResponseKey = 'GetCampaignResult.campaign.creatives.creative_info';
+      const creativeInfos = yield that.doApi('GetCampaign', getCampaignRequestParams, getCampaignResponseKey);
+      if(offer.offer_name.indexOf('Souq') == -1) {
+        const linkCreatives = creativeInfos.filter(creativeInfo => creativeInfo.creative_type.type_id === "1");
+        linkCreatives && linkCreatives[0] && offerWithCreative.push(that.prepareMerchant(offer, linkCreatives[0]));
+      } else {
+        addOfferForRegion(offer, creativeInfos, offerWithCreative, 'UAE - English', 'AE', 'UAE');
+        addOfferForRegion(offer, creativeInfos, offerWithCreative, 'Egypt - English', 'EG', 'Egypt');
+        addOfferForRegion(offer, creativeInfos, offerWithCreative, 'KSA - English', 'SA', 'Saudi Arabia');
+      }
 
     } 
     
     return yield sendEvents.sendMerchants(that.eventName, offerWithCreative);
-
   });
 
   /**
@@ -130,7 +151,7 @@ const ShooglooGenericApi = function() {
       row_limit: 0
     }, 'EventConversionsResult');
     
-    const event_conversions = results[0].event_conversions;
+    const event_conversions = results[0].event_conversions.event_conversion;
     const conversions = Array.isArray(event_conversions) ? event_conversions : [];
     transactions = conversions.map(prepareCommission).filter(exists);
     return yield sendEvents.sendCommissions(that.eventName, transactions);
@@ -158,6 +179,18 @@ function approvedAffiliate(item) {
   return false;
 }
 
+//TODO: Populate other states
+const STATE_MAP = {
+  'Pending':    'initiated',
+  'Approved':   'confirmed',
+  'Rejected':   'cancelled',
+  'Paid': 'completed' 
+};
+//TODO: Populate other currencies
+const CURRENCY_MAP = {
+  '$':    'usd'
+};
+
 /**
  * Function to prepare a single commission transaction for our data event.
  * @param {Object} o_obj  The individual commission transaction straight from webgains
@@ -169,11 +202,11 @@ function prepareCommission(o_obj) {
     transaction_id: o_obj.macro_event_conversion_id,
     order_id: o_obj.order_id,
     outclick_id: o_obj.subid_1,
-    currency: o_obj.currency_symbol,
-    purchase_amount: o_obj.price,
-    commission_amount: o_obj.order_total,
-    state: o_obj.disposition,
-    effective_date: new Date(o_obj.event_conversion_date)
+    currency: CURRENCY_MAP[o_obj.currency_symbol],
+    purchase_amount: o_obj.order_total || "0",
+    commission_amount: o_obj.price,
+    state: STATE_MAP[o_obj.disposition],
+    effective_date: o_obj.event_conversion_date
   };
 }
 
