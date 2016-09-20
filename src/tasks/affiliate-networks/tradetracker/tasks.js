@@ -150,16 +150,11 @@ const TradeTrackerGenericApi = function(s_region, s_entity) {
       // perform actual api call
       let items = yield tasks.client[method](arg)
       .then(extractAry(bodyKey))
-<<<<<<< HEAD
-      .then(resp => rinse(resp));
-
-=======
       .then(resp => rinse(resp))
       .catch((e) => {
         e.stack = e.body + ' (' +e.stack + ')'
         throw e;
       });
->>>>>>> ed2e4e4... Fixing tradetracker commissions
       results = results.concat(items);
 
       // response doesnt provide any totals, so we have to request until 0 items returned
