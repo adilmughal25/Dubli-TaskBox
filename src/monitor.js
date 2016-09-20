@@ -57,7 +57,7 @@ const defaultReport = function * (tasker, response) {
           });
         });
         
-        const html = template({ report: report });
+        const html = template({ report: transformedReport });
         return html;
   } catch(e) {
     response.type = 'text/plain';
