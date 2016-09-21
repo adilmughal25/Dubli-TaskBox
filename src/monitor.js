@@ -3,6 +3,7 @@
 const config = require('./../configs.json').notification;
 const _ = require('lodash');
 const path = require('path');
+const cofs = require('co-fs');
 const Handlebars = require('handlebars');
 const fs = require('fs');
 const moment = require('moment');
@@ -17,6 +18,7 @@ function startMonitor(tasker) {
 
   app.use(serve(__dirname + '/public'));
   app.use(serve(config.path_data));
+  app.use(serve(__dirname + '/../'));
   app.use(route.get('/data.js', function *(){
     this.body = yield notification.generate(tasker);
   }));
@@ -25,6 +27,10 @@ function startMonitor(tasker) {
   }));
   app.use(route.get('/',  function *(){
     this.body = yield defaultReport(tasker, this.response)
+  }));
+  app.use(route.get('/availableReports',  function *(){
+    const files = yield cofs.readdir(config.path_data);
+    this.body = files;
   }));
 
   app.listen(8000);
@@ -51,7 +57,7 @@ const defaultReport = function * (tasker, response) {
           });
         });
         
-        const html = template({ report: report });
+        const html = template({ report: transformedReport });
         return html;
   } catch(e) {
     response.type = 'text/plain';

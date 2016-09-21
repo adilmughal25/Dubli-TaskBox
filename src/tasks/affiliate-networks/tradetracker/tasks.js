@@ -63,7 +63,7 @@ const TradeTrackerGenericApi = function(s_region, s_entity) {
     eventName: this.eventName
   };
 
-  tasks.getMerchants = singleRun(function*(){
+  const getMerchantsOps = function*(){
     tasks.client = yield clientPool.getClient(tasks.entity, tasks.region);
 
     var results = yield {
@@ -73,14 +73,27 @@ const TradeTrackerGenericApi = function(s_region, s_entity) {
       vouchers: tasks.doApi('getMaterialIncentiveVoucherItems', MATERIAL_ARGS, 'materialItems.item').then(extractUrl)
     };
 
-    var merchants = merge(results);
+    const merchants =  merge(results);
+    return sendEvents.sendMerchants(tasks.eventName, merchants);
+  }
 
-    return yield sendEvents.sendMerchants(tasks.eventName, merchants);
+  tasks.getMerchants = singleRun(function*(){
+    try{
+      return yield getMerchantsOps();
+    } catch(e) {
+      const errorBody = _.get(e, ['body'], '');
+      if(errorBody.indexOf('Not yet authenticated') != -1) {
+        clientPool.activeClients[tasks.entity + '-' + tasks.region] = undefined;
+        return yield getMerchantsOps();
+      }
+      throw e;
+    }
   });
 
   // get commission report
-  tasks.getCommissionDetails = singleRun(function* () {
-    tasks.client = yield clientPool.getClient(tasks.entity, tasks.region);
+  const getCommissionDetailsOps = function* () {
+    tasks.client = yield clientPool
+      .getClient(tasks.entity, tasks.region);
     const startDate = new Date(Date.now() - (90 * 86400 * 1000));
     const endDate = new Date(Date.now() - (60 * 1000));
     let args = _.merge(CONVERSIONTRANS_ARGS, {options:{
@@ -94,6 +107,19 @@ const TradeTrackerGenericApi = function(s_region, s_entity) {
     const events = transactions.map(prepareCommission).filter(exists);
 
     return yield sendEvents.sendCommissions(tasks.eventName, events);
+  }
+
+  tasks.getCommissionDetails = singleRun(function* () {
+    try{
+      return yield getCommissionDetailsOps();
+    } catch(e) {
+      const errorBody = _.get(e, ['body'], '');
+      if(errorBody.indexOf('Not yet authenticated') != -1) {
+        clientPool.activeClients[tasks.entity + '-' + tasks.region] = undefined;
+        return yield getCommissionDetailsOps();
+      }
+      throw e;
+    }
   });
 
   /**
@@ -124,8 +150,11 @@ const TradeTrackerGenericApi = function(s_region, s_entity) {
       // perform actual api call
       let items = yield tasks.client[method](arg)
       .then(extractAry(bodyKey))
-      .then(resp => rinse(resp));
-
+      .then(resp => rinse(resp))
+      .catch((e) => {
+        e.stack = e.body + ' (' +e.stack + ')'
+        throw e;
+      });
       results = results.concat(items);
 
       // response doesnt provide any totals, so we have to request until 0 items returned
