@@ -56,7 +56,7 @@
     "node-schedule": "^0.2.7",
     "node-uuid": "^1.4.3",
     "nodemailer": "^2.5.0",
-    "ominto-utils": "git+ssh://git@github.com:dubli/utils.git#HEAD",
+    "ominto-utils": "git+ssh://git@github.com:dubli/utils.git#prod",
     "pretty-ms": "^1.2.1",
     "promise.prototype.finally": "^1.0.1",
     "redis": "^2.0.1",
