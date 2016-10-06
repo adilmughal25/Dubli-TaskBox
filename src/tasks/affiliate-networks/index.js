@@ -101,7 +101,6 @@ const dgmDubliAUApi = impactRadiusGenericApi('dgm', 'au', 'dubli');
 
 const hasoffersGenericApi = require('./hasoffers/tasks');
 const arabyadsApi = hasoffersGenericApi('arabyads');
-const snapdealApi = hasoffersGenericApi('snapdeal');
 const vcommissionApi = hasoffersGenericApi('vcommission');
 const shopstylers = hasoffersGenericApi('shopstylers');
 const vcommissionDubliApi = hasoffersGenericApi('vcommission', 'dubli');
@@ -145,6 +144,9 @@ const publicideasUKApi = publicideasGenericApi('uk');
 const shareASaleGenericApi = require('./share-a-sale/tasks');
 const shareASaleApi = shareASaleGenericApi();
 const shareASaleDubliApi = shareASaleGenericApi('dubli');
+
+const snapdealGenericApi = require('./snapdeal/tasks');
+const snapdealApi = snapdealGenericApi();
 
 const tradetrackerGenericApi = require('./tradetracker/tasks');
 const tradetrackerATApi = tradetrackerGenericApi('at');
@@ -234,7 +236,6 @@ function initializeMerchantImporters(tasker) {
     "PublicIdeas (LATAM) Merchants": publicideasLATAMApi.getMerchants,
     "PublicIdeas (UK) Merchants": publicideasUKApi.getMerchants,
     "ShopStylers Merchants": shopstylers.getMerchants,
-    "SnapDeal Merchants": snapdealApi.getMerchants,
     "TradeDoubler (AT) Merchants": tradedoublerAustriaApi.getMerchants,
     "TradeDoubler (BE) Merchants": tradedoublerBelgiumApi.getMerchants,
     "TradeDoubler (DK) Merchants": tradedoublerDenmarkApi.getMerchants,
