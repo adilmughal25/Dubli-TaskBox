@@ -266,6 +266,11 @@ const Tradedoubler = function(s_region, s_entity) {
    * @param params override/add default attributes
    */
   const getTradedoublerClient = (params) => {
+    //changing 'organizationId' & 'key' params for flyDubai
+    if(that.region === 'flyDubai'){
+      params.qs.organizationId = FLYDUBAI_ORGANIZATION_ID;
+      params.qs.key = FLYDUBAI_API_KEY;
+    }
     const requestParams = _.extend({
       baseUrl: API_CFG.baseUrlReports,
       json: false,
