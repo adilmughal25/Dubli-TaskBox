@@ -59,7 +59,9 @@ const PartnerAdsGenericApi = function(s_entity) {
 
 /**
  * Function to prepare a single commission transaction for our data event.
- * *Note: They do not provide a unique transaction id. We concatenate "programid"+""-"+"ordrenr"
+ * *Note: They do not provide a unique transaction id. We concatenate "programid"+""-"+"ordrenr".
+ * By default the status of these transactions are confirmed and not initiated. This
+ * was confrimed with PartnerAds
  * @param {Object} o_obj  The individual commission transaction straight from PartnerAds
  * @returns {Object}
  */
@@ -74,7 +76,7 @@ function prepareCommission(o_obj) {
     currency: 'dkk',
     purchase_amount: o_obj.omsaetning,
     commission_amount: o_obj.provision,
-    state: 'initiated',
+    state: 'confirmed',
     effective_date: reformatDate(o_obj.dato, o_obj.tidspunkt)
   };
 
