@@ -6,12 +6,15 @@ const debug = require('debug')('admitad:processor');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 const moment = require('moment');
+const limiter = require('ominto-utils').promiseRateLimiter;
 
 const exists = x => !!x;
 const merge = require('../support/easy-merge')('id', {
   coupons: 'campaign.id',
   links: 'campaign'
 });
+
+const API_LIMIT_PER_MINUTE = 20;
 
 const AdmitadGenericApi = function(s_entity) {
   if (!(this instanceof AdmitadGenericApi)) {
@@ -46,25 +49,38 @@ const AdmitadGenericApi = function(s_entity) {
     let links = [];
     let coupons = [];
     let promises = [];
+    let delayTimer = 0;
 
     for (let id of _.pluck(merchants, 'id')) {
       promises.push(
-        that.pagedApiCall('getLinks', 'results', { id: id })
-        .then(results => {
-          if (_.isEmpty(results)) {
-            debug("found empty links for '%s'", id);
-            return [];
-          } else {
-            debug("adding campaign id to links. id=[%s] count=[%s]", id, results.length);
-            return _(results).reject(_.isEmpty).forEach(l => l.campaign = id).value();
-          }
-        })
-        .then(results => links = links.concat(results))
-      );
+        new Promise((resolve) => {
+          setTimeout(() => {
+            resolve(
+              that.pagedApiCall('getLinks', 'results', { id: id })
+                .then(results => {
+                  if (_.isEmpty(results)) {
+                    debug("found empty links for '%s'", id);
+                    return [];
+                  } else {
+                    debug("adding campaign id to links. id=[%s] count=[%s]", id, results.length);
+                    return _(results).reject(_.isEmpty).forEach(l => l.campaign = id).value();
+                  }
+                })
+                .then(results => links = links.concat(results))
+            )}, delayTimer);
+        }
+      ));
+      delayTimer += 1500;
       promises.push(
-        that.pagedApiCall('getCoupons', 'results', {campaign: id})
-        .then(results => coupons = coupons.concat(results))
+        new Promise((resolve) => {
+          setTimeout(() => {
+            resolve(
+              that.pagedApiCall('getCoupons', 'results', {campaign: id})
+                .then(results => coupons = coupons.concat(results))
+            )}, delayTimer);
+        })
       );
+      delayTimer += 1500;
     }
 
     yield Promise.all(promises);
@@ -106,6 +122,9 @@ const AdmitadGenericApi = function(s_entity) {
       debug("%s : page %d of %s (%s)", method, page, Math.ceil(total/perPage) || 'unknown', JSON.stringify({args:arg}));
 
       // perform actual api call
+      //if (total % 5 === 0) {
+      yield new Promise((resolve) => setTimeout(resolve, 1000));
+      //}
       let response = yield that.client[method](arg);
 
       let items = (bodyKey && _.get(response, bodyKey)) || response || [];
