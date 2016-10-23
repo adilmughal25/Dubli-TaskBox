@@ -39,16 +39,16 @@ const ZanoxGenericApi = function(s_region, s_entity) {
   this.eventName += (this.entity === 'ominto' && this.region === 'global') ? '' : '-' + this.region;
 
   this.getMerchants = singleRun(function*() {
-    let joined = yield that.pagedApiCall('$getProgramApplications', 'programApplicationItems.programApplicationItem', {'status':'confirmed'});
+    let joined = yield that.pagedMerApiCall('$getProgramApplications', 'programApplicationItems.programApplicationItem', {'status':'confirmed'});
 
     let validIds = _.pluck(joined, 'program.@id').reduce((m,i) => _.set(m,i,1), {});
     const results = yield {
-      merchants: that.pagedApiCall('$getPrograms', 'programItems.programItem', {'partnership':'DIRECT'}),
-      admedia: that.pagedApiCall('$getAdmedia', 'admediumItems.admediumItem', {'admediumtype':'text','partnership':'direct'}),
-      incentives: that.apiCall('$getIncentives', 'incentiveItems.incentiveItem', {'incentiveType':'coupons'}),
-      exclusiveIncentives: that.apiCall('$getExclusiveIncentives', 'incentiveItems.incentiveItem', {'incentiveType':'coupons'}),
+      merchants: that.pagedMerApiCall('$getPrograms', 'programItems.programItem', {'partnership':'DIRECT'}),
+      //admedia: that.pagedApiCall('$getAdmedia', 'admediumItems.admediumItem', {'admediumtype':'text','partnership':'direct'}),
+      incentives: that.pagedMerApiCall('$getIncentives', 'incentiveItems.incentiveItem', {'incentiveType':'coupons'}),
+      exclusiveIncentives: that.pagedMerApiCall('$getExclusiveIncentives', 'incentiveItems.incentiveItem', {'incentiveType':'coupons'}),
     };
-    // require('fs').writeFileSync('erf.json', JSON.stringify(results));
+    //require('graceful-fs').writeFileSync('erf.json', JSON.stringify(results));
     let merchants = merge(results);
 
     // sadly, zanox doesn't let us clamp any of the above 4 api calls to only
@@ -80,7 +80,7 @@ const ZanoxGenericApi = function(s_region, s_entity) {
     return yield sendEvents.sendCommissions(that.eventName, events);
   });
 
-  this.pagedApiCall = co.wrap(function* (method, bodyKey, params, prefix) {
+  this.pagedComApiCall = co.wrap(function* (method, bodyKey, params, prefix) {
     let results = [];
     let perPage = 50;
     let page = 0;
@@ -103,6 +103,40 @@ const ZanoxGenericApi = function(s_region, s_entity) {
       results = results.concat(items);
     });
 
+    const end = Date.now();
+
+    debug("%s finished: %d items over %d pages (%dms)", method, results.length, page-1, end-start);
+
+    return results;
+  });
+
+  this.pagedMerApiCall = co.wrap(function* (method, bodyKey, params, prefix) {
+    let results = [];
+    let perPage = 50;
+    let page = 0;
+    let total = 0;
+
+    const start = Date.now();
+    while(true) {
+      let arg = _.extend({}, params, {page:page, items:perPage});
+      debug("%s : page %d of %s (%s)", method, page, Math.floor(total/perPage) || 'unknown', JSON.stringify({args:arg,prefix:prefix}));
+      let response;
+
+      if (prefix) {
+        let argList = (_.isArray(prefix) ? prefix : [prefix]).concat([arg]);
+        response = yield that.client[method].apply(that.client, argList);
+      } else {
+        response = yield that.client[method](arg);
+      }
+
+      if (_.isArray(response) && response.length === 1) response = response[0];
+
+      let items = _.get(response, bodyKey) || [];
+      results = results.concat(items);
+      total = response.total || 0;
+
+      if (++page * perPage >= total) break;
+    }
     const end = Date.now();
 
     debug("%s finished: %d items over %d pages (%dms)", method, results.length, page-1, end-start);
@@ -155,7 +189,7 @@ function prepareCommission(o_obj) {
 }
 
 function onlyValid(a_items, o_validIds) {
-  var fs = require('fs');
+  var fs = require('graceful-fs');
   return a_items.filter( x => !! o_validIds[_.get(x,'merchant.@id')] );
 }
 
