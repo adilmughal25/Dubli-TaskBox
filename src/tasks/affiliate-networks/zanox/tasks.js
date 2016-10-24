@@ -193,7 +193,7 @@ function prepareCommission(o_obj) {
 }
 
 function onlyValid(a_items, o_validIds) {
-  var fs = require('graceful-fs');
+  var fs = require('fs');
   return a_items.filter( x => !! o_validIds[_.get(x,'merchant.@id')] );
 }
 
