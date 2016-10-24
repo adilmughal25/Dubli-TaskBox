@@ -9,7 +9,7 @@ const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 
 const merge = require('../support/easy-merge')('@id', {
-  admedia: 'program.@id',
+  // admedia: 'program.@id',
   incentives: 'program.@id',
   exclusiveIncentives: 'program.@id'
 });
