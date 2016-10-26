@@ -71,7 +71,7 @@ const ShooglooGenericApi = function() {
             name : offer.offer_name,
             description: offer.description
           },
-          unique_link : link.unique_link,
+          unique_link : link.unique_link.replace('&s1=', '&s2='),
           offer_id : offer.offer_id,
           offer_name : offer.offer_name,
           category : offer.vertical_name,
