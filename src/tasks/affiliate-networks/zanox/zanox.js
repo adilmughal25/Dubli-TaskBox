@@ -52,6 +52,9 @@
       signature = getAuth(verb, uri, timestamp, nonce);
       header = "ZXWS " + connectId + ":" + signature;
       query = querystring.stringify(options);
+      // console.log("Date : " + timestamp);
+      // console.log("Nonce : " + nonce);
+      // console.log("Authorization : " + header);
       return options = {
         host: 'api.zanox.com',
         path: "/json/" + version + uri + "?" + query,

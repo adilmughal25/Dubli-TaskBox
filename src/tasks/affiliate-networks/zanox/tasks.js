@@ -9,7 +9,7 @@ const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 
 const merge = require('../support/easy-merge')('@id', {
-  // admedia: 'program.@id',
+  admedia: 'program.@id',
   incentives: 'program.@id',
   exclusiveIncentives: 'program.@id'
 });
@@ -44,7 +44,7 @@ const ZanoxGenericApi = function(s_region, s_entity) {
     let validIds = _.pluck(joined, 'program.@id').reduce((m,i) => _.set(m,i,1), {});
     const results = yield {
       merchants: that.pagedMerApiCall('$getPrograms', 'programItems.programItem', {'partnership':'DIRECT'}),
-      //admedia: that.pagedApiCall('$getAdmedia', 'admediumItems.admediumItem', {'admediumtype':'text','partnership':'direct'}),
+      admedia: that.pagedMerApiCall('$getAdmedia', 'admediumItems.admediumItem', {'admediumtype':'text','partnership':'direct'}),
       incentives: that.pagedMerApiCall('$getIncentives', 'incentiveItems.incentiveItem', {'incentiveType':'coupons'}),
       exclusiveIncentives: that.pagedMerApiCall('$getExclusiveIncentives', 'incentiveItems.incentiveItem', {'incentiveType':'coupons'}),
     };
@@ -55,6 +55,16 @@ const ZanoxGenericApi = function(s_region, s_entity) {
     // merchants which we have actually applied for. this bit filters the list
     // down to just those merchants who we are joined to.
     merchants = onlyValid(merchants, validIds);
+
+    // get all the commission [cashback] models for each merchants
+    // for our account all the admedia for all merchants - "@adspaceId": "2067070"
+    for(var i = 0; i < merchants.length; i++){
+      // Tracking categories and commissions [cashback]
+      // following are test calls
+      // let cashback = yield that.apiCall('$getTrackingCategories', 'trackingCategoryItem.trackingCategoryItem', {'programid':400, 'adspaceid': 2067070});
+      // let cashback = yield that.apiCall('$getTrackingCategories', 'trackingCategoryItem.trackingCategoryItem', {'programid':18274, 'adspaceid': 2067070});
+      merchants[i].cashback = yield that.apiCall('$getTrackingCategories', 'trackingCategoryItem.trackingCategoryItem', {'programid':_.get(merchants[i], "merchant.@id"), 'adspaceid': 2067070}) || [];
+    }
 
     return yield sendEvents.sendMerchants(that.eventName, merchants);
   });
