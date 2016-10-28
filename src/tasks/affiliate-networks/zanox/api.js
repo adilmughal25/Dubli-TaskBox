@@ -2,7 +2,14 @@
 
 const denodeify = require('denodeify');
 const zanox_req = require('./zanox');
-const debug = require('debug')('adcell:api-client');
+const debug = require('debug')('zanox:api-client');
+
+// API Documentation : https://developer.zanox.com/web/guest/publisher-api-2011
+// https://developer.zanox.com/web/guest/publisher-api-2011/get-programapplications [Used]
+// https://developer.zanox.com/web/guest/publisher-api-2011/get-programs [Not Used]
+// https://developer.zanox.com/web/guest/publisher-api-2011/get-admedia [Used]
+// https://developer.zanox.com/web/guest/publisher-api-2011/get-incentives [Used]
+// https://developer.zanox.com/web/guest/publisher-api-2011/get-incentives-exclusive [Used]
 
 const API_CFG = {
   ominto: {
@@ -61,6 +68,10 @@ function ZanoxApiClient(s_entity, s_region) {
 
   this.client.getExclusiveIncentives = function(params, next) {
     return that.client.sendRequest('GET', '/incentives/exclusive', params, next);
+  };
+
+  this.client.getTrackingCategories = function(params, next) {
+    return that.client.sendRequest('GET', '/programapplications/program/' + params.programid + '/adspace/' + params.adspaceid + '/trackingcategories', {}, next);
   };
 
   Object.keys(this.client).sort().forEach(function(method) {
