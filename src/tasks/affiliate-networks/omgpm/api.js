@@ -59,6 +59,13 @@ const API_CFG = {
       login: '75479e8a743aa64b1c0ec410b97ae55b',
       transactionCountries: ['1', '2', '20'],
     },
+    "uk-c": {
+      agency: 1,
+      affiliateId: 71872,
+      authHash: '15911EC45848DB22ACCB62C0F951ED1B',
+      login: '75479e8a743aa64b1c0ec410b97ae55b',
+      transactionCountries: ['1', '2', '20'],
+    },
     asia: {
       agency: 118,
       affiliateId: 826495,
@@ -69,6 +76,13 @@ const API_CFG = {
     brazil: {
       agency: 142,
       affiliateId: '835579',
+      authHash: '26E4FDB10EEF76851ABBBBB9FFC2DF4F',
+      login: '683A45C61A2B9B0A77E631EF7AB301E1',
+      transactionCountries: ['56'],
+    },
+    "brazil-c": {
+      agency: 142,
+      affiliateId: '816380',
       authHash: '26E4FDB10EEF76851ABBBBB9FFC2DF4F',
       login: '683A45C61A2B9B0A77E631EF7AB301E1',
       transactionCountries: ['56'],
@@ -139,7 +153,7 @@ function OmgPmLegacyApiClient(s_entity, s_region) {
       end     : end,
     });
     debug('GET '+apiUrl);
-
+    console.log(apiUrl)
     return client.get(apiUrl)
       .then(check('2XX', 'Could not load transactions for '+country+' ('+url+')'))
       .then(jsonify)

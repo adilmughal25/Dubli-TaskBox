@@ -115,8 +115,10 @@ const linkShareDubliGBApi = linkShareGenericApi('gb', 'dubli');
 const omgpmGenericApi = require('./omgpm/tasks');
 const omgpmIndiaApi = omgpmGenericApi('india');
 const omgpmUKApi = omgpmGenericApi('uk');
+const omgpmUKCommissionsApi = omgpmGenericApi('uk-c');
 const omgpmAsiaApi = omgpmGenericApi('asia');
 const omgpmBrazilApi = omgpmGenericApi('brazil');
+const omgpmBrazilCommissionsApi = omgpmGenericApi('brazil-c');
 const omgpmAustraliaApi = omgpmGenericApi('australia');
 const omgpmDubliIndiaApi = omgpmGenericApi('india', 'dubli');
 
@@ -307,9 +309,9 @@ function initializeCommissionsProcessors(tasker) {
     "LinkShare Commissions": linkShareApi.getCommissionDetails,
     "Lomadee Commissions": lomadeeApi.getCommissionDetails,
     "OMG (India) Commissions": omgpmIndiaApi.getCommissionDetails,
-    "OMG (UK) Commissions": omgpmUKApi.getCommissionDetails,
+    "OMG (UK) Commissions": omgpmUKCommissionsApi.getCommissionDetails,
     "OMG (Asia) Commissions": omgpmAsiaApi.getCommissionDetails,
-    "OMG (Brazil) Commissions": omgpmBrazilApi.getCommissionDetails,
+    "OMG (Brazil) Commissions": omgpmBrazilCommissionsApi.getCommissionDetails,
     "OMG (Australia) Commissions": omgpmAustraliaApi.getCommissionDetails,
     "PartnerAds Commissions": partnerAdsApi.getCommissionDetails,
     "PepperJam Commissions": pepperjamApi.getCommissionDetails,
