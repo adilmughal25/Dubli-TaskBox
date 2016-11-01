@@ -304,7 +304,7 @@ ShareASaleClient.prototype.getLedgerReport = (params) => {
   params.dateEnd = moment(params.dateEnd).format('MM/DD/YYYY');
 
   return this.getByAction('ledger', params)
-    .then(data => data.ledger.ledgerrecord)
+    .then(data => data.report.reportrecord)
     .then(data => {
       if (!data) return [];
       return ary(data);
