@@ -146,6 +146,10 @@ const shareASaleGenericApi = require('./share-a-sale/tasks');
 const shareASaleApi = shareASaleGenericApi();
 const shareASaleDubliApi = shareASaleGenericApi('dubli');
 
+
+const fanGenericApi = require('./fan/tasks');
+const fanApi = fanGenericApi('fan');
+
 const snapdealGenericApi = require('./snapdeal/tasks');
 const snapdealApi = snapdealGenericApi();
 
@@ -221,6 +225,7 @@ function initializeMerchantImporters(tasker) {
     "CommissionJunction (EU) Merchants": commissionJunctionEUApi.getMerchants,
     "CommissionJunction (US) Merchants": commissionJunctionUSApi.getMerchants,
     "CommissionFactory Merchants": commissionfactoryApi.getMerchants,
+    "Fan Merchants": fanApi.getMerchants,
     "ImpactRadius Merchants": impactRadiusApi.getMerchants,
     "LinkShare Merchants": linkShareApi.getMerchants,
     // "Lomadee Merchants": lomadeeApi.getMerchants,
@@ -307,6 +312,7 @@ function initializeCommissionsProcessors(tasker) {
     "CommissionJunction (US) Commissions": commissionJunctionUSApi.getCommissionDetails,
     // "ClixGalore Commissions": clixGaloreApi.getCommissionDetails,
     "CommissionFactory Commissions": commissionfactoryApi.getCommissionDetails,
+    "Fan Commissions": fanApi.getCommissionDetails,
     "Flipkart Commissions": flipkartApi.getCommissionDetails,
     "Groupon (US) Commissions": grouponUSApi.getCommissionDetails,
     "ImpactRadius Commissions": impactRadiusApi.getCommissionDetails,
