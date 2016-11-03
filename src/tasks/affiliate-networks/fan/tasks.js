@@ -121,15 +121,13 @@ const FanGenericApi = function(s_entity) {
   // api call generic function
   this.doApi = co.wrap(function* (method, args, key) {
 
-    let results = yield that.clientSoap[method](args)
-      .then(extractAry(key))
-      .then(resp => rinse(resp))
-      .catch((e) => {
-        e.stack = e.body + ' (' + e.stack + ')'
-        throw e;
-      });
-
-    return results || [];
+    let results = yield that.clientSoap[method](args);
+    if(results) {
+      results = extractAry(results, key);
+      results = rinse(results);
+      return results || [];
+    }
+    return [];
   });
 
   /*
@@ -143,11 +141,6 @@ const FanGenericApi = function(s_entity) {
   */
 
   this.prepareMerchant = function(offer, link) {
-
-    var util = require('util');
-    console.log("/---------------------------------------------------------------/");
-    console.log(">>>>> offer : " + util.inspect(offer, false, null));
-    console.log("/---------------------------------------------------------------/");
 
     return {
       //affiliate_id: that.clientSoap.cfg.affiliate_id,
@@ -212,8 +205,9 @@ function rinse(obj) {
 }
 
 var ary = x => _.isArray(x) ? x : [x];
-function extractAry(key) {
-  return resp => ary(_.get(resp, key) || []);
+
+function extractAry(result, key) {
+  return result = ary(_.get(result, key) || []);
 }
 
 module.exports = FanGenericApi;
