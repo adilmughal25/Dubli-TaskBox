@@ -54,17 +54,43 @@ const SnapdealGenericApi = function(s_entity) {
 function prepareCommission(status, o_obj) {
 
   const event = {
-    transaction_id: o_obj.orderCode,
+    //transaction_id: o_obj.orderCode + "-" + fetchAscii(o_obj.product),
+    transaction_id: truncateMax(o_obj.orderCode + "-" + o_obj.product),
     order_id: o_obj.orderCode,
     outclick_id: o_obj.affiliateSubId1,
     commission_amount: o_obj.commissionEarned,
     purchase_amount: o_obj.sale,
     currency: CURRENCY,
     state: status,
-    effective_date: Date.parse(o_obj.dateTime)
+    effective_date: new Date(o_obj.dateTime)
   };
 
   return event;
+}
+
+/**
+ * Function to convert string to ascii cahr sequence
+ * @param {String} product - string to convert
+ * @returns {String} convertedAscii - convert ascii value
+ */
+function fetchAscii(product)
+{
+  var convertedAscii = '';
+  for(var i = 0; i < product.length; i++)
+  {
+    convertedAscii += product.charCodeAt(i);
+  }
+  return convertedAscii;
+}
+
+/**
+ * Function to limit string to max of 250 chars
+ * @param {String} product - string to trucate
+ * @returns {String} product - string with 250 max chars
+ */
+function truncateMax(product)
+{
+  return product.substring(0, 250);
 }
 
 module.exports = SnapdealGenericApi;
