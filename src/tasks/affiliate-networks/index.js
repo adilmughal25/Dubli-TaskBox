@@ -181,6 +181,7 @@ const zanoxDubliSEApi = zanoxGenericApi('se', 'dubli');
 const zanoxDubliNOApi = zanoxGenericApi('no', 'dubli');
 const zanoxDubliGlobalApi = zanoxGenericApi('global', 'dubli');
 const shooglooApi = require('./shoogloo/tasks');
+const pricelineApi = require('./priceline/tasks')();
 
 function init(tasker) {
   initializeMerchantImporters(tasker);
@@ -359,6 +360,7 @@ function initializeCommissionsProcessors(tasker) {
     "VCommission Commissions": vcommissionApi.getCommissionDetails,
     "Webgains Commissions": webgainsApi.getCommissionDetails,
     "Zanox Commissions": zanoxApi.getCommissionDetails,
+    "Priceline Commissions": pricelineApi.getCommissionDetails
   });
 
   tasker.createTask('ShareASale Commissions', '4d +/- 1d', shareASaleApi.getCommissionDetails);
