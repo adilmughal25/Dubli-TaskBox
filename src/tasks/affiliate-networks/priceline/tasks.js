@@ -16,7 +16,7 @@ const prepareCommission = (o_obj) => {
     purchase_amount: Number(o_obj.total) || 0,
     commission_amount: Number(o_obj.commission) || 0,
     state: STATUS_MAP[o_obj.status],
-    currency: o_obj.currency && o_obj.currency.toLowerCase(),
+    currency: o_obj.currency ? o_obj.currency.toLowerCase() : 'usd' ,
     effective_date: o_obj.date ? new Date(o_obj.date) : new Date(o_obj.reservation_date_time)
   };
 }
@@ -25,11 +25,8 @@ function PricelineApi() {
     if (!(this instanceof PricelineApi)) return new PricelineApi();
 
     const getCommissionDetails = singleRun(function* () {
-
         const events = yield api.get(30).map(prepareCommission);
         return yield sendEvents.sendCommissions('priceline', events);
-
-           
     });
 
     const tasks = {
