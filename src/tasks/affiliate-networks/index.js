@@ -185,7 +185,8 @@ const shooglooApi = require('./shoogloo/tasks');
 function init(tasker) {
   initializeMerchantImporters(tasker);
   initializeCommissionsProcessors(tasker);
-  initializeCommissionsDubliProcessors(tasker);
+  // disabling dubli commission processors [11/7/2016]
+  // initializeCommissionsDubliProcessors(tasker);
   initializeNotificationProcessor(tasker);
 }
 
