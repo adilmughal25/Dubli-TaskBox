@@ -89,6 +89,10 @@ function prepareCommission(region, o_obj) {
     currency: (region === 'uk' ? 'gbp' : 'eur'),
     effective_date: date
   };
+
+  console.log("/---------------------------------------------------------------/");
+  console.log(">>>>> event : " + util.inspect(event, false, null));
+  console.log("/---------------------------------------------------------------/");
   return event;
 }
 
