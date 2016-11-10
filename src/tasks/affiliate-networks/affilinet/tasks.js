@@ -16,9 +16,13 @@ const isDate = x => (/^\d{4}(-\d{2}){2}T(\d{2}:){2}\d{2}/).test(x);
 
 // Testing States
 const STATE_MAP = {
+  
   'Open': 'initiated',
+  
   'Confirmed': 'confirmed',
+  
   'Cancelled': 'cancelled'
+  
 };
 
 const AffilinetGenericApi = function(s_region, s_entity) {
