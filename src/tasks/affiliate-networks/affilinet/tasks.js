@@ -74,6 +74,12 @@ const AffilinetGenericApi = function(s_region, s_entity) {
 };
 
 function prepareCommission(region, o_obj) {
+
+  var util = require('util');
+  console.log("/---------------------------------------------------------------/");
+  console.log(">>>>> o_obj : " + util.inspect(o_obj, false, null));
+  console.log("/---------------------------------------------------------------/");
+
   let date = new Date(o_obj.RegistrationDate);
   if (typeof o_obj.CheckDate === 'string' && isDate(o_obj.CheckDate)) {
     date = new Date(o_obj.CheckDate);
@@ -84,10 +90,14 @@ function prepareCommission(region, o_obj) {
     outclick_id: o_obj.SubId,
     purchase_amount: o_obj.NetPrice,
     commission_amount: o_obj.PublisherCommission,
-    currency: (region === 'uk' ? 'gbp' : 'eur'),
     state: STATE_MAP[o_obj.TransactionStatus],
+    currency: (region === 'uk' ? 'gbp' : 'eur'),
     effective_date: date
   };
+
+  console.log("/---------------------------------------------------------------/");
+  console.log(">>>>> event : " + util.inspect(event, false, null));
+  console.log("/---------------------------------------------------------------/");
   return event;
 }
 
