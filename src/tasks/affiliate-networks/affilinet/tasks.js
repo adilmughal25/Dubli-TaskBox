@@ -14,6 +14,7 @@ const merge = require('../support/easy-merge')('ProgramId', {
 const exists = x => !!x;
 const isDate = x => (/^\d{4}(-\d{2}){2}T(\d{2}:){2}\d{2}/).test(x);
 
+// Testing States
 const STATE_MAP = {
   'Open': 'initiated',
   'Confirmed': 'confirmed',
