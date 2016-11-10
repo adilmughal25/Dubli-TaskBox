@@ -61,7 +61,7 @@ const AffilinetGenericApi = function(s_region, s_entity) {
 
   this.getCommissionDetails = singleRun(function* () {
     yield that.client.ensureLoggedIn();
-    const startDate = moment().subtract(90, 'days').format('YYYY-MM-DD');
+    const startDate = moment().subtract(270, 'days').format('YYYY-MM-DD');
     const endDate = moment().format('YYYY-MM-DD');
     const results = yield [
       that.client.getTransactions({startDate:startDate, endDate:endDate, valuationType:'DateOfRegistration'}),
