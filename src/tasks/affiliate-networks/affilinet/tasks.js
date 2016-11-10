@@ -15,9 +15,9 @@ const exists = x => !!x;
 const isDate = x => (/^\d{4}(-\d{2}){2}T(\d{2}:){2}\d{2}/).test(x);
 
 const STATE_MAP = {
-  'open': 'tracked',
-  'confirmed': 'confirmed',
-  'cancelled': 'cancelled'
+  'Open': 'initiated',
+  'Confirmed': 'confirmed',
+  'Cancelled': 'cancelled'
 };
 
 const AffilinetGenericApi = function(s_region, s_entity) {
