@@ -15,6 +15,29 @@ const options = {
     json: true
 }
 
+const setStatus = (sales, dateField, options) => {
+    return _.values(sales).map((sale) => {
+        if(sale.status === 'Cancelled') {
+            sale.transformedStatus = 'cancelled';
+            return sale;
+        } 
+        const monthsToAdd = options[sale.ratecat] ? options[sale.ratecat] : options['*'];
+        const statusDate = moment(sale[dateField]).add(monthsToAdd, 'months').toDate();
+        if(statusDate > new Date()) {
+            sale.transformedStatus = 'initiated';
+        } else {
+            sale.transformedStatus = 'confirmed';
+        }
+        return sale;
+    });
+}
+
+const hotelSalesStatusMap = {
+    MER: 1,
+    PRF: 3,
+    AGD: 1
+}
+
 function PricelineClient() {
       if (!(this instanceof PricelineClient)) return new PricelineClient();
 
@@ -29,10 +52,10 @@ function PricelineClient() {
             .then(function (response) {
                 const data = response['getSharedTRK.Sales.Select'].results;
                 const salesData = [];
-                salesData.push(_.values(data.hotel_sales_data));
-                salesData.push(_.values(data.car_sales_data));
-                salesData.push(_.values(data.air_sales_data));
-                salesData.push(_.values(data.vp_sales_data));
+                salesData.push(setStatus(data.hotel_sales_data, 'check_out_date_time', hotelSalesStatusMap));
+                salesData.push(setStatus(data.car_sales_data, 'dropoff_time', {'*': 1}));
+                salesData.push(setStatus(data.air_sales_data, 'reservation_date_time', {'*': 1}));
+                salesData.push(setStatus(data.vp_sales_data, 'reservation_date_time', {'*': 1}));
                 return _.flatten(salesData);
             })
             .then(function (data) {
