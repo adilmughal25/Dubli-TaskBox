@@ -205,7 +205,7 @@ function prepareCommission(o_obj) {
     affiliate_name: o_obj.programname,
     transaction_id: o_obj.eventid,
     order_id: o_obj.eventid,
-    outclick_id: o_obj.subid,
+    outclick_id: getSubId(o_obj.subid),
     currency: o_obj.eventcurrency.toLowerCase(),
     purchase_amount: o_obj.netvalue,
     commission_amount: o_obj.eventcommission,
@@ -214,6 +214,22 @@ function prepareCommission(o_obj) {
   };
 
   return event;
+}
+
+// get the subid from subid field as it contains additional data
+function getSubId(subId) {
+  // this following is what we are receiving from affiliates
+  // subid: 'subid=<sub_id>/+afsrc=1'
+
+  if(subId) {
+    subId = subId.replace("subid=", "");
+    subId = subId.replace("/+afsrc=1", "");
+
+    if(!_.includes(subId, "subid=") && !_.includes(subId, "/+afsrc=1"))
+      return subId;
+    return '';
+  }
+  return '';
 }
 
 // rinse: removes SOAP-y residue
