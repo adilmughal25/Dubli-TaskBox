@@ -35,9 +35,12 @@ const SnapdealGenericApi = function(s_entity) {
 
     const response = yield that.client.orderReport(start, end);
 
+    // converting all the 'approved/confirmed' transactions to 'initiated' state so that a
+    // transaction is not converted to 'paid' state, as this will be later changed to points system
     // for each status
     const events = [].concat(
-      response.approved.map(prepareCommission.bind(null, 'confirmed')),
+      // response.approved.map(prepareCommission.bind(null, 'confirmed')),
+      response.approved.map(prepareCommission.bind(null, 'initiated')),
       response.cancelled.map(prepareCommission.bind(null, 'cancelled'))
     );
 
