@@ -118,7 +118,7 @@ const BelboonGenericApi = function(s_entity) {
 
   this.getCommissionDetails = singleRun(function* () {
     yield that.client.setup();
-    const startDate = new Date(Date.now() - (90 * 86400 * 1000));
+    const startDate = new Date(Date.now() - (270 * 86400 * 1000));
     const endDate = new Date(Date.now() - (60 * 1000));
     let response = [];
     let args = {
