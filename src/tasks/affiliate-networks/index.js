@@ -101,7 +101,6 @@ const dgmDubliAUApi = impactRadiusGenericApi('dgm', 'au', 'dubli');
 
 const hasoffersGenericApi = require('./hasoffers/tasks');
 const arabyadsApi = hasoffersGenericApi('arabyads');
-const snapdealApi = hasoffersGenericApi('snapdeal');
 const vcommissionApi = hasoffersGenericApi('vcommission');
 const shopstylers = hasoffersGenericApi('shopstylers');
 const vcommissionDubliApi = hasoffersGenericApi('vcommission', 'dubli');
@@ -148,6 +147,9 @@ const shareASaleGenericApi = require('./share-a-sale/tasks');
 const shareASaleApi = shareASaleGenericApi();
 const shareASaleDubliApi = shareASaleGenericApi('dubli');
 
+const snapdealGenericApi = require('./snapdeal/tasks');
+const snapdealApi = snapdealGenericApi();
+
 const tradetrackerGenericApi = require('./tradetracker/tasks');
 const tradetrackerATApi = tradetrackerGenericApi('at');
 const tradetrackerBEApi = tradetrackerGenericApi('be');
@@ -183,6 +185,7 @@ const zanoxDubliSEApi = zanoxGenericApi('se', 'dubli');
 const zanoxDubliNOApi = zanoxGenericApi('no', 'dubli');
 const zanoxDubliGlobalApi = zanoxGenericApi('global', 'dubli');
 const shooglooApi = require('./shoogloo/tasks');
+const pricelineApi = require('./priceline/tasks')();
 
 function init(tasker) {
   initializeMerchantImporters(tasker);
@@ -235,7 +238,6 @@ function initializeMerchantImporters(tasker) {
     "PublicIdeas (LATAM) Merchants": publicideasLATAMApi.getMerchants,
     "PublicIdeas (UK) Merchants": publicideasUKApi.getMerchants,
     "ShopStylers Merchants": shopstylers.getMerchants,
-    "SnapDeal Merchants": snapdealApi.getMerchants,
     "TradeDoubler (AT) Merchants": tradedoublerAustriaApi.getMerchants,
     "TradeDoubler (BE) Merchants": tradedoublerBelgiumApi.getMerchants,
     "TradeDoubler (DK) Merchants": tradedoublerDenmarkApi.getMerchants,
@@ -361,6 +363,7 @@ function initializeCommissionsProcessors(tasker) {
     "VCommission Commissions": vcommissionApi.getCommissionDetails,
     "Webgains Commissions": webgainsApi.getCommissionDetails,
     "Zanox Commissions": zanoxApi.getCommissionDetails,
+    "Priceline Commissions": pricelineApi.getCommissionDetails
   });
 
   tasker.createTask('ShareASale Commissions', '4d +/- 1d', shareASaleApi.getCommissionDetails);
