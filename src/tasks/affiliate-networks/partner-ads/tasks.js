@@ -40,8 +40,11 @@ const PartnerAdsGenericApi = function(s_entity) {
    * @returns {undefined}
    */
   this.getCommissionDetails = singleRun(function* () {
-    const startDate = new Date(Date.now() - (90 * 86400 * 1000));
-    const endDate = new Date(Date.now() - (60 * 1000));
+    // const startDate = new Date(Date.now() - (90 * 86400 * 1000));
+    // const endDate = new Date(Date.now() - (60 * 1000));
+
+    const startDate = new Date(Date.now() - (270 * 86400 * 1000));
+    const endDate = new Date(Date.now());
 
     // get all sales/leads
     const sales = (yield that.client.call('commissions', 'salgspec.salg', {fra: startDate, til:endDate})).map(prepareCommission);
@@ -66,8 +69,9 @@ const PartnerAdsGenericApi = function(s_entity) {
  * @returns {Object}
  */
 function prepareCommission(o_obj) {
-  let transactionId = o_obj.programid + '-' + o_obj.ordrenr;
-
+  //let transactionId = o_obj.programid + '-' + o_obj.ordrenr;
+  let transactionId = o_obj.ordrenr;
+  
   var sale = {
     affiliate_name: o_obj.program,
     transaction_id: transactionId,
@@ -106,7 +110,8 @@ function reformatDate (date, time) {
  * @returns {Object}
  */
 function prepareCancellations(o_obj) {
-  let transactionId = o_obj.programid + '-' + o_obj.ordrenr;
+  //let transactionId = o_obj.programid + '-' + o_obj.ordrenr;
+  let transactionId = o_obj.ordrenr;
 
   var sale = {
     affiliate_name: o_obj.program,
