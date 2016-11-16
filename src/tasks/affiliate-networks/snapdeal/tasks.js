@@ -30,7 +30,7 @@ const SnapdealGenericApi = function(s_entity) {
    */
   this.getCommissionDetails = singleRun(function* () {
 
-    const start = moment().subtract(90, 'days').format('YYYY-MM-DD');
+    const start = moment().subtract(270, 'days').format('YYYY-MM-DD');
     const end = moment().format('YYYY-MM-DD');
 
     const response = yield that.client.orderReport(start, end);
