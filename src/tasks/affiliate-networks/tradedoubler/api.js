@@ -8,6 +8,8 @@ const jsonify = require('../support/jsonify-xml-body');
 const debug = require('debug')('tradedoubler:api-client');
 
 const ORGANIZATION_ID = '1984882';
+const FLYDUBAI_ORGANIZATION_ID = '2051324';
+const FLYDUBAI_API_KEY = '23772cd706987befac6368959d5958ff';
 const STATUS_MAP = {
   'P': 'initiated',
   'A': 'confirmed',
