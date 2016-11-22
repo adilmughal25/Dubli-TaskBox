@@ -13,6 +13,10 @@ const singleRun = require('../support/single-run');
 const _check = utils.checkApiResponse;
 const jsonify = require('../support/jsonify-xml-body');
 const debug = require('debug')('linkshare:processor');
+const converter = require("csvtojson").Converter;
+
+const reportingURL = 'https://ran-reporting.rakutenmarketing.com/en/reports/individual-item-report-api-final/filters?';
+const reportingToken = 'ZW5jcnlwdGVkYToyOntzOjU6IlRva2VuIjtzOjY0OiI2ODI4NTljZGIxYWU2ZjllZWQ1NDFhYjhlNjY1YTM2ODI4YTM3NmIxMjFmMWI1MTI4Y2Q2YzJhMjBkMTMzMjgzIjtzOjg6IlVzZXJUeXBlIjtzOjk6IlB1Ymxpc2hlciI7fQ%3D%3D';
 
 const LinkShareGenericApi = function(s_region, s_entity) {
   if (!(this instanceof LinkShareGenericApi)) {
@@ -105,7 +109,8 @@ const LinkShareGenericApi = function(s_region, s_entity) {
     return results;
   });
 
-  this.getCommissionDetails = singleRun(function*(){
+  // old commission processing code
+  this._getCommissionDetails = singleRun(function*(){
     let page = 1;
     let commissions = [];
     const startTime = moment().subtract(90, 'days').toDate();
@@ -130,9 +135,46 @@ const LinkShareGenericApi = function(s_region, s_entity) {
     that.client.cleanup();
     yield sendEvents.sendCommissions(that.eventName, events);
   });
+
+  // https://ran-reporting.rakutenmarketing.com/en/reports/signature-orders-report/filters?
+  //start_date=2016-11-01&end_date=2016-11-15&include_summary=Y&network=1&tz=GMT&date_type=transaction
+  //&token=ZW5jcnlwdGVkYToyOntzOjU6IlRva2VuIjtzOjY0OiI2ODI4NTljZGIxYWU2ZjllZWQ1NDFhYjhlNjY1YTM2ODI4YTM3NmIxMjFmMWI1MTI4Y2Q2YzJhMjBkMTMzMjgzIjtzOjg6IlVzZXJUeXBlIjtzOjk6IlB1Ymxpc2hlciI7fQ%3D%3D
+  this.getCommissionDetails = singleRun(function*(){
+
+    const startDate = moment().subtract(90, 'days').format('YYYY-MM-DD');
+    const endDate = moment().format('YYYY-MM-DD');
+
+    var dataClient = request.defaults({});
+
+    const url = reportingURL + querystring.stringify({
+      start_date: startDate,
+      end_date: endDate,
+      include_summary: 'N',
+      // network: 1, // dont do a network specific call
+      tz: 'GMT',
+      date_type: 'process', //using process instead of transaction as these transactions are confirmed onces
+      token: reportingToken
+    });
+
+    let response = yield dataClient.get(url);
+
+    // if summary is included in the response then clean it and proceed with only essential data
+    // response = response.split('\n');
+    // response.splice(0,4);
+    // response = response.join('\n');
+
+    var events = [];
+    var csvConverter = new converter({});
+
+    csvConverter.fromString(response, co.wrap(function*(err, commissions){
+      events = commissions.map(prepareCommission).filter(x => !!x);
+      yield sendEvents.sendCommissions(that.eventName, events);
+    }));
+  });
 };
 
-function prepareCommission(o_obj) {
+// old commission processing code
+function _prepareCommission(o_obj) {
 
   const commission = {};
   // Only confirmed transaction from linkshare are included in the transactions table,
@@ -151,6 +193,27 @@ function prepareCommission(o_obj) {
     commission.effective_date = o_obj.process_date;
     return commission;
   }
+}
+
+function prepareCommission(o_obj) {
+
+  const commission = {};
+  if(o_obj){
+    commission.outclick_id = _.get(o_obj, 'Member ID (U1)');
+    commission.transaction_id = _.get(o_obj, 'Transaction ID');
+    commission.order_id = _.get(o_obj, 'Order ID');
+    commission.purchase_amount = Number(_.get(o_obj, 'Sales'));
+    commission.commission_amount = Number(_.get(o_obj, 'Total Commission'));
+    commission.currency = _.get(o_obj, 'Currency');
+    commission.effective_date = new Date(_.get(o_obj, 'Process Date') + " " + _.get(o_obj, 'Process Time'));
+
+    if(commission.purchase_amount < 0 && commission.commission_amount < 0)
+      commission.state = 'cancelled';
+    else
+      commission.state = 'confirmed';
+  }
+
+  return commission;
 }
 
 function sendMerchantsToEventHub(merchants) {
