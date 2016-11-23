@@ -11,12 +11,6 @@ const merge = require('../support/easy-merge')('CampaignId', {
   campaignAds: 'CampaignId'
 });
 
-const REGION2CURRENCY_MAP = {
-  us: 'usd',
-  ca: 'cad',
-  au: 'aud',
-};
-
 const taskCache = {};
 function ImpactRadiusGenericApi(s_whitelabel, s_region, s_entity) {
   if (!s_whitelabel) throw new Error("ImpactRadius Generic API needs whitelabel!");
@@ -75,7 +69,7 @@ function prepareCommission(region, o_irAction) {
   o_event.outclick_id = o_irAction.SubId1;
   o_event.purchase_amount = o_irAction.IntendedAmount;
   o_event.commission_amount = o_irAction.IntendedPayout;
-  o_event.currency = REGION2CURRENCY_MAP[region];// o_irAction.Currency <= (available from version API 4 and higher) JRo
+  o_event.currency = o_irAction.Currency.toLowerCase();
 
   switch(o_irAction.State) {
     case 'PENDING':
