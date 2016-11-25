@@ -141,7 +141,7 @@ const LinkShareGenericApi = function(s_region, s_entity) {
   //&token=ZW5jcnlwdGVkYToyOntzOjU6IlRva2VuIjtzOjY0OiI2ODI4NTljZGIxYWU2ZjllZWQ1NDFhYjhlNjY1YTM2ODI4YTM3NmIxMjFmMWI1MTI4Y2Q2YzJhMjBkMTMzMjgzIjtzOjg6IlVzZXJUeXBlIjtzOjk6IlB1Ymxpc2hlciI7fQ%3D%3D
   this.getCommissionDetails = singleRun(function*(){
 
-    const startDate = moment().subtract(90, 'days').format('YYYY-MM-DD');
+    const startDate = moment().subtract(270, 'days').format('YYYY-MM-DD');
     const endDate = moment().format('YYYY-MM-DD');
 
     var dataClient = request.defaults({});
