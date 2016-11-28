@@ -7,7 +7,7 @@ const singleRun = require('../support/single-run');
 
 const AFFILIATE_PROGRAM_NAME = 'Groupon';
 const STATE_MAP = {
-  VALID: 'initiated',
+  VALID: 'initiated', // TODO - should this be initiated or confirmed?
   REFUNDED: 'cancelled',
   INVALID: 'cancelled',  // to be ignored
 };
@@ -110,7 +110,8 @@ function prepareCommission(o_obj) {
     purchase_amount: o_obj.item.SaleGrossAmount,
     commission_amount: o_obj.item.LedgerAmount,
     state: STATE_MAP[o_obj.item[0].Status],
-    effective_date: 'auto', //Not sure anymore - i believe that date is NOT equal purchase date?! // o_obj.item[2].Datetime
+    effective_date: new Date(o_obj.item[2].Datetime) // changing to Datetime field for now [old developers comment below]
+    // Not sure anymore - i believe that date is NOT equal purchase date?! // o_obj.item[2].Datetime
   };
 
   return event;
