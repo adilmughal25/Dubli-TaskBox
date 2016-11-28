@@ -24,7 +24,10 @@ const FlipkartGenericApi = function(s_entity) {
     const results = yield that.client.ordersReport(start, end);
 
     const events = [].concat(
-      results.Approved.map(prepareCommission.bind(null, 'confirmed')),
+      // changing the transactions state from confirmed to initiated [this change is for
+      // points systems for Indian customers]
+      // results.Approved.map(prepareCommission.bind(null, 'confirmed')),
+      results.Approved.map(prepareCommission.bind(null, 'initiated')),
       results.Disapproved.map(prepareCommission.bind(null, 'cancelled')),
       results.Cancelled.map(prepareCommission.bind(null, 'cancelled')),
       results.Pending.map(prepareCommission.bind(null, 'initiated'))
