@@ -28,6 +28,7 @@ const tradedoublerSwedenApi = tradedoublerGenericApi('se');
 const tradedoublerSwitzerlandApi = tradedoublerGenericApi('ch');
 const tradedoublerEnglandApi = tradedoublerGenericApi('gb');
 const tradedoublerBrazilApi = tradedoublerGenericApi('br');
+const tradedoublerFlyDubaiApi = tradedoublerGenericApi('flyDubai');
 
 const adCellGenericApi = require('./ad-cell/tasks');
 const adCellApi = adCellGenericApi();
@@ -275,7 +276,8 @@ function initializeMerchantImporters(tasker) {
     "VCommission Merchants": vcommissionApi.getMerchants,
     "Webgains Merchants": webgainsApi.getMerchants,
     "Zanox Merchants": zanoxApi.getMerchants,
-    "Shoogloo Merchants": shooglooApi().getMerchants
+    "Shoogloo Merchants": shooglooApi().getMerchants,
+    "FlyDubai Merchants": tradedoublerFlyDubaiApi.getMerchants
   });
 
   tasker.createTask('ShareASale Merchants', '7d +/- 1d', shareASaleApi.getMerchants);
@@ -422,7 +424,8 @@ function initializeCommissionsDubliProcessors(tasker) {
     "Zanox DubLi (SE) Commissions": zanoxDubliSEApi.getCommissionDetails,
     "Zanox DubLi (NO) Commissions": zanoxDubliNOApi.getCommissionDetails,
     "Zanox DubLi (Global) Commissions": zanoxDubliGlobalApi.getCommissionDetails,
-    "Shoogloo Commissions": shooglooApi().getCommissionDetails
+    "Shoogloo Commissions": shooglooApi().getCommissionDetails,
+    "FlyDubai Commissions": tradedoublerFlyDubaiApi.getCommissionDetails
   });
 
   tasker.createTask('ShareASale Dubli Commissions', '7d +/- 1d', shareASaleDubliApi.getCommissionDetails);
