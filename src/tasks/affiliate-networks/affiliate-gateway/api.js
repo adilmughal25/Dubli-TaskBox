@@ -26,12 +26,12 @@ const API_CREDENTIALS = {
   asia: {
     endpoint: 'https://www.tagadmin.asia/ws/AffiliateSOAP.wsdl',
     authUser: 'merchants@ominto.com',
-    authPass: 'Minty789',
+    authPass: 'Ominto&2016'
   },
   sg: {
     endpoint: 'https://www.tagadmin.sg/ws/AffiliateSOAP.wsdl',
     authUser: 'merchants@ominto.com',
-    authPass: 'Minty789',
+    authPass: 'Ominto_2016'
   },
   /* // not yet in use - no accounts
   uk: {
