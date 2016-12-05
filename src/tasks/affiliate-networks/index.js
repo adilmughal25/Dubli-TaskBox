@@ -5,7 +5,7 @@ module.exports = { init: init };
 const amazonApi = require('./amazon/tasks');
 const clixGaloreApi = require("./clix-galore/tasks");
 const impactRadiusProductFtp = require("./impact-radius/ftp-tasks");
-// const lomadeeApi = require('./lomadee/tasks');
+const lomadeeApi = require('./lomadee/tasks');
 
 const tradedoublerGenericApi = require('./tradedoubler/tasks');
 const tradedoublerApi = tradedoublerGenericApi();
@@ -235,7 +235,7 @@ function initializeMerchantImporters(tasker) {
     "Fan Merchants": fanApi.getMerchants,
     "ImpactRadius Merchants": impactRadiusApi.getMerchants,
     "LinkShare Merchants": linkShareApi.getMerchants,
-    // "Lomadee Merchants": lomadeeApi.getMerchants,
+    "Lomadee Merchants": lomadeeApi.getMerchants,
     "OMG (India) Merchants": omgpmIndiaApi.getMerchants,
     "OMG (UK) Merchants": omgpmUKApi.getMerchants,
     "OMG (Asia) Merchants": omgpmAsiaApi.getMerchants,
@@ -325,7 +325,7 @@ function initializeCommissionsProcessors(tasker) {
     "Groupon (US) Commissions": grouponUSApi.getCommissionDetails,
     "ImpactRadius Commissions": impactRadiusApi.getCommissionDetails,
     "LinkShare Commissions": linkShareApi.getCommissionDetails,
-    // "Lomadee Commissions": lomadeeApi.getCommissionDetails,
+    "Lomadee Commissions": lomadeeApi.getCommissionDetails,
     "OMG (India) Commissions": omgpmIndiaApi.getCommissionDetails,
     "OMG (UK) Commissions": omgpmUKApi.getCommissionDetails,
     "OMG (Asia) Commissions": omgpmAsiaApi.getCommissionDetails,
