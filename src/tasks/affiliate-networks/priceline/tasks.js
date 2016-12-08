@@ -19,8 +19,17 @@ const prepareCommission = (o_obj) => {
 function PricelineApi() {
     if (!(this instanceof PricelineApi)) return new PricelineApi();
 
+    // changing the numberOfDays from 30 to 29, as the api sends the following reponse for 30 days
+    /*
+    { error:
+      { status: 'date range must be no greater than 1 month',
+        status_code: 3178,
+        time: '0.4601 (#) 282699712'
+      }
+    }
+    */
     const getCommissionDetails = singleRun(function* () {
-        const events = yield api.get(30).map(prepareCommission);
+        const events = yield api.get(29).map(prepareCommission);
         return yield sendEvents.sendCommissions('priceline', events);
     });
 
