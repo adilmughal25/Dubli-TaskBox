@@ -367,7 +367,8 @@ function initializeCommissionsProcessors(tasker) {
     "VCommission Commissions": vcommissionApi.getCommissionDetails,
     "Webgains Commissions": webgainsApi.getCommissionDetails,
     "Zanox Commissions": zanoxApi.getCommissionDetails,
-    "Priceline Commissions": pricelineApi.getCommissionDetails
+    "Priceline Commissions": pricelineApi.getCommissionDetails,
+    "FlyDubai Commissions": tradedoublerFlyDubaiApi.getCommissionDetails
   });
 
   tasker.createTask('ShareASale Commissions', '4d +/- 1d', shareASaleApi.getCommissionDetails);
@@ -425,8 +426,7 @@ function initializeCommissionsDubliProcessors(tasker) {
     "Zanox DubLi (DK) Commissions": zanoxDubliDKApi.getCommissionDetails,
     "Zanox DubLi (SE) Commissions": zanoxDubliSEApi.getCommissionDetails,
     "Zanox DubLi (NO) Commissions": zanoxDubliNOApi.getCommissionDetails,
-    "Zanox DubLi (Global) Commissions": zanoxDubliGlobalApi.getCommissionDetails,
-    "FlyDubai Commissions": tradedoublerFlyDubaiApi.getCommissionDetails
+    "Zanox DubLi (Global) Commissions": zanoxDubliGlobalApi.getCommissionDetails
   });
 
   tasker.createTask('ShareASale Dubli Commissions', '7d +/- 1d', shareASaleDubliApi.getCommissionDetails);
