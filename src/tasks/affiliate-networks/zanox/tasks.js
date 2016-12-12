@@ -42,9 +42,11 @@ const ZanoxGenericApi = function(s_region, s_entity) {
     let joined = yield that.pagedMerApiCall('$getProgramApplications', 'programApplicationItems.programApplicationItem', {'status':'confirmed'});
 
     let validIds = _.pluck(joined, 'program.@id').reduce((m,i) => _.set(m,i,1), {});
+
+    // As suggested by zanox, we are adding 'purpose=startpage' query param in admedia to fetch home page urls
     const results = yield {
       merchants: that.pagedMerApiCall('$getPrograms', 'programItems.programItem', {'partnership':'DIRECT'}),
-      admedia: that.pagedMerApiCall('$getAdmedia', 'admediumItems.admediumItem', {'admediumtype':'text','partnership':'direct'}),
+      admedia: that.pagedMerApiCall('$getAdmedia', 'admediumItems.admediumItem', {'admediumtype':'text','partnership':'direct','purpose':'startpage'}),
       incentives: that.pagedMerApiCall('$getIncentives', 'incentiveItems.incentiveItem', {'incentiveType':'coupons'}),
       exclusiveIncentives: that.pagedMerApiCall('$getExclusiveIncentives', 'incentiveItems.incentiveItem', {'incentiveType':'coupons'}),
     };
