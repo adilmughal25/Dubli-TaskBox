@@ -185,7 +185,8 @@ const zanoxDubliDKApi = zanoxGenericApi('dk', 'dubli');
 const zanoxDubliSEApi = zanoxGenericApi('se', 'dubli');
 const zanoxDubliNOApi = zanoxGenericApi('no', 'dubli');
 const zanoxDubliGlobalApi = zanoxGenericApi('global', 'dubli');
-const shooglooApi = require('./shoogloo/tasks');
+const shooglooGenericApi = require('./shoogloo/tasks');
+const shooglooApi = shooglooGenericApi('shoogloo');
 const pricelineApi = require('./priceline/tasks')();
 
 function init(tasker) {
@@ -238,6 +239,7 @@ function initializeMerchantImporters(tasker) {
     "PublicIdeas (IT) Merchants": publicideasITApi.getMerchants,
     "PublicIdeas (LATAM) Merchants": publicideasLATAMApi.getMerchants,
     "PublicIdeas (UK) Merchants": publicideasUKApi.getMerchants,
+    "Shoogloo Merchants": shooglooApi.getMerchants,
     "ShopStylers Merchants": shopstylers.getMerchants,
     "TradeDoubler (AT) Merchants": tradedoublerAustriaApi.getMerchants,
     "TradeDoubler (BE) Merchants": tradedoublerBelgiumApi.getMerchants,
@@ -276,7 +278,6 @@ function initializeMerchantImporters(tasker) {
     "VCommission Merchants": vcommissionApi.getMerchants,
     "Webgains Merchants": webgainsApi.getMerchants,
     "Zanox Merchants": zanoxApi.getMerchants,
-    "Shoogloo Merchants": shooglooApi().getMerchants,
     "FlyDubai Merchants": tradedoublerFlyDubaiApi.getMerchants
   });
 
@@ -326,6 +327,7 @@ function initializeCommissionsProcessors(tasker) {
     "PublicIdeas (IT) Commissions": publicideasITApi.getCommissionDetails,
     "PublicIdeas (LATAM) Commissions": publicideasLATAMApi.getCommissionDetails,
     "PublicIdeas (UK) Commissions": publicideasUKApi.getCommissionDetails,
+    "Shoogloo Commissions": shooglooApi.getCommissionDetails,
     "ShopStylers Commissions": shopstylers.getCommissionDetails,
     "SnapDeal Commissions": snapdealApi.getCommissionDetails,
     "TradeDoubler (AT) Commissions": tradedoublerAustriaApi.getCommissionDetails,
@@ -424,7 +426,6 @@ function initializeCommissionsDubliProcessors(tasker) {
     "Zanox DubLi (SE) Commissions": zanoxDubliSEApi.getCommissionDetails,
     "Zanox DubLi (NO) Commissions": zanoxDubliNOApi.getCommissionDetails,
     "Zanox DubLi (Global) Commissions": zanoxDubliGlobalApi.getCommissionDetails,
-    "Shoogloo Commissions": shooglooApi().getCommissionDetails,
     "FlyDubai Commissions": tradedoublerFlyDubaiApi.getCommissionDetails
   });
 
