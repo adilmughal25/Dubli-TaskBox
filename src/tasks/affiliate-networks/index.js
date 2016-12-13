@@ -198,6 +198,7 @@ function init(tasker) {
   initializeCommissionsProcessors(tasker);
   // disabling dubli commission processors [11/7/2016]
   // initializeCommissionsDubliProcessors(tasker);
+  intializeUserReferrals(tasker);
   initializeNotificationProcessor(tasker);
 }
 
