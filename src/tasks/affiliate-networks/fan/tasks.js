@@ -18,7 +18,8 @@ const STATE_MAP = {
 
 //TODO: Confirm if other currencies are available & populate them
 const CURRENCY_MAP = {
-  '$':    'usd'
+  '$':    'usd',
+  'MAD': 'mad'
 };
 
 const FanGenericApi = function(s_entity) {
@@ -179,7 +180,7 @@ function prepareCommission(o_obj) {
     transaction_id: o_obj.macro_event_conversion_id,
     order_id: o_obj.order_id,
     outclick_id: o_obj.subid_1 || o_obj.subid_2,
-    currency: CURRENCY_MAP[o_obj.currency_symbol],
+    currency: CURRENCY_MAP[o_obj.order_currency_symbol],
     purchase_amount: Number(o_obj.order_total || "0"),
     commission_amount: Number(o_obj.price || "0"),
     state: STATE_MAP[o_obj.disposition],
