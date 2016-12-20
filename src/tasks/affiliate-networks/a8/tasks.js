@@ -9,17 +9,19 @@ const singleRun = require('../support/single-run');
 const utils = require('ominto-utils');
 const converter = require("csvtojson").Converter;
 
-// TODO : confirm this
 const CURRENCY = 'JPY';
 
-// TODO : not sure if decide is initiated or confirmed, also confirm for unsealed & unsealedadd
 const STATUS_MAP = {
-  // 'decide': 'initiated',
   'decide': 'confirmed',
   'unsealed': 'cancelled',
   'unsealedadd':'cancelled'
 };
 
+/**
+ * Retrieve a generic A8 API client
+ * @returns {A8GenericApi}
+ * @constructor
+ */
 const A8GenericApi = function() {
 
   if (!(this instanceof A8GenericApi)) return new A8GenericApi();
@@ -29,6 +31,10 @@ const A8GenericApi = function() {
   this.eventName = 'a8';
   debug(this.eventName + ':processor');
 
+  /**
+   * Retrieve all commissions from A8 Directory
+   * @type {Function}
+   */
   this.getCommissionDetails = singleRun(function* () {
 
     const currentDate = moment().format('YYYYMMDD');
@@ -37,10 +43,17 @@ const A8GenericApi = function() {
     var unsealedReport = yield that.getUnsealedReport(currentDate);
     var unsealedAddReport = yield that.getUnsealedAddReport(currentDate);
 
-    var events = mergeReports(decideReport, unsealedReport, unsealedAddReport);
+    var events = merge2Reports(decideReport, unsealedAddReport);
+    // according to A8, only reports from decide folder & unsealedadd folder should be processed
+    // var events = merge3Reports(decideReport, unsealedReport, unsealedAddReport);
+
     return yield sendEvents.sendCommissions(that.eventName, events);
   });
 
+  /**
+   * Retrieve all decide type commissions from A8 Directory
+   * @type {Function}
+   */
   this.getDecideReport = co.wrap(function* (currentDate) {
 
     const url = that.client.url('decide', currentDate);
@@ -48,6 +61,10 @@ const A8GenericApi = function() {
     return yield that.client.get(url);
   });
 
+  /**
+   * Retrieve all unsealed type commissions from A8 Directory
+   * @type {Function}
+   */
   this.getUnsealedReport = co.wrap(function* (currentDate) {
 
     const url = that.client.url('unsealed', currentDate);
@@ -55,6 +72,10 @@ const A8GenericApi = function() {
     return yield that.client.get(url);
   });
 
+  /**
+   * Retrieve all unsealedadd type commissions from A8 Directory
+   * @type {Function}
+   */
   this.getUnsealedAddReport = co.wrap(function* (currentDate) {
 
     const url = that.client.url('unsealedadd', currentDate);
@@ -63,7 +84,35 @@ const A8GenericApi = function() {
   });
 };
 
-function mergeReports(decideReport, unsealedReport, unsealedAddReport) {
+/**
+ * Function to merge the commissions fetched from decideReport & unsealedAddReport methods
+ * @param decideReport
+ * @param unsealedAddReport
+ * @returns {Object} json object with combined commissions from decideReport & unsealedAddReport
+ */
+function merge2Reports(decideReport, unsealedAddReport) {
+
+  var events = [];
+
+  decideReport = csvToJson(decideReport);
+  unsealedAddReport = csvToJson(unsealedAddReport);
+
+  var decideCommission = decideReport.map(prepareCommission.bind(null, 'decide')).filter(x => !!x);
+  var unsealedAddCommission = unsealedAddReport.map(prepareCommission.bind(null, 'unsealedadd')).filter(x => !!x);
+
+  events = events.concat(decideCommission, unsealedAddCommission);
+
+  return events;
+}
+
+/**
+ * Function to merge the commissions fetched from decideReport, unsealedReport & unsealedAddReport methods
+ * @param decideReport
+ * @param unsealedReport
+ * @param unsealedAddReport
+ * @returns {Object} json object with combined commissions from decideReport, unsealedReport & unsealedAddReport
+ */
+function merge3Reports(decideReport, unsealedReport, unsealedAddReport) {
 
   var events = [];
 
@@ -80,6 +129,11 @@ function mergeReports(decideReport, unsealedReport, unsealedAddReport) {
   return events;
 }
 
+/**
+ * Convert csv data to json
+ * @param csv commission data
+ * @returns {Object}
+ */
 function csvToJson(csv) {
 
   csv = csv.replace(/['"]+/g, '');
@@ -90,6 +144,11 @@ function csvToJson(csv) {
   });
 }
 
+/**
+ * Extract the commission data into the required data structure
+ * @param o_obj raw commission data from api
+ * @returns {Object} commission object
+ */
 function prepareCommission(state, o_obj) {
 
   // only if the obj exists and a valid order_id exist [eliminating headers]
