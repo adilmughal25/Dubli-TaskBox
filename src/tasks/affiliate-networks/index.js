@@ -189,6 +189,8 @@ const zanoxDubliNOApi = zanoxGenericApi('no', 'dubli');
 const zanoxDubliGlobalApi = zanoxGenericApi('global', 'dubli');
 const shooglooGenericApi = require('./shoogloo/tasks');
 const shooglooApi = shooglooGenericApi('shoogloo');
+const addReferralPropertiesApi = require('./user-referrals/tasks');
+const userReferralApi = addReferralPropertiesApi();
 const pricelineApi = require('./priceline/tasks')();
 
 function init(tasker) {
@@ -196,6 +198,7 @@ function init(tasker) {
   initializeCommissionsProcessors(tasker);
   // disabling dubli commission processors [11/7/2016]
   // initializeCommissionsDubliProcessors(tasker);
+  intializeUserReferrals(tasker);
   initializeNotificationProcessor(tasker);
 }
 
@@ -434,4 +437,9 @@ function initializeCommissionsDubliProcessors(tasker) {
   });
 
   tasker.createTask('ShareASale Dubli Commissions', '7d +/- 1d', shareASaleDubliApi.getCommissionDetails);
+}
+function intializeUserReferrals(tasker) {
+  // Run this every 24 hour
+  tasker.createTask('add Referral users', '3h +/- 1h', userReferralApi.addReferralProperties);
+  tasker.createTask('add Referral cashback', '6h +/- 1h', userReferralApi.addReferralAmount);
 }
