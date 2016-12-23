@@ -192,13 +192,16 @@ function prepareCommission(o_obj) {
   // using auto as date for a transactions added a bug. hence using "o_obj.Stat.datetime"
   // for all transactions instead. (check STATUS_MAP for statuses)
   const S = o_obj.Stat;
+
+  // using sale_amount@CUR & payout@CUR instead of sale_amount & payout - this is as per shikha's mail
+  // OM-1710 [ignoring currency part in hasoffers]
   const event = {
     transaction_id: S.id,
     order_id: S.id,
     outclick_id: S.affiliate_info1,
-    purchase_amount: S.sale_amount,
+    purchase_amount: _.get(S, 'sale_amount@'+ S.currency), // S.sale_amount
     //commission_amount: S.approved_payout,
-    commission_amount: S.payout,
+    commission_amount: _.get(S, 'payout@'+ S.currency), // S.payout
     currency: S.currency,
     state: STATUS_MAP[S.conversion_status],
     // effective_date: S.conversion_status === 'pending' ? new Date(S.datetime) : 'auto'
