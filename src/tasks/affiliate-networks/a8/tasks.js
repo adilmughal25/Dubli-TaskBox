@@ -158,6 +158,7 @@ function csvToJson(csv) {
 function prepareCommission(state, o_obj) {
 
   // only if the obj exists and a valid order_id exist [eliminating headers]
+  // multiplying by 100 for currency conversion for JPY
   if(o_obj && _.get(o_obj, 'ORDER_ID')){
 
     const commission = {};
@@ -165,8 +166,8 @@ function prepareCommission(state, o_obj) {
     commission.outclick_id = _.get(o_obj, 'POINT_ID1');
     commission.transaction_id = _.get(o_obj, 'ORDER_ID');
     commission.order_id = _.get(o_obj, 'ORDER_ID');
-    commission.purchase_amount = Number(_.get(o_obj, '���V�Ώے������z'));
-    commission.commission_amount = Number(_.get(o_obj, '�������V�z'));
+    commission.purchase_amount = Number(_.get(o_obj, '���V�Ώے������z'))*100 || 0;
+    commission.commission_amount = Number(_.get(o_obj, '�������V�z'))*100 || 0;
     commission.currency = CURRENCY;
     commission.effective_date = new Date(_.get(o_obj, '������'));
     commission.state = STATUS_MAP[state];
