@@ -10,6 +10,7 @@ const utils = require('ominto-utils');
 const converter = require("csvtojson").Converter;
 
 const CURRENCY = 'JPY';
+const NUMBEROFDAYS = 5; // change this to 30 days once there are several days worth reports
 
 const STATUS_MAP = {
   'decide': 'confirmed',
@@ -37,15 +38,20 @@ const A8GenericApi = function() {
    */
   this.getCommissionDetails = singleRun(function* () {
 
-    const currentDate = moment().format('YYYYMMDD');
+    var events = [];
 
-    var decideReport = yield that.getDecideReport(currentDate);
-    var unsealedReport = yield that.getUnsealedReport(currentDate);
-    var unsealedAddReport = yield that.getUnsealedAddReport(currentDate);
+    for(var i = 0; i < NUMBEROFDAYS; i++) {
 
-    var events = merge2Reports(decideReport, unsealedAddReport);
-    // according to A8, only reports from decide folder & unsealedadd folder should be processed
-    // var events = merge3Reports(decideReport, unsealedReport, unsealedAddReport);
+      var currentDate = moment().subtract(i, 'days').format('YYYYMMDD');
+
+      var decideReport = yield that.getDecideReport(currentDate);
+      var unsealedReport = yield that.getUnsealedReport(currentDate);
+      var unsealedAddReport = yield that.getUnsealedAddReport(currentDate);
+
+      // according to A8, only reports from decide folder & unsealedadd folder should be processed
+      // events = events.concat(merge3Reports(decideReport, unsealedReport, unsealedAddReport));
+      events = events.concat(merge2Reports(decideReport, unsealedAddReport));
+    }
 
     return yield sendEvents.sendCommissions(that.eventName, events);
   });
