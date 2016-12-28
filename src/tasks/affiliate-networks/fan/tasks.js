@@ -28,7 +28,8 @@ const FanGenericApi = function(s_entity) {
     return new FanGenericApi(s_entity);
   }
 
-  const that = this;
+  var that = this;
+
   this.entity = s_entity ? s_entity.toLowerCase() : '';
   that.clientSoap = require('./api')(this.entity);
   this.eventName = this.entity;
@@ -41,7 +42,7 @@ const FanGenericApi = function(s_entity) {
 
     const api_key = that.clientSoap.cfg.api_key;
     const affiliate_id = that.clientSoap.cfg.affiliate_id;
-    yield that.clientSoap.setup(that.entity, 'offers'); // setup our soap client
+    yield that.clientSoap.setupOffers(that.entity, 'offers');
 
     const getOfferFeedReq = {
       api_key: that.clientSoap.cfg.api_key,
@@ -90,7 +91,7 @@ const FanGenericApi = function(s_entity) {
    */
   this.getCommissionDetails = singleRun(function* () {
 
-    yield that.clientSoap.setup(that.entity);
+    yield that.clientSoap.setupReports(that.entity);
 
     let results = [];
     let transactions = [];

@@ -36,18 +36,29 @@ function FanClient(s_entity) {
   this.cfg = API_CFG[s_entity];
   this.client = null;
   // using a flag to initialize the jar
-  this.initialized = false;
+  this.initializedOffers = false;
+  this.initializedReports = false;
   this.jar = request.jar();
   this.dateFormat = d => d.toISOString().replace(/\..+$/, '-00:00');
 }
 
-FanClient.prototype.setup = co.wrap(function* (entity, serviceType) {
-  if (!this.initialized) {
+FanClient.prototype.setupOffers = co.wrap(function* (entity, serviceType) {
+  if (!this.initializedOffers) {
     let Client = this.client = yield init(this.jar, entity, serviceType);
-    const keys = serviceType === 'offers' ? ['offers', 'offersSoap'] : ['reports', 'reportsSoap'];
+    const keys = ['offers', 'offersSoap'];
     let methods = Object.keys(_.get(this.client.describe(), keys));
     methods.reduce( (self,method) => _.set(self, method, denodeify(Client[method].bind(Client))), this);
-    this.initialized = true;
+    this.initializedOffers = true;
+  }
+});
+
+FanClient.prototype.setupReports = co.wrap(function* (entity, serviceType) {
+  if (!this.initializedReports) {
+    let Client = this.client = yield init(this.jar, entity, serviceType);
+    const keys = ['reports', 'reportsSoap'];
+    let methods = Object.keys(_.get(this.client.describe(), keys));
+    methods.reduce( (self,method) => _.set(self, method, denodeify(Client[method].bind(Client))), this);
+    this.initializedReports = true;
   }
 });
 
