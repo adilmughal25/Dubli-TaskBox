@@ -14,8 +14,8 @@ const NUMBEROFDAYS = 5; // change this to 30 days once there are several days wo
 
 const STATUS_MAP = {
   'decide': 'confirmed',
-  'unsealed': 'cancelled',
-  'unsealedadd':'cancelled'
+  'unsealed': 'initiated',
+  'unsealedadd':'initiated'
 };
 
 /**
@@ -162,6 +162,10 @@ function prepareCommission(state, o_obj) {
   if(o_obj && _.get(o_obj, 'ORDER_ID')){
 
     const commission = {};
+    var isCancelled = false;
+
+    if(Number(_.get(o_obj, '���V�Ώے������z')) < 0)
+      isCancelled = true;
 
     commission.outclick_id = _.get(o_obj, 'POINT_ID1');
     commission.transaction_id = _.get(o_obj, 'ORDER_ID');
@@ -171,6 +175,9 @@ function prepareCommission(state, o_obj) {
     commission.currency = CURRENCY;
     commission.effective_date = new Date(_.get(o_obj, '������'));
     commission.state = STATUS_MAP[state];
+
+    if(isCancelled)
+      commission.state = 'cancelled';
 
     return commission;
   }
