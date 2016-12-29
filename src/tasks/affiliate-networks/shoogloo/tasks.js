@@ -8,7 +8,6 @@ const singleRun = require('../support/single-run');
 
 const exists = x => !!x;
 
-//TODO: Populate other states
 const STATE_MAP = {
   'Pending' :   'initiated',
   'Approved':   'confirmed',
@@ -16,7 +15,7 @@ const STATE_MAP = {
   'Paid'    :   'paid'
 };
 
-//TODO: Populate other currencies
+// TODO: Confirm if other currencies are available & populate them
 const CURRENCY_MAP = {
   '$':    'usd'
 };
@@ -27,7 +26,8 @@ const ShooglooGenericApi = function(s_entity) {
     return new ShooglooGenericApi(s_entity);
   }
 
-  const that = this;
+  var that = this;
+
   this.entity = s_entity ? s_entity.toLowerCase() : '';
   that.clientSoap = require('./api')(this.entity);
   this.eventName = this.entity;
@@ -94,7 +94,7 @@ const ShooglooGenericApi = function(s_entity) {
 
     const api_key = that.clientSoap.cfg.api_key;
     const affiliate_id = that.clientSoap.cfg.affiliate_id;
-    yield that.clientSoap.setup(that.entity, 'offers'); // setup our soap client
+    yield that.clientSoap.setupOffers(that.entity, 'offers');
 
     const offers = yield that.doApi('OfferFeed', getOfferFeedReq, 'OfferFeedResult.offers.offer');
     const activeOffers = offers.filter((offer) => offer.offer_status.status_id === '1');
@@ -132,7 +132,7 @@ const ShooglooGenericApi = function(s_entity) {
    */
   this.getCommissionDetails = singleRun(function* () {
 
-    yield that.clientSoap.setup(that.entity);
+    yield that.clientSoap.setupReports(that.entity, 'reports');
 
     let results = [];
     let transactions = [];
@@ -151,29 +151,34 @@ const ShooglooGenericApi = function(s_entity) {
       row_limit: 0
     }, 'EventConversionsResult');
 
-    const event_conversions = results[0].event_conversions.event_conversion;
-    const conversions = Array.isArray(event_conversions) ? event_conversions : [];
-    transactions = conversions.map(prepareCommission).filter(exists);
 
-    return yield sendEvents.sendCommissions(that.eventName, transactions);
+    if(results) {
+      const event_conversions = results[0].event_conversions.event_conversion;
+      const conversions = Array.isArray(event_conversions) ? event_conversions : [];
+      transactions = conversions.map(prepareCommission).filter(exists);
+
+      return yield sendEvents.sendCommissions(that.eventName, transactions);
+    }
   });
 
   // api call generic function
   this.doApi = co.wrap(function* (method, args, key) {
-    let results = yield that.clientSoap[method](args)
-      .then(extractAry(key))
-      // .then(resp => rinse(resp)) // causing issues with date
-      .catch((e) => {
-        e.stack = e.body + ' (' + e.stack + ')'
-        throw e;
-      });
-    return results || [];
+
+    let results = yield that.clientSoap[method](args);
+    if(results) {
+      results = extractAry(results, key);
+      // results = rinse(results); // causing issues with date
+      return results || [];
+    }
+    return [];
   });
+
 };
 
 var ary = x => _.isArray(x) ? x : [x];
-function extractAry(key) {
-  return resp => ary(_.get(resp, key) || []);
+
+function extractAry(result, key) {
+  return result = ary(_.get(result, key) || []);
 }
 
 /**
