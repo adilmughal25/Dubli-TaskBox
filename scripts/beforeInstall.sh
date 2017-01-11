@@ -32,6 +32,9 @@ mkdir -p /var/lib/taskbox-taskdb
 chown node-app-run:node-app /var/lib/taskbox-taskdb
 chmod 750 /var/lib/taskbox-taskdb
 
+# Add a data directory under /home/node-app-files
+mkdir -p /home/node-app-files/data
+chmod 777 /home/node-app-files/data
 
 if [ ! -f ${FTP_ROOT} ]; then
   mkdir -p ${FTP_ROOT}
