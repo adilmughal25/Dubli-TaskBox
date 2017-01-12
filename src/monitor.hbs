@@ -75,7 +75,7 @@
       }
     </style>
   </head>
-  <body>
+  <body onload="kinesisCount()">
     <header>
       <h1>TaskBox Task Monitor</h1>
       <input type="search" placeholder="filter by name" id="filter" incremental>
@@ -89,7 +89,7 @@
     </header>
 
     <table>
-      <tr><th>task</th><th>status</th><th>next</th><th>last</th><th>last end</th><th>last elapsed</th><th>last status</th></tr>
+      <tr><th>task</th><th>status</th><th>next</th><th>last</th><th>last end</th><th>last elapsed</th><th>last status</th><th>totalSentToKinesis</th></tr>
       {{#each report}}
       <tr data-id={{id}} data-last-details="{{lastDetails}}" data-last-status="{{lastStatus}}" data-status="{{status}}">
         <td>{{id}}</td>
@@ -160,6 +160,26 @@
       function closeModal(event) {
         event.preventDefault();
         document.body.className = "";
+      }
+
+      function kinesisCount(event) {
+        console.log("Called Kinesis Count Function");
+        //alert("Kinesis Count Function");
+          var rows = Array.from(document.querySelectorAll("tr"));
+          rows.forEach(function(tr) {
+              var detailsInfo = tr.getAttribute("data-last-details");
+              if (detailsInfo) {
+                  try{
+                      var td = tr.appendChild(document.createElement('td'));
+                      var jd = JSON.parse(detailsInfo);
+                      console.log("Input:", detailsInfo +", JSON:" + jd);
+                      td.innerHTML = jd.totalSentToKinesis;
+                  }
+                  catch(err) {
+
+                  };
+              };
+          });
       }
 
       function filterList(event) {
