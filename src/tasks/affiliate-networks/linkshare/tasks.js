@@ -158,18 +158,28 @@ const LinkShareGenericApi = function(s_region, s_entity) {
 
     let response = yield dataClient.get(url);
 
+    // if using "csvtojson" library
     // if summary is included in the response then clean it and proceed with only essential data
     // response = response.split('\n');
     // response.splice(0,4);
     // response = response.join('\n');
 
     var events = [];
-    var csvConverter = new converter({});
+    // if using "csvtojson" library
+    // var csvConverter = new converter({});
 
-    csvConverter.fromString(response, co.wrap(function*(err, commissions){
-      events = commissions.map(prepareCommission).filter(x => !!x);
-      yield sendEvents.sendCommissions(that.eventName, events);
-    }));
+    // using custom function "csvToJson" instead of library, as using the external library doesnt
+    // write the report in the flat db file - this is super weird
+    var commissions = csvToJson(response);
+    events = commissions.map(prepareCommission).filter(x => !!x);
+
+    // if using "csvtojson" library
+    // csvConverter.fromString(response, co.wrap(function*(err, commissions){
+    //  events = commissions.map(prepareCommission).filter(x => !!x);
+    //  return yield sendEvents.sendCommissions(that.eventName, events);
+    // }));
+
+    return yield sendEvents.sendCommissions(that.eventName, events);
   });
 };
 
@@ -267,6 +277,14 @@ function mergeResults(o_obj) {
   o_obj.textLinks.forEach(l => add(l.mid, 'links', l));
   o_obj.coupons.forEach(c => add(c.advertiserid, 'coupons', c));
   return _.values(res).filter(x => 'merchant' in x);
+}
+
+function csvToJson(csv) {
+  const content = csv.split('\n');
+  const header = content[0].split(',');
+  return _.tail(content).map((row) => {
+    return _.zipObject(header, row.split(','));
+  });
 }
 
 module.exports = LinkShareGenericApi;
