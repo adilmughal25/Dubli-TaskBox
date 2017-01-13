@@ -195,8 +195,8 @@ const Tradedoubler = function(s_region, s_entity) {
     }
 
     requestParams.url = apiMethod + '.json';
-    const client = getTradedoublerClient(requestParams);
-    return client.get()
+    this.client = getTradedoublerClient(requestParams);
+    return this.client.get()
         .then(
           response => {
             return response && response.length > 0 ? response : [];
