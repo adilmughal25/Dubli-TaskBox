@@ -208,8 +208,9 @@ function _prepareCommission(o_obj) {
 function prepareCommission(o_obj) {
 
   const commission = {};
-  if(o_obj){
-    commission.outclick_id = _.get(o_obj, 'Member ID (U1)');
+  // adding extra validations before parsing
+  if(o_obj && _.get(o_obj, '﻿Member ID \(U1\)') && _.get(o_obj, 'Transaction ID')){
+    commission.outclick_id = _.get(o_obj, '﻿Member ID \(U1\)');
     commission.transaction_id = _.get(o_obj, 'Transaction ID');
     commission.order_id = _.get(o_obj, 'Order ID');
     commission.purchase_amount = Number(_.get(o_obj, 'Sales'));
@@ -221,9 +222,9 @@ function prepareCommission(o_obj) {
       commission.state = 'cancelled';
     else
       commission.state = 'confirmed';
-  }
 
-  return commission;
+    return commission;
+  }
 }
 
 function sendMerchantsToEventHub(merchants) {
@@ -280,6 +281,10 @@ function mergeResults(o_obj) {
 }
 
 function csvToJson(csv) {
+  // remove excess quotes
+  csv = csv.replace(/['"]+/g, '');
+  // remove excess '\r' at the end of each line
+  csv = csv.replace(/\r+/g, '');
   const content = csv.split('\n');
   const header = content[0].split(',');
   return _.tail(content).map((row) => {
