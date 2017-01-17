@@ -70,6 +70,7 @@
     "tough-cookie": "^2.0.0",
     "transform-keys": "0.0.3",
     "underscore": "^1.8.3",
+    "validator": "^6.2.1",
     "xls-to-json-lc": "^0.3.3",
     "xml2js": "^0.4.9",
     "zanox_js": "^1.0.0"

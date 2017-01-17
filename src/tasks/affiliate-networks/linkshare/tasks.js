@@ -14,6 +14,7 @@ const _check = utils.checkApiResponse;
 const jsonify = require('../support/jsonify-xml-body');
 const debug = require('debug')('linkshare:processor');
 const converter = require("csvtojson").Converter;
+const validator = require('validator');
 
 const reportingURL = 'https://ran-reporting.rakutenmarketing.com/en/reports/individual-item-report-api-final/filters?';
 const reportingToken = 'ZW5jcnlwdGVkYToyOntzOjU6IlRva2VuIjtzOjY0OiI2ODI4NTljZGIxYWU2ZjllZWQ1NDFhYjhlNjY1YTM2ODI4YTM3NmIxMjFmMWI1MTI4Y2Q2YzJhMjBkMTMzMjgzIjtzOjg6IlVzZXJUeXBlIjtzOjk6IlB1Ymxpc2hlciI7fQ%3D%3D';
@@ -175,8 +176,8 @@ const LinkShareGenericApi = function(s_region, s_entity) {
 
     // if using "csvtojson" library
     // csvConverter.fromString(response, co.wrap(function*(err, commissions){
-    //  events = commissions.map(prepareCommission).filter(x => !!x);
-    //  return yield sendEvents.sendCommissions(that.eventName, events);
+    //   events = commissions.map(prepareCommission).filter(x => !!x);
+    //   return yield sendEvents.sendCommissions(that.eventName, events);
     // }));
 
     return yield sendEvents.sendCommissions(that.eventName, events);
@@ -208,8 +209,10 @@ function _prepareCommission(o_obj) {
 function prepareCommission(o_obj) {
 
   const commission = {};
-  if(o_obj){
-    commission.outclick_id = _.get(o_obj, 'Member ID (U1)');
+
+  // adding extra validations before parsing
+  if(o_obj && _.get(o_obj, '﻿Member ID \(U1\)')){
+    commission.outclick_id = _.get(o_obj, '﻿Member ID \(U1\)');
     commission.transaction_id = _.get(o_obj, 'Transaction ID');
     commission.order_id = _.get(o_obj, 'Order ID');
     commission.purchase_amount = Number(_.get(o_obj, 'Sales'));
@@ -221,9 +224,9 @@ function prepareCommission(o_obj) {
       commission.state = 'cancelled';
     else
       commission.state = 'confirmed';
-  }
 
-  return commission;
+    return commission;
+  }
 }
 
 function sendMerchantsToEventHub(merchants) {
@@ -279,12 +282,111 @@ function mergeResults(o_obj) {
   return _.values(res).filter(x => 'merchant' in x);
 }
 
-function csvToJson(csv) {
+// old cvs to json
+function _csvToJson(csv) {
+  // remove excess quotes
+  csv = csv.replace(/["']+/g, '');
+  // remove excess '\r' at the end of each line
+  csv = csv.replace(/\r+/g, '');
   const content = csv.split('\n');
   const header = content[0].split(',');
   return _.tail(content).map((row) => {
     return _.zipObject(header, row.split(','));
   });
+}
+
+function csvToJson(csv) {
+
+  // remove excess quotes
+  csv = csv.replace(/["']+/g, '');
+  // remove excess '\r' at the end of each line
+  csv = csv.replace(/\r+/g, '');
+
+  const content = csv.split('\n');
+  const header = content[0].split(',');
+  return _.tail(content).map((row) => {
+    var data = row.split(',');
+    if(data.length > 1){
+      if(header.length != data.length){
+        // console.log("before : " + row);
+        row = additionalProcessing(row);
+        // console.log("after  : " + row);
+        if(validateProcessing(row)){
+          return _.zipObject(header, row.split(','));
+          // console.log();
+        } else {
+          // console.log("error : " + row);
+          // console.log();
+        }
+      }
+      else{
+        return _.zipObject(header, row.split(','));
+      }
+    }
+  });
+}
+
+function additionalProcessing(row){
+
+  var rowData = row.split(',');
+  var newRowData = [];
+
+  if(validator.isAlphanumeric(String(rowData[0])))
+    newRowData[0] = rowData[0];
+
+  if(/^[a-zA-Z0-9-.]*$/.test(rowData[1]))
+    newRowData[1] = rowData[1];
+
+  if(validator.isDate(String(rowData[2])))
+    newRowData[2] = rowData[2];
+
+  if(/^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(rowData[3]))
+     newRowData[3] = rowData[3];
+
+  if(rowData.length === 9){
+    if(validator.isFloat(String(rowData[4])) && validator.isFloat(String(rowData[5])))
+      newRowData[4] = Number(rowData[4]+''+rowData[5]);
+
+    if(validator.isFloat(String(rowData[6])))
+      newRowData[5] = rowData[6];
+
+    if(validator.isAlpha(String(rowData[7])) && rowData[7].length === 3)
+      newRowData[6] = rowData[7];
+
+    if(validator.isAlphanumeric(String(rowData[8])))
+      newRowData[7] = rowData[8];
+  }
+
+  if(rowData.length === 10){
+    console.log("THIS SHOULD NOT BE PRINTED!!!");
+    if(validator.isFloat(String(rowData[4])) && validator.isFloat(String(rowData[5])))
+      newRowData[4] = Number(rowData[4]+''+rowData[5]);
+
+    if(validator.isFloat(String(rowData[6])) && validator.isFloat(String(rowData[7])))
+      newRowData[5] = Number(rowData[6]+''+rowData[7]);
+
+    if(validator.isAlpha(String(rowData[8])) && rowData[8].length === 3)
+      newRowData[6] = rowData[8];
+
+    if(validator.isAlphanumeric(String(rowData[9])))
+      newRowData[7] = rowData[9];
+  }
+
+  return newRowData.join();
+}
+
+function validateProcessing(row){
+
+  var rowData = row.split(',');
+
+  return validator.isAlphanumeric(String(rowData[0])) &&
+  /^[a-zA-Z0-9-.]*$/.test(rowData[1]) &&
+  validator.isDate(String(rowData[2])) &&
+  /^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(rowData[3]) &&
+  validator.isFloat(String(rowData[4])) &&
+  validator.isFloat(String(rowData[5])) &&
+  validator.isAlpha(String(rowData[6])) && rowData[6].length === 3 &&
+  validator.isAlphanumeric(String(rowData[7]));
 }
 
 module.exports = LinkShareGenericApi;
