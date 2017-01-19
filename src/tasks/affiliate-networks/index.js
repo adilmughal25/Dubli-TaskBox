@@ -325,7 +325,7 @@ function initializeCommissionsProcessors(tasker) {
     "Groupon (US) Commissions": grouponUSApi.getCommissionDetails,
     "ImpactRadius Commissions": impactRadiusApi.getCommissionDetails,
     "LinkShare Commissions": linkShareApi.getCommissionDetails,
-    "Lomadee Commissions": lomadeeApi.getCommissionDetails,
+    // "Lomadee Commissions": lomadeeApi.getCommissionDetails,
     "OMG (India) Commissions": omgpmIndiaApi.getCommissionDetails,
     "OMG (UK) Commissions": omgpmUKApi.getCommissionDetails,
     "OMG (Asia) Commissions": omgpmAsiaApi.getCommissionDetails,
