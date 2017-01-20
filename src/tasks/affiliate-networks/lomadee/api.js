@@ -13,7 +13,7 @@ const request = require('request-promise');
 const debug = require('debug')('lomadee:api-client');
 
 const API_URL = ' http://sandbox.buscape.com.br/service/'; // sandbox url
-// const API_URL = ' http://bws.buscape.com.br/service/'; // production url
+//const API_URL = ' http://bws.buscape.com.br/service/'; // production url
 const API_TOKEN = '5749507a5a7258304352673d';
 const SOURCE_ID = '33225840';
 const MAX_RESULTS = 100;

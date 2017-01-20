@@ -6,21 +6,21 @@ const singleRun = require('../support/single-run');
 const client = require('./api')();
 
 const merge = require('../support/easy-merge')('advertiserid', {
-  // coupons: 'advertiserid'
+  coupons: 'advertiserid'
 });
 
 let getMerchants = singleRun(function*() {
   const results = yield {
-    merchants: client.getMerchants()
-    // coupons: client.getCoupons()
+    merchants: client.getMerchants(),
+    coupons: client.getCoupons()
   };
 
   const merchants = merge(results);
-  yield sendEvents.sendMerchants('lomadee', merchants);
+  return yield sendEvents.sendMerchants('lomadee', merchants);
 });
 
 let getCommissionDetails = singleRun(function*() {
-  yield sendEvents.sendCommissions('lomadee', []);
+  return yield sendEvents.sendCommissions('lomadee', []);
 });
 
 module.exports = {
