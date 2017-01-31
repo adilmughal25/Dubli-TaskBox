@@ -220,10 +220,14 @@ function prepareCommission(o_obj) {
     commission.currency = _.get(o_obj, 'Currency');
     commission.effective_date = new Date(_.get(o_obj, 'Process Date') + " " + _.get(o_obj, 'Process Time'));
 
+    // OM-1846 - By default all the transactions with negative amounts are marked as confirmed
+    /*
     if(commission.purchase_amount < 0 && commission.commission_amount < 0)
       commission.state = 'cancelled';
     else
       commission.state = 'confirmed';
+    */
+    commission.state = 'confirmed';
 
     return commission;
   }
