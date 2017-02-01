@@ -63,12 +63,14 @@ function ImpactRadiusGenericApi(s_whitelabel, s_region, s_entity) {
 // but when cross-verified with the data that we are receiving, this field is empty.
 // Adding the transaction_id as the order_id for now.
 function prepareCommission(region, o_irAction) {
+  // Using ‘Amount’ instead of ‘IntendedAmount’ for ‘Purchase Amount’ & ‘Payout’
+  // instead of ‘IntendedPayout’ for ‘Commission Amount’ - as confirmed by impact-radius support
   var o_event = {};
   o_event.transaction_id = o_irAction.Id;
   o_event.order_id = o_irAction.Id;
   o_event.outclick_id = o_irAction.SubId1;
-  o_event.purchase_amount = o_irAction.IntendedAmount;
-  o_event.commission_amount = o_irAction.IntendedPayout;
+  o_event.purchase_amount = o_irAction.Amount;
+  o_event.commission_amount = o_irAction.Payout;
   o_event.currency = o_irAction.Currency.toLowerCase();
 
   switch(o_irAction.State) {
