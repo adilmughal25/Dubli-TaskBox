@@ -15,11 +15,13 @@ const STATUS_MAP = {
   'A': 'confirmed',
   'D': 'cancelled'
 };
+
 const API_ACTIONS = {
   merchants: { internal: 'merchants', api: '' },
   coupons: { internal: 'coupons', api: 'vouchers' },
   commissions: { internal: 'commissions', api: 'claims' }
 };
+
 const API_CFG = {
   baseUrl: 'https://api.tradedoubler.com/1.0/',
   baseUrlReports: 'https://reports.tradedoubler.com/pan/',
@@ -144,15 +146,16 @@ const API_PARAMS_MERCHANTS = {
 };
 
 /**
- * Tradedoubler client for making calls to the old report based API and the new Vouchers API.
+ * TradeDoublerClient - client for making calls to the old report based API and the new Vouchers API.
  * Different customers need to be setup in API_CFG. Currently there is ominto only
  * @param s_entity name of the tradedoubler customer
  * @param s_region region to look for merchants/vouchers
- * @returns {Tradedoubler}
+ * @returns {TradeDoublerClient}
  * @constructor
  */
-const Tradedoubler = function(s_region, s_entity) {
-  if (!(this instanceof Tradedoubler)) return new Tradedoubler(s_region, s_entity);
+const TradeDoublerClient = function(s_region, s_entity) {
+
+  if (!(this instanceof TradeDoublerClient)) return new TradeDoublerClient(s_region, s_entity);
   if (!s_region) throw new Error('Missing required argument ' + s_region + '!');
   if (!s_entity) {
     debug('Warning no entity.');
@@ -174,10 +177,12 @@ const Tradedoubler = function(s_region, s_entity) {
    * @returns {Object/json}
    */
   this.apiCall = (s_action) => {
+
     let requestParams = { qs: {} };
     if(!_.get(API_ACTIONS, s_action)) {
       throw new Error('Action ' + s_action + ' not supported!');
     }
+
     let apiMethod = _.get(API_ACTIONS, s_action + '.api' );
 
     switch (s_action) {
@@ -195,34 +200,33 @@ const Tradedoubler = function(s_region, s_entity) {
     }
 
     requestParams.url = apiMethod + '.json';
-    this.client = getTradedoublerClient(requestParams);
-    return this.client.get()
-        .then(
-          response => {
-            return response && response.length > 0 ? response : [];
-          });
+    that.client = getTradedoublerClient(requestParams);
+    return that.client.get()
+    .then(response => {
+      return response && response.length > 0 ? response : [];
+    });
   };
-
 
   /**
    * Retrieve all merchants for the region
    * @returns {Promise.<TResult>}
    */
   const getMerchants = () => {
+
     const affiliateIdFilter = { affiliateId: _.get(API_CFG, 'affiliateData.' + that.entity + '.' + that.region + '.affiliateId') };
     const overrides = _.get(API_CFG, ['affiliateData', that.entity, that.region, 'overrides']);
     const requestParams = {
       qs: _.extend(API_PARAMS_MERCHANTS, affiliateIdFilter, overrides)
     };
-    const client = getTradedoublerClient(requestParams);
-    return client.get()
-        .then((response) => {
-          return (response.indexOf("<?xml") != -1 ? jsonify(response) : '');
-        })
-        .then((response) => {
-          let merchants = _.get(response, 'report.matrix[1].rows.row', []);
-          return merchants.map((merchant) => {merchant.region = overrides && overrides.region; return merchant });
-        });
+    that.client = getTradedoublerClient(requestParams);
+    return that.client.get()
+    .then((response) => {
+      return (response.indexOf("<?xml") != -1 ? jsonify(response) : '');
+    })
+    .then((response) => {
+      let merchants = _.get(response, 'report.matrix[1].rows.row', []);
+      return merchants.map((merchant) => {merchant.region = overrides && overrides.region; return merchant });
+    });
   };
 
   /**
@@ -230,6 +234,7 @@ const Tradedoubler = function(s_region, s_entity) {
    * @returns {Promise.<TResult>}
    */
   const getCommissions = () => {
+
     const affiliateIdFilter = { affiliateId: _.get(API_CFG, 'affiliateData.' + that.entity + '.' + that.region + '.affiliateId') };
     let requestParams = {
       qs: _.extend(API_PARAMS_COMMISSIONS, affiliateIdFilter)
@@ -237,15 +242,15 @@ const Tradedoubler = function(s_region, s_entity) {
     requestParams.qs.startDate = moment().subtract(90, 'days').format('MM/DD/YYYY');
     requestParams.qs.endDate = moment().format('MM/DD/YYYY');
     debug("getting commissions from report api for duration - " + requestParams.qs.startDate + " to " + requestParams.qs.endDate);
-    const client = getTradedoublerClient(requestParams);
-    return client.get()
-        .then(response => {
-          return (response.indexOf("<?xml") != -1 ? jsonify(response) : '');
-        })
-        .then(response => {
-          const events = _.get(response, 'report.matrix.rows.row', []);
-          return events.map(prepareCommission);
-        });
+    that.client = getTradedoublerClient(requestParams);
+    return that.client.get()
+    .then(response => {
+      return (response.indexOf("<?xml") != -1 ? jsonify(response) : '');
+    })
+    .then(response => {
+      const events = _.get(response, 'report.matrix.rows.row', []);
+      return events.map(prepareCommission);
+    });
   };
 
   /**
@@ -272,6 +277,7 @@ const Tradedoubler = function(s_region, s_entity) {
    * @param params override/add default attributes
    */
   const getTradedoublerClient = (params) => {
+
     //changing 'organizationId' & 'key' params for flyDubai
     if(that.region === 'flyDubai'){
       params.qs.organizationId = FLYDUBAI_ORGANIZATION_ID;
@@ -289,7 +295,5 @@ const Tradedoubler = function(s_region, s_entity) {
 
 };
 
-
-
-module.exports = Tradedoubler;
-module.exports.Tradedoubler = Tradedoubler;
+module.exports = TradeDoublerClient;
+//module.exports.Tradedoubler = Tradedoubler;
