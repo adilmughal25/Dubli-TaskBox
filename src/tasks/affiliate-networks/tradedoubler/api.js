@@ -1,26 +1,9 @@
 'use strict';
 
 const _ = require('lodash');
-const co = require('co');
 const request = require('request-promise');
-const moment = require('moment');
-const jsonify = require('../support/jsonify-xml-body');
 const debug = require('debug')('tradedoubler:api-client');
-
-const ORGANIZATION_ID = '1984882';
-const FLYDUBAI_ORGANIZATION_ID = '2051324';
-const FLYDUBAI_API_KEY = '23772cd706987befac6368959d5958ff';
-const STATUS_MAP = {
-  'P': 'initiated',
-  'A': 'confirmed',
-  'D': 'cancelled'
-};
-
-const API_ACTIONS = {
-  merchants: { internal: 'merchants', api: '' },
-  coupons: { internal: 'coupons', api: 'vouchers' },
-  commissions: { internal: 'commissions', api: 'claims' }
-};
+const qs = require('querystring');
 
 const API_CFG = {
   baseUrl: 'https://api.tradedoubler.com/1.0/',
@@ -57,99 +40,11 @@ const API_CFG = {
   }
 };
 
-const API_PARAMS_COMMISSIONS = {
-  event_id: '0',
-  filterOnTimeHrsInterval: 'false',
-  format: 'XML',
-  key: API_CFG.reportsToken,
-  reportName: 'aAffiliateEventBreakdownReport',
-  reportTitleTextKey : 'REPORT3_SERVICE_REPORTS_AAFFILIATEEVENTBREAKDOWNREPORT_TITLE', //
-  breakdownOption: '1',
-  pending_status: '1',
-  includeMobile: '1',
-  includeWarningColumn: 'true',
-  latestDayToExecute: '0',
-  dataSelectionType: '1',
-  currencyId: 'USD',
-  setColumns: 'true',
-  sortBy: 'timeOfEvent',
-  organizationId: ORGANIZATION_ID,
-  columns: ['orderValue',
-    'pendingReason',
-    'orderNR',
-    'link',
-    'affiliateCommission',
-    'device',
-    'vendor',
-    'browser',
-    'os',
-    'deviceType',
-    'voucher_code',
-    'open_product_feeds_name',
-    'open_product_feeds_id',
-    'productValue',
-    'productNrOf',
-    'productNumber',
-    'productName',
-    'graphicalElementId',
-    'graphicalElementName',
-    'siteId',
-    'siteName',
-    'pendingStatus',
-    'eventId',
-    'eventName',
-    'epi1',
-    'lastModified',
-    //'timeInSession',
-    'timeOfEvent',
-    //'timeOfVisit',
-    'programId'
-  ],
-  'metric1.midOperator': '%2F',
-  'metric1.columnName1': 'orderValue',
-  'metric1.operator1': '%2F',
-  'metric1.columnName2': 'orderValue',
-  'metric1.lastOperator': '%2F',
-  'metric1.summaryType': 'NONE'
-};
-
-const API_PARAMS_MERCHANTS = {
-  key: API_CFG.reportsToken,
-  reportName: 'aAffiliateMyProgramsReport',
-  showAdvanced: 'true',
-  showFavorite: 'false',
-  interval: 'MONTHS',
-  includeWarningColumn: 'true',
-  programAffiliateStatusId: 3,
-  sortBy: 'orderDefault',
-  columns: ['programId',
-    'programTariffAmount',
-    'programTariffCurrency',
-    'programTariffPercentage',
-    'event',
-    'eventIdView',
-    'eventLastModified',
-    'segmentID',
-    'segmentName',
-    'lastModified',
-    'affiliateId',
-    'applicationDate',
-    'status'],
-  autoCheckbox: 'useMetricColumn',
-  'metric1.midOperator': '%2F',
-  'metric1.columnName1': 'programId',
-  'metric1.operator1': '%2F',
-  'metric1.columnName2': 'programId',
-  'metric1.lastOperator': '%2F',
-  'metric1.summaryType': 'NONE',
-  format: 'XML'
-};
-
 /**
- * TradeDoublerClient - client for making calls to the old report based API and the new Vouchers API.
- * Different customers need to be setup in API_CFG. Currently there is ominto only
- * @param s_entity name of the tradedoubler customer
+ * TradeDoublerClient - client for making calls to fetch data from old report based API for commissions
+ * and new merchant/vouchers API.
  * @param s_region region to look for merchants/vouchers
+ * @param s_entity name of the tradedoubler customer
  * @returns {TradeDoublerClient}
  * @constructor
  */
@@ -164,119 +59,29 @@ const TradeDoublerClient = function(s_region, s_entity) {
 
   debug('Create new client for entity: %s, region: %s', s_entity, s_region);
 
+  const that = this;
+
   this.counter = 0;
   this.queues = {};
   this.entity = s_entity;
   this.region = s_region;
 
-  const that = this;
-
   /**
-   * Call any api method defined in API_ACTIONS
-   * @param s_action action to be called merchants/coupons/commissions
-   * @returns {Object/json}
+   * request client with defaults params
    */
-  this.apiCall = (s_action) => {
-
-    let requestParams = { qs: {} };
-    if(!_.get(API_ACTIONS, s_action)) {
-      throw new Error('Action ' + s_action + ' not supported!');
-    }
-
-    let apiMethod = _.get(API_ACTIONS, s_action + '.api' );
-
-    switch (s_action) {
-      case API_ACTIONS.merchants.internal:
-        return getMerchants();
-      case API_ACTIONS.coupons.internal:
-        requestParams.baseUrl = API_CFG.baseUrl;
-        requestParams.json = true;
-        requestParams.qs.token = _.get(API_CFG, 'affiliateData.' + that.entity + '.' + that.region + '.voucherKey', '');
-        break;
-      case API_ACTIONS.commissions.internal:
-        return getCommissions();
-      default:
-        requestParams.qs.token = _.get(API_CFG, 'commissionsToken');
-    }
-
-    requestParams.url = apiMethod + '.json';
-    that.client = getTradedoublerClient(requestParams);
-    return that.client.get()
-    .then(response => {
-      return response && response.length > 0 ? response : [];
-    });
-  };
+  this.client = request.defaults({
+    baseUrl: API_CFG.baseUrlReports,
+    json: false,
+    simple: true,
+    resolveWithFullResponse: false,
+    url: 'aReport3Key.action'
+  });
 
   /**
-   * Retrieve all merchants for the region
-   * @returns {Promise.<TResult>}
-   */
-  const getMerchants = () => {
-
-    const affiliateIdFilter = { affiliateId: _.get(API_CFG, 'affiliateData.' + that.entity + '.' + that.region + '.affiliateId') };
-    const overrides = _.get(API_CFG, ['affiliateData', that.entity, that.region, 'overrides']);
-    const requestParams = {
-      qs: _.extend(API_PARAMS_MERCHANTS, affiliateIdFilter, overrides)
-    };
-    that.client = getTradedoublerClient(requestParams);
-    return that.client.get()
-    .then((response) => {
-      return (response.indexOf("<?xml") != -1 ? jsonify(response) : '');
-    })
-    .then((response) => {
-      let merchants = _.get(response, 'report.matrix[1].rows.row', []);
-      return merchants.map((merchant) => {merchant.region = overrides && overrides.region; return merchant });
-    });
-  };
-
-  /**
-   * Retrieve all commissions for the last 90 days
-   * @returns {Promise.<TResult>}
-   */
-  const getCommissions = () => {
-
-    const affiliateIdFilter = { affiliateId: _.get(API_CFG, 'affiliateData.' + that.entity + '.' + that.region + '.affiliateId') };
-    let requestParams = {
-      qs: _.extend(API_PARAMS_COMMISSIONS, affiliateIdFilter)
-    };
-    requestParams.qs.startDate = moment().subtract(90, 'days').format('MM/DD/YYYY');
-    requestParams.qs.endDate = moment().format('MM/DD/YYYY');
-    debug("getting commissions from report api for duration - " + requestParams.qs.startDate + " to " + requestParams.qs.endDate);
-    that.client = getTradedoublerClient(requestParams);
-    return that.client.get()
-    .then(response => {
-      return (response.indexOf("<?xml") != -1 ? jsonify(response) : '');
-    })
-    .then(response => {
-      const events = _.get(response, 'report.matrix.rows.row', []);
-      return events.map(prepareCommission);
-    });
-  };
-
-  /**
-   * Get the commission data into the required data structure
-   * @param o_obj commission event from api
-   * @returns {Object} commission event with correct data structure
-   */
-  const prepareCommission = (o_obj) => {
-    const event = {
-      transaction_id: o_obj.orderNR,
-      order_id: o_obj.orderNR,
-      outclick_id: o_obj.epi1,
-      purchase_amount: o_obj.orderValue,
-      commission_amount: o_obj.affiliateCommission,
-      currency: API_PARAMS_COMMISSIONS.currencyId.toLowerCase(),
-      state: STATUS_MAP[o_obj.pendingStatus],
-      effective_date: o_obj.timeOfEvent
-    };
-    return event;
-  };
-
-  /**
-   * Get a request client with the possibility to extend and change defaults by setting the params
+   * Get a request client with extended params
    * @param params override/add default attributes
    */
-  const getTradedoublerClient = (params) => {
+  this.getTradedoublerClient = (params) => {
 
     //changing 'organizationId' & 'key' params for flyDubai
     if(that.region === 'flyDubai'){
@@ -293,7 +98,8 @@ const TradeDoublerClient = function(s_region, s_entity) {
     return request.defaults(requestParams);
   };
 
+  // expose
+  this.get = this.client.get;
 };
 
 module.exports = TradeDoublerClient;
-//module.exports.Tradedoubler = Tradedoubler;
