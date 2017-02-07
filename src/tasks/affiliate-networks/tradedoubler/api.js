@@ -5,6 +5,9 @@ const request = require('request-promise');
 const debug = require('debug')('tradedoubler:api-client');
 const qs = require('querystring');
 
+const FLYDUBAI_ORGANIZATION_ID = '2051324';
+const FLYDUBAI_API_KEY = '23772cd706987befac6368959d5958ff';
+
 const API_CFG = {
   baseUrl: 'https://api.tradedoubler.com/1.0/',
   baseUrlReports: 'https://reports.tradedoubler.com/pan/',
