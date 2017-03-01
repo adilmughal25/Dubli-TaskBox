@@ -213,7 +213,6 @@ function initializeMerchantImporters(tasker) {
   // run each of these every 24 hours
 
   tasker.createGroup('2d +/- 1d', {
-    "A8 Commissions": a8Api.getCommissionDetails,
     "APD Performance Merchants": apdPerformanceApi.getMerchants,
     "AdCell Merchants": adCellApi.getMerchants,
     "Admitad Merchants": admitadApi.getMerchants,
@@ -297,7 +296,7 @@ function initializeMerchantImporters(tasker) {
 function initializeCommissionsProcessors(tasker) {
   // run each of these every 6 hours
   tasker.createGroup('6h +/- 1h', {
-
+    "A8 Commissions": a8Api.getCommissionDetails,
     "APD Performance Commissions": apdPerformanceApi.getCommissionDetails,
     "AdCell Commissions": adCellApi.getCommissionDetails,
     "Admitad Commissions": admitadApi.getCommissionDetails,
