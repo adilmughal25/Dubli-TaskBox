@@ -11,10 +11,10 @@ const emailTransporter = nodemailer.createTransport(smtpConfig);
 
 const sendEmail = function() {
     const mailOptions = {
-        from: 'nvalluri@ominto.com', 
-        to: 'nvalluri@ominto.com', 
-        subject: 'Hello ', 
-        html: '<b>Hello world </b>' 
+      from: 'nvalluri@ominto.com',
+      to: 'nvalluri@ominto.com',
+      subject: 'Hello ',
+      html: '<b>Hello world </b>'
     };
     emailTransporter.sendMail(mailOptions, function(error, info){
         if(error){
@@ -22,7 +22,7 @@ const sendEmail = function() {
         }
         console.log('Message sent: ' + info.response);
     });
-    
+
 }
 
 const generateAndSendEmail = function (data) {
@@ -36,10 +36,10 @@ const generateAndSendEmail = function (data) {
     const filePath = config.path_data + '/data-'+ date +'.js';
     const dataContent = "var data = " + JSON.stringify(transformedData);
     mkdirp.sync(config.path_data);
-    fs.writeFileSync(filePath, dataContent, 'utf-8'); 
+    fs.writeFileSync(filePath, dataContent, 'utf-8');
     //sendEmail();
     return dataContent;
-  
+
 }
 
 module.exports.generateP = function (tasker) {

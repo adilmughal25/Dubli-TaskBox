@@ -195,7 +195,9 @@ const zanoxDubliGlobalApi = zanoxGenericApi('global', 'dubli');
 const shooglooGenericApi = require('./shoogloo/tasks');
 const shooglooApi = shooglooGenericApi('shoogloo');
 const addReferralPropertiesApi = require('./user-referrals/tasks');
+const sendVIPRenewalReminderApi = require('./vip-renewal/tasks');
 const userReferralApi = addReferralPropertiesApi();
+const vipRenewalApi = sendVIPRenewalReminderApi();
 const pricelineApi = require('./priceline/tasks')();
 
 function init(tasker) {
@@ -448,4 +450,5 @@ function intializeUserReferrals(tasker) {
   // Run this every 24 hour
   tasker.createTask('add Referral users', '3h +/- 1h', userReferralApi.addReferralProperties);
   tasker.createTask('add Referral cashback', '6h +/- 1h', userReferralApi.addReferralAmount);
+  tasker.createTask('send VIP renewal email reminder', '2d +/- 1d', vipRenewalApi.sendEmailReminder);
 }
