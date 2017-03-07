@@ -125,7 +125,7 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
       page += 1;
     }
 
-    const events = results.map(prepareCommission);
+    const events = results.map(prepareCommission.bind(null, s_networkName));
     return yield sendEvents.sendCommissions(that.eventName, events);
   });
 
@@ -180,7 +180,7 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
   });
 };
 
-function prepareCommission(o_obj) {
+function prepareCommission(network, o_obj) {
 
   // old api
   // http://developers.hasoffers.com/#/affiliate/controller/Affiliate_Report/method/getConversions
@@ -207,6 +207,17 @@ function prepareCommission(o_obj) {
     // effective_date: S.conversion_status === 'pending' ? new Date(S.datetime) : 'auto'
     effective_date: new Date(S.datetime)
   };
+
+  // CAP-249 [for vcommission - payout will have your commission for a particular
+  // conversion and sale_amount will have the actual sale value of conversion
+  // passed by the advertiser. All the conversions by default are tracked in
+  // INR currency]
+  if(network === 'vcommission'){
+    event.purchase_amount = S.sale_amount;
+    event.commission_amount = S.payout;
+    event.currency = 'INR';
+  }
+
   return event;
 }
 
