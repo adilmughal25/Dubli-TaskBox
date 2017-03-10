@@ -28,6 +28,14 @@ const tradedoublerSwedenApi = tradedoublerGenericApi('se');
 const tradedoublerSwitzerlandApi = tradedoublerGenericApi('ch');
 const tradedoublerEnglandApi = tradedoublerGenericApi('gb');
 const tradedoublerBrazilApi = tradedoublerGenericApi('br');
+const tradedoublerHongKongApi = tradedoublerGenericApi('hk');
+const tradedoublerIndonesiaApi = tradedoublerGenericApi('id');
+const tradedoublerMalaysiaApi = tradedoublerGenericApi('my');
+const tradedoublerPhilippinesApi = tradedoublerGenericApi('ph');
+const tradedoublerSingaporeApi = tradedoublerGenericApi('sg');
+const tradedoublerThailandApi = tradedoublerGenericApi('th');
+const tradedoublerAustraliaApi = tradedoublerGenericApi('au');
+const tradedoublerNewZealandApi = tradedoublerGenericApi('nz');
 const tradedoublerFlyDubaiApi = tradedoublerGenericApi('flyDubai');
 
 const a8GenericApi = require('./a8/tasks');
@@ -271,6 +279,14 @@ function initializeMerchantImporters(tasker) {
     "TradeDoubler (CH) Merchants": tradedoublerSwitzerlandApi.getMerchants,
     "TradeDoubler (GB) Merchants": tradedoublerEnglandApi.getMerchants,
     "TradeDoubler (BR) Merchants": tradedoublerBrazilApi.getMerchants,
+    "TradeDoubler (HK) Merchants": tradedoublerHongKongApi.getMerchants,
+    "TradeDoubler (ID) Merchants": tradedoublerIndonesiaApi.getMerchants,
+    "TradeDoubler (MY) Merchants": tradedoublerMalaysiaApi.getMerchants,
+    "TradeDoubler (PH) Merchants": tradedoublerPhilippinesApi.getMerchants,
+    "TradeDoubler (SG) Merchants": tradedoublerSingaporeApi.getMerchants,
+    "TradeDoubler (TH) Merchants": tradedoublerThailandApi.getMerchants,
+    "TradeDoubler (AU) Merchants": tradedoublerAustraliaApi.getMerchants,
+    "TradeDoubler (NZ) Merchants": tradedoublerNewZealandApi.getMerchants,
     "TradeTracker (AT) Merchants": tradetrackerATApi.getMerchants,
     "TradeTracker (BE) Merchants": tradetrackerBEApi.getMerchants,
     "TradeTracker (CH) Merchants": tradetrackerCHApi.getMerchants,
@@ -362,6 +378,14 @@ function initializeCommissionsProcessors(tasker) {
     "TradeDoubler (CH) Commissions": tradedoublerSwitzerlandApi.getCommissionDetails,
     "TradeDoubler (GB) Commissions": tradedoublerEnglandApi.getCommissionDetails,
     "TradeDoubler (BR) Commissions": tradedoublerBrazilApi.getCommissionDetails,
+    "TradeDoubler (HK) Commissions": tradedoublerHongKongApi.getCommissionDetails,
+    "TradeDoubler (ID) Commissions": tradedoublerIndonesiaApi.getCommissionDetails,
+    "TradeDoubler (MY) Commissions": tradedoublerMalaysiaApi.getCommissionDetails,
+    "TradeDoubler (PH) Commissions": tradedoublerPhilippinesApi.getCommissionDetails,
+    "TradeDoubler (SG) Commissions": tradedoublerSingaporeApi.getCommissionDetails,
+    "TradeDoubler (TH) Commissions": tradedoublerThailandApi.getCommissionDetails,
+    "TradeDoubler (AU) Commissions": tradedoublerAustraliaApi.getCommissionDetails,
+    "TradeDoubler (NZ) Commissions": tradedoublerNewZealandApi.getCommissionDetails,
     "TradeTracker (AT) Commissions": tradetrackerATApi.getCommissionDetails,
     "TradeTracker (BE) Commissions": tradetrackerBEApi.getCommissionDetails,
     "TradeTracker (CH) Commissions": tradetrackerCHApi.getCommissionDetails,
