@@ -51,6 +51,14 @@ const API_CFG = {
       ch: { voucherKey: '59EFF0B87382DB3A8D59EBD174B6C5691AECCF65', affiliateId: '2511415' },
       gb: { voucherKey: 'E4A255E27533E19A71DC816EBEA318F313DA0EFE', affiliateId: '2511416' },
       br: { voucherKey: '9F43FE1AAE6FD365BB8AE2AC23DDE2EA55459640', affiliateId: '2511417' },
+      hk: { voucherKey: '4818E7A957B78042AC65B472CB1527A0AEF8D190', affiliateId: '2940115' },
+      id: { voucherKey: '7D9674C79B1906E79B6127B66DC628D41EDFD353', affiliateId: '2940117' },
+      my: { voucherKey: '340F17B69BBBC666380E86F83C1415E9480D6335', affiliateId: '2940118' },
+      ph: { voucherKey: '34AF9DDD54BBC17950F448B9AD7BD7A63CADFF41', affiliateId: '2940139' },
+      sg: { voucherKey: '840C65EC1585175A049C50FAC160577B97F5FADC', affiliateId: '2940140' },
+      th: { voucherKey: '9DAAE46F1E06CDE865B95FC4D8F2CDE4E35AE4DC', affiliateId: '2940144' },
+      au: { voucherKey: '72590F381B2CFDEC40199F5A8D6D629BB08EE09C', affiliateId: '2940148' },
+      nz: { voucherKey: 'F9C3DC8C697DF5705ADCD7D69F85DAD20DE254A1', affiliateId: '2940150' },
       flyDubai: {voucherKey: '5023327B3995A455E4F89C14FB5C49FDC8B1BCFD', affiliateId: '2822140', overrides: {
         key: '23772cd706987befac6368959d5958ff', region: 'ae'
       }}
