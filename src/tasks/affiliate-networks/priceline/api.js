@@ -45,6 +45,8 @@ function PricelineClient() {
         const endDate = moment().startOf('date').format('YYYY-MM-DD_HH:mm:ss');
         const startDate = moment().subtract(numberOfDays, 'days').startOf('date').format('YYYY-MM-DD_HH:mm:ss');
 
+        console.log("Getting commissions from : " + startDate + " to : " + endDate);
+
         options.qs.time_start = startDate;
         options.qs.time_end = endDate;
 
