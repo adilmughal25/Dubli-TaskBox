@@ -28,8 +28,10 @@ function PricelineApi() {
       }
     }
     */
+    // numberOfDays for > 30 days for feb/march overlay is throwing error [even if it is less than 29 days]
+    // changing it to 27 days to cover the difference in number of days
     const getCommissionDetails = singleRun(function* () {
-        const events = yield api.get(29).map(prepareCommission);
+        const events = yield api.get(27).map(prepareCommission);
         return yield sendEvents.sendCommissions('priceline', events);
     });
 
