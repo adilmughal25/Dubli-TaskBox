@@ -99,26 +99,22 @@ const ZanoxGenericApi = function(s_region, s_entity) {
     let total = 0;
 
     const start = Date.now();
-    while(true) {
-      let arg = _.extend({}, params, {page:page, items:perPage});
-      debug("%s : page %d of %s (%s)", method, page, Math.floor(total/perPage) || 'unknown', JSON.stringify({args:arg,prefix:prefix}));
-      let response;
+    let arg = _.extend({}, params, {page:page, items:perPage});
+    debug("%s : page %d of %s (%s)", method, page, Math.floor(total/perPage) || 'unknown', JSON.stringify({args:arg,prefix:prefix}));
+    let response;
 
-      if (prefix) {
-        let argList = (_.isArray(prefix) ? prefix : [prefix]).concat([arg]);
-        response = yield that.client[method].apply(that.client, argList);
-      } else {
-        response = yield that.client[method](arg);
-      }
-
-      if (_.isArray(response) && response.length === 1) response = response[0];
-
-      let items = _.get(response, bodyKey) || [];
-      results = results.concat(items);
-      total = response.total || 0;
-
-      if (++page * perPage >= total) break;
+    if (prefix) {
+      let argList = (_.isArray(prefix) ? prefix : [prefix]).concat([arg]);
+      response = yield that.client[method].apply(that.client, argList);
+    } else {
+      response = yield that.client[method](arg);
     }
+
+    response.forEach((responseItem) => {
+    let items = _.get(responseItem, bodyKey) || [];
+      results = results.concat(items);
+    });
+
     const end = Date.now();
 
     debug("%s finished: %d items over %d pages (%dms)", method, results.length, page-1, end-start);
