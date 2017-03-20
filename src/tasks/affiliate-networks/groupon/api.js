@@ -19,18 +19,22 @@ const API_CFG = {
     us: {
       url: 'https://partner-api.groupon.com/reporting/v2/',
       key: '86a0205660442988d738ec1e6716ac073c1e935f'
-    }
-  },
-  dubli: {
-    us: {
-      url: 'https://partner-api.groupon.com/reporting/v2/',
-      key: 'cbfa54371c094c88d2178c0a260290ac09de4679'
     },
-    eu: {
+    row: {
       url: 'https://partner-int-api.groupon.com/reporting/v2/',
-      key: '469776c78dc3f8bfdf63fc32606da73788cf049c'
+      key: '68b91f453321aa927887f2be988522829bb610f8'
     }
   }
+  // dubli: {
+  //   us: {
+  //     url: 'https://partner-api.groupon.com/reporting/v2/',
+  //     key: 'cbfa54371c094c88d2178c0a260290ac09de4679'
+  //   },
+  //   eu: {
+  //     url: 'https://partner-int-api.groupon.com/reporting/v2/',
+  //     key: '469776c78dc3f8bfdf63fc32606da73788cf049c'
+  //   }
+  // }
 };
 
 const API_TYPES = {

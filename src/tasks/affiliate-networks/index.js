@@ -100,9 +100,8 @@ const flipkartApi = flipkartGenericApi();
 const flipkartDubliApi = flipkartGenericApi('dubli');
 
 const grouponGenericApi = require('./groupon/tasks');
-const grouponUSApi = grouponGenericApi('us'); //TODO: how about a/the EU account for Ominto?
-const grouponDubliUSApi = grouponGenericApi('us', 'dubli');
-const grouponDubliEUApi = grouponGenericApi('eu', 'dubli');
+const grouponUSApi = grouponGenericApi('us'); 
+const grouponROWApi = grouponGenericApi('row'); 
 
 const impactRadiusGenericApi = require('./impact-radius/tasks');
 const apdPerformanceApi = impactRadiusGenericApi('apdperformance');
@@ -340,6 +339,7 @@ function initializeCommissionsProcessors(tasker) {
     "Fan Commissions": fanApi.getCommissionDetails,
     "Flipkart Commissions": flipkartApi.getCommissionDetails,
     "Groupon (US) Commissions": grouponUSApi.getCommissionDetails,
+    "Groupon (ROW) Commissions": grouponROWApi.getCommissionDetails,
     "ImpactRadius Commissions": impactRadiusApi.getCommissionDetails,
     "LinkShare Commissions": linkShareApi.getCommissionDetails,
     // "Lomadee Commissions": lomadeeApi.getCommissionDetails,
@@ -437,8 +437,6 @@ function initializeCommissionsDubliProcessors(tasker) {
     "CommissionJunction DubLi (IT) Commissions": commissionJunctionDubliITApi.getCommissionDetails,
     "DGM DubLi (AU) Commissions": dgmDubliAUApi.getCommissionDetails,
     "Flipkart DubLi Commissions": flipkartDubliApi.getCommissionDetails,
-    "Groupon DubLi (US) Commissions": grouponDubliUSApi.getCommissionDetails,
-    "Groupon DubLi (EU) Commissions": grouponDubliEUApi.getCommissionDetails,
     "ImpactRadius DubLi (US) Commissions": impactRadiusDubliUSApi.getCommissionDetails,
     "ImpactRadius DubLi (CA) Commissions": impactRadiusDubliCAApi.getCommissionDetails,
     "LinkShare DubLi (US) Commissions": linkShareDubliUSApi.getCommissionDetails,
