@@ -55,8 +55,9 @@ WebgainsClient.prototype.getMerchants = co.wrap(function* () {
       campaignId: that.cfg.campaignId
     }
   });
+
   const programs = body || [];
-  const livePrograms = programs.filter(program => program.status === 'live');
+  const livePrograms = programs.filter(program => program.status.toLowerCase() === 'live');
   return livePrograms;
 });
 
