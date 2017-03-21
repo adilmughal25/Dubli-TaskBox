@@ -36,6 +36,7 @@ const tradedoublerSingaporeApi = tradedoublerGenericApi('sg');
 const tradedoublerThailandApi = tradedoublerGenericApi('th');
 const tradedoublerAustraliaApi = tradedoublerGenericApi('au');
 const tradedoublerNewZealandApi = tradedoublerGenericApi('nz');
+const tradedoublerIndiaApi = tradedoublerGenericApi('in');
 const tradedoublerFlyDubaiApi = tradedoublerGenericApi('flyDubai');
 
 const a8GenericApi = require('./a8/tasks');
@@ -286,6 +287,7 @@ function initializeMerchantImporters(tasker) {
     "TradeDoubler (TH) Merchants": tradedoublerThailandApi.getMerchants,
     "TradeDoubler (AU) Merchants": tradedoublerAustraliaApi.getMerchants,
     "TradeDoubler (NZ) Merchants": tradedoublerNewZealandApi.getMerchants,
+    "TradeDoubler (IN) Merchants": tradedoublerIndiaApi.getMerchants,
     "TradeTracker (AT) Merchants": tradetrackerATApi.getMerchants,
     "TradeTracker (BE) Merchants": tradetrackerBEApi.getMerchants,
     "TradeTracker (CH) Merchants": tradetrackerCHApi.getMerchants,
@@ -386,6 +388,7 @@ function initializeCommissionsProcessors(tasker) {
     "TradeDoubler (TH) Commissions": tradedoublerThailandApi.getCommissionDetails,
     "TradeDoubler (AU) Commissions": tradedoublerAustraliaApi.getCommissionDetails,
     "TradeDoubler (NZ) Commissions": tradedoublerNewZealandApi.getCommissionDetails,
+    "TradeDoubler (IN) Commissions": tradedoublerIndiaApi.getCommissionDetails,
     "TradeTracker (AT) Commissions": tradetrackerATApi.getCommissionDetails,
     "TradeTracker (BE) Commissions": tradetrackerBEApi.getCommissionDetails,
     "TradeTracker (CH) Commissions": tradetrackerCHApi.getCommissionDetails,
