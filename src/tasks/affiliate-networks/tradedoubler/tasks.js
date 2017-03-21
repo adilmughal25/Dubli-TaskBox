@@ -59,6 +59,7 @@ const API_CFG = {
       th: { voucherKey: '9DAAE46F1E06CDE865B95FC4D8F2CDE4E35AE4DC', affiliateId: '2940144' },
       au: { voucherKey: '72590F381B2CFDEC40199F5A8D6D629BB08EE09C', affiliateId: '2940148' },
       nz: { voucherKey: 'F9C3DC8C697DF5705ADCD7D69F85DAD20DE254A1', affiliateId: '2940150' },
+      in: { voucherKey: '1E61E74C0AB3EDD0464EB3311A55C3FA0B1F78F9', affiliateId: '2942770' },
       flyDubai: {voucherKey: '5023327B3995A455E4F89C14FB5C49FDC8B1BCFD', affiliateId: '2822140', overrides: {
         key: '23772cd706987befac6368959d5958ff', region: 'ae'
       }}
