@@ -3,7 +3,16 @@ const singleRun = require('../support/single-run');
 
 const api = require('./api')();
 
+// OM-1929 VIP Lounge - Priceline
+// 'ratecat' & 'is_hotel_transaction' are additional transaction fields in the commission
+// object which are used to process Priceline CUG & Hotel purchases differently in
+// lambda-transactions (other commission objects dont have these fields)
 const prepareCommission = (o_obj) => {
+
+  var is_hotel_transaction = false;
+  if(o_obj.hotelid && o_obj.hotel_name)
+    is_hotel_transaction = true;
+
   return {
     transaction_id: o_obj.air_offer_id || o_obj.requestid || o_obj.tripid,
     order_id: o_obj.id || o_obj.requestid || o_obj.tripid || o_obj.air_offer_id,
@@ -12,7 +21,9 @@ const prepareCommission = (o_obj) => {
     commission_amount: Number(o_obj.commission) || 0,
     state: o_obj.transformedStatus,
     currency: o_obj.currency ? o_obj.currency.toLowerCase() : 'usd' ,
-    effective_date: o_obj.date ? new Date(o_obj.date) : new Date(o_obj.reservation_date_time)
+    effective_date: o_obj.date ? new Date(o_obj.date) : new Date(o_obj.reservation_date_time),
+    ratecat: o_obj.ratecat || '',
+    is_hotel_transaction: is_hotel_transaction
   };
 }
 
