@@ -260,7 +260,15 @@ const TradeDoublerGenericApi = function(s_region, s_entity) {
       return (response.indexOf("<?xml") != -1 ? jsonify(response) : '');
     })
     .then(response => {
-      const events = _.get(response, 'report.matrix.rows.row', []);
+      var events = _.get(response, 'report.matrix.rows.row', []);
+      if(!_.isArray(events)){
+        var array = [];
+        array.push(events);
+        events = array;
+
+        // following will work when lodash is updated
+        // events = _.castArray(events);
+      }
       return events.map(prepareCommission);
     });
   });
