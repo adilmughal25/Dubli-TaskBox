@@ -21,6 +21,7 @@ const soap = require('soap');
 const debug = require('debug')('affiliategatewaySoap:api-client');
 const request = require('request-promise');
 require('tough-cookie'); // for request's benefit
+const GetSalesData = "GetSalesData";
 
 const API_CREDENTIALS = {
   asia: {
@@ -105,6 +106,11 @@ AffiliateGatewaySoapClient.prototype.setup = co.wrap(function* () {
     }};
 
     let methods = Object.keys(this._client.describe().TAGDataService.TAGDataPort);
+
+    // extract only GetSalesData method (other methods failed for sg [this must be due to indexing])
+    if(methods.indexOf(GetSalesData) > -1)
+      methods = [GetSalesData];
+
     methods.reduce( (self, method) => {
       let fn = Client[method].bind(Client);
       // always inject the Authentication params into functions request parameters
