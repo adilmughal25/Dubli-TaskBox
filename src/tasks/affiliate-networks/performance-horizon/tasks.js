@@ -42,8 +42,11 @@ const PerformanceHorizonGenericApi = function(s_entity) {
   });
 
   this.getCommissionDetails = singleRun(function* () {
-    const start = moment().subtract(90, 'days').format('YYYY-MM-DD HH:mm:ss');
+
+    // changing from 90 to 180 days (to fetch travel related transactions updates)
+    const start = moment().subtract(180, 'days').format('YYYY-MM-DD HH:mm:ss');
     const end = moment().format('YYYY-MM-DD HH:mm:ss');
+
     let results = [];
     let page = 1;
 
