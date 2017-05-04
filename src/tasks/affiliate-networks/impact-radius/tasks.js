@@ -48,7 +48,7 @@ function ImpactRadiusGenericApi(s_whitelabel, s_region, s_entity) {
 
     const commissions = yield tasks.client.getCommissions(startTime, endTime);
     const events = commissions
-      .map(prepareCommission.bind(null, that.region)) // format for kinesis/lambda
+      .map(prepareCommission.bind(null, s_whitelabel)) // format for kinesis/lambda
       .filter(x => !!x); // so that the prepareCommission can return 'null' to skip one
 
     return yield sendEvents.sendCommissions(tasks.eventName, events);
@@ -62,10 +62,14 @@ function ImpactRadiusGenericApi(s_whitelabel, s_region, s_entity) {
 // As per the impact-radius documentation, 'Oid' field is populated with order_id,
 // but when cross-verified with the data that we are receiving, this field is empty.
 // Adding the transaction_id as the order_id for now.
-function prepareCommission(region, o_irAction) {
+function prepareCommission(affiliate_name, o_irAction) {
+
   // Using ‘Amount’ instead of ‘IntendedAmount’ for ‘Purchase Amount’ & ‘Payout’
   // instead of ‘IntendedPayout’ for ‘Commission Amount’ - as confirmed by impact-radius support
   var o_event = {};
+  o_event.affiliate_name = affiliate_name,
+  o_event.merchant_name = o_irAction.CampaignName || '',
+  o_event.merchant_id = o_irAction.CampaignId || '',
   o_event.transaction_id = o_irAction.Id;
   o_event.order_id = o_irAction.Id;
   o_event.outclick_id = o_irAction.SubId1;

@@ -6,6 +6,8 @@ const moment = require('moment');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 
+const AFFILIATE_NAME = 'omgpm-';
+
 const merge = require('../support/easy-merge')('PID', {
   coupons: 'ProgramId',
 });
@@ -71,6 +73,9 @@ function prepareCommission(region, o_obj) {
     _date = new Date(o_obj.LastUpdated);
 
   const event = {
+    affiliate_name: AFFILIATE_NAME + region,
+    merchant_name: o_obj.Merchant || '',
+    merchant_id: o_obj.PID || '',
     transaction_id: o_obj.TransactionID,
     order_id: o_obj.MerchantRef,
     outclick_id: o_obj.UID,

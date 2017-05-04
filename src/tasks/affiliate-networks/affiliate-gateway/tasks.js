@@ -9,6 +9,8 @@ const singleRun = require('../support/single-run');
 const clientPool = require('./api');
 const moment = require('moment');
 
+const AFFILIATE_NAME = 'affiliategateway';
+
 const taskCache = {};
 
 function setup(s_region) {
@@ -75,7 +77,9 @@ function prepareCommission(region, o_obj) {
   // for all transactions instead. (check STATUS_MAP for statuses)
 
   var event = {
-    affiliate_name: o_obj.ProgramName, // MerchantName or ProgramName
+    affiliate_name: AFFILIATE_NAME,
+    merchant_name: o_obj.ProgramName || '',
+    merchant_id: '',
     transaction_id: o_obj.TransactionId,
     order_id: o_obj.TransactionId,
     outclick_id: (o_obj.AffiliateSubId || ''),  // is an optional element

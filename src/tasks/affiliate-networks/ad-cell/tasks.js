@@ -6,6 +6,8 @@ const debug = require('debug')('adcell:processor');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 
+const AFFILIATE_NAME = 'adcell';
+
 const STATE_MAP = {
   open: 'initiated',
   cancelled: 'cancelled',
@@ -170,7 +172,9 @@ const AdCellGenericApi = function(s_entity) {
       _date = new Date(o_obj.changeTime);
 
     var event = {
-      affiliate_name: o_obj.programName,
+      affiliate_name: AFFILIATE_NAME,
+      merchant_name: o_obj.programName || '',
+      merchant_id: o_obj.programId || '',
       transaction_id: o_obj.commissionId,
       order_id: o_obj.commissionId,
       outclick_id: o_obj.subId,

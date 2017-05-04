@@ -9,6 +9,7 @@ const singleRun = require('../support/single-run');
 const utils = require('ominto-utils');
 const converter = require("csvtojson").Converter;
 
+const AFFILIATE_NAME = 'a8';
 const CURRENCY = 'JPY';
 const NUMBEROFDAYS = 5; // change this to 30 days once there are several days worth reports
 
@@ -167,6 +168,9 @@ function prepareCommission(state, o_obj) {
     if(Number(_.get(o_obj, '���V�Ώے������z')) < 0)
       isCancelled = true;
 
+    commission.affiliate_name = AFFILIATE_NAME,
+    commission.merchant_name = '',
+    commission.merchant_id = '',
     commission.outclick_id = _.get(o_obj, 'POINT_ID1');
     commission.transaction_id = _.get(o_obj, 'ORDER_ID');
     commission.order_id = _.get(o_obj, 'ORDER_ID');

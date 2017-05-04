@@ -1,7 +1,9 @@
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
-
 const api = require('./api')();
+
+const AFFILIATE_NAME = 'direct-partner';
+const MERCHANT_NAME = 'priceline';
 
 // OM-1929 VIP Lounge - Priceline
 // 'ratecat' & 'is_hotel_transaction' are additional transaction fields in the commission
@@ -14,6 +16,9 @@ const prepareCommission = (o_obj) => {
     is_hotel_transaction = true;
 
   return {
+    affiliate_name: AFFILIATE_NAME,
+    merchant_name: MERCHANT_NAME,
+    merchant_id: '',
     transaction_id: o_obj.air_offer_id || o_obj.requestid || o_obj.tripid,
     order_id: o_obj.id || o_obj.requestid || o_obj.tripid || o_obj.air_offer_id,
     outclick_id: o_obj.refclickid,

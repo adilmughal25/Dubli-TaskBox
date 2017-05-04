@@ -7,6 +7,8 @@ const utils = require('ominto-utils');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 
+const AFFILIATE_NAME = 'performancehorizon';
+
 const ary = x => !!x ? (_.isArray(x) ? x : [x]) : [];
 
 const STATUS_MAP = {
@@ -90,6 +92,9 @@ function prepareCommission(o_obj) {
     _date = new Date(o_obj.conversion_items[0].last_update);
 
   const event = {
+    affiliate_name: AFFILIATE_NAME,
+    merchant_name: o_obj.campaign_title || '',
+    merchant_id: o_obj.campaign_id || '',
     transaction_id: o_obj.conversion_id,
     order_id: o_obj.conversion_id,
     outclick_id: o_obj.click.publisher_reference,

@@ -14,6 +14,8 @@ const jsonify = require('../support/jsonify-xml-body');
 const cjClient = require('./api');
 const url = require('url');
 
+const AFFILIATE_NAME = 'commissionjunction';
+
 const merge = require('../support/easy-merge')('advertiser-id', {
   links: 'advertiser-id'
 });
@@ -23,7 +25,7 @@ const CURRENCY_MAP = {
   eu: 'eur',
   de: 'eur',
   es: 'eur',
-  gb: 'gbp',
+  uk: 'gbp',
   dk: 'eur',
   it: 'eur',
 };
@@ -137,6 +139,9 @@ function extractTrackingLinks(s_info) {
 
 function prepareCommission(currency, item) {
   const event = {
+    affiliate_name: AFFILIATE_NAME,
+    merchant_name: item['advertiser-name'] || '',
+    merchant_id: item.cid || '',
     transaction_id: item['commission-id'],
     order_id: item['order-id'],
     outclick_id: item.sid,

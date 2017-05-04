@@ -11,6 +11,8 @@ const entities = new XmlEntities();
 const singleRun = require('../support/single-run');
 const taskCache = {};
 
+const AFFILIATE_NAME = 'tradetracker';
+
 const merge = require('../support/easy-merge')('ID', {
   links: 'campaign.ID',
   vouchers: 'campaign.ID',
@@ -175,11 +177,14 @@ const TradeTrackerGenericApi = function(s_region, s_entity) {
  * @returns {Object}
  */
 function prepareCommission(o_obj) {
+
   let status = (o_obj.paidOut === true) ? 'paid' : o_obj.transactionStatus;
   let date = o_obj.assessmentDate || o_obj.registrationDate;
 
   var event = {
-    affiliate_name: o_obj.campaign.name,
+    affiliate_name: AFFILIATE_NAME,
+    merchant_name: o_obj.campaign.name || '',
+    merchant_id: o_obj.campaign.ID || '',
     transaction_id: o_obj.ID,
     order_id: o_obj.ID,
     outclick_id: o_obj.reference,

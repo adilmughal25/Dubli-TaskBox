@@ -196,6 +196,9 @@ function prepareCommission(network, o_obj) {
   // using sale_amount@CUR & payout@CUR instead of sale_amount & payout - this is as per shikha's mail
   // OM-1710 [ignoring currency part in hasoffers]
   const event = {
+    affiliate_name: network,
+    merchant_name: '',
+    merchant_id: '',
     transaction_id: S.id,
     order_id: S.id,
     outclick_id: S.affiliate_info1,

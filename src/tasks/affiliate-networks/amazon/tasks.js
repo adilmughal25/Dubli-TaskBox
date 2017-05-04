@@ -24,6 +24,9 @@ const client = require('./api')();
 //   all purchases from a previous block of time based on their existence in these
 //   files (this is documented in a secondary sheet in the ominto affiliate networks
 //   spreadsheet)
+const AFFILIATE_NAME = 'direct-partner';
+const MERCHANT_NAME = 'amazon';
+
 
 var getCommissionDetails = singleRun(function* () {
   const items = yield client.getCommissionReport('earnings');
@@ -32,12 +35,16 @@ var getCommissionDetails = singleRun(function* () {
 });
 
 function prepareCommission(o_obj) {
+
   if (!o_obj) {
     this.logger({commissionData:o_obj}, "AMAZON.IN RESULT WITH NO SUBTAG. SKIPPING.");
     return null;
   }
   const event = {
     transaction_id: o_obj.SubTag, // so far amazon.in is the only company not to give us a transaction_id of any kind, whee
+    affiliate_name: AFFILIATE_NAME,
+    merchant_name: MERCHANT_NAME,
+    merchant_id: '',
     outclick_id: o_obj.SubTag,
     commission_amount: o_obj.Earnings,
     purchase_amount: o_obj.Price,

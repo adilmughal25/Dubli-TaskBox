@@ -7,6 +7,8 @@ const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 const moment = require('moment');
 
+const AFFILIATE_NAME = 'affilinet-';
+
 const merge = require('../support/easy-merge')('ProgramId', {
   links: 'ProgramId',
   coupons: 'ProgramId'
@@ -70,16 +72,14 @@ const AffilinetGenericApi = function(s_region, s_entity) {
 
 function prepareCommission(region, o_obj) {
 
-  var util = require('util');
-  console.log("/---------------------------------------------------------------/");
-  console.log(">>>>> o_obj : " + util.inspect(o_obj, false, null));
-  console.log("/---------------------------------------------------------------/");
-
   let date = new Date(o_obj.RegistrationDate);
   if (typeof o_obj.CheckDate === 'string' && isDate(o_obj.CheckDate)) {
     date = new Date(o_obj.CheckDate);
   }
   const event = {
+    affiliate_name: AFFILIATE_NAME + region,
+    merchant_name: o_obj.ProgramTitle || '',
+    merchant_id: o_obj.ProgramId || '',
     transaction_id: o_obj.TransactionId,
     order_id: o_obj.TransactionId,
     outclick_id: o_obj.SubId,
@@ -90,9 +90,6 @@ function prepareCommission(region, o_obj) {
     effective_date: date
   };
 
-  console.log("/---------------------------------------------------------------/");
-  console.log(">>>>> event : " + util.inspect(event, false, null));
-  console.log("/---------------------------------------------------------------/");
   return event;
 }
 

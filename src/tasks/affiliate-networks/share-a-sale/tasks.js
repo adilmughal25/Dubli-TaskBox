@@ -12,6 +12,8 @@ const debug = require('debug')('shareasale:processor');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 
+const AFFILIATE_NAME = 'shareasale';
+
 const ary = x => _.isArray(x) ? x : [x];
 const exists = x => !!x;
 const merge = require('../support/easy-merge')(
@@ -102,7 +104,9 @@ function transformActivity (o_obj) {
   let voided = Number(o_obj.voided) === 1;
 
   var event = {
-    affiliate_name: o_obj.merchantorganization,
+    affiliate_name: AFFILIATE_NAME,
+    merchant_name: o_obj.merchantorganization || '',
+    merchant_id: o_obj.merchantid || '',
     transaction_id: o_obj.transid,
     order_id: o_obj.ordernumber,
     outclick_id: _.trim(o_obj.affcomment),
@@ -142,7 +146,9 @@ function transformLedger (o_obj) {
   }
 
   var event = {
-    affiliate_name: o_obj.merchantorganization,
+    affiliate_name: AFFILIATE_NAME,
+    merchant_name: o_obj.merchantorganization || '',
+    merchant_id: o_obj.merchantid || '',
     transaction_id: o_obj.transid,
     order_id: o_obj.ordernumber,
     outclick_id: _.trim(o_obj.afftrack),

@@ -7,6 +7,8 @@ const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 const moment = require('moment');
 
+const AFFILIATE_NAME = 'affiliatewindow';
+
 // helper
 const ary = x => _.isArray(x) ? x : [x];
 
@@ -107,7 +109,11 @@ const DATE_MAP = {
 };
 
 function prepareCommission(o_obj) {
+
   const event = {
+    affiliate_name: AFFILIATE_NAME,
+    merchant_name: '',
+    merchant_id: o_obj.iMerchantId || '',
     transaction_id: o_obj.iId,
     order_id: o_obj.iId,
     outclick_id: o_obj.sClickref,
@@ -119,7 +125,6 @@ function prepareCommission(o_obj) {
   if (o_obj.bPaid === "true") {
     event.state = 'paid';
     event.effective_date = new Date(o_obj.dValidationDate);
-    return event;
   } else {
     let dateField = DATE_MAP[o_obj.sStatus];
     event.state = STATE_MAP[o_obj.sStatus];

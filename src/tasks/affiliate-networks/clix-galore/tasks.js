@@ -25,6 +25,8 @@ const merge = require('../support/easy-merge')('mid_base64', {
   coupons: 'mid_base64',
 });
 
+const AFFILIATE_NAME = 'clixgalore';
+
 var getMerchants = singleRun(function* () {
   const merchants = [];
 
@@ -172,9 +174,12 @@ function prepareCoupons(o_obj) {
 
 const amountPregPattern = /([^0-9\\.])/gi;  // to clean amounts like "AU$123.45", "NZ$432.12", ...
 function prepareCommission(o_obj) {
+
   let eff_date = o_obj.Declined_Date || o_obj.Confirmed_Date || o_obj.Transaction_Date;
   let event = {
-    affiliate_name: o_obj.Merchant_Site,
+    affiliate_name: AFFILIATE_NAME,
+    merchant_name: o_obj.Merchant_Site || '',
+    merchant_id: '',
     // transaction_id: null,
     outclick_id: o_obj.Aff_Order_ID,
     currency: CURRENCY_MAP[o_obj.Currency],
