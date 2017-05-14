@@ -14,7 +14,10 @@ const _check = utils.checkApiResponse;
 const jsonify = require('../support/jsonify-xml-body');
 const debug = require('debug')('linkshare:processor');
 const converter = require("csvtojson").Converter;
-const validator = require('validator');
+// const validator = require('validator');
+const deasync = require('deasync');
+
+const AFFILIATE_NAME = 'linkshare';
 
 const reportingURL = 'https://ran-reporting.rakutenmarketing.com/en/reports/individual-item-report-api-final/filters?';
 const reportingToken = 'ZW5jcnlwdGVkYToyOntzOjU6IlRva2VuIjtzOjY0OiI2ODI4NTljZGIxYWU2ZjllZWQ1NDFhYjhlNjY1YTM2ODI4YTM3NmIxMjFmMWI1MTI4Y2Q2YzJhMjBkMTMzMjgzIjtzOjg6IlVzZXJUeXBlIjtzOjk6IlB1Ymxpc2hlciI7fQ%3D%3D';
@@ -157,7 +160,8 @@ const LinkShareGenericApi = function(s_region, s_entity) {
       token: reportingToken
     });
 
-    let response = yield dataClient.get(url);
+    /*
+    //let response = yield dataClient.get(url);
 
     // if using "csvtojson" library
     // if summary is included in the response then clean it and proceed with only essential data
@@ -165,21 +169,16 @@ const LinkShareGenericApi = function(s_region, s_entity) {
     // response.splice(0,4);
     // response = response.join('\n');
 
-    var events = [];
     // if using "csvtojson" library
     // var csvConverter = new converter({});
 
     // using custom function "csvToJson" instead of library, as using the external library doesnt
     // write the report in the flat db file - this is super weird
-    var commissions = csvToJson(response);
-    events = commissions.map(prepareCommission).filter(x => !!x);
+    //var commissions = csvToJson(response);
+    */
 
-    // if using "csvtojson" library
-    // csvConverter.fromString(response, co.wrap(function*(err, commissions){
-    //   events = commissions.map(prepareCommission).filter(x => !!x);
-    //   return yield sendEvents.sendCommissions(that.eventName, events);
-    // }));
-
+    let commissions = parseCommissions(yield dataClient.get(url));
+    var events = commissions.map(prepareCommission).filter(x => !!x);
     return yield sendEvents.sendCommissions(that.eventName, events);
   });
 };
@@ -200,7 +199,7 @@ function _prepareCommission(o_obj) {
     commission.commission_amount = o_obj.commissions;
     commission.currency = o_obj.currency;
     //commission.state = isEvent ? 'initiated' : 'confirmed'; // old code
-    commission.state = 'paid';
+    commission.state = 'confirmed'; // changing from paid to confirmed as this is handeled in DB
     commission.effective_date = o_obj.process_date;
     return commission;
   }
@@ -210,9 +209,16 @@ function prepareCommission(o_obj) {
 
   const commission = {};
 
+  // converting the string
+  o_obj = JSON.parse(JSON.stringify(o_obj).replace('Member ID (U1)','Sub_ID'));
+
   // adding extra validations before parsing
-  if(o_obj && _.get(o_obj, '﻿Member ID \(U1\)')){
-    commission.outclick_id = _.get(o_obj, '﻿Member ID \(U1\)');
+  if(o_obj){
+    commission.affiliate_name = AFFILIATE_NAME,
+    commission.merchant_name = _.get(o_obj, 'Advertiser Name').replace('\\','') || '',
+    commission.merchant_id = o_obj.MID || '',
+    //commission.outclick_id = _.get(o_obj, '﻿Member ID \(U1\)');
+    commission.outclick_id = o_obj.Sub_ID;
     commission.transaction_id = _.get(o_obj, 'Transaction ID');
     commission.order_id = _.get(o_obj, 'Order ID');
     commission.purchase_amount = Number(_.get(o_obj, 'Sales'));
@@ -280,12 +286,19 @@ function mergeResults(o_obj) {
   var make = k => res[k] || (res[k] = {links:[], coupons:[]});
   var set = (i,k,v) => make(i)[k] = v;
   var add = (i,k,v) => make(i)[k].push(v);
-  o_obj.merchants.forEach(m => set(m.mid, 'merchant', m));
+
+  if(Array.isArray(o_obj.merchants)) {
+    o_obj.merchants.forEach(m => set(m.mid, 'merchant', m));
+  }
+  else
+    set(o_obj.merchants.mid, 'merchant', o_obj.merchants);
+
   o_obj.textLinks.forEach(l => add(l.mid, 'links', l));
   o_obj.coupons.forEach(c => add(c.advertiserid, 'coupons', c));
   return _.values(res).filter(x => 'merchant' in x);
 }
 
+/*
 // old cvs to json
 function _csvToJson(csv) {
   // remove excess quotes
@@ -391,6 +404,24 @@ function validateProcessing(row){
   validator.isFloat(String(rowData[5])) &&
   validator.isAlpha(String(rowData[6])) && rowData[6].length === 3 &&
   validator.isAlphanumeric(String(rowData[7]));
+}
+*/
+
+function parseCommissions(response) {
+
+  var sync = true;
+  var commissions = null;
+  var csvConverter = new converter({});
+  csvConverter.fromString(response, function(err, data){
+    commissions = data;
+  });
+
+  while(sync) {
+    deasync.sleep(1000);
+    if(commissions.length > 0)
+      sync = false;
+  }
+  return commissions;
 }
 
 module.exports = LinkShareGenericApi;
