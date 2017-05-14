@@ -211,11 +211,12 @@ function prepareCommission(o_obj) {
 
   // converting the string
   o_obj = JSON.parse(JSON.stringify(o_obj).replace('Member ID (U1)','Sub_ID'));
+  var merchant_name = _.get(o_obj, 'Advertiser Name') ? _.get(o_obj, 'Advertiser Name').replace('\\','') : '';
 
   // adding extra validations before parsing
   if(o_obj){
     commission.affiliate_name = AFFILIATE_NAME,
-    commission.merchant_name = _.get(o_obj, 'Advertiser Name').replace('\\','') || '',
+    commission.merchant_name = merchant_name,
     commission.merchant_id = o_obj.MID || '',
     //commission.outclick_id = _.get(o_obj, '﻿Member ID \(U1\)');
     commission.outclick_id = o_obj.Sub_ID;
