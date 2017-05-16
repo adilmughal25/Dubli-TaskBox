@@ -190,6 +190,13 @@ function extractAry(result, key) {
  */
 function prepareCommission(o_obj) {
 
+  var isDefaulted = false; // to process this differently
+  var purchase_amount = Number(o_obj.order_total || "0");
+  if(purchase_amount == 0){
+    purchase_amount = 1.00;
+    isDefaulted = true;
+  }
+
   return {
     affiliate_name: AFFILIATE_NAME,
     merchant_name: o_obj.site_offer_name || '',
@@ -198,10 +205,11 @@ function prepareCommission(o_obj) {
     order_id: o_obj.order_id,
     outclick_id: o_obj.subid_1 || o_obj.subid_2,
     currency: CURRENCY_MAP[o_obj.currency_symbol],
-    purchase_amount: Number(o_obj.order_total || "0"), // need to confirm this
-    commission_amount: Number(o_obj.price || "0"), // need to confirm this
+    purchase_amount: purchase_amount,
+    commission_amount: Number(o_obj.price || "0"),
     state: STATE_MAP[o_obj.disposition],
-    effective_date: new Date(o_obj.event_conversion_date)
+    effective_date: new Date(o_obj.event_conversion_date),
+    isDefaulted: isDefaulted
   };
 }
 
