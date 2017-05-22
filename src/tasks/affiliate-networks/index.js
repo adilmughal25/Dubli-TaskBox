@@ -165,6 +165,7 @@ const snapdealGenericApi = require('./snapdeal/tasks');
 const snapdealApi = snapdealGenericApi();
 
 const tradetrackerGenericApi = require('./tradetracker/tasks');
+const tradetrackerAEApi = tradetrackerGenericApi('ae');
 const tradetrackerATApi = tradetrackerGenericApi('at');
 const tradetrackerBEApi = tradetrackerGenericApi('be');
 const tradetrackerCHApi = tradetrackerGenericApi('ch');
@@ -286,6 +287,7 @@ function initializeMerchantImporters(tasker) {
     "TradeDoubler (AU) Merchants": tradedoublerAustraliaApi.getMerchants,
     "TradeDoubler (NZ) Merchants": tradedoublerNewZealandApi.getMerchants,
     "TradeDoubler (IN) Merchants": tradedoublerIndiaApi.getMerchants,
+    "TradeTracker (AE) Merchants": tradetrackerAEApi.getMerchants,
     "TradeTracker (AT) Merchants": tradetrackerATApi.getMerchants,
     "TradeTracker (BE) Merchants": tradetrackerBEApi.getMerchants,
     "TradeTracker (CH) Merchants": tradetrackerCHApi.getMerchants,
@@ -387,6 +389,7 @@ function initializeCommissionsProcessors(tasker) {
     "TradeDoubler (AU) Commissions": tradedoublerAustraliaApi.getCommissionDetails,
     "TradeDoubler (NZ) Commissions": tradedoublerNewZealandApi.getCommissionDetails,
     "TradeDoubler (IN) Commissions": tradedoublerIndiaApi.getCommissionDetails,
+    "TradeTracker (AE) Commissions": tradetrackerAEApi.getCommissionDetails,
     "TradeTracker (AT) Commissions": tradetrackerATApi.getCommissionDetails,
     "TradeTracker (BE) Commissions": tradetrackerBEApi.getCommissionDetails,
     "TradeTracker (CH) Commissions": tradetrackerCHApi.getCommissionDetails,
