@@ -29,8 +29,10 @@ const STATE_MAP = {
 };
 
 const CURRENCY_MAP = {
-  '$': 'usd',
-  '£': 'egp'
+  '$'  : 'usd',
+  '£'  : 'egp',
+  '﷼'  : 'irr',
+  'DH' : 'aed'
 };
 
 const ShooglooGenericApi = function(s_entity) {
