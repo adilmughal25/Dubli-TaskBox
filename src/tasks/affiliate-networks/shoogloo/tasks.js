@@ -266,7 +266,7 @@ function prepareCommission(o_obj) {
     // amount in usd
     currency = CURRENCY_MAP[o_obj.order_currency_symbol];
     if(currency != 'usd'){
-      var purchaseAmountInUSD = convertPurchaseAmount(purchase_amount, 'usd', currency, date);
+      var purchaseAmountInUSD = parseFloat(convertPurchaseAmount(purchase_amount, 'usd', currency, date)).toFixed(2);
       purchase_amount = purchaseAmountInUSD;
       currency = 'usd';
     }
@@ -280,8 +280,8 @@ function prepareCommission(o_obj) {
     order_id: o_obj.order_id,
     outclick_id: o_obj.subid_1 || o_obj.subid_2,
     currency: currency,
-    purchase_amount: purchase_amount,
-    commission_amount: commission_amount,
+    purchase_amount: parseFloat(purchase_amount),
+    commission_amount: parseFloat(commission_amount),
     state: STATE_MAP[o_obj.disposition],
     effective_date: date,
     isDefaulted: isDefaulted
