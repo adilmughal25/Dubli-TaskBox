@@ -6,6 +6,9 @@ const moment = require('moment');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 
+const AFFILIATE_NAME = 'direct-partner';
+const MERCHANT_NAME = 'flipkart';
+
 const FlipkartGenericApi = function(s_entity) {
   if (!(this instanceof FlipkartGenericApi)) {
     debug("instantiating FlipkartGenericApi for: %s", s_entity);
@@ -43,6 +46,9 @@ function prepareCommission(status, o_obj) {
   // flipkart send us only one date, ie the order date
 
   const event = {
+    affiliate_name: AFFILIATE_NAME,
+    merchant_name: MERCHANT_NAME,
+    merchant_id: '',
     transaction_id: o_obj.affiliateOrderItemId,
     order_id: o_obj.affiliateOrderItemId,
     outclick_id: o_obj.affExtParam1,

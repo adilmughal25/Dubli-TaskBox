@@ -13,6 +13,8 @@ const debug = require('debug')('partnerads:processor');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 
+const AFFILIATE_NAME = 'partnerads';
+
 const PartnerAdsGenericApi = function(s_entity) {
   if (!(this instanceof PartnerAdsGenericApi)) {
     debug("instantiating PartnerAdsGenericApi for: %s", s_entity);
@@ -69,11 +71,14 @@ const PartnerAdsGenericApi = function(s_entity) {
  * @returns {Object}
  */
 function prepareCommission(o_obj) {
+
   //let transactionId = o_obj.programid + '-' + o_obj.ordrenr;
   let transactionId = o_obj.ordrenr;
-  
+
   var sale = {
-    affiliate_name: o_obj.program,
+    affiliate_name: AFFILIATE_NAME,
+    merchant_name: o_obj.program || '',
+    merchant_id: o_obj.programid || '',
     transaction_id: transactionId,
     order_id: o_obj.ordrenr,
     outclick_id: o_obj.uid,
@@ -110,6 +115,7 @@ function reformatDate (date, time) {
  * @returns {Object}
  */
 function prepareCancellations(o_obj) {
+
   //let transactionId = o_obj.programid + '-' + o_obj.ordrenr;
   let transactionId = o_obj.ordrenr;
 

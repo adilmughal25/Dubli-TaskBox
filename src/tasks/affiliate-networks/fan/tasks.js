@@ -6,6 +6,8 @@ const debug = require('debug')('fan:processor');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 
+const AFFILIATE_NAME = 'fan';
+
 const exists = x => !!x;
 
 //TODO: Confirm if other states are available & populate them
@@ -177,7 +179,9 @@ const FanGenericApi = function(s_entity) {
 function prepareCommission(o_obj) {
 
   return {
-    affiliate_name: o_obj.programName,
+    affiliate_name: AFFILIATE_NAME,
+    merchant_name: o_obj.site_offer_name || '',
+    merchant_id: o_obj.site_offer_id || '',
     transaction_id: o_obj.macro_event_conversion_id,
     order_id: o_obj.order_id,
     outclick_id: o_obj.subid_1 || o_obj.subid_2,

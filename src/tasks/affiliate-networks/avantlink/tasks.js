@@ -22,6 +22,8 @@ const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 const clientPool = require('./api');
 
+const AFFILIATE_NAME = 'avantlink-';
+
 const merge = require('../support/easy-merge')('lngMerchantId', {
   promos: 'Merchant_Id' // includes all type of promotions such as text, coupons, ...
 });
@@ -123,7 +125,9 @@ function prepareCommission(region, o_obj) {
   // for all transactions instead. (check STATUS_MAP for statuses)
 
   var event = {
-    affiliate_name: o_obj.Merchant,
+    affiliate_name: AFFILIATE_NAME + region,
+    merchant_name: o_obj.Merchant || '',
+    merchant_id: o_obj.Merchant_Id || '',
     transaction_id: o_obj.Order_Id,
     order_id: o_obj.Order_Id,
     outclick_id: o_obj.Custom_Tracking_Code,

@@ -19,6 +19,8 @@ const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 const jsonify = require('../support/jsonify-xml-body');
 
+const AFFILIATE_NAME = 'belboon';
+
 const merge = require('../support/easy-merge')('programid', {
   details:  'programid',
   vouchers: 'programid',
@@ -201,8 +203,11 @@ const STATUS_MAP = {
 };
 
 function prepareCommission(o_obj) {
+
   const event = {
-    affiliate_name: o_obj.programname,
+    affiliate_name: AFFILIATE_NAME,
+    merchant_name: o_obj.programname || '',
+    merchant_id: o_obj.programid || '',
     transaction_id: o_obj.eventid,
     order_id: o_obj.eventid,
     outclick_id: getSubId(o_obj.subid),

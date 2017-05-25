@@ -8,6 +8,8 @@ const singleRun = require('../support/single-run');
 const moment = require('moment');
 const limiter = require('ominto-utils').promiseRateLimiter;
 
+const AFFILIATE_NAME = 'admitad';
+
 const exists = x => !!x;
 const merge = require('../support/easy-merge')('id', {
   coupons: 'campaign.id',
@@ -176,7 +178,9 @@ function prepareCommission(o_obj) {
     _date = new Date(o_obj.closing_date);
 
   let event = {
-    affiliate_name: o_obj.advcampaign_name,
+    affiliate_name: AFFILIATE_NAME,
+    merchant_name: o_obj.advcampaign_name || '',
+    merchant_id: o_obj.advcampaign_id || '',
     transaction_id: o_obj.action_id,
     order_id: o_obj.order_id,
     outclick_id: o_obj.subid,

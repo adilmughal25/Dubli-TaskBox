@@ -6,6 +6,9 @@ const moment = require('moment');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 
+const AFFILIATE_NAME = 'direct-partner';
+const MERCHANT_NAME = 'snapdeal';
+
 const CURRENCY = 'inr';
 
 /**
@@ -57,6 +60,9 @@ const SnapdealGenericApi = function(s_entity) {
 function prepareCommission(status, o_obj) {
 
   const event = {
+    affiliate_name: AFFILIATE_NAME,
+    merchant_name: MERCHANT_NAME,
+    merchant_id: '',
     //transaction_id: o_obj.orderCode + "-" + fetchAscii(o_obj.product),
     transaction_id: truncateMax(o_obj.orderCode + "-" + o_obj.product),
     order_id: o_obj.orderCode,

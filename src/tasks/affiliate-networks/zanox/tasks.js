@@ -8,6 +8,8 @@ const utils = require('ominto-utils');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 
+const AFFILIATE_NAME = 'zanox';
+
 const merge = require('../support/easy-merge')('@id', {
   admedia: 'program.@id',
   incentives: 'program.@id',
@@ -186,7 +188,11 @@ function findSubId(o_obj) {
 }
 
 function prepareCommission(o_obj) {
+
   const event = {
+    affiliate_name: AFFILIATE_NAME,
+    merchant_name: _.get(o_obj.program, '$') || '',
+    merchant_id: _.get(o_obj.program, '@id') || '',
     transaction_id: _.get(o_obj, '@id'),
     order_id: _.get(o_obj, '@id'),
     outclick_id: findSubId(o_obj),
@@ -197,6 +203,7 @@ function prepareCommission(o_obj) {
     effective_date: new Date(o_obj.reviewState === 'open' ?
       o_obj.trackingDate : o_obj.modifiedDate)
   };
+
   return event;
 }
 

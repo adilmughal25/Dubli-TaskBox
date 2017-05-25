@@ -8,6 +8,8 @@ const moment = require('moment');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 
+const AFFILIATE_NAME = 'pepperjam';
+
 const exists = x => !!x;
 const merge = require('../support/easy-merge')('id', {
   coupons: 'program_id',
@@ -57,7 +59,11 @@ const PepperJamGenericApi = function(s_entity) {
 };
 
 function prepareCommission(o_obj) {
+
   const event = {
+    affiliate_name: AFFILIATE_NAME,
+    merchant_name: o_obj.program_name || '',
+    merchant_id: o_obj.program_id || '',
     transaction_id: o_obj.transaction_id,
     order_id: o_obj.order_id,
     outclick_id: o_obj.sid,
@@ -67,6 +73,7 @@ function prepareCommission(o_obj) {
     state: STATE_MAP[o_obj.status],
     effective_date: o_obj.date
   };
+
   return event;
 }
 

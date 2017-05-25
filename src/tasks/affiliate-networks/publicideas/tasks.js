@@ -7,8 +7,10 @@ const utils = require('ominto-utils');
 const moment = require('moment');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
-
 const createClient = require('./api');
+
+const AFFILIATE_NAME = 'publicideas-';
+
 const ary = x => _.isArray(x) ? x : [x];
 
 const STATUS_MAP = {
@@ -34,7 +36,11 @@ function clean(merchants) {
 }
 
 function prepareCommission(s_region, o_obj) {
+
   const event = {
+    affiliate_name: AFFILIATE_NAME + s_region,
+    merchant_name: '', // o_obj.title - not sure if this is correct?
+    merchant_id: '',
     transaction_id: o_obj.id,
     order_id: o_obj.id,
     outclick_id: o_obj.cashBack,

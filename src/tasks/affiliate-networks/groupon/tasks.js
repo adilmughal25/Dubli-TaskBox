@@ -5,7 +5,9 @@ const co = require('co');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 
-const AFFILIATE_PROGRAM_NAME = 'Groupon';
+const AFFILIATE_NAME = 'direct-partner';
+const MERCHANT_NAME = 'groupon';
+
 const STATE_MAP = {
   VALID: 'initiated', // TODO - should this be initiated or confirmed?
   REFUNDED: 'cancelled',
@@ -102,7 +104,9 @@ function prepareCommission(o_obj) {
   }
 
   let event = {
-    affiliate_name: AFFILIATE_PROGRAM_NAME + (o_obj.item[0].DealListName==='unknown' ? '' : (' -' + o_obj.item[0].DealListName)),
+    affiliate_name: AFFILIATE_NAME,
+    merchant_name: MERCHANT_NAME,
+    merchant_id: '',
     transaction_id: o_obj.item[0].BillingId,
     order_id: o_obj.item[0].BillingId,
     outclick_id: o_obj.item[0].Sid,

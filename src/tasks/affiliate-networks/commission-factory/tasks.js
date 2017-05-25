@@ -15,6 +15,8 @@ const utils = require('ominto-utils');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 
+const AFFILIATE_NAME = 'commissionfactory';
+
 const merge = require('../support/easy-merge')('Id', {
   coupons: 'MerchantId',
   links: 'MerchantId'
@@ -84,6 +86,9 @@ function prepareCommission(o_obj) {
     _date = new Date(o_obj.DateModified);
 
   const event = {
+    affiliate_name: AFFILIATE_NAME,
+    merchant_name: o_obj.MerchantName || '',
+    merchant_id: o_obj.MerchantId || '',
     transaction_id: o_obj.Id,
     order_id: o_obj.OrderId,
     outclick_id: o_obj.UniqueId,

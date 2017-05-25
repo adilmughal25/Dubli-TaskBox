@@ -9,6 +9,8 @@ const moment = require('moment');
 const request = require('request-promise');
 const jsonify = require('../support/jsonify-xml-body');
 
+const AFFILIATE_NAME = 'tradedoubler';
+
 const merge = require('../support/easy-merge')('programId', {
   coupons: 'programId'
 });
@@ -280,7 +282,11 @@ const TradeDoublerGenericApi = function(s_region, s_entity) {
  * @returns {Object} commission event with correct data structure
  */
 function prepareCommission(o_obj) {
+
   const event = {
+    affiliate_name: AFFILIATE_NAME,
+    merchant_name: o_obj.programName || '',
+    merchant_id: o_obj.programId || '',
     transaction_id: o_obj.orderNR,
     order_id: o_obj.orderNR,
     outclick_id: o_obj.epi1,
@@ -290,6 +296,7 @@ function prepareCommission(o_obj) {
     state: STATUS_MAP[o_obj.pendingStatus],
     effective_date: o_obj.timeOfEvent
   };
+
   return event;
 };
 

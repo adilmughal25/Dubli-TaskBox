@@ -12,6 +12,8 @@ const utils = require('ominto-utils');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 
+const AFFILIATE_NAME = 'webgains';
+
 const exists = x => !!x;
 const XmlEntities = require('html-entities').XmlEntities;
 const entities = new XmlEntities();
@@ -129,7 +131,9 @@ function prepareCommission(o_obj) {
 
   let status = o_obj.status + '_' + o_obj.paymentStatus;
   let event = {
-    affiliate_name: o_obj.programName,
+    affiliate_name: AFFILIATE_NAME,
+    merchant_name: o_obj.programName || '',
+    merchant_id: o_obj.programID || '',
     transaction_id: o_obj.transactionID,
     order_id: o_obj.transactionID,
     outclick_id: o_obj.clickRef,
