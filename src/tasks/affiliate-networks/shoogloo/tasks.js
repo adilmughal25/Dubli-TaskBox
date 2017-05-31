@@ -5,6 +5,17 @@ const co = require('co');
 const debug = require('debug')('shoogloo:processor');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
+const deasync = require('deasync');
+const utils = require('ominto-utils');
+const configs = require('../../../../configs.json');
+utils.clients.init(configs);
+const dataClient = utils.restClient(configs.data_api);
+
+var merchantMeta = [];
+const merge = require('../support/easy-merge')('merchant_id', {
+  cashbacks: 'merchant_id',
+  regions: 'merchant_id'
+});
 
 const AFFILIATE_NAME = 'shoogloo';
 
@@ -17,9 +28,11 @@ const STATE_MAP = {
   'Paid'    :   'paid'
 };
 
-// TODO: Confirm if other currencies are available & populate them
 const CURRENCY_MAP = {
-  '$':    'usd'
+  '$'  : 'usd',
+  '£'  : 'egp',
+  '﷼'  : 'irr',
+  'DH' : 'aed'
 };
 
 const ShooglooGenericApi = function(s_entity) {
@@ -153,6 +166,17 @@ const ShooglooGenericApi = function(s_entity) {
       row_limit: 0
     }, 'EventConversionsResult');
 
+    // create a merchant meta data from merchant, cashback & regions objects from DB
+    merchantMeta = merge(yield {
+      merchants: that.merchantInfo(),
+      cashbacks: that.cashbackInfo(),
+      regions: that.regionInfo()
+    });
+
+    // get the country mappings from DB
+    var countryInfo = yield that.countryInfo();
+
+    merchantMeta = processData(merchantMeta, countryInfo);
 
     if(results) {
       const event_conversions = results[0].event_conversions.event_conversion;
@@ -175,6 +199,35 @@ const ShooglooGenericApi = function(s_entity) {
     return [];
   });
 
+  // call to data layer to get merchant info
+  this.merchantInfo = co.wrap(function* () {
+    let result = yield dataClient.get('/getMerchantInfoByAffiliate/' + AFFILIATE_NAME, null, this);
+    return result.body || [];
+  });
+
+  // call to data layer to get merchant cashback info
+  this.cashbackInfo = co.wrap(function* () {
+    let result = yield dataClient.get('/getCashbackInfoByAffiliate/' + AFFILIATE_NAME, null, this);
+    return result.body || [];
+  });
+
+  // call to data layer to get merchant region info
+  this.regionInfo = co.wrap(function* () {
+    let result = yield dataClient.get('/getRegionInfoByAffiliate/' + AFFILIATE_NAME, null, this);
+    return result.body || [];
+  });
+
+  // call to data layer to get currencies info
+  // this.currencyInfo = co.wrap(function* () {
+  //   let result = yield dataClient.get('/getCurrencies/', null, this);
+  //   return result.body || [];
+  // });
+
+  // call to data layer to get countries info
+  this.countryInfo = co.wrap(function* () {
+    let result = yield dataClient.get('/getCountryInfo/', null, this);
+    return result.body || [];
+  });
 };
 
 var ary = x => _.isArray(x) ? x : [x];
@@ -190,19 +243,51 @@ function extractAry(result, key) {
  */
 function prepareCommission(o_obj) {
 
-  return {
+  var isDefaulted = false; // to process this differently
+  var purchase_amount = Number(o_obj.order_total || "0");
+  var commission_amount = Number(o_obj.price || "0");
+  var merchant = getMerchantFromMeta(merchantMeta, o_obj.site_offer_id);
+  var currency = CURRENCY_MAP[o_obj.currency_symbol];
+  var date = new Date(o_obj.event_conversion_date);
+
+  // if the purchase_amount is zero, try to estimate the currency & purchase_amount from DB
+  if(purchase_amount == 0){
+
+    if(merchant && merchant.percentageAverage > 0){
+      purchase_amount = parseFloat((commission_amount * 100)/merchant.percentageAverage).toFixed(2);
+    } else {
+      purchase_amount = 1;
+    }
+
+    isDefaulted = true;
+    currency = 'usd';
+  } else {
+    // if order_total is part of the reponse, then estimate the currency & purchase
+    // amount in usd
+    currency = CURRENCY_MAP[o_obj.order_currency_symbol];
+    if(currency != 'usd'){
+      var purchaseAmountInUSD = parseFloat(convertPurchaseAmount(purchase_amount, 'usd', currency, date)).toFixed(2);
+      purchase_amount = purchaseAmountInUSD;
+      currency = 'usd';
+    }
+  }
+
+  var o_obj =  {
     affiliate_name: AFFILIATE_NAME,
     merchant_name: o_obj.site_offer_name || '',
     merchant_id: o_obj.site_offer_id || '',
     transaction_id: o_obj.macro_event_conversion_id,
     order_id: o_obj.order_id,
     outclick_id: o_obj.subid_1 || o_obj.subid_2,
-    currency: CURRENCY_MAP[o_obj.currency_symbol],
-    purchase_amount: Number(o_obj.order_total || "0"), // need to confirm this
-    commission_amount: Number(o_obj.price || "0"), // need to confirm this
+    currency: currency,
+    purchase_amount: parseFloat(purchase_amount),
+    commission_amount: parseFloat(commission_amount),
     state: STATE_MAP[o_obj.disposition],
-    effective_date: new Date(o_obj.event_conversion_date)
+    effective_date: date,
+    isDefaulted: isDefaulted
   };
+
+  return o_obj;
 }
 
 /**
@@ -221,6 +306,94 @@ function rinse(obj) {
     return _.mapValues(obj, rinse);
   }
   return obj;
+}
+
+/**
+ * Function to extract a single merchant from merchantMeta object based on  affiliate_id
+ * the regions & currencies for a give merchant based of the data in DB
+ * @param {Object} merchantMeta  merchant meta data from DB
+ * @param {Number} affiliate_id  affiliate_id (program id on affiliate side)
+ * @returns {Object} merchant  merchant object
+ */
+function getMerchantFromMeta(merchantMeta, affiliate_id){
+
+  for (let merchant of merchantMeta) {
+    if(Number(merchant.merchant.affiliate_id) == Number(affiliate_id))
+      return merchant;
+  }
+  return;
+}
+
+/**
+ * Function to process the merchant data which includes, computing percentageAverage & approximating
+ * the regions & currencies for a give merchant based of the data in DB
+ * @param {Object} merchantMeta  merchant meta data from DB
+ * @param {Object} countryInfo  country & currency mapping from DB
+ * @returns {Object} merchantMeta  merchant meta data with additional fields
+ */
+function processData(merchantMeta, countryInfo){
+
+  // create a country map <county, currency>
+  var countryMap = countryInfo.reduce(function(map, country) {
+    if(country.countries_iso2_code && country.countries_currencies_code){
+      map[country.countries_iso2_code.toLowerCase()] = country.countries_currencies_code.toLowerCase();
+    }
+    return map;
+  }, {});
+
+  // for each merchant approximate the purchase price & curriencies
+  for (let merchant of merchantMeta) {
+
+    var percentageSum = 0, percentageCounter = 0;
+    for (let cashback of merchant.cashbacks) {
+      if(cashback.type === 'cashback'){
+        if(cashback.rate && cashback.rate > 0){
+          percentageSum += parseFloat(cashback.rate);
+          percentageCounter++;
+        }
+      }
+    }
+    merchant.percentageAverage = 0;
+    if(percentageCounter > 0){
+      merchant.percentageAverage = parseFloat((percentageSum/percentageCounter).toFixed(2));
+    }
+
+    var curriencies = [];
+    var regions = merchant.regions[0].regions.split(',');
+    for (let region of regions) {
+      curriencies.push(countryMap[region]);
+    }
+    merchant.curriencies = _.uniq(curriencies);
+  }
+
+  return merchantMeta;
+}
+
+/**
+ * Function to convert the purchase amount from one currency to another based on a specific date
+ * @param {Number} amount  Amount to be converted
+ * @param {String} to  To currency (3 chars)
+ * @param {String} from  From currency (3 chars)
+ * @param {Date} date  Date of conversation
+ * @returns {Number} Amount converted to specific currency from specific currency on a specific date
+ */
+function convertPurchaseAmount(amount, to, from, date){
+
+  var sync = true;
+  var response ;
+  co(function* () {
+    var reqObj = [{ 'amount': amount, 'to': to, 'from': from, 'date': date }];
+    response = yield dataClient.post('/convertCurrencies/', reqObj, this);
+  });
+
+  while(sync) {
+    deasync.sleep(100);
+    if(response && response.body.length > 0){
+      sync = false;
+    }
+  }
+
+  return response.body[0].amount ? response.body[0].amount : 0 ;
 }
 
 module.exports = ShooglooGenericApi;

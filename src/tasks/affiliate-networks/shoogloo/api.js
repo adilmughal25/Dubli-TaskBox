@@ -8,6 +8,12 @@ const request = require('request-promise');
 const debug = require('debug')('shooglooSoap:api-client');
 //require('tough-cookie'); // for request's benefit
 
+/*
+Docs
+https://support.getcake.com/support/solutions/5000109264
+https://support.getcake.com/support/solutions/folders/5000173061
+*/
+
 const API_CFG = {
   /*
   fan: {
