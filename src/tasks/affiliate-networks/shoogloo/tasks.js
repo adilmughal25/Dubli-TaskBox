@@ -255,7 +255,12 @@ function prepareCommission(o_obj) {
 
     if(merchant && merchant.percentageAverage > 0){
       purchase_amount = parseFloat((commission_amount * 100)/merchant.percentageAverage).toFixed(2);
-    } else {
+    }
+
+    // very strange but, in some cases the purchase_amount & commission_amount
+    // are zero(as the fields might be missing), due to which the above calculations
+    // computes to zero, hence checking it once again, and defaulting if needed
+    if(purchase_amount == 0){
       purchase_amount = 1;
     }
 
