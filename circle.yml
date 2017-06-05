@@ -30,3 +30,9 @@ deployment:
     codedeploy:
       taskbox:
         deployment_group: prod-taskbox
+  # Test:
+   # branch: testbranch
+   # codedeploy:
+    #  taskbox:
+     #   deployment_group: testbranch
+
