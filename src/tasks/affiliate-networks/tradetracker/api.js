@@ -12,6 +12,12 @@ const API_SERVICE_WSDL  = 'http://ws.tradetracker.com/soap/affiliate?wsdl';
 const API_LOCALE        = 'en_GB'; // Default locale; Possible values: nl_BE, fr_BE, cs_CZ, da_DK, de_DE, et_EE, en_GB, es_ES, fr_FR, it_IT, hu_HU, nl_NL, nb_NO, de_AT, pl_PL, fi_FI, sv_SE, ru_RU
 const API_CREDENTIALS   = {
   ominto: {
+    ae: {
+      siteId: 279740,
+      customerId: 120335,
+      passphrase: '37e434fc026948c59b784514fdf4aec3bdb2793b',
+      //locale: 'ar_SA'  //SR: need to find our what this would be and whether it's needed.
+    },
     at: {
       siteId: 227197,
       customerId: 120335,
