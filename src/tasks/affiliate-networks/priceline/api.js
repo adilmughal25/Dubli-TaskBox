@@ -39,11 +39,13 @@ const hotelSalesStatusMap = {
 }
 
 function PricelineClient() {
-      if (!(this instanceof PricelineClient)) return new PricelineClient();
 
-    this.get = (numberOfDays) => {
-        const endDate = moment().startOf('date').format('YYYY-MM-DD_HH:mm:ss');
-        const startDate = moment().subtract(numberOfDays, 'days').startOf('date').format('YYYY-MM-DD_HH:mm:ss');
+    if (!(this instanceof PricelineClient)) return new PricelineClient();
+
+    this.get = (numberOfDays, itr) => {
+
+        const endDate = moment().subtract(numberOfDays * (itr - 1), 'days').startOf('date').format('YYYY-MM-DD_HH:mm:ss');
+        const startDate = moment().subtract(numberOfDays * itr, 'days').startOf('date').format('YYYY-MM-DD_HH:mm:ss');
 
         console.log("Getting commissions from : " + startDate + " to : " + endDate);
 

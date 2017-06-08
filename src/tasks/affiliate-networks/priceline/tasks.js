@@ -33,6 +33,7 @@ const prepareCommission = (o_obj) => {
 }
 
 function PricelineApi() {
+
     if (!(this instanceof PricelineApi)) return new PricelineApi();
 
     // changing the numberOfDays from 30 to 29, as the api sends the following reponse for 30 days
@@ -44,16 +45,21 @@ function PricelineApi() {
       }
     }
     */
-    // numberOfDays for > 30 days for feb/march overlay is throwing error [even if it is less than 29 days]
-    // changing it to 27 days to cover the difference in number of days
+    // running the commissions for 90 days (making 6 calls of 15 days each)
     const getCommissionDetails = singleRun(function* () {
-        const events = yield api.get(27).map(prepareCommission);
+
+        var events = [];
+        for(var itr=6;itr>0;itr--){
+          events = events.concat(yield api.get(15, itr).map(prepareCommission));
+        }
+
         return yield sendEvents.sendCommissions('priceline', events);
     });
 
     const tasks = {
         getCommissionDetails: getCommissionDetails
     };
+
     return tasks;
 }
 
