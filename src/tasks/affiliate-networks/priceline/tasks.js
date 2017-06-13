@@ -22,7 +22,7 @@ const prepareCommission = (o_obj) => {
     transaction_id: o_obj.air_offer_id || o_obj.requestid || o_obj.tripid,
     order_id: o_obj.id || o_obj.requestid || o_obj.tripid || o_obj.air_offer_id,
     outclick_id: o_obj.refclickid,
-    purchase_amount: Number(o_obj.total) || 0,
+    purchase_amount: Number(o_obj.sub_total) || 0,
     commission_amount: Number(o_obj.commission) || 0,
     state: o_obj.transformedStatus,
     currency: o_obj.currency ? o_obj.currency.toLowerCase() : 'usd' ,
