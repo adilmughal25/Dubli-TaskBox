@@ -13,23 +13,62 @@ const AFFILIATE_NAME = 'affiliategateway';
 
 const taskCache = {};
 
+const merge = require('../support/easy-merge')('ProgramId', {
+  coupons: 'ProgramId'
+});
+
 function setup(s_region) {
-  if (taskCache[s_region]) return taskCache[s_region];
+  let eventName = 'affiliategateway-' + s_region;
+  if (taskCache[eventName]) return taskCache[eventName];
 
   var tasks = {};
 
-  // get commission report
+  tasks.getMerchants = singleRun(function* () {
+    const client = yield clientPool.getClient(s_region);
+
+    var results = yield {
+      merchants: client.GetProgramData({
+        Criteria: {  // ApprovalStatusId, ProgramId, MerchantId, ProgramName, MerchantName
+          ApprovalStatusId: 2 //2: Approved, 1: Pending, 3: Declined
+        }
+      }),
+      coupons: client.GetAffiliateVouchers({
+        //TODO add more Criteria if needed once Vouchers are available form AG
+        Criteria: { //StartDateTime, EndDateTime, Status, MerchantId, ProgramId
+        }
+      })
+    };
+
+    var resolve = require('path').resolve;
+    var write = require('graceful-fs').writeFileSync;
+    var results = require(resolve(__dirname, '../../../../test/output/tag-input.json'));
+
+    results.merchants = results.merchants.Programs.Program;
+    results.coupons = results.coupons.Vouchers.length ? results.coupons.Vouchers : JSON.parse('[]');
+
+    //var ids = _.pluck(results.merchants, 'ProgramId');
+
+    debug("merchants count: %d", results.merchants.length);
+    debug("coupons count: %d", results.coupons.length);
+    debug("programs count: %d", ids.length);
+
+    var merged = merge(results);
+    return sendEvents.sendMerchants(eventName, merged);
+  });
+
+  // get commissions 
+  // TODO not tested yet
   tasks.getCommissionDetails = singleRun(function* () {
     const client = yield clientPool.getClient(s_region);
     const startDate = new Date(Date.now() - (90 * 86400 * 1000));
-    const endDate = new Date(Date.now() - (60 * 1000));
+    const endDate = Date.now();
 
     debug("fetching all transactions between %s and %s", startDate, endDate);
 
     const results = yield client.GetSalesData({
-      Criteria:{
-        StartDateTime:  moment(startDate).format('YYYY-MM-DD 00:00:00'),
-        EndDateTime:    moment(endDate).format('YYYY-MM-DD 23:59:59')
+      Criteria: {
+        StartDateTime: moment(startDate).format('YYYY-MM-DD 00:00:00'),
+        EndDateTime: moment(endDate).format('YYYY-MM-DD 23:59:59')
       }
     });
 
@@ -41,12 +80,10 @@ function setup(s_region) {
     }
 
     const events = transactions.map(prepareCommission.bind(null, s_region));
-
-    return yield sendEvents.sendCommissions('affiliategateway-'+s_region, events);
+    return yield sendEvents.sendCommissions(eventName, events);
   });
 
-  taskCache[s_region] = tasks;
-
+  taskCache[eventName] = tasks;
   return tasks;
 }
 
