@@ -234,6 +234,8 @@ function initializeMerchantImporters(tasker) {
     "Affili.Net (Spain) Merchants": affilinetSpainApi.getMerchants,
     "Affili.Net (Switzerland) Merchants": affilinetSwitzerlandApi.getMerchants,
     "Affili.Net (UK) Merchants": affilinetUKApi.getMerchants,
+    "Affiliate Gateway (Asia) Merchants": affiliateGatewayAsiaApi.getMerchants,
+    //"Affiliate Gateway (Sg) Merchants": affiliateGatewaySgApi.getMerchants, //TODO LM to be implemented
     "AffiliateWindow Merchants": affiliatewindowApi.getMerchants,
     // "ArabyAds Merchants" : arabyadsApi.getMerchants,
     "AvantLink (CA) Merchants": avantLinkCAApi.getMerchants,
