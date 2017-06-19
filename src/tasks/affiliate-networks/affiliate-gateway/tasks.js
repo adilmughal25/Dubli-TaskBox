@@ -39,10 +39,6 @@ function setup(s_region) {
       })
     };
 
-    var resolve = require('path').resolve;
-    var write = require('graceful-fs').writeFileSync;
-    var results = require(resolve(__dirname, '../../../../test/output/tag-input.json'));
-
     results.merchants = results.merchants.Programs.Program;
     results.coupons = results.coupons.Vouchers.length ? results.coupons.Vouchers : JSON.parse('[]');
 
