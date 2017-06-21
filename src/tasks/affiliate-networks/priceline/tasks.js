@@ -49,7 +49,7 @@ function PricelineApi() {
     const getCommissionDetails = singleRun(function* () {
 
         var events = [];
-        for(var itr=6;itr>0;itr--){
+        for(var itr=18;itr>0;itr--){
           events = events.concat(yield api.get(15, itr).map(prepareCommission));
         }
 
