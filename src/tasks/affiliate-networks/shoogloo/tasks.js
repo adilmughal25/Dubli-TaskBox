@@ -151,7 +151,7 @@ const ShooglooGenericApi = function(s_entity) {
 
     let results = [];
     let transactions = [];
-    const startDate = new Date(Date.now() - (90 * 86400 * 1000));
+    const startDate = new Date(Date.now() - (270 * 86400 * 1000));
     const endDate = new Date(Date.now() - (60 * 1000));
     results = yield that.doApi('EventConversions', {
       start_date: that.clientSoap.dateFormat(startDate),
@@ -261,7 +261,7 @@ function prepareCommission(o_obj) {
     // are zero(as the fields might be missing), due to which the above calculations
     // computes to zero, hence checking it once again, and defaulting if needed
     if(purchase_amount == 0){
-      purchase_amount = 1;
+      purchase_amount = 0.01;
     }
 
     isDefaulted = true;
