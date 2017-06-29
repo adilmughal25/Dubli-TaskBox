@@ -104,24 +104,18 @@ const CURRENCY_MAP = {
  */
 function prepareCommission(region, o_obj) {
 
-  // https://www.tagadmin.asia/ws/AffiliateSOAP.wsdl
-  // https://www.tagadmin.sg/ws/AffiliateSOAP.wsdl
-  // using auto as date for a transactions added a bug. hence using "o_obj.TransactionDateTime"
-  // for all transactions instead. (check STATUS_MAP for statuses)
-
   var event = {
     affiliate_name: AFFILIATE_NAME,
     merchant_name: o_obj.ProgramName || '',
-    merchant_id: '',
+    merchant_id: o_obj.ProgramId || '',
     transaction_id: o_obj.TransactionId,
     order_id: o_obj.TransactionId,
-    outclick_id: (o_obj.AffiliateSubId || ''),  // is an optional element
-    currency: CURRENCY_MAP[region],
+    outclick_id: (o_obj.AffiliateSubId || ''),  
+    currency: CURRENCY_MAP[region],  //TODO: read currency from transaction
     purchase_amount: Number(o_obj.OrderAmount),
     commission_amount: Number(o_obj.AffiliateCommissionAmount),
-    state: STATE_MAP[o_obj.ApprovalStatusId],   // .. or string representation from "ApprovalStatus"
-    //effective_date: 'auto'
-    effective_date: new Date(o_obj.TransactionDateTime)
+    state: STATE_MAP[o_obj.ApprovalStatusId],
+    effective_date: new Date(moment(o_obj.TransactionDateTime, "DD/MM/YYYY 00:00:00"))
   };
 
   return event;
