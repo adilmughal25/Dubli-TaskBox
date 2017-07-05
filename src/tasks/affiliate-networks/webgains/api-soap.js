@@ -23,7 +23,7 @@ const API_SERVICE_WSDL = 'http://ws.webgains.com/aws.php?wsdl';
 const API_CFG = {
   ominto: {
     user: 'merchants@ominto.com',
-    pass: 'DubLi2017',
+    pass: 'Dubot2017#',
     siteId: 177143
   },
 };
