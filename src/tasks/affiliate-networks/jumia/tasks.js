@@ -153,8 +153,7 @@ const JumiaGenericApi = function(s_entity) {
       logo: offer.thumbnail_image_url,
       name : offer.offer_name,
       description: offer.description,
-      //unique_link : link.unique_link.replace('&s1=', '&s2='),
-      unique_link : link.unique_link,
+      unique_link : link.unique_link.replace('&s1=', '&s2='),
       offer_id : offer.offer_id,
       offer_name : offer.offer_name,
       category : offer.vertical_name,  //always coming as Jumia.. can be commented as well.
