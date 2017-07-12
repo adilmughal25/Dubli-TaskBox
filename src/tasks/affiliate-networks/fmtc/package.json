@@ -1,0 +1,23 @@
+{
+  "name": "FMTC",
+  "version": "0.0.1",
+  "main": "index.js",
+  "description": "Sample script for difference",
+  "dependencies": {
+    "arraylist": "0.1.0",
+    "aws-sdk": "^2.2.6",
+    "csv-parse": "^1.1.10",
+    "lodash": "~4.14.0",
+    "mysql": "~2.12.0",
+    "nodemailer": "^2.7.2",
+    "co": "^4.6.0",
+    "uuid": "^2.0.1",
+    "node-uuid": "^1.4.3",
+    "ominto-utils": "git+ssh://git@github.com/dubli/utils.git#dev",
+    "child_process":"^1.0.2",
+    "fs":"^0.0.2",
+    "xml2js": "^0.4.17",
+    "csvtojson" : "^1.1.0"
+
+  }
+}
