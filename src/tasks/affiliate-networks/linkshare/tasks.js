@@ -213,6 +213,28 @@ function prepareCommission(o_obj) {
   o_obj = JSON.parse(JSON.stringify(o_obj).replace('Member ID (U1)','Sub_ID'));
   var merchant_name = _.get(o_obj, 'Advertiser Name') ? _.get(o_obj, 'Advertiser Name').replace('\\','') : '';
 
+  var currency = _.get(o_obj, 'Currency').toLowerCase();
+
+  // remove special chars [','] from amount
+  // TODO: for eur currency - check the format('.' instead of ',' for digit separation),
+  // currently its the same as usd, hence no currency check
+  var purchase_amount;
+  if(typeof _.get(o_obj, 'Sales') === 'string'){
+    purchase_amount = _.get(o_obj, 'Sales').replace(/\,/g, '');
+  } else {
+    purchase_amount = _.get(o_obj, 'Sales');
+  }
+
+  // remove special chars [','] from amount
+  // TODO: for eur currency - check the format('.' instead of ',' for digit separation),
+  // currently its the same as usd, hence no currency check
+  var commission_amount;
+  if(typeof _.get(o_obj, 'Total Commission') === 'string'){
+    commission_amount = _.get(o_obj, 'Total Commission').replace(/\,/g, '');
+  } else {
+    commission_amount = _.get(o_obj, 'Total Commission');
+  }
+
   // adding extra validations before parsing
   if(o_obj){
     commission.affiliate_name = AFFILIATE_NAME,
@@ -222,9 +244,11 @@ function prepareCommission(o_obj) {
     commission.outclick_id = o_obj.Sub_ID;
     commission.transaction_id = _.get(o_obj, 'Transaction ID');
     commission.order_id = _.get(o_obj, 'Order ID');
-    commission.purchase_amount = Number(_.get(o_obj, 'Sales'));
-    commission.commission_amount = Number(_.get(o_obj, 'Total Commission'));
-    commission.currency = _.get(o_obj, 'Currency');
+    // commission.purchase_amount = _.toNumber(_.get(o_obj, 'Sales'));
+    // commission.commission_amount = _.toNumber(_.get(o_obj, 'Total Commission'));
+    commission.purchase_amount = Number(purchase_amount);
+    commission.commission_amount = Number(commission_amount);
+    commission.currency = currency;
     commission.effective_date = new Date(_.get(o_obj, 'Process Date') + " " + _.get(o_obj, 'Process Time'));
 
     // OM-1846 - By default all the transactions with negative amounts are marked as confirmed
