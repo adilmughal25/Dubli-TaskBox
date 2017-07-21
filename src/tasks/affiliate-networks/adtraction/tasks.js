@@ -49,23 +49,19 @@ const adtractionGenericApi = function (s_entity) {
     results.coupons = JSON.parse(results.coupons);
 
     var merchants = mergeResults(results);
-
-    var resolve = require('path').resolve;
-    var write = require('graceful-fs').writeFileSync;
-    var f = resolve(__dirname, '../../../../test/output/raw-merchants-adtraction-results.json');
-    write(f, JSON.stringify(results), 'utf-8');
-    console.log("saved >>> ", f);
-
     merchants = merchants.map(prepareMerchant).filter(exists);
     return yield sendEvents.sendMerchants(that.eventName, merchants);
   });
 
   this.getCommissionDetails = singleRun(function* () {
-    const startDate = moment().tz("America/Los_Angeles").subtract(90, 'days').format('YYYY-MM-DD');
-    const endDate = moment().tz("America/Los_Angeles").format('YYYY-MM-DD');
-    const results = yield that.client.getPaginated('/publisher/report/transaction-details', { startDate: startDate, endDate: endDate });
-    const events = results.map(prepareCommission).filter(exists);
-    return yield sendEvents.sendCommissions(that.eventName, events);
+    //TODO: Finish this.
+    
+    // const startDate = moment().tz("America/Los_Angeles").subtract(90, 'days').format('YYYY-MM-DD');
+    // const endDate = moment().tz("America/Los_Angeles").format('YYYY-MM-DD');
+    // const results = yield that.client.getPaginated('/publisher/report/transaction-details', { startDate: startDate, endDate: endDate });
+    // const events = results.map(prepareCommission).filter(exists);
+    // return yield sendEvents.sendCommissions(that.eventName, events);
+    return;
   });
 };
 
