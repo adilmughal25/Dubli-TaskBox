@@ -4,7 +4,6 @@ const _ = require('lodash');
 const co = require('co');
 const debug = require('debug')('adtraction:processor');
 const utils = require('ominto-utils');
-const moment = require('moment-timezone');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 
