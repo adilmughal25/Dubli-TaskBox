@@ -189,8 +189,9 @@ const JumiaGenericApi = function (s_entity) {
 
         if(response.statusCode == 200) {
           if(jsonBody && (!jsonBody.error) && jsonBody.currencies && jsonBody.currencies.length > 0) {
-            console.log("conversion rate ", jsonBody.currencies[0].bid);
             purchaseAmount = Number(o_obj.order_total || "0") / jsonBody.currencies[0].bid;
+            console.log("original amount %s, converted amount %s, conversion rate %s currency %s, conversion date %s",
+            o_obj.order_total, purchaseAmount, jsonBody.currencies[0].bid, currencyCode, convDate);
           }
         }
       });
@@ -198,8 +199,6 @@ const JumiaGenericApi = function (s_entity) {
     else {
       console.log("ERROR: Setting purchase amount to zero as currency code not understood.  ", currencyCode);
     }
-
-    console.log("purchase amount ", purchaseAmount);
 
     return {
       affiliate_name: o_obj.offer_name,
