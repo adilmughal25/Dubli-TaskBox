@@ -117,7 +117,7 @@ const JumiaGenericApi = function (s_entity) {
     const event_conversions = results[0].conversions.conversion;
     const conversions = Array.isArray(event_conversions) ? event_conversions : [];
     transactions = yield conversions.map(that.prepareCommission).filter(exists);
-    return yield sendEvents.sendCommissions(that.eventName, transactions);
+    return sendEvents.sendCommissions(that.eventName, transactions);
   });
 
   // api call generic function
