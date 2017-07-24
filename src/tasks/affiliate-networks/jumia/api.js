@@ -16,7 +16,7 @@ const API_CFG = {
   }  
 };
 
-const REPORTS_WSDL = '/api/15/reports.asmx?wsdl';
+const REPORTS_WSDL = '/affiliates/api/5/reports.asmx?wsdl';
 const OFFERS_WSDL = '/affiliates/api/2/offers.asmx?wsdl';
 
 function JumiaClient(s_entity) {
