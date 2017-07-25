@@ -9,8 +9,6 @@ const singleRun = require('../support/single-run');
 const clientPool = require('./api');
 const moment = require('moment');
 
-const AFFILIATE_NAME = 'affiliategateway';
-
 const taskCache = {};
 
 const merge = require('../support/easy-merge')('ProgramId', {
@@ -33,7 +31,8 @@ function setup(s_region) {
         }
       }),
       coupons: client.GetAffiliateVouchers({
-        //TODO add more Criteria if needed once Vouchers are available form AG
+        //TODO add more Criteria if needed once Vouchers are available form AG.  
+        //As of today, it's not available from TAG
         Criteria: { //StartDateTime, EndDateTime, Status, MerchantId, ProgramId
         }
       })
@@ -42,24 +41,19 @@ function setup(s_region) {
     results.merchants = results.merchants.Programs.Program;
     results.coupons = results.coupons.Vouchers.length ? results.coupons.Vouchers : JSON.parse('[]');
 
-    //var ids = _.pluck(results.merchants, 'ProgramId');
-
-    debug("merchants count: %d", results.merchants.length);
+    debug("programs count: %d", results.merchants.length);
     debug("coupons count: %d", results.coupons.length);
-    debug("programs count: %d", ids.length);
 
     var merged = merge(results);
     return sendEvents.sendMerchants(eventName, merged);
   });
 
-  // get commissions 
-  // TODO not tested yet
   tasks.getCommissionDetails = singleRun(function* () {
     const client = yield clientPool.getClient(s_region);
     const startDate = new Date(Date.now() - (90 * 86400 * 1000));
     const endDate = Date.now();
 
-    debug("fetching all transactions between %s and %s", startDate, endDate);
+    console.log("fetching all transactions between %s and %s", startDate, endDate);
 
     const results = yield client.GetSalesData({
       Criteria: {
@@ -103,19 +97,18 @@ const CURRENCY_MAP = {
  * @returns {Object}
  */
 function prepareCommission(region, o_obj) {
+  var effDate = o_obj.SaleApprovalDateTime || o_obj.TransactionDateTime;
 
   var event = {
-    affiliate_name: AFFILIATE_NAME,
-    merchant_name: o_obj.ProgramName || '',
-    merchant_id: o_obj.ProgramId || '',
+    affiliate_name: o_obj.ProgramName,
     transaction_id: o_obj.TransactionId,
     order_id: o_obj.TransactionId,
     outclick_id: (o_obj.AffiliateSubId || ''),  
-    currency: CURRENCY_MAP[region],  //TODO: read currency from transaction
+    currency: CURRENCY_MAP[region],  //TAG (asia) is giving the transactions in USD 
     purchase_amount: Number(o_obj.OrderAmount),
     commission_amount: Number(o_obj.AffiliateCommissionAmount),
     state: STATE_MAP[o_obj.ApprovalStatusId],
-    effective_date: new Date(moment(o_obj.TransactionDateTime, "DD/MM/YYYY 00:00:00"))
+    effective_date: new Date(moment(effDate, "DD/MM/YYYY 00:00:00"))
   };
 
   return event;
