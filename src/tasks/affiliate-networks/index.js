@@ -163,6 +163,9 @@ const shareASaleDubliApi = shareASaleGenericApi('dubli');
 const fanGenericApi = require('./fan/tasks');
 const fanApi = fanGenericApi('fan');
 
+const jumiaGenericApi = require('./jumia/tasks');
+const jumiaApi = jumiaGenericApi('jumia');
+
 const snapdealGenericApi = require('./snapdeal/tasks');
 const snapdealApi = snapdealGenericApi();
 
@@ -234,6 +237,8 @@ function initializeMerchantImporters(tasker) {
     "Affili.Net (Spain) Merchants": affilinetSpainApi.getMerchants,
     "Affili.Net (Switzerland) Merchants": affilinetSwitzerlandApi.getMerchants,
     "Affili.Net (UK) Merchants": affilinetUKApi.getMerchants,
+    "Affiliate Gateway (Asia) Merchants": affiliateGatewayAsiaApi.getMerchants,
+    //"Affiliate Gateway (Sg) Merchants": affiliateGatewaySgApi.getMerchants, //TODO LM to be implemented
     "AffiliateWindow Merchants": affiliatewindowApi.getMerchants,
     // "ArabyAds Merchants" : arabyadsApi.getMerchants,
     "AvantLink (CA) Merchants": avantLinkCAApi.getMerchants,
@@ -244,6 +249,7 @@ function initializeMerchantImporters(tasker) {
     "CommissionFactory Merchants": commissionfactoryApi.getMerchants,
     "Fan Merchants": fanApi.getMerchants,
     "ImpactRadius Merchants": impactRadiusApi.getMerchants,
+    "Jumia Merchants": jumiaApi.getMerchants,    
     "LinkShare Merchants": linkShareApi.getMerchants,
     // "Lomadee Merchants": lomadeeApi.getMerchants,
     "OMG (India) Merchants": omgpmIndiaApi.getMerchants,
@@ -345,6 +351,7 @@ function initializeCommissionsProcessors(tasker) {
     "Groupon (US) Commissions": grouponUSApi.getCommissionDetails,
     "Groupon (ROW) Commissions": grouponROWApi.getCommissionDetails,
     "ImpactRadius Commissions": impactRadiusApi.getCommissionDetails,
+    "Jumia Commissions": jumiaApi.getCommissionDetails,    
     "LinkShare Commissions": linkShareApi.getCommissionDetails,
     // "Lomadee Commissions": lomadeeApi.getCommissionDetails,
     "OMG (India) Commissions": omgpmIndiaApi.getCommissionDetails,

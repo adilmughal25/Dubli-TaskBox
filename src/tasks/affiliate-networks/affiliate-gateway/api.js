@@ -106,16 +106,11 @@ AffiliateGatewaySoapClient.prototype.setup = co.wrap(function* () {
     }};
 
     let methods = Object.keys(this._client.describe().TAGDataService.TAGDataPort);
-
-    // extract only GetSalesData method (other methods failed for sg [this must be due to indexing])
-    if(methods.indexOf(GetSalesData) > -1)
-      methods = [GetSalesData];
-
     methods.reduce( (self, method) => {
       let fn = Client[method].bind(Client);
       // always inject the Authentication params into functions request parameters
       let newMethod = (args, cb) => fn(_.merge(authArgs, args), cb);
-      _.set(self._client, method, denodeify(newMethod));
+      _.set(Client, method, denodeify(newMethod));
       debug("registering api call %s", method);
     }, this);
 

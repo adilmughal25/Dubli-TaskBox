@@ -9,27 +9,56 @@ const singleRun = require('../support/single-run');
 const clientPool = require('./api');
 const moment = require('moment');
 
-const AFFILIATE_NAME = 'affiliategateway';
-
 const taskCache = {};
 
+const merge = require('../support/easy-merge')('ProgramId', {
+  coupons: 'ProgramId'
+});
+
 function setup(s_region) {
-  if (taskCache[s_region]) return taskCache[s_region];
+  let eventName = 'affiliategateway-' + s_region;
+  if (taskCache[eventName]) return taskCache[eventName];
 
   var tasks = {};
 
-  // get commission report
+  tasks.getMerchants = singleRun(function* () {
+    const client = yield clientPool.getClient(s_region);
+
+    var results = yield {
+      merchants: client.GetProgramData({
+        Criteria: {  // ApprovalStatusId, ProgramId, MerchantId, ProgramName, MerchantName
+          ApprovalStatusId: 2 //2: Approved, 1: Pending, 3: Declined
+        }
+      }),
+      coupons: client.GetAffiliateVouchers({
+        //TODO add more Criteria if needed once Vouchers are available form AG.  
+        //As of today, it's not available from TAG
+        Criteria: { //StartDateTime, EndDateTime, Status, MerchantId, ProgramId
+        }
+      })
+    };
+
+    results.merchants = results.merchants.Programs.Program;
+    results.coupons = results.coupons.Vouchers.length ? results.coupons.Vouchers : JSON.parse('[]');
+
+    debug("programs count: %d", results.merchants.length);
+    debug("coupons count: %d", results.coupons.length);
+
+    var merged = merge(results);
+    return sendEvents.sendMerchants(eventName, merged);
+  });
+
   tasks.getCommissionDetails = singleRun(function* () {
     const client = yield clientPool.getClient(s_region);
     const startDate = new Date(Date.now() - (90 * 86400 * 1000));
-    const endDate = new Date(Date.now() - (60 * 1000));
+    const endDate = new Date(Date.now());
 
-    debug("fetching all transactions between %s and %s", startDate, endDate);
+    console.log("fetching all transactions between %s and %s", startDate, endDate);
 
     const results = yield client.GetSalesData({
-      Criteria:{
-        StartDateTime:  moment(startDate).format('YYYY-MM-DD 00:00:00'),
-        EndDateTime:    moment(endDate).format('YYYY-MM-DD 23:59:59')
+      Criteria: {
+        StartDateTime: moment(startDate).format('YYYY-MM-DD 00:00:00'),
+        EndDateTime: moment(endDate).format('YYYY-MM-DD 23:59:59')
       }
     });
 
@@ -41,12 +70,10 @@ function setup(s_region) {
     }
 
     const events = transactions.map(prepareCommission.bind(null, s_region));
-
-    return yield sendEvents.sendCommissions('affiliategateway-'+s_region, events);
+    return yield sendEvents.sendCommissions(eventName, events);
   });
 
-  taskCache[s_region] = tasks;
-
+  taskCache[eventName] = tasks;
   return tasks;
 }
 
@@ -70,25 +97,18 @@ const CURRENCY_MAP = {
  * @returns {Object}
  */
 function prepareCommission(region, o_obj) {
-
-  // https://www.tagadmin.asia/ws/AffiliateSOAP.wsdl
-  // https://www.tagadmin.sg/ws/AffiliateSOAP.wsdl
-  // using auto as date for a transactions added a bug. hence using "o_obj.TransactionDateTime"
-  // for all transactions instead. (check STATUS_MAP for statuses)
+  var effDate = o_obj.SaleApprovalDateTime || o_obj.TransactionDateTime;
 
   var event = {
-    affiliate_name: AFFILIATE_NAME,
-    merchant_name: o_obj.ProgramName || '',
-    merchant_id: '',
+    affiliate_name: o_obj.ProgramName,
     transaction_id: o_obj.TransactionId,
     order_id: o_obj.TransactionId,
-    outclick_id: (o_obj.AffiliateSubId || ''),  // is an optional element
-    currency: CURRENCY_MAP[region],
+    outclick_id: (o_obj.AffiliateSubId || ''),  
+    currency: CURRENCY_MAP[region],  //TAG (asia) is giving the transactions in USD 
     purchase_amount: Number(o_obj.OrderAmount),
     commission_amount: Number(o_obj.AffiliateCommissionAmount),
-    state: STATE_MAP[o_obj.ApprovalStatusId],   // .. or string representation from "ApprovalStatus"
-    //effective_date: 'auto'
-    effective_date: new Date(o_obj.TransactionDateTime)
+    state: STATE_MAP[o_obj.ApprovalStatusId],
+    effective_date: new Date(moment(effDate, "DD/MM/YYYY 00:00:00"))
   };
 
   return event;
