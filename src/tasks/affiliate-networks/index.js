@@ -369,7 +369,7 @@ function initializeCommissionsProcessors(tasker) {
     "PublicIdeas (UK) Commissions": publicideasUKApi.getCommissionDetails,
     "Shoogloo Commissions": shooglooApi.getCommissionDetails,
     "ShopStylers Commissions": shopstylers.getCommissionDetails,
-    "SnapDeal Commissions": snapdealApi.getCommissionDetails,
+    // "SnapDeal Commissions": snapdealApi.getCommissionDetails, // OM-2252
     "TradeDoubler (AT) Commissions": tradedoublerAustriaApi.getCommissionDetails,
     "TradeDoubler (BE) Commissions": tradedoublerBelgiumApi.getCommissionDetails,
     "TradeDoubler (DK) Commissions": tradedoublerDenmarkApi.getCommissionDetails,
