@@ -4,6 +4,7 @@ const _ = require('lodash');
 const co = require('co');
 const request = require('request-promise');
 const debug = require('debug')('adtraction:api-client');
+const moment = require('moment-timezone');
 
 const API_CFG = {
   ominto: {
@@ -16,19 +17,14 @@ const API_CFG = {
 const API_URLS = {
   programs: 'https://api.adtraction.com/v1/affiliate/programs',
   coupons: 'https://api.adtraction.com/v1/affiliate/couponcodes',
-  commissions: 'https://api.adtraction.com/v1/affiliate/TODO-ADD' //TODO fix the url
+  commissions: 'https://api.adtraction.com/v1/affiliate/transactions/combined' 
 };
 
 // helpers
 const ary = x => x ? (_.isArray(x) ? x : [x]) : [];
-const formatDate = d => moment(d).format('YYYY-MM-DD');
-const isStringDate = d => _.isString(d) && /^\d{4}(-\d{2}){2}$/.test(d);
-const getDate = d => {
-  if (_.isDate(d)) return formatDate(d);
-  if (isStringDate(d)) return d;
-  throw new Error("Not a date: ", d);
-};
+const formatDate = d => moment(d).format('YYYY-MM-DDT00:00:00.000Z');
 
+// client
 function createClient(s_entity) {
   if (!s_entity) s_entity = 'ominto';
 
@@ -61,10 +57,14 @@ function createClient(s_entity) {
   };
 
   client.getCommissions = function (start, end) {
+    var transRequest = this.defaults({
+      body : "{\"fromDate\": \"" + formatDate(start) + "\",  \"toDate\": \"" + formatDate(end) + "\"}"
+    })
+
     const requestUrl = this.url('commissions');
-    console.log("URL", requestUrl);
-    //TODO add start and end dates to the request
-    const promise = this.post(requestUrl);
+    console.log("Invoking Commissions URL: %s, from %s, to %s", requestUrl, formatDate(start), formatDate(end));
+
+    const promise = transRequest.post(requestUrl);
     return promise;
   };
 

@@ -327,6 +327,7 @@ function initializeCommissionsProcessors(tasker) {
     "APD Performance Commissions": apdPerformanceApi.getCommissionDetails,
     "AdCell Commissions": adCellApi.getCommissionDetails,
     "Admitad Commissions": admitadApi.getCommissionDetails,
+    "Adtraction Commissions": adtractionApi.getCommissionDetails,    
     "Affili.Net (Austria) Commissions": affilinetAustriaApi.getCommissionDetails,
     "Affili.Net (France) Commissions": affilinetFranceApi.getCommissionDetails,
     "Affili.Net (Germany) Commissions": affilinetGermanyApi.getCommissionDetails,

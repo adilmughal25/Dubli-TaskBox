@@ -11,14 +11,6 @@ const AFFILIATE_NAME = 'adtraction';
 
 const exists = x => !!x;
 
-const STATE_MAP = {
-  paid: 'paid',
-  pending: 'initiated',
-  locked: 'confirmed',
-  delayed: 'confirmed',
-  unconfirmed: 'initiated'
-};
-
  const STATUS_MAP = {
   0: 'Rejected',
   1: 'Approved',
@@ -49,23 +41,21 @@ const adtractionGenericApi = function (s_entity) {
 
     var merchants = mergeResults(results);
     merchants = merchants.map(prepareMerchant).filter(exists);
-    return yield sendEvents.sendMerchants(that.eventName, merchants);
+    return sendEvents.sendMerchants(that.eventName, merchants);
   });
 
   this.getCommissionDetails = singleRun(function* () {
-    //TODO: Finish this.
-    
-    // const startDate = moment().tz("America/Los_Angeles").subtract(90, 'days').format('YYYY-MM-DD');
-    // const endDate = moment().tz("America/Los_Angeles").format('YYYY-MM-DD');
-    // const results = yield that.client.getPaginated('/publisher/report/transaction-details', { startDate: startDate, endDate: endDate });
-    // const events = results.map(prepareCommission).filter(exists);
-    // return yield sendEvents.sendCommissions(that.eventName, events);
-    return;
+    const startDate = new Date(Date.now() - (90 * 86400 * 1000));  //90 days
+    const endDate = new Date(Date.now());
+
+    var results = yield that.client.getCommissions(startDate, endDate);
+    results = JSON.parse(results);
+    const events = results.map(prepareCommission).filter(exists);
+    return sendEvents.sendCommissions(that.eventName, events);
   });
 };
 
 function prepareMerchant(o_obj) {
-  console.log("processing: ", o_obj);
 
   let merchant = o_obj.merchant;
   let coupons = o_obj.coupons;
@@ -126,19 +116,22 @@ function prepareCoupons(o_obj) {
 }
 
 function prepareCommission(o_obj) {
+  var status = 'initiated';
+  status = o_obj.paid === 'true' ? 'paid' : status;
+  status = o_obj.cancelled === 'true' ? 'cancelled' : status;
 
   const event = {
     affiliate_name: AFFILIATE_NAME,
-    merchant_name: o_obj.program_name || '',
-    merchant_id: o_obj.program_id || '',
-    transaction_id: o_obj.transaction_id,
-    order_id: o_obj.order_id,
-    outclick_id: o_obj.sid,
-    currency: 'usd',
-    purchase_amount: o_obj.sale_amount,
+    merchant_name: o_obj.programName || '',
+    merchant_id: o_obj.programId + "-(" + o_obj.channelId + ")",
+    transaction_id: o_obj.orderId,
+    order_id: o_obj.orderId,
+    outclick_id: o_obj.epi,
+    currency: o_obj.currency.toLowerCase(),
+    purchase_amount: o_obj.orderValue,
     commission_amount: o_obj.commission,
-    state: STATE_MAP[o_obj.status],
-    effective_date: o_obj.date
+    state: status,
+    effective_date: new Date(o_obj.transactionDate)
   };
 
   return event;
