@@ -19,8 +19,8 @@ const exists = x => !!x;
 const merge = require('../support/easy-merge')(
   'merchantid',
   {
-    cashback: 'merchantid',
-    deals: 'merchantid',
+    // cashback: 'merchantid', // OM-1568
+    deals: 'merchantid'
   }
 );
 
@@ -45,9 +45,10 @@ const ShareASaleGenericApi = function(s_entity) {
   this.getMerchants = singleRun(function*() {
     debug('scanning all merchants');
     const results = {
-      merchants: yield that.client.getMerchants(),
-      cashback: yield that.client.getMerchantStatus(),
-      deals: yield that.client.getDeals(),
+      // merchants: yield that.client.getMerchants(), // OM-1568
+      // cashback: yield that.client.getMerchantStatus(), // OM-1568
+      merchants: yield that.client.getMerchantStatus(),
+      deals: yield that.client.getDeals()
     };
 
     const merchants = merge(results);
