@@ -209,6 +209,8 @@ const shooglooApi = shooglooGenericApi('shoogloo');
 const addReferralPropertiesApi = require('./user-referrals/tasks');
 const userReferralApi = addReferralPropertiesApi();
 const pricelineApi = require('./priceline/tasks')();
+const adtractionGenericApi = require('./adtraction/tasks');
+const adtractionApi = adtractionGenericApi();
 
 function init(tasker) {
   initializeMerchantImporters(tasker);
@@ -230,6 +232,7 @@ function initializeMerchantImporters(tasker) {
     "APD Performance Merchants": apdPerformanceApi.getMerchants,
     "AdCell Merchants": adCellApi.getMerchants,
     "Admitad Merchants": admitadApi.getMerchants,
+    "Adtraction Merchants": adtractionApi.getMerchants,    
     "Affili.Net (Austria) Merchants": affilinetAustriaApi.getMerchants,
     "Affili.Net (France) Merchants": affilinetFranceApi.getMerchants,
     "Affili.Net (Germany) Merchants": affilinetGermanyApi.getMerchants,
@@ -327,6 +330,7 @@ function initializeCommissionsProcessors(tasker) {
     "APD Performance Commissions": apdPerformanceApi.getCommissionDetails,
     "AdCell Commissions": adCellApi.getCommissionDetails,
     "Admitad Commissions": admitadApi.getCommissionDetails,
+    "Adtraction Commissions": adtractionApi.getCommissionDetails,    
     "Affili.Net (Austria) Commissions": affilinetAustriaApi.getCommissionDetails,
     "Affili.Net (France) Commissions": affilinetFranceApi.getCommissionDetails,
     "Affili.Net (Germany) Commissions": affilinetGermanyApi.getCommissionDetails,
