@@ -163,7 +163,7 @@ function ShareASaleClient(s_entity) {
 ShareASaleClient.prototype.getByAction = co.wrap(function* (actionVerb, params) {
   params = params || {};
   debug('getByAction %s with params %o', actionVerb, params);
-  
+
   const apiCfg = API_TYPES[actionVerb];
 	let arg = {
     headers: this.getCustomHeaders(apiCfg.params.action),
@@ -253,7 +253,15 @@ ShareASaleClient.prototype.getMerchantStatus = (params) => {
     .then(data => data.merchantstatusreport.merchantstatusreportrecord)
     .then(data => {
       if (!data) return [];
-      return ary(data);
+
+      // OM-1568
+      var filteredData = [];
+      data.forEach(function(record){
+        if(/yes/gi.test(record.approved))
+          filteredData.push(record);
+      });
+
+      return ary(filteredData);
     })
   ;
 };
