@@ -59,18 +59,28 @@ const ZanoxGenericApi = function(s_region, s_entity) {
     // merchants which we have actually applied for. this bit filters the list
     // down to just those merchants who we are joined to.
     merchants = onlyValid(merchants, validIds);
+    console.log("Zanox: total merchants before adspace cloning: " + merchants.length);
 
+    var newMerchants = [];
     // get all the commission [cashback] models for each merchants
     // for our account all the admedia for all merchants - "@adspaceId": "2067070"
     for(var i = 0; i < merchants.length; i++){
-      // Tracking categories and commissions [cashback]
-      // following are test calls
-      // let cashback = yield that.apiCall('$getTrackingCategories', 'trackingCategoryItem.trackingCategoryItem', {'programid':400, 'adspaceid': 2067070});
-      // let cashback = yield that.apiCall('$getTrackingCategories', 'trackingCategoryItem.trackingCategoryItem', {'programid':18274, 'adspaceid': 2067070});
-      merchants[i].cashback = yield that.apiCall('$getTrackingCategories', 'trackingCategoryItem.trackingCategoryItem', {'programid':_.get(merchants[i], "merchant.@id"), 'adspaceid': 2067070}) || [];
+        //console.log("Zanox: processing merchant (id: %s) at index %d/%d", merchants[i].merchant['@id'], i, merchants.length);
+        var adSpMerchants = yield that.cloneDuplicateAdSpaceMerchants(merchants[i]);
+        //console.log("Zanox: no. of adspace merchants (id: %s) at index %d/%d is %d", merchants[i].merchant['@id'], i, merchants.length, adSpMerchants.length);
+
+        for (var j = 0; j < adSpMerchants.length; j++) {
+          newMerchants.push(adSpMerchants[j]);
+          // Tracking categories and commissions [cashback]
+          // following are test calls
+          // let cashback = yield that.apiCall('$getTrackingCategories', 'trackingCategoryItem.trackingCategoryItem', {'programid':400, 'adspaceid': 2067070});
+          // let cashback = yield that.apiCall('$getTrackingCategories', 'trackingCategoryItem.trackingCategoryItem', {'programid':18274, 'adspaceid': 2067070});
+          //merchants[i].cashback = yield that.apiCall('$getTrackingCategories', 'trackingCategoryItem.trackingCategoryItem', {'programid':_.get(merchants[i], "merchant.@id"), 'adspaceid': 2067070}) || [];
+        }
     }
 
-    return yield sendEvents.sendMerchants(that.eventName, merchants);
+    console.log("Zanox: total merchants after adspace cloning: " + newMerchants.length);
+    return yield sendEvents.sendMerchants(that.eventName, newMerchants);
   });
 
   // changing the number of days for commissions api from 90 days to 30 days,
@@ -170,6 +180,62 @@ const ZanoxGenericApi = function(s_region, s_entity) {
     debug("%s finished: %d items (%dms)", method, items.length, end-start);
 
     return items;
+  });
+
+  this.cloneDuplicateAdSpaceMerchants = co.wrap(function* (input) {
+    var rtArray = [];
+    var processed = false;
+
+    if (input.admedia && input.admedia.length > 0) {
+      try {
+        processed = false;
+        var length = input.admedia[0].trackingLinks.trackingLink ? input.admedia[0].trackingLinks.trackingLink.length : 0;
+
+        for (let j = 0; j < length; j++) {
+          var newMerchant = _.cloneDeep(input);
+
+          newMerchant.admedia[0].trackingLinks.trackingLink = newMerchant.admedia[0].trackingLinks.trackingLink[j];
+
+          if (newMerchant.incentives && newMerchant.incentives.length > 0 &&
+            newMerchant.incentives[0].admedia.admediumItem.trackingLinks &&
+            newMerchant.incentives[0].admedia.admediumItem.trackingLinks.trackingLink &&
+            newMerchant.incentives[0].admedia.admediumItem.trackingLinks.trackingLink.length > 0
+          ) {
+            newMerchant.incentives[0].admedia.admediumItem.trackingLinks.trackingLink =
+              newMerchant.incentives[0].admedia.admediumItem.trackingLinks.trackingLink[j];
+          }
+
+          var adspaceId = newMerchant.admedia[0].trackingLinks.trackingLink['@adspaceId'];
+          if(adspaceId !== '2067070') {  
+            newMerchant.merchant['@id'] = newMerchant.merchant['@id'] + "-(" + adspaceId + ")";
+          }
+
+          newMerchant.cashback = yield that.apiCall('$getTrackingCategories', 'trackingCategoryItem.trackingCategoryItem', { 'programid': _.get(input, "merchant.@id"), 'adspaceid': adspaceId }) || [];
+          rtArray.push(newMerchant);
+          processed = true;
+        }
+      }
+      catch (ex) {
+        console.log("ERROR: Using the orginal merchant details as clone failed due to exception: %s", ex);
+      }
+    }
+    
+    if(! processed) {
+      // if (input.admedia && input.admedia.length > 0 && 
+      //     input.admedia[0].trackingLinks && input.admedia[0].trackingLinks.trackingLink) {
+      //   var adspaceId = input.admedia[0].trackingLinks.trackingLink['@adspaceId']
+      //   input.cashback = yield that.apiCall('$getTrackingCategories', 'trackingCategoryItem.trackingCategoryItem', { 'programid': _.get(input, "merchant.@id"), 'adspaceid': adspaceId }) || [];
+      // }
+      // else {
+      //   console.log("WARN: Unable to find cashback for merchant id %s", input.merchant['@id']);
+      // }
+      
+      // use the default adspace id
+      input.cashback = yield that.apiCall('$getTrackingCategories', 'trackingCategoryItem.trackingCategoryItem', { 'programid': _.get(input, "merchant.@id"), 'adspaceid': 2067070 }) || [];
+      rtArray.push(input);
+    }
+
+    return rtArray;
   });
 };
 
