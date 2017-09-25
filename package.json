@@ -26,6 +26,8 @@
   },
   "homepage": "http://dubli.com",
   "dependencies": {
+    "request": "2.74.0",
+    "request-promise": "0.4.3",
     "async": "^2.0.1",
     "aws-sdk": "^2.2.30",
     "aws-sdk-promise": "0.0.2",
@@ -65,7 +67,6 @@
     "pretty-ms": "^1.2.1",
     "promise.prototype.finally": "^1.0.1",
     "redis": "^2.0.1",
-    "request-promise": "^0.4.2",
     "s3fs": "^2.1.0",
     "soap": "^0.9.1",
     "taskmatic": "^1.0.12",
