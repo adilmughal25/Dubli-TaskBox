@@ -240,6 +240,12 @@ function defaultCountry(affiliate){
     case 'shopstylers':
         defaultCountry = ["my"];
         break;
+    case 'levant':
+        defaultCountry = ["ae"];
+        break;
+    case 'vcommission_mena':
+        defaultCountry = ["ae"];
+        break;
     default:
         break;
   }
