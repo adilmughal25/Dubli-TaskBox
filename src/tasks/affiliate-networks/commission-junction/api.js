@@ -65,7 +65,7 @@ const API_TYPES = {
     qs: {
       'website-id': '{{website-id}}',
       'advertiser-ids': 'joined',
-      // 'link-type': 'text', // now scanning all links and filtering the list down to just text links, so this is disabled
+      'link-type': 'Text Link'
     },
     bodyKey: 'cj-api.links',
     resultKey: 'link',
