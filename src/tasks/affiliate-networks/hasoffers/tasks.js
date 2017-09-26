@@ -42,7 +42,9 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
     yield that.getTargetCategories(results.merchants);
 
     var merged = merge(results);
-    return yield sendEvents.sendMerchants(that.eventName, merged);
+    var myEventName = that.eventName;
+    if(myEventName === 'vcommission_mena') myEventName = 'vcommission';
+    return yield sendEvents.sendMerchants(myEventName, merged);
   });
 
   this.doApiGetAllTrackingLinks  = co.wrap(function* (merchants) {
