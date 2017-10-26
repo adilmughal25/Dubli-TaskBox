@@ -27,6 +27,16 @@ const API_CFG = {
       api_key: '2f4b194614629ed6fdb455104523d571b4d30f4b8df95eb89b8efbd12ce664c8',
       NetworkId: 'arabyads',
       defaultCurrency: 'usd'
+    },
+    levant: {
+      api_key: 'b2ebc7bbc187fc46b66ee7bc4a7874bf9094c6c90673585c67502be15174e112',
+      NetworkId: 'levantnetwork',
+      defaultCurrency: 'usd'
+    },    
+    vcommissionmena: {
+      api_key: 'b1966d15862f36e1bf5626e3b9062562ff01639208046fff7e69b8f5a03162c2',
+      NetworkId: 'vcm',
+      defaultCurrency: 'usd'
     }
   },
   dubli: {
