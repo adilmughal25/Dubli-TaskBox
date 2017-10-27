@@ -114,7 +114,6 @@ const dgmDubliAUApi = impactRadiusGenericApi('dgm', 'au', 'dubli');
 const hasoffersGenericApi = require('./hasoffers/tasks');
 // const arabyadsApi = hasoffersGenericApi('arabyads');
 const vcommissionApi = hasoffersGenericApi('vcommission');
-const vcommissionMenaApi = hasoffersGenericApi('vcommissionmena');
 const shopstylers = hasoffersGenericApi('shopstylers');
 const vcommissionDubliApi = hasoffersGenericApi('vcommission', 'dubli');
 
@@ -316,8 +315,6 @@ function initializeMerchantImporters(tasker) {
     "TradeTracker (RU) Merchants": tradetrackerRUApi.getMerchants,
     "TradeTracker (SE) Merchants": tradetrackerSEApi.getMerchants,
     "VCommission Merchants": vcommissionApi.getMerchants,
-    "VCommission MENA Merchants": vcommissionMenaApi.getMerchants,
-    
     "Webgains Merchants": webgainsApi.getMerchants,
     "Zanox Merchants": zanoxApi.getMerchants,
     "FlyDubai Merchants": tradedoublerFlyDubaiApi.getMerchants
@@ -422,7 +419,6 @@ function initializeCommissionsProcessors(tasker) {
     "TradeTracker (RU) Commissions": tradetrackerRUApi.getCommissionDetails,
     "TradeTracker (SE) Commissions": tradetrackerSEApi.getCommissionDetails,
     "VCommission Commissions": vcommissionApi.getCommissionDetails,
-    "VCommission MENA Commissions": vcommissionMenaApi.getCommissionDetails,
     "Webgains Commissions": webgainsApi.getCommissionDetails,
     "Zanox Commissions": zanoxApi.getCommissionDetails,
     "Priceline Commissions": pricelineApi.getCommissionDetails,
