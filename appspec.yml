@@ -5,6 +5,8 @@ files:
     destination: /var/www/src
   - source: /package.json
     destination: /var/www
+  - source: /node_modules
+    destination: /var/www/node_modules  
 permissions:
   - object: /var/www
     pattern: "**"
