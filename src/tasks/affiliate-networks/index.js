@@ -13,7 +13,6 @@ const adserviceSweedenkApi = adserviceGenericApi('se');
 const adserviceFinlandApi = adserviceGenericApi('fi');
 const adserviceNorwayApi = adserviceGenericApi('no');
 const adserviceGermanyApi = adserviceGenericApi('de');
-
 const tradedoublerGenericApi = require('./tradedoubler/tasks');
 const tradedoublerApi = tradedoublerGenericApi();
 const tradedoublerGermanyApi = tradedoublerGenericApi('de');
@@ -111,8 +110,8 @@ const flipkartApi = flipkartGenericApi();
 const flipkartDubliApi = flipkartGenericApi('dubli');
 
 const grouponGenericApi = require('./groupon/tasks');
-const grouponUSApi = grouponGenericApi('us'); 
-const grouponROWApi = grouponGenericApi('row'); 
+const grouponUSApi = grouponGenericApi('us');
+const grouponROWApi = grouponGenericApi('row');
 
 const impactRadiusGenericApi = require('./impact-radius/tasks');
 const apdPerformanceApi = impactRadiusGenericApi('apdperformance');
@@ -259,11 +258,11 @@ function initializeMerchantImporters(tasker, interval) {
     "Adservice(se) Merchants": adserviceSweedenkApi.getMerchants,
     "Adservice(fi) Merchants": adserviceFinlandApi.getMerchants,
     "Adservice(no) Merchants": adserviceNorwayApi.getMerchants,
-    "Adservice(de) Merchants": adserviceGermanyApi.getMerchants,    
+    "Adservice(de) Merchants": adserviceGermanyApi.getMerchants,
     "APD Performance Merchants": apdPerformanceApi.getMerchants,
     "AdCell Merchants": adCellApi.getMerchants,
     "Admitad Merchants": admitadApi.getMerchants,
-    "Adtraction Merchants": adtractionApi.getMerchants,    
+    "Adtraction Merchants": adtractionApi.getMerchants,
     "Affili.Net (Austria) Merchants": affilinetAustriaApi.getMerchants,
     "Affili.Net (France) Merchants": affilinetFranceApi.getMerchants,
     "Affili.Net (Germany) Merchants": affilinetGermanyApi.getMerchants,
@@ -285,7 +284,7 @@ function initializeMerchantImporters(tasker, interval) {
     "CommissionFactory Merchants": commissionfactoryApi.getMerchants,
     "Fan Merchants": fanApi.getMerchants,
     "ImpactRadius Merchants": impactRadiusApi.getMerchants,
-    "Jumia Merchants": jumiaApi.getMerchants,    
+    "Jumia Merchants": jumiaApi.getMerchants,
     "LinkShare Merchants": linkShareApi.getMerchants,
     "LinkShare Japan Merchants": linkShareJPApi.getMerchants,
     // "Lomadee Merchants": lomadeeApi.getMerchants,
@@ -376,7 +375,7 @@ function initializeCommissionsProcessors(tasker, interval) {
     "Adservice(no) Commisions": adserviceNorwayApi.getCommissionDetails,
     "Adservice(de) Commisions": adserviceGermanyApi.getCommissionDetails,
 
-    "Adtraction Commissions": adtractionApi.getCommissionDetails,    
+    "Adtraction Commissions": adtractionApi.getCommissionDetails,
     "Affili.Net (Austria) Commissions": affilinetAustriaApi.getCommissionDetails,
     "Affili.Net (France) Commissions": affilinetFranceApi.getCommissionDetails,
     "Affili.Net (Germany) Commissions": affilinetGermanyApi.getCommissionDetails,
@@ -402,7 +401,7 @@ function initializeCommissionsProcessors(tasker, interval) {
     "Groupon (US) Commissions": grouponUSApi.getCommissionDetails,
     "Groupon (ROW) Commissions": grouponROWApi.getCommissionDetails,
     "ImpactRadius Commissions": impactRadiusApi.getCommissionDetails,
-    "Jumia Commissions": jumiaApi.getCommissionDetails,    
+    "Jumia Commissions": jumiaApi.getCommissionDetails,
     "LinkShare Commissions": linkShareApi.getCommissionDetails,
     "LinkShare Japan Commissions": linkShareJPApi.getCommissionDetails,
     // "Lomadee Commissions": lomadeeApi.getCommissionDetails,
