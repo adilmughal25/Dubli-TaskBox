@@ -374,7 +374,6 @@ function initializeCommissionsProcessors(tasker, interval) {
     "Adservice(fi) Commisions": adserviceFinlandApi.getCommissionDetails,
     "Adservice(no) Commisions": adserviceNorwayApi.getCommissionDetails,
     "Adservice(de) Commisions": adserviceGermanyApi.getCommissionDetails,
-
     "Adtraction Commissions": adtractionApi.getCommissionDetails,
     "Affili.Net (Austria) Commissions": affilinetAustriaApi.getCommissionDetails,
     "Affili.Net (France) Commissions": affilinetFranceApi.getCommissionDetails,

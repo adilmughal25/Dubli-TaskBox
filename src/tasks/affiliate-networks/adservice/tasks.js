@@ -6,6 +6,11 @@ const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 
 const AFFILIATE_NAME = 'adservice-';
+const STATUS_MAP = {
+  'pending': 'initiated',
+  'reject': 'cancelled',
+  'approve': 'confirmed'
+};
 
 const taskCache = {};
 
@@ -34,12 +39,12 @@ const AdserviceGenericApi = function(s_region, s_entity) {
   });
 
   tasks.getCommissionDetails = singleRun(function* (){
-    const start = moment().subtract(90, 'days');
-    const end = new Date();
-    const commissions = yield tasks.client.getTransactions(start, end);
-    //const events = commissions.map(prepareCommission.bind(null, tasks.region));
+    const startDate = moment().subtract(90, 'days');
+    const endDate = new Date();
+    const commissions = yield tasks.client.getTransactions(startDate, endDate);
+    const events = commissions.map(prepareCommission.bind(null, tasks.region));
 
-    return yield sendEvents.sendCommissions(tasks.eventName, commissions);
+    return yield sendEvents.sendCommissions(tasks.eventName, events);
   });
 
   taskCache[eventName] = tasks;
@@ -47,5 +52,26 @@ const AdserviceGenericApi = function(s_region, s_entity) {
   return tasks;
   
 } 
+
+
+function prepareCommission(region, transaction) {
+  
+    const event = {
+      affiliate_name: AFFILIATE_NAME + region,
+      merchant_name: transaction.camp_title,
+      merchant_id: transaction.camp_id, 
+      transaction_id: transaction.record_id,
+      order_id: transaction.order_id,
+      outclick_id: transaction.sub,
+      purchase_amount: transaction.amount,
+      commission_amount: transaction.pay_for_sale,
+      currency: transaction.currency_name,
+      state: STATUS_MAP[transaction.status] ? STATUS_MAP[transaction.status] : '',
+      effective_date: transaction.stamp
+    };
+  
+    return event;
+  }
+  
 
 module.exports = AdserviceGenericApi;

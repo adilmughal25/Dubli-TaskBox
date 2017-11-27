@@ -23,7 +23,7 @@ const API_CFG = {
       login: '6891e2321cf0b0f80571f713fdab0f9221cc034f',
       uid: 19453,
     },
-    fl: {
+    fi: {
       loginToken: 'not working',
       uid: 'not working',
     },
@@ -36,7 +36,7 @@ const API_CFG = {
 
 function Adservice(s_entity, s_region) {
   if (!s_entity) throw new Error("Missing required argument 's_entity'!");
-  if (!s_region) s_region = 'india';
+  if (!s_region) s_region = 'dk';
   if (!API_CFG[s_entity]) throw new Error("Entity '"+s_entity+"' is not defined in API_CFG.");
   if (!API_CFG[s_entity][s_region]) throw new Error("Region '"+s_region+"' for entity '"+s_entity+"' is not defined in API_CFG.");
  
@@ -56,10 +56,10 @@ function Adservice(s_entity, s_region) {
     return client.get(apiUrl)
       .then(resp => resp.body && resp.body.rows ? resp.body.rows : [])
   };
-
-  client.getTransactions = function() {
+  
+  client.getTransactions = function(startDate, endDate) {
     client.url = getUrl;  
-    const apiUrl = client.url('transactions', cfg);
+    const apiUrl = client.url('transactions', cfg, startDate, endDate);
     debug('GET' + apiUrl);
 
     return client.get(apiUrl)
@@ -69,13 +69,13 @@ function Adservice(s_entity, s_region) {
   return client;
 } 
 
-function getUrl(urlType, cfg) {
+function getUrl(urlType, cfg, startDate, endDate) {
   if (urlType === 'merchants') {
     return 'Campaigns.pl?' + 'UID='+ cfg.uid+'&LoginToken=' + cfg.loginToken
   }
   
   if (urlType === 'transactions') {
-    return 'Statistics.pl/orders/?' + 'UID='+ cfg.uid+'&LoginToken=' + cfg.loginToken
+    return 'Statistics.pl/orders/?' + 'startDate=' + startDate + '&endDate='+ endDate + '&UID='+ cfg.uid+'&LoginToken=' + cfg.loginToken
   }
 
   throw new Error("Pass valid url type for valid url(merchants, transactions).");
