@@ -16,19 +16,19 @@ const API_CFG = {
       uid: 19451,
     },
     se: {
-      loginToken: '2aa537d6c2628a24e5c446c50cdaf897f340b9b4',
+      loginToken: '0abdc31af662e3ff4733caf110b4892961d7099a',
       uid: 19452,
     },
     no: {
-      login: '6891e2321cf0b0f80571f713fdab0f9221cc034f',
+      login: '67681e9db22c243c78c5b820aa76ce9c8cf6fcfd',
       uid: 19453,
     },
     fi: {
-      loginToken: 'not working',
-      uid: 'not working',
+      loginToken: 'd5e1ef28c88de69c595d70f449bf6da5ae1db48b',
+      uid: '19454',
     },
     de: {
-      loginToken: '43bcb2d789992111d0a58d0da0b0e9088e993826',
+      loginToken: 'df75e5f7555073b569cd346cf5c3cc165fe73533',
       uid: 19455,
     },
   }
