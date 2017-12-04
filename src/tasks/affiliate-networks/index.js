@@ -1,4 +1,5 @@
 "use strict";
+const config = require('./../../../configs.json');
 
 module.exports = { init: init };
 
@@ -6,6 +7,12 @@ const amazonApi = require('./amazon/tasks');
 const clixGaloreApi = require("./clix-galore/tasks");
 const impactRadiusProductFtp = require("./impact-radius/ftp-tasks");
 // const lomadeeApi = require('./lomadee/tasks');
+const adserviceGenericApi = require('./adservice/tasks');
+const adserviceDenmarkApi = adserviceGenericApi('dk');
+const adserviceSweedenkApi = adserviceGenericApi('se');
+const adserviceFinlandApi = adserviceGenericApi('fi');
+const adserviceNorwayApi = adserviceGenericApi('no');
+const adserviceGermanyApi = adserviceGenericApi('de');
 
 const tradedoublerGenericApi = require('./tradedoubler/tasks');
 const tradedoublerApi = tradedoublerGenericApi();
@@ -72,6 +79,9 @@ const affilinetDubliUKApi = affilinetGenericApi('uk', 'dubli');
 const affilinetDubliATApi = affilinetGenericApi('at', 'dubli');
 const affilinetDubliCHApi = affilinetGenericApi('ch', 'dubli');
 
+const afilioGenericApi = require('./afilio/tasks');
+const afilioBrazilApi = afilioGenericApi('afilio');
+
 const avantLinkGenericApi = require('./avantlink/tasks');
 const avantLinkCAApi = avantLinkGenericApi('ca');
 const avantLinkUSApi = avantLinkGenericApi('us');
@@ -116,9 +126,11 @@ const hasoffersGenericApi = require('./hasoffers/tasks');
 const vcommissionApi = hasoffersGenericApi('vcommission');
 const shopstylers = hasoffersGenericApi('shopstylers');
 const vcommissionDubliApi = hasoffersGenericApi('vcommission', 'dubli');
+const levantApi = hasoffersGenericApi('levant');
 
 const linkShareGenericApi = require("./linkshare/tasks");
 const linkShareApi = linkShareGenericApi();
+const linkShareJPApi = linkShareGenericApi('jp', 'ominto');
 const linkShareDubliUSApi = linkShareGenericApi('us', 'dubli');
 const linkShareDubliCAApi = linkShareGenericApi('ca', 'dubli');
 const linkShareDubliGBApi = linkShareGenericApi('gb', 'dubli');
@@ -207,28 +219,47 @@ const zanoxDubliGlobalApi = zanoxGenericApi('global', 'dubli');
 const shooglooGenericApi = require('./shoogloo/tasks');
 const shooglooApi = shooglooGenericApi('shoogloo');
 const addReferralPropertiesApi = require('./user-referrals/tasks');
+const sendVIPRenewalReminderApi = require('./vip-renewal/tasks');
 const userReferralApi = addReferralPropertiesApi();
+const vipRenewalApi = sendVIPRenewalReminderApi();
 const pricelineApi = require('./priceline/tasks')();
+// const souqTasks = require('./souq/tasks');
 const adtractionGenericApi = require('./adtraction/tasks');
 const adtractionApi = adtractionGenericApi();
 
 function init(tasker) {
-  initializeMerchantImporters(tasker);
-  initializeCommissionsProcessors(tasker);
+  // different intervals for different envs, default to fortnight settings
+  var lfInterval = '15d +/- 5d';
+  var hfInterval = '15d +/- 5d';
+
+  if(config.env === 'prod') {
+    lfInterval = '2d +/- 1d';
+    hfInterval = '6h +/- 1h';
+  }
+
+  initializeMerchantImporters(tasker, lfInterval);
+  initializeCommissionsProcessors(tasker, hfInterval);
   // disabling dubli commission processors [11/7/2016]
-  // initializeCommissionsDubliProcessors(tasker);
+  // initializeCommissionsDubliProcessors(tasker, lfInterval);
+  // initializeEPaisaProcessor(tasker);
   intializeUserReferrals(tasker);
   initializeNotificationProcessor(tasker);
 }
 
 function initializeNotificationProcessor(tasker) {
-  tasker.createTask('Taskbox Notifications', '2d +/- 1d', require('./notification').generateP);
 }
 
-function initializeMerchantImporters(tasker) {
-  // run each of these every 24 hours
-
-  tasker.createGroup('2d +/- 1d', {
+function initializeMerchantImporters(tasker, interval) {
+  // run each of these :
+  // 1. every 24 hours for prod env
+  // 2. every fortnight for other envs
+  // console.log("initializeMerchantImporters interval : " + interval);
+  tasker.createGroup(interval, {
+    "Adservice(dk) Merchants": adserviceDenmarkApi.getMerchants,
+    "Adservice(se) Merchants": adserviceSweedenkApi.getMerchants,
+    "Adservice(fi) Merchants": adserviceFinlandApi.getMerchants,
+    "Adservice(no) Merchants": adserviceNorwayApi.getMerchants,
+    "Adservice(de) Merchants": adserviceGermanyApi.getMerchants,    
     "APD Performance Merchants": apdPerformanceApi.getMerchants,
     "AdCell Merchants": adCellApi.getMerchants,
     "Admitad Merchants": admitadApi.getMerchants,
@@ -243,10 +274,12 @@ function initializeMerchantImporters(tasker) {
     "Affiliate Gateway (Asia) Merchants": affiliateGatewayAsiaApi.getMerchants,
     //"Affiliate Gateway (Sg) Merchants": affiliateGatewaySgApi.getMerchants, //TODO LM to be implemented
     "AffiliateWindow Merchants": affiliatewindowApi.getMerchants,
+    "Afilio Merchants": afilioBrazilApi.getMerchants,
     // "ArabyAds Merchants" : arabyadsApi.getMerchants,
     "AvantLink (CA) Merchants": avantLinkCAApi.getMerchants,
     "AvantLink (US) Merchants": avantLinkUSApi.getMerchants,
     "Belboon Merchants": belboonApi.getMerchants,
+    "ClixGalore Merchants": clixGaloreApi.getMerchants,
     "CommissionJunction (EU) Merchants": commissionJunctionEUApi.getMerchants,
     "CommissionJunction (US) Merchants": commissionJunctionUSApi.getMerchants,
     "CommissionFactory Merchants": commissionfactoryApi.getMerchants,
@@ -254,6 +287,7 @@ function initializeMerchantImporters(tasker) {
     "ImpactRadius Merchants": impactRadiusApi.getMerchants,
     "Jumia Merchants": jumiaApi.getMerchants,    
     "LinkShare Merchants": linkShareApi.getMerchants,
+    "LinkShare Japan Merchants": linkShareJPApi.getMerchants,
     // "Lomadee Merchants": lomadeeApi.getMerchants,
     "OMG (India) Merchants": omgpmIndiaApi.getMerchants,
     "OMG (UK) Merchants": omgpmUKApi.getMerchants,
@@ -317,19 +351,31 @@ function initializeMerchantImporters(tasker) {
     "VCommission Merchants": vcommissionApi.getMerchants,
     "Webgains Merchants": webgainsApi.getMerchants,
     "Zanox Merchants": zanoxApi.getMerchants,
-    "FlyDubai Merchants": tradedoublerFlyDubaiApi.getMerchants
+    "FlyDubai Merchants": tradedoublerFlyDubaiApi.getMerchants,
+    "Levant Merchants" : levantApi.getMerchants
   });
 
+  tasker.createTask('Amazon (IN) Merchants', '18h +/- 6h', amazonApi.getMerchants);
   tasker.createTask('ShareASale Merchants', '7d +/- 1d', shareASaleApi.getMerchants);
 }
 
-function initializeCommissionsProcessors(tasker) {
-  // run each of these every 6 hours
-  tasker.createGroup('6h +/- 1h', {
+function initializeCommissionsProcessors(tasker, interval) {
+  // run each of these :
+  // 1. every 6 hours for prod env
+  // 2. every fortnight for other envs
+  // console.log("initializeCommissionsProcessors interval : " + interval);
+  tasker.createGroup(interval, {
     "A8 Commissions": a8Api.getCommissionDetails,
     "APD Performance Commissions": apdPerformanceApi.getCommissionDetails,
     "AdCell Commissions": adCellApi.getCommissionDetails,
     "Admitad Commissions": admitadApi.getCommissionDetails,
+
+    "Adservice(dk) Commisions": adserviceDenmarkApi.getCommissionDetails,
+    "Adservice(se) Commisions": adserviceSweedenkApi.getCommissionDetails,
+    "Adservice(fi) Commisions": adserviceFinlandApi.getCommissionDetails,
+    "Adservice(no) Commisions": adserviceNorwayApi.getCommissionDetails,
+    "Adservice(de) Commisions": adserviceGermanyApi.getCommissionDetails,
+
     "Adtraction Commissions": adtractionApi.getCommissionDetails,    
     "Affili.Net (Austria) Commissions": affilinetAustriaApi.getCommissionDetails,
     "Affili.Net (France) Commissions": affilinetFranceApi.getCommissionDetails,
@@ -341,14 +387,15 @@ function initializeCommissionsProcessors(tasker) {
     "Affiliate Gateway (Asia) Commissions": affiliateGatewayAsiaApi.getCommissionDetails,
     "Affiliate Gateway (SG) Commissions": affiliateGatewaySgApi.getCommissionDetails,
     "AffiliateWindow Commissions": affiliatewindowApi.getCommissionDetails,
-    // "Amazon (IN) Commissions": amazonApi.getCommissionDetails, // problems w/ amazon.in
+    "Amazon (IN) Commissions": amazonApi.getCommissionDetails, // problems w/ amazon.in
+    "Afilio Commissions": afilioBrazilApi.getCommissionDetails,
     // "ArabyAds Commissions" : arabyadsApi.getCommissionDetails,
     "AvantLink (CA) Commissions": avantLinkCAApi.getCommissionDetails,
     "AvantLink (US) Commissions": avantLinkUSApi.getCommissionDetails,
     "Belboon Commissions": belboonApi.getCommissionDetails,
     "CommissionJunction (EU) Commissions": commissionJunctionEUApi.getCommissionDetails,
     "CommissionJunction (US) Commissions": commissionJunctionUSApi.getCommissionDetails,
-    // "ClixGalore Commissions": clixGaloreApi.getCommissionDetails,
+    "ClixGalore Commissions": clixGaloreApi.getCommissionDetails,
     "CommissionFactory Commissions": commissionfactoryApi.getCommissionDetails,
     "Fan Commissions": fanApi.getCommissionDetails,
     "Flipkart Commissions": flipkartApi.getCommissionDetails,
@@ -357,6 +404,7 @@ function initializeCommissionsProcessors(tasker) {
     "ImpactRadius Commissions": impactRadiusApi.getCommissionDetails,
     "Jumia Commissions": jumiaApi.getCommissionDetails,    
     "LinkShare Commissions": linkShareApi.getCommissionDetails,
+    "LinkShare Japan Commissions": linkShareJPApi.getCommissionDetails,
     // "Lomadee Commissions": lomadeeApi.getCommissionDetails,
     "OMG (India) Commissions": omgpmIndiaApi.getCommissionDetails,
     "OMG (UK) Commissions": omgpmUKCommissionsApi.getCommissionDetails,
@@ -422,7 +470,9 @@ function initializeCommissionsProcessors(tasker) {
     "Webgains Commissions": webgainsApi.getCommissionDetails,
     "Zanox Commissions": zanoxApi.getCommissionDetails,
     "Priceline Commissions": pricelineApi.getCommissionDetails,
-    "FlyDubai Commissions": tradedoublerFlyDubaiApi.getCommissionDetails
+    //"Souq Commissions": souqTasks.getCommissionDetails,
+    "FlyDubai Commissions": tradedoublerFlyDubaiApi.getCommissionDetails,
+    "Levant Commissions" : levantApi.getCommissionDetails
   });
 
   tasker.createTask('ShareASale Commissions', '4d +/- 1d', shareASaleApi.getCommissionDetails);
@@ -431,9 +481,12 @@ function initializeCommissionsProcessors(tasker) {
   //createTask("ImpactRadius Product FTP": impactRadiusProductFtp.getProducts, {minute:35});
 }
 
-function initializeCommissionsDubliProcessors(tasker) {
-  // run each of these every 24 hours
-  tasker.createGroup('2d +/- 1d', {
+function initializeCommissionsDubliProcessors(tasker, interval) {
+  // run each of these :
+  // 1. every 24 hours for prod env
+  // 2. every fortnight for other envs
+  // console.log("initializeCommissionsDubliProcessors interval : " + interval);
+  tasker.createGroup(interval, {
     "AdCell DubLi Commissions": adCellDubliApi.getCommissionDetails,
     "Admitad DubLi Commissions": admitadDubliApi.getCommissionDetails,
     "Affili.Net DubLi (DE) Commissions": affilinetDubliDEApi.getCommissionDetails,
@@ -483,8 +536,10 @@ function initializeCommissionsDubliProcessors(tasker) {
 
   tasker.createTask('ShareASale Dubli Commissions', '7d +/- 1d', shareASaleDubliApi.getCommissionDetails);
 }
+
 function intializeUserReferrals(tasker) {
   // Run this every 24 hour
   tasker.createTask('add Referral users', '3h +/- 1h', userReferralApi.addReferralProperties);
   tasker.createTask('add Referral cashback', '6h +/- 1h', userReferralApi.addReferralAmount);
+  tasker.createTask('send VIP renewal email reminder', '2d +/- 1d', vipRenewalApi.sendEmailReminder);
 }
