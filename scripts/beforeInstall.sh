@@ -12,6 +12,9 @@ NODE_ENV=$(${fetch_tags_cmd} | grep "^env\s" | cut -f5)
 APP_NAME=$(${fetch_tags_cmd} | grep "^app\s" | cut -f5)
 APP_SCOPE=$(${fetch_tags_cmd} | grep "^scope\s" | cut -f5)
 
+#setting up NODE_ENV outside of upstream for pm2
+env NODE_ENV="${NODE_ENV}"
+
 # need this during the afterInstall cleanupOldDeploys -- by the time that runs the file in deployment-instructions has changed
 DEPLOYMENT_GROUP_ID=$(aws deploy get-deployment-group --region ${AWS_REGION} --application-name $APPLICATION_NAME --deployment-group-name $DEPLOYMENT_GROUP_NAME --output text | grep DEPLOYMENTGROUPINFO | awk '{print $4}')
 DEP_ROOT="/opt/codedeploy-agent/deployment-root"
