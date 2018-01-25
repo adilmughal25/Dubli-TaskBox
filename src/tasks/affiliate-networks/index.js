@@ -56,6 +56,7 @@ const adCellDubliApi = adCellGenericApi('dubli');
 const admitadGenericApi = require('./admitad/tasks');
 const admitadApi = admitadGenericApi();
 const admitadDubliApi = admitadGenericApi('dubli');
+const admitadDubliIndiaApi = admitadGenericApi('', 'in');
 
 const affiliateGatewayGenericApi = require('./affiliate-gateway/tasks');
 const affiliateGatewayAsiaApi = affiliateGatewayGenericApi('asia');
@@ -245,6 +246,7 @@ function initializeMerchantImporters(tasker) {
     "APD Performance Merchants": apdPerformanceApi.getMerchants,
     "AdCell Merchants": adCellApi.getMerchants,
     "Admitad Merchants": admitadApi.getMerchants,
+    "Admitad India Merchants": admitadDubliIndiaApi.getMerchants,
     "Adtraction Merchants": adtractionApi.getMerchants,    
     "Affili.Net (Austria) Merchants": affilinetAustriaApi.getMerchants,
     "Affili.Net (France) Merchants": affilinetFranceApi.getMerchants,
@@ -343,6 +345,7 @@ function initializeCommissionsProcessors(tasker) {
     "APD Performance Commissions": apdPerformanceApi.getCommissionDetails,
     "AdCell Commissions": adCellApi.getCommissionDetails,
     "Admitad Commissions": admitadApi.getCommissionDetails,
+    "Admitad India Commissions": admitadDubliIndiaApi.getCommissionDetails,    
     
     "Adservice(dk) Commisions": adserviceDenmarkApi.getCommissionDetails,
     "Adservice(se) Commisions": adserviceSweedenkApi.getCommissionDetails,
