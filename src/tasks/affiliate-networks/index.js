@@ -125,6 +125,13 @@ const vcommissionApi = hasoffersGenericApi('vcommission');
 const shopstylers = hasoffersGenericApi('shopstylers');
 const vcommissionDubliApi = hasoffersGenericApi('vcommission', 'dubli');
 
+const lazadaPhApi = hasoffersGenericApi('lazada-ph');
+const lazadaMyApi = hasoffersGenericApi('lazada-my');
+const lazadaSgApi = hasoffersGenericApi('lazada-sg');
+const lazadaThApi = hasoffersGenericApi('lazada-th');
+const lazadaVnApi = hasoffersGenericApi('lazada-vn');
+const lazadaIdApi = hasoffersGenericApi('lazada-id');
+
 const linkShareGenericApi = require("./linkshare/tasks");
 const linkShareApi = linkShareGenericApi();
 const linkShareDubliUSApi = linkShareGenericApi('us', 'dubli');
@@ -332,7 +339,14 @@ function initializeMerchantImporters(tasker) {
     "VCommission Merchants": vcommissionApi.getMerchants,
     "Webgains Merchants": webgainsApi.getMerchants,
     "Zanox Merchants": zanoxApi.getMerchants,
-    "FlyDubai Merchants": tradedoublerFlyDubaiApi.getMerchants
+    "FlyDubai Merchants": tradedoublerFlyDubaiApi.getMerchants,
+
+    "Lazada (Ph) Merchants" : lazadaPhApi.getMerchants,
+    "Lazada (My) Merchants" : lazadaMyApi.getMerchants,
+    "Lazada (Sg) Merchants" : lazadaSgApi.getMerchants,
+    "Lazada (Th) Merchants" : lazadaThApi.getMerchants,
+    "Lazada (Vn) Merchants" : lazadaVnApi.getMerchants,
+    "Lazada (Id) Merchants" : lazadaIdApi.getMerchants
   });
 
   tasker.createTask('ShareASale Merchants', '7d +/- 1d', shareASaleApi.getMerchants);
@@ -378,7 +392,15 @@ function initializeCommissionsProcessors(tasker) {
     "Groupon (US) Commissions": grouponUSApi.getCommissionDetails,
     "Groupon (ROW) Commissions": grouponROWApi.getCommissionDetails,
     "ImpactRadius Commissions": impactRadiusApi.getCommissionDetails,
-    "Jumia Commissions": jumiaApi.getCommissionDetails,    
+    "Jumia Commissions": jumiaApi.getCommissionDetails,
+
+    "Lazada (Ph) Commissions" : lazadaPhApi.getCommissionDetails,
+    "Lazada (My) Commissions" : lazadaMyApi.getCommissionDetails,
+    "Lazada (Sg) Commissions" : lazadaSgApi.getCommissionDetails,
+    "Lazada (Th) Commissions" : lazadaThApi.getCommissionDetails,
+    "Lazada (Vn) Commissions" : lazadaVnApi.getCommissionDetails,
+    "Lazada (Id) Commissions" : lazadaIdApi.getCommissionDetails,
+    
     "LinkShare Commissions": linkShareApi.getCommissionDetails,
     // "Lomadee Commissions": lomadeeApi.getCommissionDetails,
     "OMG (India) Commissions": omgpmIndiaApi.getCommissionDetails,
