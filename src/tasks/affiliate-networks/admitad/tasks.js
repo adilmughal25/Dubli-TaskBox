@@ -18,18 +18,19 @@ const merge = require('../support/easy-merge')('id', {
 
 const API_LIMIT_PER_MINUTE = 20;
 
-const AdmitadGenericApi = function(s_entity) {
+const AdmitadGenericApi = function(s_entity, s_region) {
   if (!(this instanceof AdmitadGenericApi)) {
     debug("instantiating AdmitadGenericApi for: %s", s_entity);
-    return new AdmitadGenericApi(s_entity);
+    return new AdmitadGenericApi(s_entity, s_region);
   }
 
   var that = this;
 
+  this.region = s_region ? s_region.toLowerCase() : '';  
   this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
-  this.client = require('./api')(this.entity);
-  this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'admitad';
-
+  this.client = require('./api')(this.entity, this.region);
+  this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'admitad' + (this.region ? '-' + this.region : '');
+  
   /**
    * Retrieve all commission details (sales/transactions) from Admitad within given period of time.
    * @returns {undefined}
@@ -164,7 +165,7 @@ const STATE_MAP = {
  * @param {Object} o_obj  The individual commission transaction straight from Admitad
  * @returns {Object}
  */
-function prepareCommission(o_obj) {
+function prepareCommission(o_obj, region) {
 
   // https://developers.admitad.com/en/doc/api_en/methods/statistics/statistics-actions/
   // using auto as date when a transactions status is in confirmed (internal state) &
@@ -178,7 +179,7 @@ function prepareCommission(o_obj) {
     _date = new Date(o_obj.closing_date);
 
   let event = {
-    affiliate_name: AFFILIATE_NAME,
+    affiliate_name: AFFILIATE_NAME + region,
     merchant_name: o_obj.advcampaign_name || '',
     merchant_id: o_obj.advcampaign_id || '',
     transaction_id: o_obj.action_id,

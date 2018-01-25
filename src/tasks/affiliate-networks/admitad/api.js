@@ -16,14 +16,23 @@ const limiter = require('ominto-utils').promiseRateLimiter;
 const API_CFG = {
   url: 'https://api.admitad.com/',
   ominto: {
-    clientId: '4f4a18238d260e4c457bd885667949',
-    secret: 'e644187aaf8325ef993ead2c618589',
-    storeId: 296893,
+    global: {
+      clientId: '4f4a18238d260e4c457bd885667949',
+      secret: 'e644187aaf8325ef993ead2c618589',
+      storeId: 296893,
+    },
+    in: {
+      clientId: 'e7d1cb030a138156053958e1507678',
+      secret: 'd678a79e83aa74e6dcd77ad6a5474a',
+      storeId: 416353,
+    }
   },
   dubli: {
-    clientId: 'ef607af853e28790fa360daf3f2616',
-    secret: '0ccae8ee1cf05bd25cfe1ceba81a96',
-    storeId: 98792,
+    global: {
+      clientId: 'ef607af853e28790fa360daf3f2616',
+      secret: '0ccae8ee1cf05bd25cfe1ceba81a96',
+      storeId: 98792,
+    }
   }
 };
 
@@ -70,13 +79,21 @@ const API_TYPES_DEFAULTS = {
  * Admitad API requires OAuth2.0 - token with expiration.
  * @class
  */
-function AdmitadClient(s_entity) {
-  if (!(this instanceof AdmitadClient)) return new AdmitadClient(s_entity);
+function AdmitadClient(s_entity, s_region) {
+  if (!(this instanceof AdmitadClient)) return new AdmitadClient(s_entity, s_region);
   if (!s_entity) throw new Error("Missing required argument 's_entity'!");
-  if (!API_CFG[s_entity]) throw new Error("Entity '"+s_entity+"' is not defined in API_CFG.");
-  debug("Create new client for entity: %s", s_entity);
+  
+  if(!s_region) {
+    s_region = 'global';
+  }
 
-  this.cfg = API_CFG[s_entity];
+  if (!API_CFG[s_entity]) throw new Error("Entity '"+s_entity+"' is not defined in API_CFG.");
+  if (!API_CFG[s_entity][s_region]) throw new Error("Region '"+s_region+"' for entity '"+s_entity+"' is not defined in API_CFG.");  
+  debug("Create new client for entity: %s", s_entity);
+  if (!s_region) console.log('No regions has been passed. Running admitad global by default.');
+
+
+  this.cfg = API_CFG[s_entity][s_region];
 	this.token = null;              // the token for re-use
 	this.tokenExpires = new Date(); // use token until expired
 
