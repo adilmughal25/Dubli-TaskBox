@@ -42,9 +42,7 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
     yield that.getTargetCategories(results.merchants);
 
     var merged = merge(results);
-    var myEventName = that.eventName;
-    if(myEventName === 'vcommission_mena') myEventName = 'vcommission';
-    return yield sendEvents.sendMerchants(myEventName, merged);
+    return yield sendEvents.sendMerchants(that.eventName, merged);
   });
 
   this.doApiGetAllTrackingLinks  = co.wrap(function* (merchants) {
@@ -242,11 +240,26 @@ function defaultCountry(affiliate){
     case 'shopstylers':
         defaultCountry = ["my"];
         break;
-    case 'levant':
+    case 'vcommissionmena':
         defaultCountry = ["ae"];
         break;
-    case 'vcommission_mena':
-        defaultCountry = ["ae"];
+        case 'lazada-ph':
+        defaultCountry = ["ph"];
+        break;
+    case 'lazada-id':
+        defaultCountry = ["id"];
+        break;
+    case 'lazada-my':
+        defaultCountry = ["my"];
+        break;
+    case 'lazada-sg':
+        defaultCountry = ["sg"];
+        break;
+    case 'lazada-th':
+        defaultCountry = ["th"];
+        break;
+    case 'lazada-vn':
+        defaultCountry = ["vn"];
         break;
     default:
         break;

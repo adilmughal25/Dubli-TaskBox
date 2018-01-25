@@ -27,16 +27,53 @@ const API_CFG = {
       api_key: '2f4b194614629ed6fdb455104523d571b4d30f4b8df95eb89b8efbd12ce664c8',
       NetworkId: 'arabyads',
       defaultCurrency: 'usd'
-    },
-    levant: {
-      api_key: 'b2ebc7bbc187fc46b66ee7bc4a7874bf9094c6c90673585c67502be15174e112',
-      NetworkId: 'levantnetwork',
-      defaultCurrency: 'usd'
     },    
     vcommissionmena: {
       api_key: 'b1966d15862f36e1bf5626e3b9062562ff01639208046fff7e69b8f5a03162c2',
       NetworkId: 'vcm',
       defaultCurrency: 'usd'
+    },
+    //Phillipines
+    'lazada-ph': {
+      api_key: 'f12e8a7eb1605aa0d61376e225365278f061b55d2e63ced2437aeda59f4b9151',
+      NetworkId: 'lazada',
+      defaultCurrency: 'ph',
+      region: 'php'
+    },
+    //Indonesia
+    'lazada-id': {
+      api_key: 'f12e8a7eb1605aa0d61376e225365278f061b55d2e63ced2437aeda59f4b9151',
+      NetworkId: 'lazada',
+      defaultCurrency: 'id',
+      region: 'idr'
+    },
+    //Malaysia
+    'lazada-my': {
+      api_key: 'f12e8a7eb1605aa0d61376e225365278f061b55d2e63ced2437aeda59f4b9151',
+      NetworkId: 'lazada',
+      defaultCurrency: 'my',
+      region: 'myr'
+    },
+    //Singapore
+    'lazada-sg': {
+      api_key: 'f12e8a7eb1605aa0d61376e225365278f061b55d2e63ced2437aeda59f4b9151',
+      NetworkId: 'lazada',
+      defaultCurrency: 'sg',
+      region: 'sgd'
+    },
+    //Thailand
+    'lazada-th': {
+      api_key: 'f12e8a7eb1605aa0d61376e225365278f061b55d2e63ced2437aeda59f4b9151',
+      NetworkId: 'lazada',
+      defaultCurrency: 'th',
+      region: 'thb'
+    },
+    //Vietnam
+    'lazada-vn': {
+      api_key: 'f12e8a7eb1605aa0d61376e225365278f061b55d2e63ced2437aeda59f4b9151',
+      NetworkId: 'lazada',
+      defaultCurrency: 'vn',
+      region: 'vnd'
     }
   },
   dubli: {
@@ -71,6 +108,24 @@ const HasOfferClient = function(s_entity, s_networkName) {
   _.extend(this.client, this._credentials);
 
   this.url = function urlMaker(s_target, s_method, params) {
+    // Specifically added to accomodate lazada. The region parameter is only been used lazada. 
+    // This can be seperated out during the refactoring process.
+    if (API_CFG[s_entity][s_networkName].region) {
+      // Lazada merchants and commissions are taking two different parameters for currency
+      // that is why i added the condition. This also will be fixed during refactoring.
+      if(s_method === 'getConversions') {
+        params['filters[Stat.currency][conditional]'] = 'EQUAL_TO';
+        params['filters[Stat.currency][values]'] = API_CFG[s_entity][s_networkName].region;
+      }
+      else {
+        params['filters[currency]'] = API_CFG[s_entity][s_networkName].region;        
+      }  
+    }
+
+    if (API_CFG[s_entity][s_networkName].region) {
+      params['filters[currency]'] = API_CFG[s_entity][s_networkName].region;
+    }
+
     let args = _.extend({
       Target: s_target,
       Method: s_method
