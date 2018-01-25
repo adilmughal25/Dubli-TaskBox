@@ -122,10 +122,6 @@ const HasOfferClient = function(s_entity, s_networkName) {
       }  
     }
 
-    if (API_CFG[s_entity][s_networkName].region) {
-      params['filters[currency]'] = API_CFG[s_entity][s_networkName].region;
-    }
-
     let args = _.extend({
       Target: s_target,
       Method: s_method
