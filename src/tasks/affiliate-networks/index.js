@@ -175,11 +175,11 @@ const shareASaleApi = shareASaleGenericApi();
 const shareASaleDubliApi = shareASaleGenericApi('dubli');
 
 
-const fanGenericApi = require('./fan/tasks');
-const fanApi = fanGenericApi('fan');
+//const fanGenericApi = require('./fan/tasks');
+//const fanApi = fanGenericApi('fan');
 
-const jumiaGenericApi = require('./jumia/tasks');
-const jumiaApi = jumiaGenericApi('jumia');
+//const jumiaGenericApi = require('./jumia/tasks');
+//const jumiaApi = jumiaGenericApi('jumia');
 
 const snapdealGenericApi = require('./snapdeal/tasks');
 const snapdealApi = snapdealGenericApi();
@@ -219,8 +219,8 @@ const zanoxDubliDKApi = zanoxGenericApi('dk', 'dubli');
 const zanoxDubliSEApi = zanoxGenericApi('se', 'dubli');
 const zanoxDubliNOApi = zanoxGenericApi('no', 'dubli');
 const zanoxDubliGlobalApi = zanoxGenericApi('global', 'dubli');
-const shooglooGenericApi = require('./shoogloo/tasks');
-const shooglooApi = shooglooGenericApi('shoogloo');
+//const shooglooGenericApi = require('./shoogloo/tasks');
+//const shooglooApi = shooglooGenericApi('shoogloo');
 const addReferralPropertiesApi = require('./user-referrals/tasks');
 const userReferralApi = addReferralPropertiesApi();
 const pricelineApi = require('./priceline/tasks')();
@@ -272,9 +272,9 @@ function initializeMerchantImporters(tasker) {
     "CommissionJunction (EU) Merchants": commissionJunctionEUApi.getMerchants,
     "CommissionJunction (US) Merchants": commissionJunctionUSApi.getMerchants,
     "CommissionFactory Merchants": commissionfactoryApi.getMerchants,
-    "Fan Merchants": fanApi.getMerchants,
+    //"Fan Merchants": fanApi.getMerchants,
     "ImpactRadius Merchants": impactRadiusApi.getMerchants,
-    "Jumia Merchants": jumiaApi.getMerchants,    
+    //"Jumia Merchants": jumiaApi.getMerchants,    
     "LinkShare Merchants": linkShareApi.getMerchants,
     // "Lomadee Merchants": lomadeeApi.getMerchants,
     "OMG (India) Merchants": omgpmIndiaApi.getMerchants,
@@ -290,7 +290,7 @@ function initializeMerchantImporters(tasker) {
     "PublicIdeas (IT) Merchants": publicideasITApi.getMerchants,
     "PublicIdeas (LATAM) Merchants": publicideasLATAMApi.getMerchants,
     "PublicIdeas (UK) Merchants": publicideasUKApi.getMerchants,
-    "Shoogloo Merchants": shooglooApi.getMerchants,
+    //"Shoogloo Merchants": shooglooApi.getMerchants,
     "ShopStylers Merchants": shopstylers.getMerchants,
     "TradeDoubler (AT) Merchants": tradedoublerAustriaApi.getMerchants,
     "TradeDoubler (BE) Merchants": tradedoublerBelgiumApi.getMerchants,
@@ -387,12 +387,12 @@ function initializeCommissionsProcessors(tasker) {
     "CommissionJunction (US) Commissions": commissionJunctionUSApi.getCommissionDetails,
     // "ClixGalore Commissions": clixGaloreApi.getCommissionDetails,
     "CommissionFactory Commissions": commissionfactoryApi.getCommissionDetails,
-    "Fan Commissions": fanApi.getCommissionDetails,
+    //"Fan Commissions": fanApi.getCommissionDetails,
     "Flipkart Commissions": flipkartApi.getCommissionDetails,
     "Groupon (US) Commissions": grouponUSApi.getCommissionDetails,
     "Groupon (ROW) Commissions": grouponROWApi.getCommissionDetails,
     "ImpactRadius Commissions": impactRadiusApi.getCommissionDetails,
-    "Jumia Commissions": jumiaApi.getCommissionDetails,
+    //"Jumia Commissions": jumiaApi.getCommissionDetails,
 
     "Lazada (Ph) Commissions" : lazadaPhApi.getCommissionDetails,
     "Lazada (My) Commissions" : lazadaMyApi.getCommissionDetails,
@@ -416,7 +416,7 @@ function initializeCommissionsProcessors(tasker) {
     "PublicIdeas (IT) Commissions": publicideasITApi.getCommissionDetails,
     "PublicIdeas (LATAM) Commissions": publicideasLATAMApi.getCommissionDetails,
     "PublicIdeas (UK) Commissions": publicideasUKApi.getCommissionDetails,
-    "Shoogloo Commissions": shooglooApi.getCommissionDetails,
+    //"Shoogloo Commissions": shooglooApi.getCommissionDetails,
     "ShopStylers Commissions": shopstylers.getCommissionDetails,
     // "SnapDeal Commissions": snapdealApi.getCommissionDetails, // OM-2252
     "TradeDoubler (AT) Commissions": tradedoublerAustriaApi.getCommissionDetails,
