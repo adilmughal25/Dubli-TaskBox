@@ -50,6 +50,22 @@ ec2-associate-address -i $AWS_INSTANCE_ID '52.20.12.41'
 #AWS Cloudwatch Logs -- this is the "default" that doesn't run under upstart
 service awslogs stop
 
+cat > /var/scripts/process.json <<EOF
+{
+  "apps" : [
+    {
+      "name": "website",
+      "script": "/var/www/src/server.js",
+      "node_args": ["--harmony"],
+      "instances": 2,
+      "env": {
+        "NODE_ENV": "${NODE_ENV}"
+      }
+    }
+  ]
+}
+EOF
+
 #save userdata properties
 cat > /var/scripts/env.prop <<EOF
 WWW_ROOT=${WWW_ROOT}
