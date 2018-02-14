@@ -197,8 +197,10 @@ const tradetrackerFIApi = tradetrackerGenericApi('fi');
 const tradetrackerFRApi = tradetrackerGenericApi('fr');
 const tradetrackerGBApi = tradetrackerGenericApi('gb');
 const tradetrackerITApi = tradetrackerGenericApi('it');
+const tradetrackerMXApi = tradetrackerGenericApi('mx');
 const tradetrackerNLApi = tradetrackerGenericApi('nl');
 const tradetrackerNOApi = tradetrackerGenericApi('no');
+const tradetrackerPLApi = tradetrackerGenericApi('pl');
 const tradetrackerRUApi = tradetrackerGenericApi('ru');
 const tradetrackerSEApi = tradetrackerGenericApi('se');
 const tradetrackerDubliCHApi = tradetrackerGenericApi('ch', 'dubli');
@@ -332,8 +334,10 @@ function initializeMerchantImporters(tasker) {
     "TradeTracker (FR) Merchants": tradetrackerFRApi.getMerchants,
     "TradeTracker (GB) Merchants": tradetrackerGBApi.getMerchants,
     "TradeTracker (IT) Merchants": tradetrackerITApi.getMerchants,
+    "TradeTracker (MX) Merchants": tradetrackerMXApi.getMerchants,    
     "TradeTracker (NL) Merchants": tradetrackerNLApi.getMerchants,
     "TradeTracker (NO) Merchants": tradetrackerNOApi.getMerchants,
+    "TradeTracker (PL) Merchants": tradetrackerPLApi.getMerchants,
     "TradeTracker (RU) Merchants": tradetrackerRUApi.getMerchants,
     "TradeTracker (SE) Merchants": tradetrackerSEApi.getMerchants,
     "VCommission Merchants": vcommissionApi.getMerchants,
@@ -459,8 +463,10 @@ function initializeCommissionsProcessors(tasker) {
     "TradeTracker (FR) Commissions": tradetrackerFRApi.getCommissionDetails,
     "TradeTracker (GB) Commissions": tradetrackerGBApi.getCommissionDetails,
     "TradeTracker (IT) Commissions": tradetrackerITApi.getCommissionDetails,
+    "TradeTracker (MX) Commissions": tradetrackerMXApi.getCommissionDetails,    
     "TradeTracker (NL) Commissions": tradetrackerNLApi.getCommissionDetails,
     "TradeTracker (NO) Commissions": tradetrackerNOApi.getCommissionDetails,
+    "TradeTracker (PL) Commissions": tradetrackerPLApi.getCommissionDetails,
     "TradeTracker (RU) Commissions": tradetrackerRUApi.getCommissionDetails,
     "TradeTracker (SE) Commissions": tradetrackerSEApi.getCommissionDetails,
     "VCommission Commissions": vcommissionApi.getCommissionDetails,
