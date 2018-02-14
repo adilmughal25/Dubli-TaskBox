@@ -66,6 +66,12 @@ const API_CREDENTIALS   = {
       passphrase: 'd5fd1c833f3086da2ab9ae44a163768cfb3d6451',
       locale: 'it_IT'
     },
+    mx: {
+      siteId: 283298,
+      customerId: 120335,
+      passphrase: 'fcc6cc8acf3b9e72e4ff75a6a393588725cc56b0',
+      locale: 'es_MX'
+    },
     nl: {
       siteId: 227193,
       customerId: 120335,
@@ -77,6 +83,12 @@ const API_CREDENTIALS   = {
       customerId: 120335,
       passphrase: '56d7c37a0fde4f3f538ad176c162da39a8e179d5',
       locale: 'nb_NO'
+    },
+    pl: {
+      siteId: 227211,
+      customerId: 120335,
+      passphrase: '60b9f2462c37b79b2402c57cc713273a017a2682',
+      locale: 'pl_PL'
     },
     es: {
       siteId: 227214,
