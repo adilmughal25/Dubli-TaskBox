@@ -57,7 +57,6 @@ cat > /var/scripts/process.json <<EOF
       "name": "website",
       "script": "/var/www/src/server.js",
       "node_args": ["--harmony"],
-      "instances": 2,
       "env": {
         "NODE_ENV": "${NODE_ENV}"
       }
