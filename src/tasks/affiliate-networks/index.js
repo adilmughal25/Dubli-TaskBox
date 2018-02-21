@@ -109,8 +109,8 @@ const flipkartApi = flipkartGenericApi();
 const flipkartDubliApi = flipkartGenericApi('dubli');
 
 const grouponGenericApi = require('./groupon/tasks');
-const grouponUSApi = grouponGenericApi('us'); 
-const grouponROWApi = grouponGenericApi('row'); 
+const grouponUSApi = grouponGenericApi('us');
+const grouponROWApi = grouponGenericApi('row');
 
 const impactRadiusGenericApi = require('./impact-radius/tasks');
 const apdPerformanceApi = impactRadiusGenericApi('apdperformance');
@@ -178,8 +178,8 @@ const shareASaleDubliApi = shareASaleGenericApi('dubli');
 //const fanGenericApi = require('./fan/tasks');
 //const fanApi = fanGenericApi('fan');
 
-//const jumiaGenericApi = require('./jumia/tasks');
-//const jumiaApi = jumiaGenericApi('jumia');
+const jumiaGenericApi = require('./jumia/tasks');
+const jumiaApi = jumiaGenericApi('jumia');
 
 const snapdealGenericApi = require('./snapdeal/tasks');
 const snapdealApi = snapdealGenericApi();
@@ -250,13 +250,13 @@ function initializeMerchantImporters(tasker) {
     "Adservice(se) Merchants": adserviceSweedenkApi.getMerchants,
     "Adservice(fi) Merchants": adserviceFinlandApi.getMerchants,
     "Adservice(no) Merchants": adserviceNorwayApi.getMerchants,
-    "Adservice(de) Merchants": adserviceGermanyApi.getMerchants, 
+    "Adservice(de) Merchants": adserviceGermanyApi.getMerchants,
 
     "APD Performance Merchants": apdPerformanceApi.getMerchants,
     "AdCell Merchants": adCellApi.getMerchants,
     "Admitad Merchants": admitadApi.getMerchants,
     "Admitad India Merchants": admitadDubliIndiaApi.getMerchants,
-    "Adtraction Merchants": adtractionApi.getMerchants,    
+    "Adtraction Merchants": adtractionApi.getMerchants,
     "Affili.Net (Austria) Merchants": affilinetAustriaApi.getMerchants,
     "Affili.Net (France) Merchants": affilinetFranceApi.getMerchants,
     "Affili.Net (Germany) Merchants": affilinetGermanyApi.getMerchants,
@@ -276,7 +276,7 @@ function initializeMerchantImporters(tasker) {
     "CommissionFactory Merchants": commissionfactoryApi.getMerchants,
     //"Fan Merchants": fanApi.getMerchants,
     "ImpactRadius Merchants": impactRadiusApi.getMerchants,
-    //"Jumia Merchants": jumiaApi.getMerchants,    
+    "Jumia Merchants": jumiaApi.getMerchants,
     "LinkShare Merchants": linkShareApi.getMerchants,
     // "Lomadee Merchants": lomadeeApi.getMerchants,
     "OMG (India) Merchants": omgpmIndiaApi.getMerchants,
@@ -334,7 +334,7 @@ function initializeMerchantImporters(tasker) {
     "TradeTracker (FR) Merchants": tradetrackerFRApi.getMerchants,
     "TradeTracker (GB) Merchants": tradetrackerGBApi.getMerchants,
     "TradeTracker (IT) Merchants": tradetrackerITApi.getMerchants,
-    "TradeTracker (MX) Merchants": tradetrackerMXApi.getMerchants,    
+    "TradeTracker (MX) Merchants": tradetrackerMXApi.getMerchants,
     "TradeTracker (NL) Merchants": tradetrackerNLApi.getMerchants,
     "TradeTracker (NO) Merchants": tradetrackerNOApi.getMerchants,
     "TradeTracker (PL) Merchants": tradetrackerPLApi.getMerchants,
@@ -363,15 +363,15 @@ function initializeCommissionsProcessors(tasker) {
     "APD Performance Commissions": apdPerformanceApi.getCommissionDetails,
     "AdCell Commissions": adCellApi.getCommissionDetails,
     "Admitad Commissions": admitadApi.getCommissionDetails,
-    "Admitad India Commissions": admitadDubliIndiaApi.getCommissionDetails,    
-    
+    "Admitad India Commissions": admitadDubliIndiaApi.getCommissionDetails,
+
     "Adservice(dk) Commisions": adserviceDenmarkApi.getCommissionDetails,
     "Adservice(se) Commisions": adserviceSweedenkApi.getCommissionDetails,
     "Adservice(fi) Commisions": adserviceFinlandApi.getCommissionDetails,
     "Adservice(no) Commisions": adserviceNorwayApi.getCommissionDetails,
     "Adservice(de) Commisions": adserviceGermanyApi.getCommissionDetails,
-    
-    "Adtraction Commissions": adtractionApi.getCommissionDetails,    
+
+    "Adtraction Commissions": adtractionApi.getCommissionDetails,
     "Affili.Net (Austria) Commissions": affilinetAustriaApi.getCommissionDetails,
     "Affili.Net (France) Commissions": affilinetFranceApi.getCommissionDetails,
     "Affili.Net (Germany) Commissions": affilinetGermanyApi.getCommissionDetails,
@@ -396,7 +396,7 @@ function initializeCommissionsProcessors(tasker) {
     "Groupon (US) Commissions": grouponUSApi.getCommissionDetails,
     "Groupon (ROW) Commissions": grouponROWApi.getCommissionDetails,
     "ImpactRadius Commissions": impactRadiusApi.getCommissionDetails,
-    //"Jumia Commissions": jumiaApi.getCommissionDetails,
+    "Jumia Commissions": jumiaApi.getCommissionDetails,
 
     "Lazada (Ph) Commissions" : lazadaPhApi.getCommissionDetails,
     "Lazada (My) Commissions" : lazadaMyApi.getCommissionDetails,
@@ -404,7 +404,7 @@ function initializeCommissionsProcessors(tasker) {
     "Lazada (Th) Commissions" : lazadaThApi.getCommissionDetails,
     "Lazada (Vn) Commissions" : lazadaVnApi.getCommissionDetails,
     "Lazada (Id) Commissions" : lazadaIdApi.getCommissionDetails,
-    
+
     "LinkShare Commissions": linkShareApi.getCommissionDetails,
     // "Lomadee Commissions": lomadeeApi.getCommissionDetails,
     "OMG (India) Commissions": omgpmIndiaApi.getCommissionDetails,
@@ -463,7 +463,7 @@ function initializeCommissionsProcessors(tasker) {
     "TradeTracker (FR) Commissions": tradetrackerFRApi.getCommissionDetails,
     "TradeTracker (GB) Commissions": tradetrackerGBApi.getCommissionDetails,
     "TradeTracker (IT) Commissions": tradetrackerITApi.getCommissionDetails,
-    "TradeTracker (MX) Commissions": tradetrackerMXApi.getCommissionDetails,    
+    "TradeTracker (MX) Commissions": tradetrackerMXApi.getCommissionDetails,
     "TradeTracker (NL) Commissions": tradetrackerNLApi.getCommissionDetails,
     "TradeTracker (NO) Commissions": tradetrackerNOApi.getCommissionDetails,
     "TradeTracker (PL) Commissions": tradetrackerPLApi.getCommissionDetails,
