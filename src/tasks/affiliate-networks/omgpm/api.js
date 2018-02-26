@@ -90,7 +90,7 @@ const API_CFG = {
     australia: {
       agency: 47,
       affiliateId: 835094,
-      authHash: 'DF1F0E5DD0AB1859FDF9C5583ECFB5FF',
+      authHash: 'ADFE8EEF6BC1B23317644F4BE38A99D0',
       login: 'DF1F0E5DD0AB1859FDF9C5583ECFB5FF',
       transactionCountries: ['22', '24', '228']
     }
