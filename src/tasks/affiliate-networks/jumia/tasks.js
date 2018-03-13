@@ -27,7 +27,7 @@ const CURRENCY_MAP = {
   '£': 'egp', //Egypt Pound
   'GH₵': 'ghs', //Ghana - Ghanaian Cedi
   '₦': 'ngn', //Nigerian Naira
-  'NGN': 'ngn' //Nigerian Naira  
+  'NGN': 'ngn' //Nigerian Naira
 };
 
 const JumiaGenericApi = function (s_entity) {
@@ -47,36 +47,15 @@ const JumiaGenericApi = function (s_entity) {
    * @returns {undefined}
    */
   this.getMerchants = singleRun(function* () {
-
-    const api_key = that.clientSoap.cfg.api_key;
-    const affiliate_id = that.clientSoap.cfg.affiliate_id;
-    yield that.clientSoap.setupOffers(that.entity, 'offers');
-
-    const getOfferFeedReq = {
-      api_key: that.clientSoap.cfg.api_key,
-      affiliate_id: that.clientSoap.cfg.affiliate_id,
-      media_type_category_id: 0,
-      vertical_category_id: 0,
-      vertical_id: 0,
-      offer_status_id: 0,
-      tag_id: 0,
-      start_at_row: 1,
-      row_limit: 0
-    };
-    const offers = yield that.doApi('OfferFeed', getOfferFeedReq, 'OfferFeedResult.offers.offer');
-
-    const activeOffers = offers.filter((offer) => offer.offer_status.status_id === '1');
+    const offers = yield that.clientSoap.getOffers(that.entity);
+    //const offers = yield that.parseXml(rawOffersData, 'offers');
+    const activeOffers = offers.filter((offer) => {  return offer.offer_status.status_id === '1' });
 
     const offerWithCreative = [];
 
     for (var offer of activeOffers) {
-      const getCampaignRequestParams = {
-        api_key: api_key,
-        affiliate_id: affiliate_id,
-        campaign_id: offer.campaign_id
-      };
-      const getCampaignResponseKey = 'GetCampaignResult.campaign.creatives.creative_info';
-      const creativeInfos = yield that.doApi('GetCampaign', getCampaignRequestParams, getCampaignResponseKey);
+      const creativeInfos = yield that.clientSoap.getMerchants(that.entity, offer.campaign_id);
+      //const creativeInfos = yield that.parseXml(rawMerchantsData, 'merchants');
 
       const linkCreatives = creativeInfos.filter(creativeInfo => creativeInfo.creative_type.type_id === "1");
       linkCreatives && linkCreatives[0] && offerWithCreative.push(that.prepareMerchant(offer, linkCreatives[0]));
@@ -90,31 +69,14 @@ const JumiaGenericApi = function (s_entity) {
    * @returns {undefined}
    */
   this.getCommissionDetails = singleRun(function* () {
-
-    yield that.clientSoap.setupReports(that.entity);
-
-    let results = [];
     let transactions = [];
 
-    const startDate = new Date(Date.now() - (90 * 86400 * 1000));
-    const endDate = new Date(Date.now());
-    const eventConversionsRequestParams = {
-      start_date: that.clientSoap.dateFormat(startDate),
-      end_date: that.clientSoap.dateFormat(endDate),
-      api_key: that.clientSoap.cfg.api_key,
-      affiliate_id: that.clientSoap.cfg.affiliate_id,
-      site_offer_id: 0,
-      currency_id: 0,
-      event_type: 'all',
-      exclude_bot_traffic: false,
-      start_at_row: 0,
-      row_limit: 0
-    };
+    const dateFormat = d => d.toISOString().replace(/\..+$/, '-00:00');
+    const startDate = dateFormat(new Date(Date.now() - (90 * 86400 * 1000)));
+    const endDate = dateFormat(new Date(Date.now()));
+    const event_conversions = yield that.clientSoap.getTransactions(that.entity, startDate, endDate);
 
-    const eventConversionsResponseKey = 'ConversionsResult';
-    results = yield that.doApi('Conversions', eventConversionsRequestParams, eventConversionsResponseKey);
-
-    const event_conversions = results[0].conversions.conversion;
+    //var event_conversions = yield(that.parseXml(results, 'commissions'));
     const conversions = Array.isArray(event_conversions) ? event_conversions : [];
     transactions = yield conversions.map(that.prepareCommission).filter(exists);
     return sendEvents.sendCommissions(that.eventName, transactions);
@@ -167,13 +129,13 @@ const JumiaGenericApi = function (s_entity) {
    */
   this.prepareCommission = co.wrap(function* (o_obj) {
     //Jumia sends order currency local and commission is USD
-    if ('$' !== o_obj.currency_symbol) {  //this should not happen
-      console.log("ERROR: Unable to understand Currency Symbol ", o_obj.currency_symbol);
+    if ('$' !== o_obj.currency_symbol[0]) {  //this should not happen
+      console.log("ERROR: Unable to understand Currency Symbol ", o_obj.currency_symbol[0]);
       return;
     }
 
     var purchaseAmount = 0;
-    var currencyCode = CURRENCY_MAP[o_obj.order_currency_symbol];
+    var currencyCode = CURRENCY_MAP[o_obj.order_currency_symbol[0]];
     var convDate = new Date(o_obj.conversion_date);
 
     if (currencyCode) {
@@ -184,7 +146,7 @@ const JumiaGenericApi = function (s_entity) {
 
       console.log("currency conv url: ", currencyConvUrl);
       yield request.get(currencyConvUrl, function (error, response, body) {
-        console.log('body:', body); 
+        console.log('body:', body);
         var jsonBody = JSON.parse(body);
 
         if(response.statusCode == 200) {
