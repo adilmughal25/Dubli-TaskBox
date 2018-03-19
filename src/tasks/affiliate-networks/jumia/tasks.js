@@ -27,7 +27,8 @@ const CURRENCY_MAP = {
   '£': 'egp', //Egypt Pound
   'GH₵': 'ghs', //Ghana - Ghanaian Cedi
   '₦': 'ngn', //Nigerian Naira
-  'NGN': 'ngn' //Nigerian Naira
+  'NGN': 'ngn', //Nigerian Naira,
+  'د.ج': 'dzd', //Jumia Algeria
 };
 
 const JumiaGenericApi = function (s_entity) {
@@ -135,7 +136,7 @@ const JumiaGenericApi = function (s_entity) {
     }
 
     var purchaseAmount = 0;
-    var currencyCode = CURRENCY_MAP[o_obj.order_currency_symbol[0]];
+    var currencyCode = CURRENCY_MAP[o_obj.order_currency_symbol];
     var convDate = new Date(o_obj.conversion_date);
 
     if (currencyCode) {
