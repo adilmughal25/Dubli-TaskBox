@@ -58,7 +58,14 @@ const JumiaGenericApi = function (s_entity) {
       const creativeInfos = yield that.clientSoap.getMerchants(that.entity, offer.campaign_id);
       //const creativeInfos = yield that.parseXml(rawMerchantsData, 'merchants');
 
-      const linkCreatives = creativeInfos.filter(creativeInfo => creativeInfo.creative_type.type_id === "1");
+      let linkCreatives = [];
+      if (Array.isArray(creativeInfos)) {
+        linkCreatives = creativeInfos.filter(creativeInfo => creativeInfo.creative_type.type_id === "1");
+      } else if(creativeInfos.creative_type && creativeInfos.creative_type.type_id === "1") {
+        linkCreatives.push(creativeInfos);
+      }
+
+      //const linkCreatives = creativeInfos.filter(creativeInfo => creativeInfo.creative_type.type_id === "1");
       linkCreatives && linkCreatives[0] && offerWithCreative.push(that.prepareMerchant(offer, linkCreatives[0]));
     }
 
