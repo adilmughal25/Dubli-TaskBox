@@ -28,7 +28,18 @@ const CURRENCY_MAP = {
   'GH₵': 'ghs', //Ghana - Ghanaian Cedi
   '₦': 'ngn', //Nigerian Naira
   'NGN': 'ngn', //Nigerian Naira,
-  'د.ج': 'dzd', //Jumia Algeria
+  'د.ج': 'dzd', //Jumia Algeria,
+  'K': 'mmk', // Myanamar taka
+  'USh': 'ugx', // uganda shilling
+  'FC': 'cdf',
+  'ብር': 'etb',
+  'Ar': 'mga', // malaysian ariary,
+  '₨': 'mur',
+  'MT': 'mzn',
+  'FRw': 'rwf',
+  'دينار': 'tnd',
+  'TSh': 'tzs',
+  'ZK': 'zmw',
 };
 
 const JumiaGenericApi = function (s_entity) {
