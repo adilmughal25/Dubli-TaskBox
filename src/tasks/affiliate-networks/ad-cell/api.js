@@ -62,6 +62,7 @@ function AdCellClient(s_entity) {
   // default request options
   this.client = request.defaults({
     baseUrl: API_CFG.url,
+    strictSSL : false,
     json: true,
     simple: true,
     resolveWithFullResponse: false,
