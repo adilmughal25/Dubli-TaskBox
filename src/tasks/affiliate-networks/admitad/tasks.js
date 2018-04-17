@@ -26,11 +26,11 @@ const AdmitadGenericApi = function(s_entity, s_region) {
 
   var that = this;
 
-  this.region = s_region ? s_region.toLowerCase() : '';  
+  this.region = s_region ? s_region.toLowerCase() : '';
   this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
   this.client = require('./api')(this.entity, this.region);
   this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'admitad' + (this.region ? '-' + this.region : '');
-  
+
   /**
    * Retrieve all commission details (sales/transactions) from Admitad within given period of time.
    * @returns {undefined}
@@ -73,7 +73,7 @@ const AdmitadGenericApi = function(s_entity, s_region) {
             )}, delayTimer);
         }
       ));
-      delayTimer += 1500;
+      delayTimer += 2500;
       promises.push(
         new Promise((resolve) => {
           setTimeout(() => {
@@ -83,7 +83,7 @@ const AdmitadGenericApi = function(s_entity, s_region) {
             )}, delayTimer);
         })
       );
-      delayTimer += 1500;
+      delayTimer += 2500;
     }
 
     yield Promise.all(promises);
