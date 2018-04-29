@@ -3,8 +3,8 @@
 /*
  * Webgains API client for their webservices / SOAP API.
  * Used for commission details only. See "webgains.js" for RESTful API client to get merchant information.
- * 
- * API Documentation: 
+ *
+ * API Documentation:
  *    http://www.webgains.de/newsletter/images/Webgains%20Webservice%20f%C3%BCr%20Affiliates.pdf
  *    http://ws.webgains.com/aws.php
  *
@@ -23,7 +23,7 @@ const API_SERVICE_WSDL = 'http://ws.webgains.com/aws.php?wsdl';
 const API_CFG = {
   ominto: {
     user: 'merchants@ominto.com',
-    pass: 'Dubot2017#',
+    pass: 'Ominto2018#',
     siteId: 177143
   },
 };
