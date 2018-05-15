@@ -22,6 +22,15 @@ const AFFILIATE_NAME = 'linkshare';
 const reportingURL = 'https://ran-reporting.rakutenmarketing.com/en/reports/individual-item-report-api-final/filters?';
 const reportingToken = 'ZW5jcnlwdGVkYToyOntzOjU6IlRva2VuIjtzOjY0OiI2ODI4NTljZGIxYWU2ZjllZWQ1NDFhYjhlNjY1YTM2ODI4YTM3NmIxMjFmMWI1MTI4Y2Q2YzJhMjBkMTMzMjgzIjtzOjg6IlVzZXJUeXBlIjtzOjk6IlB1Ymxpc2hlciI7fQ%3D%3D';
 
+const networksList = {
+    us: 1,
+    gb: 3,
+    ca: 5,
+    fr: 7,
+    br: 8,
+    de: 9
+}
+
 const LinkShareGenericApi = function(s_region, s_entity) {
   if (!(this instanceof LinkShareGenericApi)) {
     debug("instantiating LinkShareGenericApi for: %s", s_entity);
@@ -114,7 +123,8 @@ const LinkShareGenericApi = function(s_region, s_entity) {
   });
 
   // old commission processing code
-  this._getCommissionDetails = singleRun(function*(){
+  this._getCommissionDetails = singleRun(function*() {
+
     let page = 1;
     let commissions = [];
     const startTime = moment().subtract(90, 'days').toDate();
@@ -144,21 +154,28 @@ const LinkShareGenericApi = function(s_region, s_entity) {
   //start_date=2016-11-01&end_date=2016-11-15&include_summary=Y&network=1&tz=GMT&date_type=transaction
   //&token=ZW5jcnlwdGVkYToyOntzOjU6IlRva2VuIjtzOjY0OiI2ODI4NTljZGIxYWU2ZjllZWQ1NDFhYjhlNjY1YTM2ODI4YTM3NmIxMjFmMWI1MTI4Y2Q2YzJhMjBkMTMzMjgzIjtzOjg6IlVzZXJUeXBlIjtzOjk6IlB1Ymxpc2hlciI7fQ%3D%3D
   this.getCommissionDetails = singleRun(function*(){
-
     const startDate = moment().subtract(270, 'days').format('YYYY-MM-DD');
     const endDate = moment().format('YYYY-MM-DD');
 
     var dataClient = request.defaults({});
 
+    console.log(networksList[s_region] ? networksList[s_region] : networksList['us']);
     const url = reportingURL + querystring.stringify({
       start_date: startDate,
       end_date: endDate,
       include_summary: 'N',
       // network: 1, // dont do a network specific call
+      network: networksList[s_region] ? networksList[s_region] : networksList['us'], // dont do a network specific call
       tz: 'GMT',
       date_type: 'process', //using process instead of transaction as these transactions are confirmed onces
       token: reportingToken
     });
+
+    // Network: 3 is uk
+    // Network: 5 is Canada
+    // Network: 7 is france
+    // Network: 8 is brazil
+    // Network: 9 is germany
 
     /*
     //let response = yield dataClient.get(url);

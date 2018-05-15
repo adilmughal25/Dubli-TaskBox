@@ -41,6 +41,30 @@ const API_AUTH_FORMS = {
       username: 'dubliuk',
       password: 'dubli200',
       scope: 2739901
+    },
+    fr: {
+      grant_type: 'NONE', // As we are calling api from linkshare dashboard
+      username: 'NONE',
+      password: 'NONE',
+      scope: 0
+    },
+    br: {
+      grant_type: 'NONE', // As we are calling api from linkshare dashboard
+      username: 'NONE',
+      password: 'NONE',
+      scope: 0
+    },
+    de: {
+      grant_type: 'NONE', // As we are calling api from linkshare dashboard
+      username: 'NONE',
+      password: 'NONE',
+      scope: 0
+    },
+    au: {
+      grant_type: 'NONE', // As we are calling api from linkshare dashboard
+      username: 'NONE',
+      password: 'NONE',
+      scope: 2739901
     }
   }
 };
