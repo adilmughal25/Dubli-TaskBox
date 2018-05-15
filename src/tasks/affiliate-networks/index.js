@@ -134,9 +134,14 @@ const lazadaIdApi = hasoffersGenericApi('lazada-id');
 
 const linkShareGenericApi = require("./linkshare/tasks");
 const linkShareApi = linkShareGenericApi();
-const linkShareDubliUSApi = linkShareGenericApi('us', 'dubli');
 const linkShareDubliCAApi = linkShareGenericApi('ca', 'dubli');
 const linkShareDubliGBApi = linkShareGenericApi('gb', 'dubli');
+
+const linkShareDubliFRApi = linkShareGenericApi('fr', 'dubli');
+const linkShareDubliBRApi = linkShareGenericApi('br', 'dubli');
+const linkShareDubliDeApi = linkShareGenericApi('de', 'dubli');
+//const linkShareDubliAUApi = linkShareGenericApi('au', 'dubli');
+
 
 const omgpmGenericApi = require('./omgpm/tasks');
 const omgpmIndiaApi = omgpmGenericApi('india');
@@ -405,7 +410,12 @@ function initializeCommissionsProcessors(tasker) {
     "Lazada (Vn) Commissions" : lazadaVnApi.getCommissionDetails,
     "Lazada (Id) Commissions" : lazadaIdApi.getCommissionDetails,
 
-    "LinkShare Commissions": linkShareApi.getCommissionDetails,
+    "LinkShare (US) Commissions": linkShareApi.getCommissionDetails,
+    "LinkShare (UK) Commissions": linkShareDubliGBApi.getCommissionDetails,
+    "LinkShare (Ca) Commissions": linkShareDubliCAApi.getCommissionDetails,
+    "LinkShare (FR) Commissions": linkShareDubliFRApi.getCommissionDetails,
+    "LinkShare (Br) Commissions": linkShareDubliBRApi.getCommissionDetails,
+    "LinkShare (De) Commissions": linkShareDubliDeApi.getCommissionDetails,
     // "Lomadee Commissions": lomadeeApi.getCommissionDetails,
     "OMG (India) Commissions": omgpmIndiaApi.getCommissionDetails,
     "OMG (UK) Commissions": omgpmUKCommissionsApi.getCommissionDetails,
