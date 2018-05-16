@@ -139,8 +139,8 @@ const linkShareDubliGBApi = linkShareGenericApi('gb', 'dubli');
 
 const linkShareDubliFRApi = linkShareGenericApi('fr', 'dubli');
 const linkShareDubliBRApi = linkShareGenericApi('br', 'dubli');
-const linkShareDubliDeApi = linkShareGenericApi('de', 'dubli');
-//const linkShareDubliAUApi = linkShareGenericApi('au', 'dubli');
+const linkShareDubliDEApi = linkShareGenericApi('de', 'dubli');
+const linkShareDubliAUApi = linkShareGenericApi('au', 'dubli');
 
 
 const omgpmGenericApi = require('./omgpm/tasks');
@@ -414,8 +414,9 @@ function initializeCommissionsProcessors(tasker) {
     "LinkShare (UK) Commissions": linkShareDubliGBApi.getCommissionDetails,
     "LinkShare (Ca) Commissions": linkShareDubliCAApi.getCommissionDetails,
     "LinkShare (FR) Commissions": linkShareDubliFRApi.getCommissionDetails,
-    "LinkShare (Br) Commissions": linkShareDubliBRApi.getCommissionDetails,
-    "LinkShare (De) Commissions": linkShareDubliDeApi.getCommissionDetails,
+    "LinkShare (BR) Commissions": linkShareDubliBRApi.getCommissionDetails,
+    "LinkShare (DE) Commissions": linkShareDubliDEApi.getCommissionDetails,
+    "LinkShare (AU) Commissions": linkShareDubliAUApi.getCommissionDetails,
     // "Lomadee Commissions": lomadeeApi.getCommissionDetails,
     "OMG (India) Commissions": omgpmIndiaApi.getCommissionDetails,
     "OMG (UK) Commissions": omgpmUKCommissionsApi.getCommissionDetails,
