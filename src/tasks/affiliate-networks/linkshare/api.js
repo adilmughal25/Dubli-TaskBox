@@ -64,7 +64,7 @@ const API_AUTH_FORMS = {
       grant_type: 'NONE', // As we are calling api from linkshare dashboard
       username: 'NONE',
       password: 'NONE',
-      scope: 2739901
+      scope: 0
     }
   }
 };

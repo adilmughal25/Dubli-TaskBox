@@ -28,7 +28,8 @@ const networksList = {
     ca: 5,
     fr: 7,
     br: 8,
-    de: 9
+    de: 9,
+    au: 41,
 }
 
 const LinkShareGenericApi = function(s_region, s_entity) {
