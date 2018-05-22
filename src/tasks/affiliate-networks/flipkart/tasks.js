@@ -57,7 +57,7 @@ function prepareCommission(status, o_obj) {
     currency: o_obj.tentativeCommission.currency,
     state: status,
     // effective_date: status === 'pending' ? Date.parse(o_obj.orderDate) : 'auto'
-    effective_date: Date.parse(o_obj.orderDate)
+    effective_date: new Date(o_obj.orderDate)
   };
   return event;
 }
