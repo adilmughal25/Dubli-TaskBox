@@ -108,8 +108,10 @@ const HasOffersGenericApi = function(s_networkName, s_entity) {
 
     while (true) {
       const url = that.client.url('Affiliate_Report', 'getConversions', {
-        'data_start': start,
-        'data_end': end,
+        // 'data_start': start,
+        // 'data_end': end,
+        'filters[Stat.date][conditional]': 'BETWEEN',
+        'filters[Stat.date][values]': [start, end],
         'fields[]': commFields,
         'limit': 1000,
         'page': page
