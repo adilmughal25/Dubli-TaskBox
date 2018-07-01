@@ -26,7 +26,7 @@ const GetSalesData = "GetSalesData";
 const API_CREDENTIALS = {
   asia: {
     endpoint: 'https://www.tagadmin.asia/ws/AffiliateSOAP.wsdl',
-    authUser: 'merchants@ominto.com',
+    authUser: 'slambah@ominto.com',
     authPass: 'AffDUBLI@2017'
   },
   sg: {
