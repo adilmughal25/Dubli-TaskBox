@@ -71,6 +71,7 @@ function prepareCommission(transaction) {
       affiliate_name: AFFILIATE_NAME,
       merchant_name: MERCHANT_NAME,
       merchant_id: '',
+      currency: 'usd',
       transaction_id: transaction.orderNumber,
       order_id: transaction.orderNumber,
       outclick_id: extraParams.dp,
