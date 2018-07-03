@@ -14,6 +14,9 @@ const adserviceFinlandApi = adserviceGenericApi('fi');
 const adserviceNorwayApi = adserviceGenericApi('no');
 const adserviceGermanyApi = adserviceGenericApi('de');
 
+const aliexpressGenericApi = require('./aliexpress/tasks');
+const aliexpressApi = aliexpressGenericApi();
+
 const tradedoublerGenericApi = require('./tradedoubler/tasks');
 const tradedoublerApi = tradedoublerGenericApi();
 const tradedoublerGermanyApi = tradedoublerGenericApi('de');
@@ -270,6 +273,8 @@ function initializeMerchantImporters(tasker) {
     "Affili.Net (Switzerland) Merchants": affilinetSwitzerlandApi.getMerchants,
     "Affili.Net (UK) Merchants": affilinetUKApi.getMerchants,
     "Affiliate Gateway (Asia) Merchants": affiliateGatewayAsiaApi.getMerchants,
+
+    "Ali Express Commisions": aliexpressApi.getCommissionDetails,
     //"Affiliate Gateway (Sg) Merchants": affiliateGatewaySgApi.getMerchants, //TODO LM to be implemented
     "AffiliateWindow Merchants": affiliatewindowApi.getMerchants,
     // "ArabyAds Merchants" : arabyadsApi.getMerchants,
