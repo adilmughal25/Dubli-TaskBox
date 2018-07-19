@@ -426,6 +426,9 @@ function initializeCommissionsProcessors(tasker) {
     "LinkShare (BR) Commissions": linkShareDubliBRApi.getCommissionDetails,
     "LinkShare (DE) Commissions": linkShareDubliDEApi.getCommissionDetails,
     "LinkShare (AU) Commissions": linkShareDubliAUApi.getCommissionDetails,
+
+    "Linkprice Commissions": linkpriceApi.getCommissionDetails,
+
     // "Lomadee Commissions": lomadeeApi.getCommissionDetails,
     "OMG (India) Commissions": omgpmIndiaApi.getCommissionDetails,
     "OMG (UK) Commissions": omgpmUKCommissionsApi.getCommissionDetails,

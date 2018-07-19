@@ -11,7 +11,7 @@ const querystring = require('querystring');
 const BASE_URL = 'http://api.linkprice.com/';
 const API_CFG = {
   dubli: {
-    apiToken: 'A100540634',
+    apiToken: 'f51f4ea3f5c4f5a399a210f18bc94062',
     aid: 'A100540634',
   }
 };
@@ -36,16 +36,16 @@ function LinkPrice(s_entity, s_region) {
 
 
     return client.get(apiUrl)
-      .then(resp => resp.body && resp.body ? resp.body : [])
+      .then(resp => resp.body ? resp.body : [])
   };
 
-  client.getTransactions = function(startDate, endDate) {
+  client.getTransactions = function(startDate, endDate, cancelled) {
     client.url = getUrl;
     const apiUrl = client.url('transactions', cfg, startDate, endDate);
     debug('GET' + apiUrl);
 
     return client.get(apiUrl)
-      .then(resp => resp.body && resp.body.rows ? resp.body.rows : [])
+      .then(resp => resp.body && resp.body.order_list ? resp.body.order_list : [])
   };
 
   return client;
@@ -57,7 +57,7 @@ function getUrl(urlType, cfg, startDate, endDate) {
   }
 
   if (urlType === 'transactions') {
-    return 'Statistics.pl/orders/?' + 'startDate=' + startDate + '&endDate='+ endDate + '&UID='+ cfg.uid+'&LoginToken=' + cfg.loginToken
+    return 'affiliate/translist.php?auth_key=' + 'f51f4ea3f5c4f5a399a210f18bc94062&a_id='+ cfg.aid + '&yyyymmdd=' + endDate
   }
 
   throw new Error("Pass valid url type for valid url(merchants, transactions).");
