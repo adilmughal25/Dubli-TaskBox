@@ -44,15 +44,14 @@ const LinkpriceGenericApi = function(s_region, s_entity) {
   });
 
   tasks.getCommissionDetails = singleRun(function* (){
-    const startDate = moment().subtract(90, 'days');
-    //const endDate = moment().format('YYYYMMDD');
-    const endDate = moment(new Date);
+    const startDate = moment().subtract(3, 'months');
+    const endDate = moment().endOf('month');
 
     let commissions = [];
-    while (endDate > startDate) {
-      let formattedDate = startDate.format('YYYYMMDD');
-      startDate.add(1,'day');
-      let res = yield tasks.client.getTransactions(startDate, formattedDate);
+    while (startDate.format('M') <= endDate.format('M')) {
+      let formattedDate = startDate.format('YYYYMM');
+      let res = yield tasks.client.getTransactions(formattedDate);
+      startDate.add(1,'month');
       commissions = commissions.concat(res);
     }
 

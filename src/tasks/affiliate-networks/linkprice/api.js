@@ -39,9 +39,9 @@ function LinkPrice(s_entity, s_region) {
       .then(resp => resp.body ? resp.body : [])
   };
 
-  client.getTransactions = function(startDate, endDate, cancelled) {
+  client.getTransactions = function(transactionsDate) {
     client.url = getUrl;
-    const apiUrl = client.url('transactions', cfg, startDate, endDate);
+    const apiUrl = client.url('transactions', cfg, transactionsDate);
     debug('GET' + apiUrl);
 
     return client.get(apiUrl)
@@ -51,13 +51,13 @@ function LinkPrice(s_entity, s_region) {
   return client;
 }
 
-function getUrl(urlType, cfg, startDate, endDate) {
+function getUrl(urlType, cfg, transactionsDate) {
   if (urlType === 'merchants') {
     return 'shoplist2.php?' + 'a_id='+ cfg.aid
   }
 
   if (urlType === 'transactions') {
-    return 'affiliate/translist.php?auth_key=' + 'f51f4ea3f5c4f5a399a210f18bc94062&a_id='+ cfg.aid + '&yyyymmdd=' + endDate
+    return 'affiliate/translist.php?auth_key=' + 'f51f4ea3f5c4f5a399a210f18bc94062&a_id='+ cfg.aid + '&yyyymmdd=' + transactionsDate
   }
 
   throw new Error("Pass valid url type for valid url(merchants, transactions).");
