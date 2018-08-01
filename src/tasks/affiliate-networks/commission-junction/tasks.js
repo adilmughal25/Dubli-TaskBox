@@ -133,6 +133,11 @@ function extractTrackingLinks(s_info) {
     if (cur.clickUrl) return pickUrl(cur.clickUrl);
   }
 
+  // create deep link generator before giving up
+  if (merchant['program-url']) {
+    return pickUrl('www.anrdoezrs.net/links/8058979/type/dlg/' + merchant['program-url']);
+  }
+
   // just give up now
   return pickUrl("");
 }
