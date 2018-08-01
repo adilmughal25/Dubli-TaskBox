@@ -135,6 +135,9 @@ const lazadaThApi = hasoffersGenericApi('lazada-th');
 const lazadaVnApi = hasoffersGenericApi('lazada-vn');
 const lazadaIdApi = hasoffersGenericApi('lazada-id');
 
+const linkPriceGenericApi = require('./linkprice/tasks');
+const linkpriceApi = linkPriceGenericApi('linkprice');
+
 const linkShareGenericApi = require("./linkshare/tasks");
 const linkShareApi = linkShareGenericApi();
 const linkShareDubliCAApi = linkShareGenericApi('ca', 'dubli');
@@ -287,6 +290,7 @@ function initializeMerchantImporters(tasker) {
     //"Fan Merchants": fanApi.getMerchants,
     "ImpactRadius Merchants": impactRadiusApi.getMerchants,
     "Jumia Merchants": jumiaApi.getMerchants,
+    "Linkprice Merchants": linkpriceApi.getMerchants,
     "LinkShare Merchants": linkShareApi.getMerchants,
     // "Lomadee Merchants": lomadeeApi.getMerchants,
     "OMG (India) Merchants": omgpmIndiaApi.getMerchants,
@@ -422,6 +426,9 @@ function initializeCommissionsProcessors(tasker) {
     "LinkShare (BR) Commissions": linkShareDubliBRApi.getCommissionDetails,
     "LinkShare (DE) Commissions": linkShareDubliDEApi.getCommissionDetails,
     "LinkShare (AU) Commissions": linkShareDubliAUApi.getCommissionDetails,
+
+    "Linkprice Commissions": linkpriceApi.getCommissionDetails,
+
     // "Lomadee Commissions": lomadeeApi.getCommissionDetails,
     "OMG (India) Commissions": omgpmIndiaApi.getCommissionDetails,
     "OMG (UK) Commissions": omgpmUKCommissionsApi.getCommissionDetails,
