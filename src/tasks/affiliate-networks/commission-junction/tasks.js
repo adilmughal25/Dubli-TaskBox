@@ -38,6 +38,7 @@ const CommissionJunctionGenericApi = function(s_region, s_entity) {
 
   this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
   this.region = s_region;
+
   this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'commissionjunction-' + s_region;
 
   const debug = require('debug')(this.eventName + ':processor');
@@ -50,7 +51,7 @@ const CommissionJunctionGenericApi = function(s_region, s_entity) {
       links: clientL.getLinks()
     };
 
-    const merchants = merge(results).map(extractTrackingLinks);
+    const merchants = merge(results).map(extractTrackingLinks.bind(null, that.region));
 
     return yield sendEvents.sendMerchants(that.eventName, merchants);
   });
@@ -87,7 +88,8 @@ function extractEmbeddedUrl(s_url) {
   return picked ? query[picked] : null;
 }
 
-function extractTrackingLinks(s_info) {
+function extractTrackingLinks(region, s_info) {
+  console.log(s_info);
   const merchant = s_info.merchant;
   const allLinks = s_info.links;
   const textLinks = allLinks.filter(x => x['link-type'] === 'Text Link');
@@ -135,7 +137,10 @@ function extractTrackingLinks(s_info) {
 
   // create deep link generator before giving up
   if (merchant['program-url']) {
-    return pickUrl('www.anrdoezrs.net/links/8058979/type/dlg/' + merchant['program-url']);
+    // Cj is generating different id for different accounts. We have 2 accounts currently.
+    // In case we will have a third account which is very unlikely then update the condition accordingly
+    const linkId = region === 'us' ? '8058979' : '8070057';
+    return pickUrl('www.anrdoezrs.net/links/'+linkId+'/type/dlg/' + merchant['program-url']);
   }
 
   // just give up now
