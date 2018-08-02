@@ -9,7 +9,7 @@ const API_CFG = {
   url: 'https://api.hasoffers.com/',
   ominto: {
     vcommission: {
-      api_key: '669ba8e6d46a319e67e21f529cd9f78bd27f99322c6c9c40e0f250588d1e2959',
+      api_key: 'edd8bd82a4c7d76ca5af591eda7ecfb17d0fe90a3a31e471d5cb81e3d4fc4165',
       NetworkId: 'vcm',
       defaultCurrency: 'inr'
     },
@@ -27,7 +27,7 @@ const API_CFG = {
       api_key: '2f4b194614629ed6fdb455104523d571b4d30f4b8df95eb89b8efbd12ce664c8',
       NetworkId: 'arabyads',
       defaultCurrency: 'usd'
-    },    
+    },
     vcommissionmena: {
       api_key: 'b1966d15862f36e1bf5626e3b9062562ff01639208046fff7e69b8f5a03162c2',
       NetworkId: 'vcm',
@@ -108,7 +108,7 @@ const HasOfferClient = function(s_entity, s_networkName) {
   _.extend(this.client, this._credentials);
 
   this.url = function urlMaker(s_target, s_method, params) {
-    // Specifically added to accomodate lazada. The region parameter is only been used lazada. 
+    // Specifically added to accomodate lazada. The region parameter is only been used lazada.
     // This can be seperated out during the refactoring process.
     if (API_CFG[s_entity][s_networkName].region) {
       // Lazada merchants and commissions are taking two different parameters for currency
@@ -118,8 +118,8 @@ const HasOfferClient = function(s_entity, s_networkName) {
         params['filters[Stat.currency][values]'] = API_CFG[s_entity][s_networkName].region;
       }
       else {
-        params['filters[currency]'] = API_CFG[s_entity][s_networkName].region;        
-      }  
+        params['filters[currency]'] = API_CFG[s_entity][s_networkName].region;
+      }
     }
 
     let args = _.extend({
