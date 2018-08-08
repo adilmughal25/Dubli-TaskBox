@@ -112,6 +112,10 @@ function commissionJunctionClient(s_entity, s_region, s_type) {
     }
   });
 
+  client.getConfig = () => {
+    return cfg;
+  }
+
   client.getMerchants = co.wrap(function* () {
     return yield client.pagedApiCall();
   });
