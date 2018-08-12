@@ -43,15 +43,18 @@ const CommissionJunctionGenericApi = function(s_region, s_entity) {
 
   const debug = require('debug')(this.eventName + ':processor');
 
+
   this.getMerchants = co.wrap(function* () {
     const clientM = cjClient(that.entity, that.region, 'advertisers');
     const clientL = cjClient(that.entity, that.region, 'links');
+
+    const apiConfig = clientM.getConfig();
     const results = yield {
       merchants: clientM.getMerchants(),
       links: clientL.getLinks()
     };
 
-    const merchants = merge(results).map(extractTrackingLinks.bind(null, that.region));
+    const merchants = merge(results).map(extractTrackingLinks.bind(null, that.region, apiConfig));
 
     return yield sendEvents.sendMerchants(that.eventName, merchants);
   });
@@ -88,8 +91,7 @@ function extractEmbeddedUrl(s_url) {
   return picked ? query[picked] : null;
 }
 
-function extractTrackingLinks(region, s_info) {
-  console.log(s_info);
+function extractTrackingLinks(region, apiConfig, s_info) {
   const merchant = s_info.merchant;
   const allLinks = s_info.links;
   const textLinks = allLinks.filter(x => x['link-type'] === 'Text Link');
@@ -139,7 +141,7 @@ function extractTrackingLinks(region, s_info) {
   if (merchant['program-url']) {
     // Cj is generating different id for different accounts. We have 2 accounts currently.
     // In case we will have a third account which is very unlikely then update the condition accordingly
-    const linkId = region === 'us' ? '8058979' : '8070057';
+    const linkId = apiConfig.siteId;
     return pickUrl('www.anrdoezrs.net/links/'+linkId+'/type/dlg/' + merchant['program-url']);
   }
 
