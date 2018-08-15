@@ -114,8 +114,9 @@ const WebgainsGenericApi = function(s_entity) {
  */
 function approvedAffiliate(item) {
   var status = Number(item.merchant.affiliateApprovalStatus);
-  if (status === 1) return true;
-  if (status === 2) return true;
+  var membershipStatus = Number(item.merchant.membershipStatus);
+  if (status === 1 && membershipStatus === 10) return true;
+  if (status === 2 && membershipStatus === 10) return true;
   return false;
 }
 
