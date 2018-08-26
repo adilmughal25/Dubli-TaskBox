@@ -52,7 +52,7 @@ cat > /var/scripts/process.json <<EOF
 {
   "apps" : [
     {
-      "name": "website",
+      "name": "taskbox",
       "script": "/var/www/src/server.js",
       "node_args": ["--harmony"],
       "env": {
