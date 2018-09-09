@@ -16,9 +16,9 @@ const addReferralPropertiesApi = function() {
     if (!(this instanceof addReferralPropertiesApi)) {
         return new addReferralPropertiesApi();
     }
-    
+
     this.addReferralProperties = singleRun(function*() {
-        
+
         let newInvitedUsers= yield dataClient.get('/getNewInvitedFriends',false,this);
         let getNewInvitedSocialFriends= yield dataClient.get('/getNewInvitedSocialFriends',false,this);
         let getOtherFriends= yield dataClient.get('/getOtherFriends',false,this);
@@ -26,6 +26,11 @@ const addReferralPropertiesApi = function() {
 
     this.addReferralAmount=singleRun(function* () {
         let addReferralAmountForAvailableBalance = yield dataClient.get('/addReferralAmountForAvailableBalance',false,this);
+        //let VipReferralAmount = yield dataClient.get('/VipReferralAmount',false,this);
+    })
+
+    this.addVipReferralAmount=singleRun(function* () {
+        //let addReferralAmountForAvailableBalance = yield dataClient.get('/addReferralAmountForAvailableBalance',false,this);
         let VipReferralAmount = yield dataClient.get('/VipReferralAmount',false,this);
     })
 }

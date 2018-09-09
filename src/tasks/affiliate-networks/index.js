@@ -561,4 +561,5 @@ function intializeUserReferrals(tasker) {
   // Run this every 24 hour
   tasker.createTask('add Referral users', '3h +/- 1h', userReferralApi.addReferralProperties);
   tasker.createTask('add Referral cashback', '6h +/- 1h', userReferralApi.addReferralAmount);
+  tasker.createTask('add Vip Referral cashback', '6h +/- 1h', userReferralApi.addVipReferralAmount);
 }
