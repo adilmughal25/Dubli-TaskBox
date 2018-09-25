@@ -1,8 +1,6 @@
 "use strict";
 
 module.exports = { init: init };
-
-const amazonApi = require('./amazon/tasks');
 const clixGaloreApi = require("./clix-galore/tasks");
 const impactRadiusProductFtp = require("./impact-radius/ftp-tasks");
 // const lomadeeApi = require('./lomadee/tasks');
@@ -16,6 +14,9 @@ const adserviceGermanyApi = adserviceGenericApi('de');
 
 const aliexpressGenericApi = require('./aliexpress/tasks');
 const aliexpressApi = aliexpressGenericApi();
+
+//const AmazonIndiaGenericApi = require('./amazon/tasks');
+//const amazonApi = AmazonIndiaGenericApi();
 
 const tradedoublerGenericApi = require('./tradedoubler/tasks');
 const tradedoublerApi = tradedoublerGenericApi();
@@ -359,12 +360,13 @@ function initializeMerchantImporters(tasker) {
     "Zanox Merchants": zanoxApi.getMerchants,
     "FlyDubai Merchants": tradedoublerFlyDubaiApi.getMerchants,
 
-    "Lazada (Ph) Merchants" : lazadaPhApi.getMerchants,
-    "Lazada (My) Merchants" : lazadaMyApi.getMerchants,
-    "Lazada (Sg) Merchants" : lazadaSgApi.getMerchants,
-    "Lazada (Th) Merchants" : lazadaThApi.getMerchants,
-    "Lazada (Vn) Merchants" : lazadaVnApi.getMerchants,
-    "Lazada (Id) Merchants" : lazadaIdApi.getMerchants
+    // Stopping lazada until new implementation
+    // "Lazada (Ph) Merchants" : lazadaPhApi.getMerchants,
+    // "Lazada (My) Merchants" : lazadaMyApi.getMerchants,
+    // "Lazada (Sg) Merchants" : lazadaSgApi.getMerchants,
+    // "Lazada (Th) Merchants" : lazadaThApi.getMerchants,
+    // "Lazada (Vn) Merchants" : lazadaVnApi.getMerchants,
+    // "Lazada (Id) Merchants" : lazadaIdApi.getMerchants
   });
 
   tasker.createTask('ShareASale Merchants', '7d +/- 1d', shareASaleApi.getMerchants);
@@ -396,7 +398,7 @@ function initializeCommissionsProcessors(tasker) {
     "Affiliate Gateway (Asia) Commissions": affiliateGatewayAsiaApi.getCommissionDetails,
     "Affiliate Gateway (SG) Commissions": affiliateGatewaySgApi.getCommissionDetails,
     "AffiliateWindow Commissions": affiliatewindowApi.getCommissionDetails,
-    // "Amazon (IN) Commissions": amazonApi.getCommissionDetails, // problems w/ amazon.in
+    //"Amazon (IN) Commissions": amazonApi.getCommissionDetails, // problems w/ amazon.in
     // "ArabyAds Commissions" : arabyadsApi.getCommissionDetails,
     "AvantLink (CA) Commissions": avantLinkCAApi.getCommissionDetails,
     "AvantLink (US) Commissions": avantLinkUSApi.getCommissionDetails,
@@ -412,12 +414,13 @@ function initializeCommissionsProcessors(tasker) {
     "ImpactRadius Commissions": impactRadiusApi.getCommissionDetails,
     "Jumia Commissions": jumiaApi.getCommissionDetails,
 
-    "Lazada (Ph) Commissions" : lazadaPhApi.getCommissionDetails,
-    "Lazada (My) Commissions" : lazadaMyApi.getCommissionDetails,
-    "Lazada (Sg) Commissions" : lazadaSgApi.getCommissionDetails,
-    "Lazada (Th) Commissions" : lazadaThApi.getCommissionDetails,
-    "Lazada (Vn) Commissions" : lazadaVnApi.getCommissionDetails,
-    "Lazada (Id) Commissions" : lazadaIdApi.getCommissionDetails,
+    // Stopping lazada until new implementation.
+    // "Lazada (Ph) Commissions" : lazadaPhApi.getCommissionDetails,
+    // "Lazada (My) Commissions" : lazadaMyApi.getCommissionDetails,
+    // "Lazada (Sg) Commissions" : lazadaSgApi.getCommissionDetails,
+    // "Lazada (Th) Commissions" : lazadaThApi.getCommissionDetails,
+    // "Lazada (Vn) Commissions" : lazadaVnApi.getCommissionDetails,
+    // "Lazada (Id) Commissions" : lazadaIdApi.getCommissionDetails,
 
     "LinkShare (US) Commissions": linkShareApi.getCommissionDetails,
     "LinkShare (UK) Commissions": linkShareDubliGBApi.getCommissionDetails,
