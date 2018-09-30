@@ -15,8 +15,8 @@ const adserviceGermanyApi = adserviceGenericApi('de');
 const aliexpressGenericApi = require('./aliexpress/tasks');
 const aliexpressApi = aliexpressGenericApi();
 
-//const AmazonIndiaGenericApi = require('./amazon/tasks');
-//const amazonApi = AmazonIndiaGenericApi();
+const AmazonIndiaGenericApi = require('./amazon/tasks');
+const amazonApi = AmazonIndiaGenericApi();
 
 const tradedoublerGenericApi = require('./tradedoubler/tasks');
 const tradedoublerApi = tradedoublerGenericApi();
@@ -398,7 +398,7 @@ function initializeCommissionsProcessors(tasker) {
     "Affiliate Gateway (Asia) Commissions": affiliateGatewayAsiaApi.getCommissionDetails,
     "Affiliate Gateway (SG) Commissions": affiliateGatewaySgApi.getCommissionDetails,
     "AffiliateWindow Commissions": affiliatewindowApi.getCommissionDetails,
-    //"Amazon (IN) Commissions": amazonApi.getCommissionDetails, // problems w/ amazon.in
+    "Amazon (IN) Commissions": amazonApi.getCommissionDetails, // problems w/ amazon.in
     // "ArabyAds Commissions" : arabyadsApi.getCommissionDetails,
     "AvantLink (CA) Commissions": avantLinkCAApi.getCommissionDetails,
     "AvantLink (US) Commissions": avantLinkUSApi.getCommissionDetails,
@@ -434,7 +434,7 @@ function initializeCommissionsProcessors(tasker) {
 
     // "Lomadee Commissions": lomadeeApi.getCommissionDetails,
     "OMG (India) Commissions": omgpmIndiaApi.getCommissionDetails,
-    "OMG (UK) Commissions": omgpmUKCommissionsApi.getCommissionDetails,
+    //"OMG (UK) Commissions": omgpmUKCommissionsApi.getCommissionDetails,
     "OMG (Asia) Commissions": omgpmAsiaApi.getCommissionDetails,
     "OMG (Brazil) Commissions": omgpmBrazilCommissionsApi.getCommissionDetails,
     "OMG (Australia) Commissions": omgpmAustraliaApi.getCommissionDetails,
