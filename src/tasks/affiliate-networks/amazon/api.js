@@ -45,7 +45,7 @@ function setup() {
 function* getCommissionReport(type, start, end, format) {
   if (!type) type = 'earnings';
   if (type !== 'earnings' && type !== 'orders') throw new Error("invalid commission report type "+type);
-  start = start ? moment(start).toDate() : moment().subtract(7, 'days').toDate();
+  start = start ? moment(start).toDate() : moment().subtract(60, 'days').toDate();
   end = end ? moment(end).toDate() : new Date();
   if (!format) format = 'xml'; // xml ends up working slightly nicer, though the data's mostly the same
 
@@ -87,7 +87,6 @@ function parseXml(data, rec) {
   const promise = jsonify(data).then(function(json) {
     const items = json.Data.Items;
     if (typeof items === 'string') return [];
-    console.log("items is", items);
     if (!items.Item) return [];
     const realItems = ary(items.Item).map(x => x.$);
     return realItems;
