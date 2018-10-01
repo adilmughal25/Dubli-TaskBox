@@ -7,8 +7,12 @@ const utils = require('ominto-utils');
 const moment = require('moment');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
+const uuid = require('node-uuid'); // not used
 
 const client = require('./api')();
+
+// 0 confirmed
+// if returned quantity is 1 then it is refunded
 
 //@TODO: We're currently waiting on amazon.in -- Samantha is processing a purchase
 // with a pending return so we can see what those look like in the data (because
@@ -27,12 +31,29 @@ const client = require('./api')();
 const AFFILIATE_NAME = 'direct-partner';
 const MERCHANT_NAME = 'amazon';
 
+const AmazonIndiaGenericApi = function(s_entity) {
+  if (!(this instanceof AmazonIndiaGenericApi)) return new AmazonIndiaGenericApi(s_entity);
+  var that = this;
 
-var getCommissionDetails = singleRun(function* () {
-  const items = yield client.getCommissionReport('earnings');
-  const events = items.map(prepareCommission.bind(this)).filter(x => !!x);
-  console.log(items);
-});
+  this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
+  this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'amazon-india';
+
+
+  this.getCommissionDetails = co.wrap(function* () {
+    const clientC = client(that.entity, that.region, 'commissions');
+    const items = yield client.getCommissionReport('earnings');
+    const events = items.map(prepareCommission.bind(this)).filter(x => !!x);
+
+    return yield sendEvents.sendCommissions(that.eventName, events);
+
+  });
+}
+
+// var getCommissionDetails = singleRun(function* () {
+//   const items = yield client.getCommissionReport('earnings');
+//   const events = items.map(prepareCommission.bind(this)).filter(x => !!x);
+//   console.log(items);
+// });
 
 function prepareCommission(o_obj) {
 
@@ -41,20 +62,19 @@ function prepareCommission(o_obj) {
     return null;
   }
   const event = {
-    transaction_id: o_obj.SubTag, // so far amazon.in is the only company not to give us a transaction_id of any kind, whee
+
+    transaction_id: uuid.v4(),  //o_obj.SubTag, // so far amazon.in is the only company not to give us a transaction_id of any kind, whee
     affiliate_name: AFFILIATE_NAME,
     merchant_name: MERCHANT_NAME,
-    merchant_id: '',
+    merchant_id: '11551',
     outclick_id: o_obj.SubTag,
     commission_amount: o_obj.Earnings,
     purchase_amount: o_obj.Price,
     currency: 'INR', // amazon.in is INR only
-    status: '', // i really don't know what goes here. i guess it's "pending", though i dont know if we have a way to know when each order has been paid :/
+    status: parseInt(o_obj.Qty) < 0 && parseInt(o_obj.Earnings) > -1 ? 'cancelled' : 'confirmed', // the status is initiated as we are manually paying it off
     date: new Date(Number(o_obj.EDate) * 1000)
   };
   return event;
 }
 
-module.exports = {
-  getCommissionDetails: getCommissionDetails
-};
+module.exports = AmazonIndiaGenericApi;

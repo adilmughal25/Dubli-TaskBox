@@ -57,7 +57,8 @@ cat > /var/scripts/process.json <<EOF
       "node_args": ["--harmony"],
       "env": {
         "NODE_ENV": "${APP_ENV}"
-      }
+      },
+      "max_restarts"  : 5
     }
   ]
 }
