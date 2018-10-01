@@ -71,7 +71,7 @@ function prepareCommission(o_obj) {
     commission_amount: o_obj.Earnings,
     purchase_amount: o_obj.Price,
     currency: 'INR', // amazon.in is INR only
-    status: parseInt(o_obj.Qty) < 0 && parseInt(o_obj.Earnings) > -1 ? 'cancelled' : 'confirmed', // the status is initiated as we are manually paying it off
+    state: parseInt(o_obj.Qty) < 0 && parseInt(o_obj.Earnings) > -1 ? 'cancelled' : 'initiated', // the status is initiated as we are manually paying it off
     date: new Date(Number(o_obj.EDate) * 1000)
   };
   return event;
