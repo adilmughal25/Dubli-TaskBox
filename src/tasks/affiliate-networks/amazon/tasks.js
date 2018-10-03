@@ -7,7 +7,7 @@ const utils = require('ominto-utils');
 const moment = require('moment');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
-const uuid = require('node-uuid'); // not used
+//const uuid = require('node-uuid'); // not used
 
 const client = require('./api')();
 
@@ -56,14 +56,13 @@ const AmazonIndiaGenericApi = function(s_entity) {
 // });
 
 function prepareCommission(o_obj) {
-
   if (!o_obj) {
     this.logger({commissionData:o_obj}, "AMAZON.IN RESULT WITH NO SUBTAG. SKIPPING.");
     return null;
   }
   const event = {
 
-    transaction_id: uuid.v4(),  //o_obj.SubTag, // so far amazon.in is the only company not to give us a transaction_id of any kind, whee
+    transaction_id: o_obj.SubTag + '-' + o_obj.EDate + '-' + o_obj.Category,  //o_obj.SubTag, // so far amazon.in is the only company not to give us a transaction_id of any kind, whee
     affiliate_name: AFFILIATE_NAME,
     merchant_name: MERCHANT_NAME,
     merchant_id: '11551',
@@ -71,7 +70,7 @@ function prepareCommission(o_obj) {
     commission_amount: o_obj.Earnings,
     purchase_amount: o_obj.Price,
     currency: 'INR', // amazon.in is INR only
-    state: parseInt(o_obj.Qty) < 0 && parseInt(o_obj.Earnings) > -1 ? 'cancelled' : 'initiated', // the status is initiated as we are manually paying it off
+    state: 'initiated', // the status is initiated because of reward points
     date: new Date(Number(o_obj.EDate) * 1000)
   };
   return event;
