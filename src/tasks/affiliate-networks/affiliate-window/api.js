@@ -4,6 +4,9 @@ const soap = require('soap');
 const co = require('co');
 const denodeify = require('denodeify');
 const debug = require('debug')('affiliatewindow:api-client');
+const request = require('request-promise');
+const converter = require("csvtojson").Converter;
+const _ = require('lodash');
 
 const AFFILIATE_WSDL = 'http://api.affiliatewindow.com/v4/AffiliateService?wsdl';
 const API_CFG = {
@@ -28,6 +31,38 @@ function AWClient(s_entity) {
   this._client = null;
   this.initialized = false;
 }
+
+AWClient.prototype.getDeals = function*() {
+  var csvConverter = new converter({});
+
+  const apiClient = request.defaults({
+    baseUrl: 'https://ui.awin.com/',
+    resolveWithFullResponse: true,
+    json: true
+  });
+
+    const apiUrl = 'export-promotions/238283/e55af278629a6336549b016ba817299d?downloadType=json&promotionType=&categoryIds=&regionIds=11&advertiserIds=&membershipStatus=&promotionStatus=';
+    debug('GET ' + apiUrl);
+
+    const apiResponse = yield apiClient.get(apiUrl)
+      .then(resp => {
+        return resp.body && resp.body ? resp.body : []
+      });
+
+      return new Promise(function(resolve, reject) {
+        var csvConverter = new converter({});
+          csvConverter.fromString(apiResponse,function(err,result){
+
+                if(err){
+                    console.log(err);
+                    reject();
+                }
+
+                resolve(result);
+            });
+      });
+}
+
 
 AWClient.prototype.setup = co.wrap(function* () {
   if (!this.initialized) {
