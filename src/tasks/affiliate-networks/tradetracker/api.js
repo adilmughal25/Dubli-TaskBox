@@ -118,6 +118,12 @@ const API_CREDENTIALS   = {
       customerId: 120335,
       passphrase: '1608b1c6888577a635d187019ae8d1ca6d89d6fa',
       locale: 'ru_RU'
+    },
+    br: {
+      siteId: 292895,
+      customerId: 120335,
+      passphrase: '084a479b26add21009380d3cbd93dcfd297f2ffe',
+      locale: 'pt_BR'
     }
   },
   dubli: {
@@ -149,6 +155,12 @@ const API_CREDENTIALS   = {
       customerId: 96906,
       passphrase: 'e121440ed81b78569c22c7b769dfd32554dc44fe',
       locale: 'ru_RU'
+    },
+    br: {
+      siteId: 120335,
+      customerId: 120335,
+      passphrase: '084a479b26add21009380d3cbd93dcfd297f2ffe',
+      locale: 'pt_BR'
     }
   }
 };
