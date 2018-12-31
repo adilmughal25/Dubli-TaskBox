@@ -3,7 +3,7 @@
 module.exports = { init: init };
 const clixGaloreApi = require("./clix-galore/tasks");
 const impactRadiusProductFtp = require("./impact-radius/ftp-tasks");
-// const lomadeeApi = require('./lomadee/tasks');
+//const lomadeeApi = require('./lomadee/tasks');
 
 const adserviceGenericApi = require('./adservice/tasks');
 const adserviceDenmarkApi = adserviceGenericApi('dk');
@@ -139,6 +139,9 @@ const lazadaIdApi = hasoffersGenericApi('lazada-id');
 const linkPriceGenericApi = require('./linkprice/tasks');
 const linkpriceApi = linkPriceGenericApi('linkprice');
 
+// const lomadeeGenericApi = require('./lomadee/tasks');
+// const lomadeeApi = lomadeeGenericApi('linkprice');
+
 const linkShareGenericApi = require("./linkshare/tasks");
 const linkShareApi = linkShareGenericApi();
 const linkShareDubliCAApi = linkShareGenericApi('ca', 'dubli');
@@ -215,6 +218,7 @@ const tradetrackerNOApi = tradetrackerGenericApi('no');
 const tradetrackerPLApi = tradetrackerGenericApi('pl');
 const tradetrackerRUApi = tradetrackerGenericApi('ru');
 const tradetrackerSEApi = tradetrackerGenericApi('se');
+const tradetrackerBRApi = tradetrackerGenericApi('br');
 const tradetrackerDubliCHApi = tradetrackerGenericApi('ch', 'dubli');
 const tradetrackerDubliDEApi = tradetrackerGenericApi('de', 'dubli');
 const tradetrackerDubliDKApi = tradetrackerGenericApi('dk', 'dubli');
@@ -293,7 +297,7 @@ function initializeMerchantImporters(tasker) {
     "Jumia Merchants": jumiaApi.getMerchants,
     "Linkprice Merchants": linkpriceApi.getMerchants,
     "LinkShare Merchants": linkShareApi.getMerchants,
-    // "Lomadee Merchants": lomadeeApi.getMerchants,
+    //"Lomadee Merchants": lomadeeApi.getMerchants,
     "OMG (India) Merchants": omgpmIndiaApi.getMerchants,
     "OMG (UK) Merchants": omgpmUKApi.getMerchants,
     "OMG (Asia) Merchants": omgpmAsiaApi.getMerchants,
@@ -355,6 +359,7 @@ function initializeMerchantImporters(tasker) {
     "TradeTracker (PL) Merchants": tradetrackerPLApi.getMerchants,
     "TradeTracker (RU) Merchants": tradetrackerRUApi.getMerchants,
     "TradeTracker (SE) Merchants": tradetrackerSEApi.getMerchants,
+    "TradeTracker (BR) Merchants": tradetrackerBRApi.getMerchants,
     "VCommission Merchants": vcommissionApi.getMerchants,
     "Webgains Merchants": webgainsApi.getMerchants,
     "Zanox Merchants": zanoxApi.getMerchants,
@@ -432,7 +437,7 @@ function initializeCommissionsProcessors(tasker) {
 
     "Linkprice Commissions": linkpriceApi.getCommissionDetails,
 
-    // "Lomadee Commissions": lomadeeApi.getCommissionDetails,
+     //"Lomadee Commissions": lomadeeApi.getCommissionDetails,
     "OMG (India) Commissions": omgpmIndiaApi.getCommissionDetails,
     //"OMG (UK) Commissions": omgpmUKCommissionsApi.getCommissionDetails,
     "OMG (Asia) Commissions": omgpmAsiaApi.getCommissionDetails,
@@ -495,6 +500,7 @@ function initializeCommissionsProcessors(tasker) {
     "TradeTracker (PL) Commissions": tradetrackerPLApi.getCommissionDetails,
     "TradeTracker (RU) Commissions": tradetrackerRUApi.getCommissionDetails,
     "TradeTracker (SE) Commissions": tradetrackerSEApi.getCommissionDetails,
+    "TradeTracker (BR) Commissions": tradetrackerBRApi.getCommissionDetails,
     "VCommission Commissions": vcommissionApi.getCommissionDetails,
     "Webgains Commissions": webgainsApi.getCommissionDetails,
     "Zanox Commissions": zanoxApi.getCommissionDetails,
@@ -548,6 +554,7 @@ function initializeCommissionsDubliProcessors(tasker) {
     "TradeTracker DubLi (DK) Commissions": tradetrackerDubliDKApi.getCommissionDetails,
     "TradeTracker DubLi (AT) Commissions": tradetrackerDubliATApi.getCommissionDetails,
     "TradeTracker DubLi (RU) Commissions": tradetrackerDubliRUApi.getCommissionDetails,
+    "TradeTracker DubLi (BR) Commissions": tradetrackerDubliBRApi.getCommissionDetails,
     "VCommission DubLi Commissions": vcommissionDubliApi.getCommissionDetails,
     "Zanox DubLi (DE) Commissions": zanoxDubliDEApi.getCommissionDetails,
     "Zanox DubLi (ES) Commissions": zanoxDubliESApi.getCommissionDetails,
