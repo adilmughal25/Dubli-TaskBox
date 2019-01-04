@@ -44,11 +44,12 @@ const LinkpriceGenericApi = function(s_region, s_entity) {
   });
 
   tasks.getCommissionDetails = singleRun(function* (){
-    const startDate = moment().subtract(3, 'months');
+    const monthsToBeProcessed = 3;
+    const startDate = moment().subtract(monthsToBeProcessed, 'months');
     const endDate = moment().endOf('month');
 
     let commissions = [];
-    while (startDate.format('M') <= endDate.format('M')) {
+    for(let i = 0; i <= monthsToBeProcessed; i++) {
       let formattedDate = startDate.format('YYYYMM');
       let res = yield tasks.client.getTransactions(formattedDate);
       startDate.add(1,'month');
