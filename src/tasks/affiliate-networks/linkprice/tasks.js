@@ -10,12 +10,12 @@ const AFFILIATE_NAME = 'linkprice';
 // / 200(Waiting commission)/ 210(confirm commission
 // MER) / 220(confirm commission AFF)
 const STATUS_MAP = {
-  '100': 'confirmed',
+  '100': 'initiated',
   '200': 'initiated',
   '300': 'initiated',
   '310': 'cancelled',
   '210': 'confirmed',
-  '220': 'confirmed'
+  '220': 'initiated'
 };
 
 const taskCache = {};
@@ -55,6 +55,9 @@ const LinkpriceGenericApi = function(s_region, s_entity) {
       startDate.add(1,'month');
       commissions = commissions.concat(res);
     }
+
+    //Ignoring all of the transactions having status of either 220 or 300
+    commissions = _.filter(commissions, commission => commission.status != '220' && commission.status != '300');
 
     const events = commissions.map(prepareCommission.bind(null));
 
