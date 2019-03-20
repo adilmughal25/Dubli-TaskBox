@@ -11,6 +11,7 @@ const AFFILIATE_NAME = 'affiliatewindow';
 
 // helper
 const ary = x => _.isArray(x) ? x : [x];
+const exists = x => !!x;
 
 const AffiliateWindowGenericApi = function(s_entity) {
   if (!(this instanceof AffiliateWindowGenericApi)) {
@@ -28,7 +29,9 @@ const AffiliateWindowGenericApi = function(s_entity) {
     yield that.client.setup();
     var merchants = (yield that.doApiMerchants()).map(m => ({merchant:m}));
     yield that.doApiCashback(merchants);
-    return yield sendEvents.sendMerchants(that.eventName, merchants);
+    merchants = yield that.doApiDeals(merchants);
+
+     return yield sendEvents.sendMerchants(that.eventName, merchants);
   });
 
   this.getCommissionDetails = singleRun(function* () {
@@ -69,6 +72,26 @@ const AffiliateWindowGenericApi = function(s_entity) {
     }
   });
 
+  this.doApiDeals = co.wrap(function* (a_merchants){
+    var promotions = yield that.client.getDeals();
+    var results = [];
+    for (var i = 0; i < a_merchants.length; i++) {
+      var rec = a_merchants[i];
+      var merchant = rec.merchant;
+      merchant.promotions = [];
+      //var cg = [];
+      promotions.forEach(p => {
+        if(p["Advertiser ID"] == merchant.iId) {
+          merchant.promotions.push(p);
+        }
+      });
+
+      results.push({ merchant: merchant });
+    }
+
+    return results;
+  });
+
   this.doApiTransactions = co.wrap(function* (start, end, type) {
     let transactions = [];
     let perPage = 1000;
@@ -96,6 +119,24 @@ const AffiliateWindowGenericApi = function(s_entity) {
     return transactions;
   });
 };
+
+function mergeResults(o_obj) {
+  var res = {};
+  var make = k => res[k] || (res[k] = { coupons: [] });
+  var set = (i, k, v) => make(i)[k] = v;
+  var add = (i, k, v) => make(i)[k].push(v);
+
+  if (Array.isArray(o_obj.merchants)) {
+    o_obj.merchants.forEach(m => { set(m.merchant.iId, 'merchant', m)});
+  }
+  else
+    set(o_obj.merchants.programId, 'merchant', o_obj.merchants);
+
+  o_obj.coupons.forEach(c => add(c['Advertiser ID'], 'coupons', c));
+  //o_obj.coupons.forEach(c => c.Starts = new Date(c.Ends).toISOString());
+  //o_obj.coupons.forEach(c => c.Ends = new Date(c.Ends).toISOString());
+  return _.values(res).filter(x => 'merchant' in x);
+}
 
 const STATE_MAP = {
   'pending': 'initiated',
