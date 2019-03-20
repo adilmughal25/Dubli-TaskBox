@@ -40,8 +40,9 @@ AWClient.prototype.getDeals = function*() {
     resolveWithFullResponse: true,
     json: true
   });
-
-    const apiUrl = 'export-promotions/238283/e55af278629a6336549b016ba817299d?downloadType=json&promotionType=&categoryIds=&regionIds=11&advertiserIds=&membershipStatus=&promotionStatus=';
+    // https://ui.awin.com/export-promotions/238283/e55af278629a6336549b016ba817299d?downloadType=json&membershipStatus=joined
+    //const apiUrl = 'export-promotions/238283/e55af278629a6336549b016ba817299d?downloadType=json&promotionType=&categoryIds=&regionIds=11&advertiserIds=&membershipStatus=&promotionStatus=';
+    const apiUrl = 'export-promotions/238283/e55af278629a6336549b016ba817299d?downloadType=json&membershipStatus=joined';
     debug('GET ' + apiUrl);
 
     const apiResponse = yield apiClient.get(apiUrl)
