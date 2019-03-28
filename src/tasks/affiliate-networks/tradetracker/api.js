@@ -5,10 +5,10 @@ const co = require('co');
 const denodeify = require('denodeify');
 const soap = require('soap');
 const debug = require('debug')('tradetracker:api-client');
-const request = require('request-promise');
+const request = require('request-promise').defaults({ rejectUnauthorized: false });
 require('tough-cookie'); // for request's benefit
 
-const API_SERVICE_WSDL  = 'http://ws.tradetracker.com/soap/affiliate?wsdl';
+const API_SERVICE_WSDL  = 'https://ws.tradetracker.com/soap/affiliate?wsdl';
 const API_LOCALE        = 'en_GB'; // Default locale; Possible values: nl_BE, fr_BE, cs_CZ, da_DK, de_DE, et_EE, en_GB, es_ES, fr_FR, it_IT, hu_HU, nl_NL, nb_NO, de_AT, pl_PL, fi_FI, sv_SE, ru_RU
 const API_CREDENTIALS   = {
   ominto: {
