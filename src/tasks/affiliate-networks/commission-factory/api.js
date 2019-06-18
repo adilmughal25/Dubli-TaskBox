@@ -3,7 +3,7 @@
 /*
  * API Documentation: http://dev.commissionfactory.com/V1/Affiliate/Functions/GetTransactions/
  */
-const request = require('request-promise');
+const request = require('request-promise').defaults({ rejectUnauthorized: false });
 const debug = require('debug')('commissionfactory:api-client');
 const limiter = require('ominto-utils').promiseRateLimiter;
 
