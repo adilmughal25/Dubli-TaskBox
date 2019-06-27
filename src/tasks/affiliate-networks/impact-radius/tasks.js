@@ -71,7 +71,7 @@ function prepareCommission(affiliate_name, o_irAction) {
   o_event.merchant_name = o_irAction.CampaignName || '',
   o_event.merchant_id = o_irAction.CampaignId || '',
   o_event.transaction_id = o_irAction.Id;
-  o_event.order_id = o_irAction.Id;
+  o_event.order_id = o_irAction.Oid;
   o_event.outclick_id = o_irAction.SubId1;
   o_event.purchase_amount = o_irAction.Amount;
   o_event.commission_amount = o_irAction.Payout;
