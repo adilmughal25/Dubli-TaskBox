@@ -160,6 +160,8 @@ AdmitadClient.prototype.getToken = co.wrap(function* () {
     })
   };
 
+  process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
+
   body = yield this.client.post(arg);
   response = body || {error:-1, error_description:'Unknown error. Empty response body.'};
 
