@@ -9,7 +9,7 @@ const AFFILIATE_NAME = 'direct-partner';
 const MERCHANT_NAME = 'groupon';
 
 const STATE_MAP = {
-  VALID: 'initiated', // TODO - should this be initiated or confirmed?
+  VALID: 'confirmed',
   REFUNDED: 'cancelled',
   INVALID: 'cancelled',  // to be ignored
 };
