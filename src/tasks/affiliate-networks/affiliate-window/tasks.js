@@ -161,6 +161,7 @@ function prepareCommission(o_obj) {
     currency: o_obj.mCommissionAmount.sCurrency,
     purchase_amount: o_obj.mSaleAmount.dAmount,
     commission_amount: o_obj.mCommissionAmount.dAmount,
+    cashback_id: o_obj.aTransactionParts.TransactionPart.sCommissionGroupName || ""
   };
 
   if (o_obj.bPaid === "true") {
