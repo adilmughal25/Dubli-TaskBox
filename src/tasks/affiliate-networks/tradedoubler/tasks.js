@@ -294,10 +294,12 @@ function prepareCommission(o_obj) {
     commission_amount: o_obj.affiliateCommission,
     currency: API_PARAMS_COMMISSIONS.currencyId.toLowerCase(),
     state: STATUS_MAP[o_obj.pendingStatus],
-    effective_date: o_obj.timeOfEvent
+    effective_date: o_obj.timeOfEvent,
+    cashback_id: o_obj.eventId || ''
   };
 
   return event;
+
 };
 
 module.exports = TradeDoublerGenericApi;

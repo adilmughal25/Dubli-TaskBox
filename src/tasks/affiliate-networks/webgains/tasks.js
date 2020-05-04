@@ -143,7 +143,8 @@ function prepareCommission(o_obj) {
     commission_amount: o_obj.commission,
     state: STATE_MAP[status],
     // effective_date: 'auto'
-    effective_date: new Date(o_obj.validationDate)
+    effective_date: new Date(o_obj.validationDate),
+    cashback_id: o_obj.eventID || ''
   };
   return event;
 }
