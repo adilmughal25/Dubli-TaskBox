@@ -9,6 +9,7 @@ const AFFILIATE_NAME = 'direct-partner';
 const MERCHANT_NAME = 'groupon';
 
 const STATE_MAP = {
+  INITIATED: 'initiated',
   VALID: 'confirmed',
   REFUNDED: 'cancelled',
   INVALID: 'cancelled',  // to be ignored
@@ -94,7 +95,8 @@ const GrouponGenericApi = function(s_region, s_entity) {
  * @returns {Object}
  */
 function prepareCommission(o_obj) {
-
+  var d = new Date();
+  d.setDate(d.getDate() - 45);
   // https://partner-api.groupon.com/help/reporting-version-2-order-api
   // need a sample response to get the effective_date field populated
 
@@ -113,7 +115,8 @@ function prepareCommission(o_obj) {
     currency: o_obj.item[0].Currency,
     purchase_amount: o_obj.item.SaleGrossAmount,
     commission_amount: o_obj.item.LedgerAmount,
-    state: STATE_MAP[o_obj.item[0].Status],
+    // Keep it initiated for 1st 45 days and then change it to confirmed if the status is VALID
+    state: STATE_MAP[(o_obj.item[0].Status === 'VALID' && new Date(o_obj.item[2].Datetime) > d) ? 'INITIATED': o_obj.item[0].Status],
     effective_date: new Date(o_obj.item[2].Datetime) // changing to Datetime field for now [old developers comment below]
     // Not sure anymore - i believe that date is NOT equal purchase date?! // o_obj.item[2].Datetime
   };
