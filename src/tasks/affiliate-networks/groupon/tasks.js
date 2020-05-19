@@ -96,7 +96,7 @@ const GrouponGenericApi = function(s_region, s_entity) {
  */
 function prepareCommission(o_obj) {
   var d = new Date();
-  d.setDate(d.getDate() - 45);
+  d.setDate(d.getDate() - 15);
   // https://partner-api.groupon.com/help/reporting-version-2-order-api
   // need a sample response to get the effective_date field populated
 
