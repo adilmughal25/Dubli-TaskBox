@@ -17,7 +17,7 @@ jobs:
           command: rm -rf node_modules
       - run:
           name: Running npm install
-          command: npm install --only=dev
+          command: npm install
       - persist_to_workspace:
           root: ~/dubli
           paths:
@@ -48,11 +48,14 @@ jobs:
     working_directory: ~/dubli/taskbox
     environment:
       ENV: "dev"
-      APP_NAME: "taskbox"
+      APP_CODEDEPLOY_NAME: "taskbox"
+      ASG: "om-dev-taskbox"
       DEPLOYMENT_GROUP: "dev-taskbox"
       REVISION_S3_BUCKET: "codedeploy-bucket-352228731405"
       REVISION_KEY_PATTERN: "taskbox"
       FILES_TO_COPY: "package.json,configs.json,appspec.yml,src/,scripts/"
+      APP_RUN_SCRIPT: "src/server.js"
+      APP_RUNNING_PORT: "8000"
     steps:
       - attach_workspace:
           at: ~/dubli
@@ -62,30 +65,33 @@ jobs:
       - run:
           name: Install aws-cli
           command:
-              ./node_modules/deploy-scripts/aws-cli.sh
+              ./node_modules/deploy-scripts/setup/aws-cli.sh
       - run:
           name: Install node 0.12.7
           command:
-              ./node_modules/deploy-scripts/node.sh
+              ./node_modules/deploy-scripts/setup/node.sh
       - run:
           name: Building Application
           command:
-              ./node_modules/deploy-scripts/ec2-build.sh
+              ./node_modules/deploy-scripts/asg/ec2-build.sh
       - run:
           name: Deploying apllication to aws ec2 instances
           command:
-              ./node_modules/deploy-scripts/ec2-deploy.sh
+              ./node_modules/deploy-scripts/asg/ec2-deploy.sh
   deploy-stage:
     docker:
       - image: circleci/node:8.10
     working_directory: ~/dubli/taskbox
     environment:
       ENV: "stage"
-      APP_NAME: "taskbox"
+      APP_CODEDEPLOY_NAME: "taskbox"
+      ASG: "stage-taskbox"
       DEPLOYMENT_GROUP: "stage-taskbox"
       REVISION_S3_BUCKET: "codedeploy-bucket-352228731405"
       REVISION_KEY_PATTERN: "taskbox"
       FILES_TO_COPY: "package.json,configs.json,appspec.yml,src/,scripts/"
+      APP_RUN_SCRIPT: "src/server.js"
+      APP_RUNNING_PORT: "8000"
     steps:
       - attach_workspace:
           at: ~/dubli
@@ -95,30 +101,33 @@ jobs:
       - run:
           name: Install aws-cli
           command:
-              ./node_modules/deploy-scripts/aws-cli.sh
+              ./node_modules/deploy-scripts/setup/aws-cli.sh
       - run:
           name: Install node 0.12.7
           command:
-              ./node_modules/deploy-scripts/node.sh
+              ./node_modules/deploy-scripts/setup/node.sh
       - run:
           name: Building Application
           command:
-              ./node_modules/deploy-scripts/ec2-build.sh
+              ./node_modules/deploy-scripts/asg/ec2-build.sh
       - run:
           name: Deploying apllication to aws ec2 instances
           command:
-              ./node_modules/deploy-scripts/ec2-deploy.sh
+              ./node_modules/deploy-scripts/asg/ec2-deploy.sh
   deploy-prod:
     docker:
       - image: circleci/node:8.10
     working_directory: ~/dubli/taskbox
     environment:
       ENV: "prod"
-      APP_NAME: "taskbox"
+      APP_CODEDEPLOY_NAME: "taskbox"
+      ASG: "prod-taskbox"
       DEPLOYMENT_GROUP: "prod-taskbox"
       REVISION_S3_BUCKET: "codedeploy-bucket-352228731405"
       REVISION_KEY_PATTERN: "taskbox"
       FILES_TO_COPY: "package.json,configs.json,appspec.yml,src/,scripts/"
+      APP_RUN_SCRIPT: "src/server.js"
+      APP_RUNNING_PORT: "8000"
     steps:
       - attach_workspace:
           at: ~/dubli
@@ -129,19 +138,19 @@ jobs:
       - run:
           name: Install aws-cli
           command:
-              ./node_modules/deploy-scripts/aws-cli.sh
+              ./node_modules/deploy-scripts/setup/aws-cli.sh
       - run:
           name: Install node 0.12.7
           command:
-              ./node_modules/deploy-scripts/node.sh
+              ./node_modules/deploy-scripts/setup/node.sh
       - run:
           name: Building Application
           command:
-              ./node_modules/deploy-scripts/ec2-build.sh
+              ./node_modules/deploy-scripts/asg/ec2-build.sh
       - run:
           name: Deploying apllication to aws ec2 instances
           command:
-              ./node_modules/deploy-scripts/ec2-deploy.sh
+              ./node_modules/deploy-scripts/asg/ec2-deploy.sh
 workflows:
   version: 2
   build-deploy:

@@ -2,18 +2,18 @@ version: 0.0
 os: linux
 files:
   - source: /src
-    destination: /var/www/src
+    destination: /var/www/taskbox/src
   - source: /package.json
-    destination: /var/www
+    destination: /var/www/taskbox
 permissions:
-  - object: /var/www
+  - object: /var/www/taskbox
     pattern: "**"
     owner: node-app-files
     group: node-app
     mode: 750
     type:
       - directory
-  - object: /var/www
+  - object: /var/www/taskbox
     pattern: "**"
     owner: node-app-files
     group: node-app
