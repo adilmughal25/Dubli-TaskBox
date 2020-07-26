@@ -183,7 +183,8 @@ const AdCellGenericApi = function(s_entity) {
       commission_amount: o_obj.totalCommission,
       state: STATE_MAP[o_obj.status],
       //effective_date: (o_obj.changeTime !== '' ? new Date(o_obj.changeTime) : 'auto')
-      effective_date: _date
+      effective_date: _date,
+      cashback_id: o_obj.eventId || ''
     };
     return event;
   };

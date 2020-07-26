@@ -190,7 +190,8 @@ function prepareCommission(o_obj, region) {
     commission_amount: o_obj.payment,
     state: STATE_MAP[o_obj.status],
     //effective_date: 'auto'
-    effective_date: _date
+    effective_date: _date,
+    cashback_id: o_obj.positions[0].rate_id || ''
   };
   return event;
 }

@@ -159,7 +159,8 @@ function prepareCommission(currency, item) {
     outclick_id: item.sid,
     currency: currency,
     purchase_amount: item['sale-amount'],
-    commission_amount: item['commission-amount']
+    commission_amount: item['commission-amount'],
+    cashback_id: item['action-tracker-id'] || ''
   };
 
   switch (item['action-status']) {
