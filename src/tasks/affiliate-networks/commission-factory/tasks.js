@@ -45,10 +45,15 @@ const CommissionFactoryGernericApi = function(s_entity) {
   this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'commissionfactory';
 
   this.getMerchants = singleRun(function*() {
-    let results = yield {
-      merchants: that.client.get(MERCHANT_URL),
-      coupons: that.client.get(COUPONS_URL),
-      links: that.client.get(PROMOTIONS_URL)
+    let merchantsData = yield that.client.get(MERCHANT_URL);
+    let coupons = yield that.client.get(COUPONS_URL);
+    let links = yield that.client.get(PROMOTIONS_URL);
+
+
+    let results = {
+      merchants: merchantsData,
+      coupons: coupons,
+      links: links
     };
 
     let merchants = merge(results);
