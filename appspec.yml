@@ -5,6 +5,8 @@ files:
     destination: /var/www/taskbox/src
   - source: /package.json
     destination: /var/www/taskbox
+  - source: /npm-shrinkwrap.json
+    destination: /var/www/taskbox
 permissions:
   - object: /var/www/taskbox
     pattern: "**"
