@@ -53,7 +53,7 @@ jobs:
       DEPLOYMENT_GROUP: "dev-taskbox"
       REVISION_S3_BUCKET: "codedeploy-bucket-352228731405"
       REVISION_KEY_PATTERN: "taskbox"
-      FILES_TO_COPY: "package.json,configs.json,appspec.yml,src/,scripts/"
+      FILES_TO_COPY: "package.json,npm-shrinkwrap.json,configs.json,appspec.yml,src/,scripts/"
       APP_RUN_SCRIPT: "src/server.js"
       APP_RUNNING_PORT: "8000"
     steps:
@@ -89,7 +89,7 @@ jobs:
       DEPLOYMENT_GROUP: "stage-taskbox"
       REVISION_S3_BUCKET: "codedeploy-bucket-352228731405"
       REVISION_KEY_PATTERN: "taskbox"
-      FILES_TO_COPY: "package.json,configs.json,appspec.yml,src/,scripts/"
+      FILES_TO_COPY: "package.json,npm-shrinkwrap.json,configs.json,appspec.yml,src/,scripts/"
       APP_RUN_SCRIPT: "src/server.js"
       APP_RUNNING_PORT: "8000"
     steps:
@@ -125,7 +125,7 @@ jobs:
       DEPLOYMENT_GROUP: "prod-taskbox"
       REVISION_S3_BUCKET: "codedeploy-bucket-352228731405"
       REVISION_KEY_PATTERN: "taskbox"
-      FILES_TO_COPY: "package.json,configs.json,appspec.yml,src/,scripts/"
+      FILES_TO_COPY: "package.json,npm-shrinkwrap.json,configs.json,appspec.yml,src/,scripts/"
       APP_RUN_SCRIPT: "src/server.js"
       APP_RUNNING_PORT: "8000"
     steps:
