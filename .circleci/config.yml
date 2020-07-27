@@ -52,7 +52,7 @@ jobs:
       DEPLOYMENT_GROUP: "dev-taskbox"
       REVISION_S3_BUCKET: "codedeploy-bucket-352228731405"
       REVISION_KEY_PATTERN: "taskbox"
-      FILES_TO_COPY: "package.json,configs.json,appspec.yml,src/,scripts/"
+      FILES_TO_COPY: "package.json,npm-shrinkwrap.json,configs.json,appspec.yml,src/,scripts/"
     steps:
       - attach_workspace:
           at: ~/dubli
@@ -85,7 +85,7 @@ jobs:
       DEPLOYMENT_GROUP: "stage-taskbox"
       REVISION_S3_BUCKET: "codedeploy-bucket-352228731405"
       REVISION_KEY_PATTERN: "taskbox"
-      FILES_TO_COPY: "package.json,configs.json,appspec.yml,src/,scripts/"
+      FILES_TO_COPY: "package.json,npm-shrinkwrap.json,configs.json,appspec.yml,src/,scripts/"
     steps:
       - attach_workspace:
           at: ~/dubli
@@ -118,7 +118,7 @@ jobs:
       DEPLOYMENT_GROUP: "prod-taskbox"
       REVISION_S3_BUCKET: "codedeploy-bucket-352228731405"
       REVISION_KEY_PATTERN: "taskbox"
-      FILES_TO_COPY: "package.json,configs.json,appspec.yml,src/,scripts/"
+      FILES_TO_COPY: "package.json,npm-shrinkwrap.json,configs.json,appspec.yml,src/,scripts/"
     steps:
       - attach_workspace:
           at: ~/dubli
