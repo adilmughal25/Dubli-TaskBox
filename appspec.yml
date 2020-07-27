@@ -5,6 +5,8 @@ files:
     destination: /var/www/src
   - source: /package.json
     destination: /var/www
+  - source: /npm-shrinkwrap.json
+    destination: /var/www
 permissions:
   - object: /var/www
     pattern: "**"
