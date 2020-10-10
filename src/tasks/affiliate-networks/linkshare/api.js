@@ -18,7 +18,7 @@ const API_AUTH_FORMS = {
     global: {
       grant_type: 'password',
       username: 'Ominto',
-      password: 'Dubom2019',
+      password: '2020Ominto',
       scope: 3239617
     },
   },
@@ -27,19 +27,19 @@ const API_AUTH_FORMS = {
     us: {
       grant_type: 'password',
       username: 'mngroup',
-      password: 'Dubom2019',
+      password: '2020Ominto',
       scope: 1347525
     },
     ca: {
       grant_type: 'password',
       username: 'bsprewards',
-      password: 'Dubom2019',
+      password: '2020Ominto',
       scope: 2335836
     },
     gb: {
       grant_type: 'password',
       username: 'dubliuk',
-      password: 'Dubom2019',
+      password: '2020Ominto',
       scope: 2739901
     },
     fr: {
