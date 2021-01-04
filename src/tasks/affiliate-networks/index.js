@@ -362,7 +362,7 @@ function initializeMerchantImporters(tasker) {
     "TradeTracker (BR) Merchants": tradetrackerBRApi.getMerchants,
     "VCommission Merchants": vcommissionApi.getMerchants,
     "Webgains Merchants": webgainsApi.getMerchants,
-    "Zanox Merchants": zanoxApi.getMerchants,
+    //"Zanox Merchants": zanoxApi.getMerchants,
     "FlyDubai Merchants": tradedoublerFlyDubaiApi.getMerchants,
 
     // Stopping lazada until new implementation
