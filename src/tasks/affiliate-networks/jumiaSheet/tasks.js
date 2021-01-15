@@ -53,9 +53,9 @@ const JumiaSheetGenericApi = function (s_entity) {
   };
 /*
 To Create our own rules to generate Unique Order Id
-Add All Pending
-Add All approved
-Add All rejected
+Add All Pending If no approved and rejected
+Add All approved If no pending and rejected
+Add All rejected If no pending and approved
 Add Pending and Approved with State Initiated
 Add Only Pending and Approved If it is also containing rejected. So rejected combination with approved and
 rejected we are not sending rejected to our system.
