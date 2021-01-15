@@ -196,6 +196,10 @@ const shareASaleDubliApi = shareASaleGenericApi('dubli');
 const jumiaGenericApi = require('./jumia/tasks');
 const jumiaApi = jumiaGenericApi('jumia');
 
+const JumiaSheetGenericApi = require('./jumiaSheet/tasks');
+const JumiaSheetApi = JumiaSheetGenericApi('jumiaSheet');
+
+
 const snapdealGenericApi = require('./snapdeal/tasks');
 const snapdealApi = snapdealGenericApi();
 
@@ -418,6 +422,7 @@ function initializeCommissionsProcessors(tasker) {
     "Groupon (ROW) Commissions": grouponROWApi.getCommissionDetails,
     "ImpactRadius Commissions": impactRadiusApi.getCommissionDetails,
     "Jumia Commissions": jumiaApi.getCommissionDetails,
+    "Jumia Sheet Commission": JumiaSheetApi.getCommissionDetails,
 
     // Stopping lazada until new implementation.
     // "Lazada (Ph) Commissions" : lazadaPhApi.getCommissionDetails,
