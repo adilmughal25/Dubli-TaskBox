@@ -45,12 +45,12 @@ const JumiaSheetGenericApi = function (s_entity) {
 }
 
 // Group by to get each order ID transactions
-  var groupBy = function(xs, key) {
-    return xs.reduce(function(rv, x) {
-      (rv[x[key]] = rv[x[key]] || []).push(x);
-      return rv;
-    }, {});
-  };
+var groupBy = function(xs, key) {
+  return xs.reduce(function(rv, x) {
+    (rv[x[key]] = rv[x[key]] || []).push(x);
+    return rv;
+  }, {});
+};
 /*
 To Create our own rules to generate Unique Order Id
 Add All Pending If no approved and rejected
@@ -71,20 +71,18 @@ function prepareUniqueOrderId(groupedOrders) {
       let approved = arr.filter(o => o.Status === 'approved');
       let rejected = arr.filter(o => o.Status === 'rejected');
 
-      if (pending.length && !approved.length && !rejected.length) {
-        Array.prototype.push.apply(TransactionArray, formatArray(pending, 'initiated'));
-      } else if (approved.length && !pending.length && !rejected.length) {
-        Array.prototype.push.apply(TransactionArray, formatArray(approved, 'confirmed'));
-      } else if (rejected.length && !pending.length && !approved.length) {
-        Array.prototype.push.apply(TransactionArray, formatArray(rejected, 'cancelled'));
-      } else if (pending.length && approved.length && (rejected.length || !rejected.length)) {
-        Array.prototype.push.apply(pending, approved)
-        Array.prototype.push.apply(TransactionArray, formatArray(pending, 'initiated'));
-      } else if (pending.length && rejected.length) {
-        Array.prototype.push.apply(TransactionArray, formatArray(pending, 'initiated'));
-      } else if (approved.length && rejected.length) {
-        Array.prototype.push.apply(TransactionArray, formatArray(approved, 'confirmed'));
-      }
+      if (pending.length && !approved.length && !rejected.length)
+        TransactionArray = [...TransactionArray, ...formatArray(pending, 'initiated')];
+      else if (approved.length && !pending.length && !rejected.length)
+        TransactionArray = [...TransactionArray, ...formatArray(approved, 'confirmed')];
+      else if (rejected.length && !pending.length && !approved.length)
+        TransactionArray = [...TransactionArray, ...formatArray(rejected, 'cancelled')];
+      else if (pending.length && approved.length)
+        TransactionArray = [...TransactionArray, ...formatArray([...pending,...approved], 'initiated')];
+      else if (pending.length && rejected.length)
+        TransactionArray = [...TransactionArray, ...formatArray(pending, 'initiated')];
+      else if (approved.length && rejected.length)
+        TransactionArray = [...TransactionArray, ...formatArray(approved, 'confirmed')];
     }
   }
 
@@ -93,18 +91,15 @@ function prepareUniqueOrderId(groupedOrders) {
 
 // To Add Purchase Amount and Commission Amount For same Order Id
 function formatArray(arr, status){
-  let initialArray = [];
-  initialArray.push(arr[0]);
+  let transactionObject = arr[0];
   let amountInEur = 0;
   let commissionAmountInEur = 0;
   for (let i=0; i <arr.length; i++){
     amountInEur += parseFloat(arr[i]['Amount in Eur']);
     commissionAmountInEur += parseFloat(arr[i]['Commission Amount in Eur']);
   }
-  initialArray = initialArray.map((item) => {
-    return {...item, Status: status, 'Amount in Eur': amountInEur.toFixed(2), 'Commission Amount in Eur': commissionAmountInEur.toFixed(2)}
-  });
-  return initialArray;
+  transactionObject = {...transactionObject, Status: status, 'Amount in Eur': amountInEur.toFixed(2), 'Commission Amount in Eur': commissionAmountInEur.toFixed(2)}
+  return [transactionObject];
 }
 
 function prepareCommission(obj) {
@@ -127,3 +122,4 @@ function prepareCommission(obj) {
 }
 
 module.exports = JumiaSheetGenericApi;
+
