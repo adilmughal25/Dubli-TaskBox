@@ -61,33 +61,41 @@ Add Only Pending and Approved If it is also containing rejected. So rejected com
 rejected we are not sending rejected to our system.
  */
 function prepareUniqueOrderId(groupedOrders) {
-  for (let orderNum in groupedOrders) {
-    const arr = groupedOrders[orderNum];
-    if (arr.length === 1) {
-      arr[0].Status = STATE_MAP[arr[0].Status];
-      TransactionArray.push(arr[0]);
-    } else {
-      let pending = arr.filter(o => o.Status === 'pending');
-      let approved = arr.filter(o => o.Status === 'approved');
-      let rejected = arr.filter(o => o.Status === 'rejected');
+ try {
+   for (let orderNum in groupedOrders) {
+     const arr = groupedOrders[orderNum];
+     if (arr.length === 1) {
+       arr[0].Status = STATE_MAP[arr[0].Status];
+       TransactionArray.push(arr[0]);
+     } else {
+       let pending = arr.filter(o => o.Status === 'pending');
+       let approved = arr.filter(o => o.Status === 'approved');
+       let rejected = arr.filter(o => o.Status === 'rejected');
 
-      if (pending.length && !approved.length && !rejected.length)
-        TransactionArray = [...TransactionArray, ...formatArray(pending, 'initiated')];
-      else if (approved.length && !pending.length && !rejected.length)
-        TransactionArray = [...TransactionArray, ...formatArray(approved, 'confirmed')];
-      else if (rejected.length && !pending.length && !approved.length)
-        TransactionArray = [...TransactionArray, ...formatArray(rejected, 'cancelled')];
-      else if (pending.length && approved.length)
-        TransactionArray = [...TransactionArray, ...formatArray([...pending,...approved], 'initiated')];
-      else if (pending.length && rejected.length)
-        TransactionArray = [...TransactionArray, ...formatArray(pending, 'initiated')];
-      else if (approved.length && rejected.length)
-        TransactionArray = [...TransactionArray, ...formatArray(approved, 'confirmed')];
-    }
-  }
-
-  return TransactionArray;
+       if (pending.length && !approved.length && !rejected.length)
+         mergeArray(TransactionArray, formatArray(pending, 'initiated'));
+       else if (approved.length && !pending.length && !rejected.length)
+         mergeArray(TransactionArray, formatArray(approved, 'confirmed'));
+       else if (rejected.length && !pending.length && !approved.length)
+         mergeArray(TransactionArray, formatArray(rejected, 'cancelled'));
+       else if (pending.length && approved.length){
+         mergeArray(pending,approved);
+         mergeArray(TransactionArray, formatArray(pending, 'initiated'));
+       }
+       else if (pending.length && rejected.length)
+         mergeArray(TransactionArray, formatArray(pending, 'initiated'));
+       else if (approved.length && rejected.length)
+         mergeArray(TransactionArray, formatArray(approved, 'confirmed'));
+     }
+   }
+   return TransactionArray;
+ } catch (e) {
+   console.log(e);
+ }
 }
+ function mergeArray(array1, array2){
+   Array.prototype.push.apply(array1,array2);
+ }
 
 // To Add Purchase Amount and Commission Amount For same Order Id
 function formatArray(arr, status){
@@ -98,7 +106,9 @@ function formatArray(arr, status){
     amountInEur += parseFloat(arr[i]['Amount in Eur']);
     commissionAmountInEur += parseFloat(arr[i]['Commission Amount in Eur']);
   }
-  transactionObject = {...transactionObject, Status: status, 'Amount in Eur': amountInEur.toFixed(2), 'Commission Amount in Eur': commissionAmountInEur.toFixed(2)}
+  transactionObject.Status = status;
+  transactionObject['Amount in Eur'] = amountInEur.toFixed(2);
+  transactionObject['Commission Amount in Eur'] = commissionAmountInEur.toFixed(2);
   return [transactionObject];
 }
 

@@ -10,7 +10,7 @@ function JumiaSheet(s_entity) {
   const client = {};
 
   let transactionObj = [];
-  client.getTransactions  = async function start() {
+  client.getTransactions  = function* start() {
   return new Promise((resolve,reject)=> {
     request.get(baseUrl, function (error, response, body) {
     if (!error && response.statusCode == 200) {
