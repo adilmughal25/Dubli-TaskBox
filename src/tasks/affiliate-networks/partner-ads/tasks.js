@@ -13,6 +13,11 @@ const debug = require('debug')('partnerads:processor');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 
+const moment = require('moment');
+const utils = require('ominto-utils');
+const configs = require('../../../../configs.json');
+const utilsDataClient = utils.restClient(configs.data_api);
+
 const AFFILIATE_NAME = 'partnerads';
 
 const PartnerAdsGenericApi = function(s_entity) {
@@ -45,6 +50,17 @@ const PartnerAdsGenericApi = function(s_entity) {
     // const startDate = new Date(Date.now() - (90 * 86400 * 1000));
     // const endDate = new Date(Date.now() - (60 * 1000));
 
+    let allCommissions = [];
+
+    let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME, true, this);
+
+    if (taskDate.body && taskDate.body !== "Not Found") {
+      let startCount = moment().diff(moment(taskDate.body.start_date), "days")
+      let endCount = moment().diff(moment(taskDate.body.end_date), "days");
+      allCommissions = yield that.getCommissionsByDate(startCount, endCount);
+      yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME, true, this);
+    }
+
     const startDate = new Date(Date.now() - (270 * 86400 * 1000));
     const endDate = new Date(Date.now());
 
@@ -56,8 +72,51 @@ const PartnerAdsGenericApi = function(s_entity) {
 
     // merge it
     const transactions = sales.concat(cancellations);
+    allCommissions = allCommissions.concat(transactions);
+    return yield sendEvents.sendCommissions(that.eventName, allCommissions);
+  });
 
-    return yield sendEvents.sendCommissions(that.eventName, transactions);
+  this.getCommissionsByDate = co.wrap(function* (fromCount, toCount) {
+    let startDate;
+    let endDate;
+    let allCommissions = [];
+    try {
+
+      let startCount = fromCount;
+      let endCount = (fromCount - toCount > 90) ? fromCount - 90 : toCount;
+
+      debug('start');
+
+      while (true) {
+        debug('inside while');
+        if (startCount <= toCount) {
+          break;
+        }
+
+        debug('start date --> ' + moment().subtract(startCount, 'days').toDate() + ' start count --> ' +startCount);
+        debug('end date --> ' + moment().subtract(endCount, 'days').toDate() + ' end count --> ' +endCount);
+        startDate = new Date(Date.now() - (startCount * 86400 * 1000));
+        endDate = new Date(Date.now() - (endCount * 86400 * 1000));
+
+        // get all sales/leads
+        const sales = (yield that.client.call('commissions', 'salgspec.salg', {fra: startDate, til:endDate})).map(prepareCommission);
+
+        // get all cancelled sales/leads
+        const cancellations = (yield that.client.call('cancellations', 'annulleredeordrer.annullering', {fra: startDate, til:endDate})).map(prepareCancellations);
+
+        // merge it
+        const transactions = sales.concat(cancellations);
+        allCommissions = allCommissions.concat(transactions);
+
+        startCount = startCount - 90;
+        endCount = (startCount - endCount > 90) ? fromCount - 90 : toCount;
+      }
+
+      debug('finish');
+    } catch (e) {
+      console.log(e);
+    }
+    return allCommissions;
   });
 
 };

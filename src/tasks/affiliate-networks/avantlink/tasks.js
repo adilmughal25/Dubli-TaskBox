@@ -22,6 +22,10 @@ const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 const clientPool = require('./api');
 
+const configs = require('../../../../configs.json');
+const utilsDataClient = utils.restClient(configs.data_api);
+const moment = require('moment');
+
 const AFFILIATE_NAME = 'avantlink-';
 
 const merge = require('../support/easy-merge')('lngMerchantId', {
@@ -61,12 +65,60 @@ function setup(s_region, s_entity) {
     let endDate = new Date(Date.now() - (60 * 1000));
     const exists = x => !!x;
 
+    let allCommissions = [];
+
+    let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME + s_region, true, this);
+
+    if (taskDate.body && taskDate.body !== "Not Found") {
+      let startCount = moment().diff(moment(taskDate.body.start_date), "days")
+      let endCount = moment().diff(moment(taskDate.body.end_date), "days");
+      allCommissions = yield tasks.getCommissionsByDate(startCount, endCount, clientC);
+      yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME + s_region, true, this);
+    }
+
     debug("fetching all transactions between %s and %s", startDate, endDate);
 
     transactions = yield clientC.getData({date_begin: startDate, date_end:endDate});
-    events = transactions.map(prepareCommission.bind(null, s_region)).filter(exists);
+    allCommissions = allCommissions.concat(transactions);
+    events = allCommissions.map(prepareCommission.bind(null, s_region)).filter(exists);
 
     return yield sendEvents.sendCommissions(eventName, events);
+  });
+
+  tasks.getCommissionsByDate = co.wrap(function* (fromCount, toCount, clientC) {
+    let startDate;
+    let endDate;
+    let allCommissions = [];
+    try {
+
+      let startCount = fromCount;
+      let endCount = (fromCount - toCount > 90) ? fromCount - 90 : toCount;
+
+      debug('start');
+
+      while (true) {
+        debug('inside while');
+        if (startCount <= toCount) {
+          break;
+        }
+
+        debug('start date --> ' + moment().subtract(startCount, 'days').toDate() + ' start count --> ' +startCount);
+        debug('end date --> ' + moment().subtract(endCount, 'days').toDate() + ' end count --> ' +endCount);
+        startDate = new Date(Date.now() - (startCount * 86400 * 1000));
+        endDate = new Date(Date.now() - (endCount * 86400 * 1000));
+
+        const commissions = yield clientC.getData({date_begin: startDate, date_end:endDate});
+        allCommissions = allCommissions.concat(commissions);
+
+        startCount = startCount - 90;
+        endCount = (startCount - endCount > 90) ? fromCount - 90 : toCount;
+      }
+
+      debug('finish');
+    } catch (e) {
+      console.log(e);
+    }
+    return allCommissions;
   });
 
   taskCache[eventName] = tasks;

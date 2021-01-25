@@ -7,6 +7,10 @@ const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 const moment = require('moment');
 
+const utils = require('ominto-utils');
+const configs = require('../../../../configs.json');
+const utilsDataClient = utils.restClient(configs.data_api);
+
 const AFFILIATE_NAME = 'affiliatewindow';
 
 // helper
@@ -36,11 +40,22 @@ const AffiliateWindowGenericApi = function(s_entity) {
 
   this.getCommissionDetails = singleRun(function* () {
     yield that.client.setup();
+    let results = [];
+    let allCommissions = [];
+
+    let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME, true, this);
+
+    if (taskDate.body && taskDate.body !== "Not Found") {
+      let startCount = moment().diff(moment(taskDate.body.start_date), "days")
+      let endCount = moment().diff(moment(taskDate.body.end_date), "days");
+      allCommissions = yield that.getCommissionsByDate(startCount, endCount);
+      yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME, true, this);
+    }
+
     const endDate = new Date(Date.now() - (60 * 1000));
     const startDate = moment().subtract(90, 'days').toDate();
     const transactionRanges = getRanges(startDate, endDate);
     const validationRanges = getRanges(startDate, endDate);
-    let results = [];
 
     for (let i = 0; i < transactionRanges.length; i++) {
       let range = transactionRanges[i];
@@ -52,9 +67,57 @@ const AffiliateWindowGenericApi = function(s_entity) {
       results = results.concat(yield that.doApiTransactions(range.start, range.end, 'validation'));
     }
 
-    const events = _.uniq(results, false, x => x.iId).map(prepareCommission);
+    allCommissions = allCommissions.concat(results)
+    const events = _.uniq(allCommissions, false, x => x.iId).map(prepareCommission);
 
     return yield sendEvents.sendCommissions(that.eventName, events);
+  });
+
+  this.getCommissionsByDate = co.wrap(function* (fromCount, toCount) {
+    let startDate;
+    let endDate;
+    let allCommissions = [];
+    let results = [];
+    try {
+
+      let startCount = fromCount;
+      let endCount = (fromCount - toCount > 90) ? fromCount - 90 : toCount;
+
+      debug('start');
+
+      while (true) {
+        debug('inside while');
+        if (startCount <= toCount) {
+          break;
+        }
+
+        debug('start date --> ' + moment().subtract(startCount, 'days').toDate() + ' start count --> ' +startCount);
+        debug('end date --> ' + moment().subtract(endCount, 'days').toDate() + ' end count --> ' +endCount);
+        startDate = moment().subtract(startCount, 'days').toDate();
+        endDate = moment().subtract(endCount, 'days').toDate();
+        const transactionRanges = getRanges(startDate, endDate);
+        const validationRanges = getRanges(startDate, endDate);
+
+        for (let i = 0; i < transactionRanges.length; i++) {
+          let range = transactionRanges[i];
+          results = results.concat(yield that.doApiTransactions(range.start, range.end, 'transaction'));
+        }
+
+        for (let i = 0; i < validationRanges.length; i++) {
+          let range = validationRanges[i];
+          results = results.concat(yield that.doApiTransactions(range.start, range.end, 'validation'));
+        }
+        allCommissions = allCommissions.concat(results);
+
+        startCount = startCount - 90;
+        endCount = (startCount - endCount > 90) ? fromCount - 90 : toCount;
+      }
+
+      debug('finish');
+    } catch (e) {
+      console.log(e);
+    }
+    return allCommissions;
   });
 
   this.doApiMerchants = co.wrap(function* (){

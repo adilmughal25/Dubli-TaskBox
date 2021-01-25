@@ -5,6 +5,10 @@ const moment = require('moment');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 
+const utils = require('ominto-utils');
+const configs = require('../../../../configs.json');
+const utilsDataClient = utils.restClient(configs.data_api);
+
 const AFFILIATE_NAME = 'linkprice';
 // 100 (Normal) / 300(Apply cancel) / 310(Confirm cancel)
 // / 200(Waiting commission)/ 210(confirm commission
@@ -44,7 +48,14 @@ const LinkpriceGenericApi = function(s_region, s_entity) {
   });
 
   tasks.getCommissionDetails = singleRun(function* (){
-    const monthsToBeProcessed = 3;
+    let monthsToBeProcessed = 3;
+    let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME, true, this);
+
+    if (taskDate.body && taskDate.body !== "Not Found") {
+      let startCount = moment().diff(moment(taskDate.body.start_date), "days")
+      monthsToBeProcessed = Math.round(startCount / 30);
+      yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME, true, this);
+    }
     const startDate = moment().subtract(monthsToBeProcessed, 'months');
     const endDate = moment().endOf('month');
 

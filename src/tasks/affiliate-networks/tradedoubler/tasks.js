@@ -9,6 +9,10 @@ const moment = require('moment');
 const request = require('request-promise');
 const jsonify = require('../support/jsonify-xml-body');
 
+const utils = require('ominto-utils');
+const configs = require('../../../../configs.json');
+const utilsDataClient = utils.restClient(configs.data_api);
+
 const AFFILIATE_NAME = 'tradedoubler';
 
 const merge = require('../support/easy-merge')('programId', {
@@ -247,6 +251,17 @@ const TradeDoublerGenericApi = function(s_region, s_entity) {
    */
   this.getCommissionData = co.wrap(function* (){
 
+    let allCommissions = [];
+
+    let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME + '-' + that.region, true, this);
+
+    if (taskDate.body && taskDate.body !== "Not Found") {
+      let startCount = moment().diff(moment(taskDate.body.start_date), "days");
+      let endCount = moment().diff(moment(taskDate.body.end_date), "days");
+      allCommissions = yield that.getCommissionsByDate(startCount, endCount);
+      yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME + '-' + that.region, true, this);
+    }
+
     const affiliateIdFilter = { affiliateId: _.get(API_CFG, 'affiliateData.' + that.entity + '.' + that.region + '.affiliateId') };
     let requestParams = {
       qs: _.extend(API_PARAMS_COMMISSIONS, affiliateIdFilter)
@@ -271,8 +286,73 @@ const TradeDoublerGenericApi = function(s_region, s_entity) {
         // following will work when lodash is updated
         // events = _.castArray(events);
       }
-      return events.map(prepareCommission);
+      allCommissions = allCommissions.concat(events);
+      return allCommissions.map(prepareCommission);
     });
+  });
+
+  this.getCommissionsByDate = co.wrap(function* (fromCount, toCount) {
+    let startDate;
+    let endDate;
+    let allCommissions = [];
+    try {
+
+      let startCount = fromCount;
+      let endCount = (fromCount - toCount > 90) ? fromCount - 90 : toCount;
+
+      debug('start');
+
+      while (true) {
+        debug('inside while');
+        if (startCount <= toCount) {
+          break;
+        }
+
+        debug('start date --> ' + moment().subtract(startCount, 'days').toDate() + ' start count --> ' +startCount);
+        debug('end date --> ' + moment().subtract(endCount, 'days').toDate() + ' end count --> ' +endCount);
+
+        const affiliateIdFilter = { affiliateId: _.get(API_CFG, 'affiliateData.' + that.entity + '.' + that.region + '.affiliateId') };
+        let requestParams = {
+          qs: _.extend(API_PARAMS_COMMISSIONS, affiliateIdFilter)
+        };
+        requestParams.qs.startDate = moment().subtract(startCount, 'days').format('MM/DD/YYYY');
+        requestParams.qs.endDate = moment().subtract(endCount, 'days').format('MM/DD/YYYY');
+
+        debug("getting commissions from report api for duration - " + requestParams.qs.startDate + " to " + requestParams.qs.endDate);
+
+        var client = that.client.getTradedoublerClient(requestParams);
+        const events = yield this.getComm(client);
+        allCommissions = allCommissions.concat(events);
+        startCount = startCount - 90;
+        endCount = (startCount - endCount > 90) ? fromCount - 90 : toCount;
+      }
+
+      debug('finish');
+    } catch (e) {
+      console.log(e);
+    }
+    return allCommissions;
+  });
+
+  this.getComm = co.wrap(function* (client) {
+    return new Promise(function(resolve, reject) {
+      client.get()
+        .then(response => {
+          return response.indexOf("<?xml") != -1 ? jsonify(response) : '';
+        })
+        .then(response => {
+          var events = _.get(response, 'report.matrix.rows.row', []);
+          if(!_.isArray(events)){
+            var array = [];
+            array.push(events);
+            events = array;
+            // following will work when lodash is updated
+            // events = _.castArray(events);
+            resolve(events);
+          } else {
+            resolve(events);
+          }
+        })});
   });
 };
 

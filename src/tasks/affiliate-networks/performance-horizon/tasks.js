@@ -1,11 +1,15 @@
 "use strict";
 
 const _ = require('lodash');
+const co = require('co');
 const debug = require('debug')('performancehorizon:processor');
 const moment = require('moment');
 const utils = require('ominto-utils');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
+
+const configs = require('../../../../configs.json');
+const utilsDataClient = utils.restClient(configs.data_api);
 
 const AFFILIATE_NAME = 'performancehorizon';
 
@@ -49,6 +53,17 @@ const PerformanceHorizonGenericApi = function(s_entity) {
     const start = moment().subtract(180, 'days').format('YYYY-MM-DD HH:mm:ss');
     const end = moment().format('YYYY-MM-DD HH:mm:ss');
 
+    let allCommissions = [];
+
+    let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME, true, this);
+
+    if (taskDate.body && taskDate.body !== "Not Found") {
+      let startCount = moment().diff(moment(taskDate.body.start_date), "days")
+      let endCount = moment().diff(moment(taskDate.body.end_date), "days");
+      allCommissions = yield that.getCommissionsByDate(startCount, endCount);
+      yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME, true, this);
+    }
+
     let results = [];
     let page = 1;
 
@@ -63,9 +78,58 @@ const PerformanceHorizonGenericApi = function(s_entity) {
       page += 1;
     }
 
-    const events = results.map(extractConversionData).map(prepareCommission);
+    allCommissions = allCommissions.concat(results);
+    const events = allCommissions.map(extractConversionData).map(prepareCommission);
 
     return yield sendEvents.sendCommissions(that.eventName, events);
+  });
+
+  this.getCommissionsByDate = co.wrap(function* (fromCount, toCount) {
+    let startDate;
+    let endDate;
+    let allCommissions = [];
+    try {
+
+      let startCount = fromCount;
+      let endCount = (fromCount - toCount > 90) ? fromCount - 90 : toCount;
+
+      debug('start');
+
+      while (true) {
+        debug('inside while');
+        if (startCount <= toCount) {
+          break;
+        }
+
+        debug('start date --> ' + moment().subtract(startCount, 'days').toDate() + ' start count --> ' +startCount);
+        debug('end date --> ' + moment().subtract(endCount, 'days').toDate() + ' end count --> ' +endCount);
+        startDate = moment().subtract(startCount, 'days').format('YYYY-MM-DD');
+        endDate = moment().subtract(endCount, 'days').format('YYYY-MM-DD');
+
+        let results = [];
+        let page = 1;
+
+        while (true) {
+          const url = that.client.getUrl('transactions', {start:startDate, end:endDate, page:page});
+          debug('fetching url %s', url);
+          const response = yield that.client.get(url);
+          results = results.concat(ary(response.conversions));
+          const ceiling = response.offset + response.limit;
+          debug('loaded %d of %d', Math.min(ceiling,response.count), response.count);
+          if (ceiling >= response.count) break;
+          page += 1;
+        }
+        allCommissions = allCommissions.concat(results);
+
+        startCount = startCount - 90;
+        endCount = (startCount - endCount > 90) ? fromCount - 90 : toCount;
+      }
+
+      debug('finish');
+    } catch (e) {
+      console.log(e);
+    }
+    return allCommissions;
   });
 };
 
