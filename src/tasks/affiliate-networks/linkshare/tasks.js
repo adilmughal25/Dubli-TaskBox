@@ -21,6 +21,8 @@ const AFFILIATE_NAME = 'linkshare';
 
 const reportingURL = 'https://ran-reporting.rakutenmarketing.com/en/reports/individual-item-report-api-final/filters?';
 const reportingToken = 'ZW5jcnlwdGVkYToyOntzOjU6IlRva2VuIjtzOjY0OiI2ODI4NTljZGIxYWU2ZjllZWQ1NDFhYjhlNjY1YTM2ODI4YTM3NmIxMjFmMWI1MTI4Y2Q2YzJhMjBkMTMzMjgzIjtzOjg6IlVzZXJUeXBlIjtzOjk6IlB1Ymxpc2hlciI7fQ%3D%3D';
+const configs = require('../../../../configs.json');
+const utilsDataClient = utils.restClient(configs.data_api);
 
 const networksList = {
     us: 1,
@@ -158,6 +160,17 @@ const LinkShareGenericApi = function(s_region, s_entity) {
     const startDate = moment().subtract(90, 'days').format('YYYY-MM-DD');
     const endDate = moment().format('YYYY-MM-DD');
 
+    let allCommissions = [];
+
+    let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/linkshare-' + (s_region || 'us'), true, this);
+
+    if (taskDate.body && taskDate.body !== "Not Found") {
+      let startCount = moment().diff(moment(taskDate.body.start_date), "days")
+      let endCount = moment().diff(moment(taskDate.body.end_date), "days");
+      allCommissions = yield getCommissionsByDate(startCount, endCount, s_region, that);
+      yield utilsDataClient.patch('/inactivateTask/linkshare-' + (s_region || 'us'), true, this);
+    }
+
     var dataClient = request.defaults({});
 
     console.log(networksList[s_region] ? networksList[s_region] : networksList['us']);
@@ -196,10 +209,61 @@ const LinkShareGenericApi = function(s_region, s_entity) {
     */
 
     let commissions = parseCommissions(yield dataClient.get(url));
-    var events = commissions.map(prepareCommission).filter(x => !!x);
+    allCommissions = allCommissions.concat(commissions);
+    var events = allCommissions.map(prepareCommission).filter(x => !!x);
     return yield sendEvents.sendCommissions(that.eventName, events);
   });
 };
+
+function * getCommissionsByDate(fromCount, toCount, s_region) {
+  let startDate;
+  let endDate;
+  let allCommissions = [];
+  try {
+
+    let startCount = fromCount;
+    let endCount = (fromCount - toCount > 90) ? fromCount - 90 : toCount;
+
+    debug('start');
+
+    while (true) {
+      debug('inside while');
+      if (startCount <= toCount) {
+        break;
+      }
+
+      debug('start date --> ' + moment().subtract(startCount, 'days').toDate() + ' start count --> ' +startCount);
+      debug('end date --> ' + moment().subtract(endCount, 'days').toDate() + ' end count --> ' +endCount);
+      startDate = moment().subtract(startCount, 'days').format('YYYY-MM-DD');
+      endDate = moment().subtract(endCount, 'days').format('YYYY-MM-DD');
+
+      var dataClient = request.defaults({});
+
+      console.log(networksList[s_region] ? networksList[s_region] : networksList['us']);
+      const url = reportingURL + querystring.stringify({
+        start_date: startDate,
+        end_date: endDate,
+        include_summary: 'N',
+        // network: 1, // dont do a network specific call
+        network: networksList[s_region] ? networksList[s_region] : networksList['us'], // dont do a network specific call
+        tz: 'GMT',
+        date_type: 'process', //using process instead of transaction as these transactions are confirmed onces
+        token: reportingToken
+      });
+
+      let commissions = parseCommissions(yield dataClient.get(url));
+      allCommissions = allCommissions.concat(commissions);
+
+      startCount = startCount - 90;
+      endCount = (startCount - endCount > 90) ? fromCount - 90 : toCount;
+    }
+
+    debug('finish');
+  } catch (e) {
+    console.log(e);
+  }
+  return allCommissions;
+}
 
 // old commission processing code
 function _prepareCommission(o_obj) {

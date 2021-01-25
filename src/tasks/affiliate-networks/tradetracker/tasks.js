@@ -11,6 +11,10 @@ const entities = new XmlEntities();
 const singleRun = require('../support/single-run');
 const taskCache = {};
 
+const moment = require('moment');
+const configs = require('../../../../configs.json');
+const utilsDataClient = utils.restClient(configs.data_api);
+
 const AFFILIATE_NAME = 'tradetracker';
 
 const merge = require('../support/easy-merge')('ID', {
@@ -96,6 +100,18 @@ const TradeTrackerGenericApi = function(s_region, s_entity) {
   const getCommissionDetailsOps = function* () {
     tasks.client = yield clientPool
       .getClient(tasks.entity, tasks.region);
+
+    let allCommissions = [];
+
+    let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME + '-' + tasks.region, true, this);
+
+    if (taskDate.body && taskDate.body !== "Not Found") {
+      let startCount = moment().diff(moment(taskDate.body.start_date), "days")
+      let endCount = moment().diff(moment(taskDate.body.end_date), "days");
+      allCommissions = yield getCommissionsByDate(startCount, endCount);
+      yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME + '-' + tasks.region, true, this);
+    }
+
     const startDate = new Date(Date.now() - (90 * 86400 * 1000));
     const endDate = new Date(Date.now() - (60 * 1000));
     let args = _.merge(CONVERSIONTRANS_ARGS, {options:{
@@ -106,10 +122,51 @@ const TradeTrackerGenericApi = function(s_region, s_entity) {
     debug("fetching all transactions between %s and %s", startDate, endDate);
 
     let transactions = yield tasks.pagedApiCall('getConversionTransactions', 'conversionTransactions.item', args);
-    const events = transactions.map(prepareCommission).filter(exists);
+    allCommissions = allCommissions.concat(transactions);
+    const events = allCommissions.map(prepareCommission).filter(exists);
 
     return yield sendEvents.sendCommissions(tasks.eventName, events);
   }
+
+  const getCommissionsByDate = co.wrap(function* (fromCount, toCount) {
+    let startDate;
+    let endDate;
+    let allCommissions = [];
+    try {
+
+      let startCount = fromCount;
+      let endCount = (fromCount - toCount > 90) ? fromCount - 90 : toCount;
+
+      debug('start');
+
+      while (true) {
+        debug('inside while');
+        if (startCount <= toCount) {
+          break;
+        }
+
+        debug('start date --> ' + moment().subtract(startCount, 'days').toDate() + ' start count --> ' +startCount);
+        debug('end date --> ' + moment().subtract(endCount, 'days').toDate() + ' end count --> ' +endCount);
+        startDate = new Date(Date.now() - (startCount * 86400 * 1000));
+        endDate = new Date(Date.now() - (endCount * 86400 * 1000));
+
+        let args = _.merge(CONVERSIONTRANS_ARGS, {options:{
+            registrationDateFrom: dateFormat(startDate),
+            registrationDateTo: dateFormat(endDate),
+          }});
+        let transactions = yield tasks.pagedApiCall('getConversionTransactions', 'conversionTransactions.item', args);
+        allCommissions = allCommissions.concat(transactions);
+
+        startCount = startCount - 90;
+        endCount = (startCount - endCount > 90) ? fromCount - 90 : toCount;
+      }
+
+      debug('finish');
+    } catch (e) {
+      console.log(e);
+    }
+    return allCommissions;
+  });
 
   tasks.getCommissionDetails = singleRun(function* () {
     try{

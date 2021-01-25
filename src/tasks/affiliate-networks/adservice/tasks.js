@@ -1,9 +1,15 @@
 "use strict";
 
 const _ = require('lodash');
+const co = require('co');
 const moment = require('moment');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
+
+const debug = require('debug')('adservice:processor');
+const utils = require('ominto-utils');
+const configs = require('../../../../configs.json');
+const utilsDataClient = utils.restClient(configs.data_api);
 
 const AFFILIATE_NAME = 'adservice-';
 const STATUS_MAP = {
@@ -41,10 +47,59 @@ const AdserviceGenericApi = function(s_region, s_entity) {
   tasks.getCommissionDetails = singleRun(function* (){
     const startDate = moment().subtract(90, 'days');
     const endDate = new Date();
+
+    let allCommissions = [];
+
+    let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME + tasks.region, true, this);
+
+    if (taskDate.body && taskDate.body !== "Not Found") {
+      let startCount = moment().diff(moment(taskDate.body.start_date), "days")
+      let endCount = moment().diff(moment(taskDate.body.end_date), "days");
+      allCommissions = yield tasks.getCommissionsByDate(startCount, endCount);
+      yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME + tasks.region, true, this);
+    }
+
     const commissions = yield tasks.client.getTransactions(startDate, endDate);
-    const events = commissions.map(prepareCommission.bind(null, tasks.region));
+    allCommissions = allCommissions.concat(commissions);
+    const events = allCommissions.map(prepareCommission.bind(null, tasks.region));
 
     return yield sendEvents.sendCommissions(tasks.eventName, events);
+  });
+
+  tasks.getCommissionsByDate = co.wrap(function* (fromCount, toCount) {
+    let startDate;
+    let endDate;
+    let allCommissions = [];
+    try {
+
+      let startCount = fromCount;
+      let endCount = (fromCount - toCount > 90) ? fromCount - 90 : toCount;
+
+      debug('start');
+
+      while (true) {
+        debug('inside while');
+        if (startCount <= toCount) {
+          break;
+        }
+
+        debug('start date --> ' + moment().subtract(startCount, 'days').toDate() + ' start count --> ' +startCount);
+        debug('end date --> ' + moment().subtract(endCount, 'days').toDate() + ' end count --> ' +endCount);
+        startDate = new Date(Date.now() - (startCount * 86400 * 1000));
+        endDate = new Date(Date.now() - (endCount * 86400 * 1000));
+
+        const commissions = yield tasks.client.getTransactions(startDate, endDate);
+        allCommissions = allCommissions.concat(commissions);
+
+        startCount = startCount - 90;
+        endCount = (startCount - endCount > 90) ? fromCount - 90 : toCount;
+      }
+
+      debug('finish');
+    } catch (e) {
+      console.log(e);
+    }
+    return allCommissions;
   });
 
   taskCache[eventName] = tasks;

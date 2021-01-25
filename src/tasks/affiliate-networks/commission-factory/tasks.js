@@ -14,6 +14,8 @@ const querystring = require('querystring');
 const utils = require('ominto-utils');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
+const configs = require('../../../../configs.json');
+const utilsDataClient = utils.restClient(configs.data_api);
 
 const AFFILIATE_NAME = 'commissionfactory';
 
@@ -63,9 +65,60 @@ const CommissionFactoryGernericApi = function(s_entity) {
   this.getCommissionDetails = singleRun(function* () {
     const start = moment().subtract(90, 'days').toDate();
     const end = moment().toDate();
+
+    let allCommissions = [];
+
+    let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME, true, this);
+
+    if (taskDate.body && taskDate.body !== "Not Found") {
+      let startCount = moment().diff(moment(taskDate.body.start_date), "days")
+      let endCount = moment().diff(moment(taskDate.body.end_date), "days");
+      allCommissions = yield that.getCommissionsByDate(startCount, endCount);
+      yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME, true, this);
+    }
+
     const url = getTransactionsUrl(start, end);
-    const events = (yield that.client.get(url)).map(prepareCommission);
+    const commissions = yield that.client.get(url);
+    allCommissions = allCommissions.concat(commissions);
+    const events = allCommissions.map(prepareCommission);
     return yield sendEvents.sendCommissions(that.eventName, events);
+  });
+
+  this.getCommissionsByDate = co.wrap(function* (fromCount, toCount) {
+    let startDate;
+    let endDate;
+    let allCommissions = [];
+    try {
+
+      let startCount = fromCount;
+      let endCount = (fromCount - toCount > 90) ? fromCount - 90 : toCount;
+
+      debug('start');
+
+      while (true) {
+        debug('inside while');
+        if (startCount <= toCount) {
+          break;
+        }
+
+        debug('start date --> ' + moment().subtract(startCount, 'days').toDate() + ' start count --> ' +startCount);
+        debug('end date --> ' + moment().subtract(endCount, 'days').toDate() + ' end count --> ' +endCount);
+        startDate = moment().subtract(startCount, 'days').toDate();
+        endDate = moment().subtract(endCount, 'days').toDate();
+
+        const url = getTransactionsUrl(startDate, endDate);
+        const commissions = yield that.client.get(url);
+        allCommissions = allCommissions.concat(commissions);
+
+        startCount = startCount - 90;
+        endCount = (startCount - endCount > 90) ? fromCount - 90 : toCount;
+      }
+
+      debug('finish');
+    } catch (e) {
+      console.log(e);
+    }
+    return allCommissions;
   });
 };
 
