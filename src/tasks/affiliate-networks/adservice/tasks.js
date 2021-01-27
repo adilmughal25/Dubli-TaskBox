@@ -91,8 +91,8 @@ const AdserviceGenericApi = function(s_region, s_entity) {
         const commissions = yield tasks.client.getTransactions(startDate, endDate);
         allCommissions = allCommissions.concat(commissions);
 
+        endCount = (startCount - endCount >= 90) ? endCount - 90 : toCount;
         startCount = startCount - 90;
-        endCount = (startCount - endCount > 90) ? fromCount - 90 : toCount;
       }
 
       debug('finish');

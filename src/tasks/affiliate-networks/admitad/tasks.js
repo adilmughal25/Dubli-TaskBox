@@ -88,8 +88,8 @@ const AdmitadGenericApi = function(s_entity, s_region) {
         const commissions = yield that.pagedApiCall('getStatisticsByAction', 'results', {status_updated_start: startDate, status_updated_end:endDate});
         allCommissions = allCommissions.concat(commissions);
 
+        endCount = (startCount - endCount >= 90) ? endCount - 90 : toCount;
         startCount = startCount - 90;
-        endCount = (startCount - endCount > 90) ? fromCount - 90 : toCount;
       }
 
       debug('finish');

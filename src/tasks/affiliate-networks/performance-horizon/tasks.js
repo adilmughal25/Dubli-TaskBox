@@ -121,8 +121,8 @@ const PerformanceHorizonGenericApi = function(s_entity) {
         }
         allCommissions = allCommissions.concat(results);
 
+        endCount = (startCount - endCount >= 90) ? endCount - 90 : toCount;
         startCount = startCount - 90;
-        endCount = (startCount - endCount > 90) ? fromCount - 90 : toCount;
       }
 
       debug('finish');
