@@ -110,8 +110,8 @@ const CommissionFactoryGernericApi = function(s_entity) {
         const commissions = yield that.client.get(url);
         allCommissions = allCommissions.concat(commissions);
 
+        endCount = (startCount - endCount >= 90) ? endCount - 90 : toCount;
         startCount = startCount - 90;
-        endCount = (startCount - endCount > 90) ? fromCount - 90 : toCount;
       }
 
       debug('finish');

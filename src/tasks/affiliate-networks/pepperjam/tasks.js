@@ -69,7 +69,7 @@ const PepperJamGenericApi = function(s_entity) {
 
     const results = yield that.client.getPaginated('/publisher/report/transaction-details', {startDate:startDate, endDate:endDate});
     allCommissions = allCommissions.concat(results);
-    const events = results.map(prepareCommission).filter(exists);
+    const events = allCommissions.map(prepareCommission).filter(exists);
     return yield sendEvents.sendCommissions(that.eventName, events);
   });
 
@@ -98,13 +98,13 @@ const PepperJamGenericApi = function(s_entity) {
         const results = yield that.client.getPaginated('/publisher/report/transaction-details', {startDate:startDate, endDate:endDate});
         allCommissions = allCommissions.concat(results);
 
+        endCount = (startCount - endCount >= 90) ? endCount - 90 : toCount;
         startCount = startCount - 90;
-        endCount = (startCount - endCount > 90) ? fromCount - 90 : toCount;
       }
 
       debug('finish');
     } catch (e) {
-      console.log(e);
+      console.log('Error --> ' + JSON.stringify(e));
     }
     return allCommissions;
   });

@@ -108,8 +108,8 @@ const PartnerAdsGenericApi = function(s_entity) {
         const transactions = sales.concat(cancellations);
         allCommissions = allCommissions.concat(transactions);
 
+        endCount = (startCount - endCount >= 90) ? endCount - 90 : toCount;
         startCount = startCount - 90;
-        endCount = (startCount - endCount > 90) ? fromCount - 90 : toCount;
       }
 
       debug('finish');

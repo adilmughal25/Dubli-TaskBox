@@ -157,8 +157,8 @@ const TradeTrackerGenericApi = function(s_region, s_entity) {
         let transactions = yield tasks.pagedApiCall('getConversionTransactions', 'conversionTransactions.item', args);
         allCommissions = allCommissions.concat(transactions);
 
+        endCount = (startCount - endCount >= 90) ? endCount - 90 : toCount;
         startCount = startCount - 90;
-        endCount = (startCount - endCount > 90) ? fromCount - 90 : toCount;
       }
 
       debug('finish');

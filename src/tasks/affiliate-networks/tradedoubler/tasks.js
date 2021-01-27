@@ -323,8 +323,9 @@ const TradeDoublerGenericApi = function(s_region, s_entity) {
         var client = that.client.getTradedoublerClient(requestParams);
         const events = yield this.getComm(client);
         allCommissions = allCommissions.concat(events);
+
+        endCount = (startCount - endCount >= 90) ? endCount - 90 : toCount;
         startCount = startCount - 90;
-        endCount = (startCount - endCount > 90) ? fromCount - 90 : toCount;
       }
 
       debug('finish');

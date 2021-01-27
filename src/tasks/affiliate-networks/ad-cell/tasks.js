@@ -231,8 +231,8 @@ const AdCellGenericApi = function(s_entity) {
         const commissions = yield that.pagedApiCall('getStatisticsByCommission', 'items', {startDate: startDate, endDate:endDate});
         allCommissions = allCommissions.concat(commissions);
 
+        endCount = (startCount - endCount >= 90) ? endCount - 90 : toCount;
         startCount = startCount - 90;
-        endCount = (startCount - endCount > 90) ? fromCount - 90 : toCount;
       }
 
       debug('finish');
