@@ -14,7 +14,7 @@ const STATE_MAP = {
   'approved': 'confirmed',
   'rejected': 'cancelled'
 };
-let TransactionArray = [];
+
 const JumiaSheetGenericApi = function (s_entity) {
   if (!(this instanceof JumiaSheetGenericApi)) {
     debug("instantiating JumiaSheetGenericApi for: %s", s_entity);
@@ -35,8 +35,7 @@ const JumiaSheetGenericApi = function (s_entity) {
   this.getCommissionDetails = singleRun(function* () {
     const event_conversions = yield that.client.getTransactions();
     const groupedOrders = groupBy(event_conversions, 'Order Nr');
-    prepareUniqueOrderId(groupedOrders);
-    const events = TransactionArray.map(prepareCommission).filter(exists);
+    const events = prepareUniqueOrderId(groupedOrders).map(prepareCommission).filter(exists);
     return sendEvents.sendCommissions(that.eventName, events);
 
   });
@@ -62,6 +61,7 @@ rejected we are not sending rejected to our system.
  */
 function prepareUniqueOrderId(groupedOrders) {
  try {
+   const TransactionArray = [];
    for (let orderNum in groupedOrders) {
      const arr = groupedOrders[orderNum];
      if (arr.length === 1) {
