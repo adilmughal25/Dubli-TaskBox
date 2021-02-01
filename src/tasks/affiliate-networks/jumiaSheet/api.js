@@ -9,20 +9,20 @@ function JumiaSheet(s_entity) {
 
   const client = {};
 
-  let transactionObj = [];
   client.getTransactions  = function* start() {
   return new Promise((resolve,reject)=> {
+    let transactionObj = [];
     request.get(baseUrl, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-        csv().fromString(body).on("json",function(json){
-          transactionObj.push(json);
-        }).on('done', (error) => {
-            if (error)
-              return reject(error);
-            resolve(transactionObj);
-        })
-      }
-    });
+      if (!error && response.statusCode == 200) {
+          csv().fromString(body).on("json",function(json){
+            transactionObj.push(json);
+          }).on('done', (error) => {
+              if (error)
+                return reject(error);
+              resolve(transactionObj);
+          })
+        }
+      });
   })
 }
   return client;

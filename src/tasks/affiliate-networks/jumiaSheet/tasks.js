@@ -99,8 +99,7 @@ function prepareUniqueOrderId(groupedOrders) {
 
 // To Add Purchase Amount and Commission Amount For same Order Id
 function formatArray(arr, status){
-  let transactionObject = {};
-  transactionObject = _.assign(transactionObject,arr[0]);
+  let transactionObject = arr[0];
   let amountInEur = 0;
   let commissionAmountInEur = 0;
   for (let i=0; i <arr.length; i++){
