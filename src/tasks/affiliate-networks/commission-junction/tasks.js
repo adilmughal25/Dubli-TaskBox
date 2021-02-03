@@ -14,6 +14,10 @@ const jsonify = require('../support/jsonify-xml-body');
 const cjClient = require('./api');
 const url = require('url');
 
+const utils = require('ominto-utils');
+const configs = require('../../../../configs.json');
+const utilsDataClient = utils.restClient(configs.data_api);
+
 const AFFILIATE_NAME = 'commissionjunction';
 
 const merge = require('../support/easy-merge')('advertiser-id', {
@@ -65,17 +69,49 @@ const CommissionJunctionGenericApi = function(s_region, s_entity) {
     const periods = commissionPeriods(31, 3); // three 31-day periods
     let all = [];
 
+    let allCommissions = [];
+
+    let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME + '-' + that.region, true, this);
+
+    if (taskDate.body && taskDate.body !== "Not Found") {
+      allCommissions = yield that.getCommissionsByDate(taskDate.body.start_date, taskDate.body.end_date);
+      yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME + '-' + that.region, true, this);
+    }
+
     for (let i = 0; i < periods.length; i++) {
       const p = periods[i];
       let results = yield clientC.getCommission(p.start, p.end);
       all = all.concat(results);
     }
-
+    allCommissions = allCommissions.concat(all);
     const prep = prepareCommission.bind(null, currency);
     const exists = x => !!x;
-    const events = all.map(prep).filter(exists);
+    const events = allCommissions.map(prep).filter(exists);
 
     return yield sendEvents.sendCommissions(that.eventName, events);
+  });
+
+  this.getCommissionsByDate = co.wrap(function* (startDate, endDate) {
+    const clientC = cjClient(that.entity, that.region, 'commissions');
+    let allCommissions = [];
+    try {
+      const periods = getExtraCommissionPeriods(startDate, endDate);
+
+      for (let i = 0; i < periods.length; i++) {
+        const p = periods[i];
+
+        debug('start date --> ' + p.start);
+        debug('end date --> ' + p.end);
+
+        let results = yield clientC.getCommission(p.start, p.end);
+        allCommissions = allCommissions.concat(results);
+      }
+
+      debug('finish');
+    } catch (e) {
+      console.log(e);
+    }
+    return allCommissions;
   });
 };
 
@@ -193,6 +229,21 @@ function commissionPeriods(i_days, i_count) {
     current = current.subtract(i_days, 'days');
     let then = current.format('YYYY-MM-DD');
     vals.push({start:then, end:now});
+  }
+
+  return vals;
+}
+
+function getExtraCommissionPeriods(startDate, endDate) {
+  let startMonth = moment().diff(moment(startDate), "months");
+  let endMonth = moment().diff(moment(endDate), "months");
+  let vals = [];
+  const noOfMonths = startMonth - endMonth;
+
+  for (let i = 0; i < noOfMonths; i++) {
+    let from = moment(startDate).add(i, 'M').format('YYYY-MM-DD');
+    let to = moment(startDate).add(i + 1, 'M').format('YYYY-MM-DD');
+    vals.push({start: from, end: to});
   }
 
   return vals;
