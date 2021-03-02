@@ -15,12 +15,20 @@ const AFFILIATE_NAME = 'adtraction';
 
 const exists = x => !!x;
 
- const STATUS_MAP = {
+const STATUS_MAP = {
   0: 'Rejected',
   1: 'Approved',
   2: 'Pending',
   3: 'Not Available'
 };
+
+const TRANSACTION_STATUS_MAP = {
+  1: 'confirmed',
+  2: 'initiated',
+  3: 'initiated',
+  4: 'initiated',
+  5: 'cancelled'
+}
 
 const adtractionGenericApi = function (s_entity) {
   if (!(this instanceof adtractionGenericApi)) {
@@ -169,21 +177,17 @@ function prepareCoupons(o_obj) {
 }
 
 function prepareCommission(o_obj) {
-  var status = 'initiated';
-  status = o_obj.paid === 'true' ? 'paid' : status;
-  status = o_obj.cancelled === 'true' ? 'cancelled' : status;
-
   const event = {
     affiliate_name: AFFILIATE_NAME,
-    merchant_name: o_obj.programName || '',
-    merchant_id: o_obj.programId + "-(" + o_obj.channelId + ")",
-    transaction_id: o_obj.orderId,
-    order_id: o_obj.orderId,
-    outclick_id: o_obj.epi,
+    merchant_name: o_obj.click.programName || '',
+    merchant_id: o_obj.click.programId + "-(" + o_obj.click.channelId + ")",
+    transaction_id: o_obj.uniqueId,
+    order_id: o_obj.uniqueId,
+    outclick_id: o_obj.click.epi,
     currency: o_obj.currency.toLowerCase(),
     purchase_amount: o_obj.orderValue,
     commission_amount: o_obj.commission,
-    state: status,
+    state: TRANSACTION_STATUS_MAP[o_obj.transactionStatus],
     effective_date: new Date(o_obj.transactionDate)
   };
 
