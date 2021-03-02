@@ -17,7 +17,8 @@ const API_CFG = {
 const API_URLS = {
   programs: 'https://api.adtraction.com/v1/affiliate/programs',
   coupons: 'https://api.adtraction.com/v1/affiliate/couponcodes',
-  commissions: 'https://api.adtraction.com/v1/affiliate/transactions/combined' 
+  commissions: 'https://api.adtraction.com/v1/affiliate/transactions/combined',
+  commissionsV2: 'https://api.adtraction.com/v2/affiliate/transactions'
 };
 
 // helpers
@@ -58,10 +59,11 @@ function createClient(s_entity) {
 
   client.getCommissions = function (start, end) {
     var transRequest = this.defaults({
-      body : "{\"fromDate\": \"" + formatDate(start) + "\",  \"toDate\": \"" + formatDate(end) + "\"}"
+      body : "{\"fromDate\": \"" + formatDate(start) + "\",  \"toDate\": \"" + formatDate(end) + "\", \"transactionStatus\": 0}"
     })
 
-    const requestUrl = this.url('commissions');
+    let requestUrl = this.url('commissionsV2');
+    requestUrl += '?token=' + API_CFG[s_entity].token;
     console.log("Invoking Commissions URL: %s, from %s, to %s", requestUrl, formatDate(start), formatDate(end));
 
     const promise = transRequest.post(requestUrl);
