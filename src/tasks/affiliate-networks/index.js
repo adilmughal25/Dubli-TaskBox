@@ -6,7 +6,7 @@ const impactRadiusProductFtp = require("./impact-radius/ftp-tasks");
 //const lomadeeApi = require('./lomadee/tasks');
 
 const adserviceGenericApi = require('./adservice/tasks');
-const adserviceDenmarkApi = adserviceGenericApi('dk');
+// const adserviceDenmarkApi = adserviceGenericApi('dk');
 const adserviceSweedenkApi = adserviceGenericApi('se');
 const adserviceFinlandApi = adserviceGenericApi('fi');
 const adserviceNorwayApi = adserviceGenericApi('no');
@@ -50,8 +50,8 @@ const tradedoublerNewZealandApi = tradedoublerGenericApi('nz');
 const tradedoublerIndiaApi = tradedoublerGenericApi('in');
 const tradedoublerFlyDubaiApi = tradedoublerGenericApi('flyDubai');
 
-const a8GenericApi = require('./a8/tasks');
-const a8Api = a8GenericApi();
+// const a8GenericApi = require('./a8/tasks');
+// const a8Api = a8GenericApi();
 
 const adCellGenericApi = require('./ad-cell/tasks');
 const adCellApi = adCellGenericApi();
@@ -63,26 +63,26 @@ const admitadDubliApi = admitadGenericApi('dubli');
 const admitadDubliIndiaApi = admitadGenericApi('', 'in');
 
 const affiliateGatewayGenericApi = require('./affiliate-gateway/tasks');
-const affiliateGatewayAsiaApi = affiliateGatewayGenericApi('asia');
+// const affiliateGatewayAsiaApi = affiliateGatewayGenericApi('asia');
 const affiliateGatewaySgApi = affiliateGatewayGenericApi('sg');
 
 const affiliatewindowGenericApi = require('./affiliate-window/tasks');
 const affiliatewindowApi = affiliatewindowGenericApi();
 const affiliatewindowDubliApi = affiliatewindowGenericApi('dubli');
 
-const affilinetGenericApi = require('./affilinet/tasks');
-const affilinetAustriaApi = affilinetGenericApi('at');
-const affilinetFranceApi = affilinetGenericApi('fr');
-const affilinetGermanyApi = affilinetGenericApi('de');
-const affilinetNetherlandsApi = affilinetGenericApi('nl');
-const affilinetSpainApi = affilinetGenericApi('es');
-const affilinetSwitzerlandApi = affilinetGenericApi('ch');
-const affilinetUKApi = affilinetGenericApi('uk');
-const affilinetDubliDEApi = affilinetGenericApi('de', 'dubli');
-const affilinetDubliESApi = affilinetGenericApi('es', 'dubli');
-const affilinetDubliUKApi = affilinetGenericApi('uk', 'dubli');
-const affilinetDubliATApi = affilinetGenericApi('at', 'dubli');
-const affilinetDubliCHApi = affilinetGenericApi('ch', 'dubli');
+//const affilinetGenericApi = require('./affilinet/tasks');
+// const affilinetAustriaApi = affilinetGenericApi('at');
+// const affilinetFranceApi = affilinetGenericApi('fr');
+// const affilinetGermanyApi = affilinetGenericApi('de');
+// const affilinetNetherlandsApi = affilinetGenericApi('nl');
+// const affilinetSpainApi = affilinetGenericApi('es');
+// const affilinetSwitzerlandApi = affilinetGenericApi('ch');
+// const affilinetUKApi = affilinetGenericApi('uk');
+//const affilinetDubliDEApi = affilinetGenericApi('de', 'dubli');
+// const affilinetDubliESApi = affilinetGenericApi('es', 'dubli');
+// const affilinetDubliUKApi = affilinetGenericApi('uk', 'dubli');
+// const affilinetDubliATApi = affilinetGenericApi('at', 'dubli');
+// const affilinetDubliCHApi = affilinetGenericApi('ch', 'dubli');
 
 const avantLinkGenericApi = require('./avantlink/tasks');
 const avantLinkCAApi = avantLinkGenericApi('ca');
@@ -126,15 +126,15 @@ const dgmDubliAUApi = impactRadiusGenericApi('dgm', 'au', 'dubli');
 const hasoffersGenericApi = require('./hasoffers/tasks');
 // const arabyadsApi = hasoffersGenericApi('arabyads');
 const vcommissionApi = hasoffersGenericApi('vcommission');
-const shopstylers = hasoffersGenericApi('shopstylers');
+// const shopstylers = hasoffersGenericApi('shopstylers');
 const vcommissionDubliApi = hasoffersGenericApi('vcommission', 'dubli');
 
-const lazadaPhApi = hasoffersGenericApi('lazada-ph');
-const lazadaMyApi = hasoffersGenericApi('lazada-my');
-const lazadaSgApi = hasoffersGenericApi('lazada-sg');
-const lazadaThApi = hasoffersGenericApi('lazada-th');
-const lazadaVnApi = hasoffersGenericApi('lazada-vn');
-const lazadaIdApi = hasoffersGenericApi('lazada-id');
+// const lazadaPhApi = hasoffersGenericApi('lazada-ph');
+// const lazadaMyApi = hasoffersGenericApi('lazada-my');
+// const lazadaSgApi = hasoffersGenericApi('lazada-sg');
+// const lazadaThApi = hasoffersGenericApi('lazada-th');
+// const lazadaVnApi = hasoffersGenericApi('lazada-vn');
+// const lazadaIdApi = hasoffersGenericApi('lazada-id');
 
 const linkPriceGenericApi = require('./linkprice/tasks');
 const linkpriceApi = linkPriceGenericApi('linkprice');
@@ -155,12 +155,12 @@ const linkShareDubliAUApi = linkShareGenericApi('au', 'dubli');
 
 const omgpmGenericApi = require('./omgpm/tasks');
 const omgpmIndiaApi = omgpmGenericApi('india');
-const omgpmUKApi = omgpmGenericApi('uk');
-const omgpmUKCommissionsApi = omgpmGenericApi('uk-c');
+// const omgpmUKApi = omgpmGenericApi('uk');
+// const omgpmUKCommissionsApi = omgpmGenericApi('uk-c');
 const omgpmAsiaApi = omgpmGenericApi('asia');
 const omgpmBrazilApi = omgpmGenericApi('brazil');
 const omgpmBrazilCommissionsApi = omgpmGenericApi('brazil-c');
-const omgpmAustraliaApi = omgpmGenericApi('australia');
+// const omgpmAustraliaApi = omgpmGenericApi('australia');
 const omgpmDubliIndiaApi = omgpmGenericApi('india', 'dubli');
 
 const partnerAdsGenericApi = require('./partner-ads/tasks');
@@ -182,7 +182,7 @@ const publicideasGenericApi = require('./publicideas/tasks');
 const publicideasESApi = publicideasGenericApi('es');
 const publicideasFRApi = publicideasGenericApi('fr');
 const publicideasITApi = publicideasGenericApi('it');
-const publicideasLATAMApi = publicideasGenericApi('latam');
+// const publicideasLATAMApi = publicideasGenericApi('latam');
 const publicideasUKApi = publicideasGenericApi('uk');
 
 const shareASaleGenericApi = require('./share-a-sale/tasks');
@@ -193,15 +193,15 @@ const shareASaleDubliApi = shareASaleGenericApi('dubli');
 //const fanGenericApi = require('./fan/tasks');
 //const fanApi = fanGenericApi('fan');
 
-const jumiaGenericApi = require('./jumia/tasks');
-const jumiaApi = jumiaGenericApi('jumia');
+// const jumiaGenericApi = require('./jumia/tasks');
+// const jumiaApi = jumiaGenericApi('jumia');
 
 const JumiaSheetGenericApi = require('./jumiaSheet/tasks');
 const JumiaSheetApi = JumiaSheetGenericApi('jumiaSheet');
 
 
-const snapdealGenericApi = require('./snapdeal/tasks');
-const snapdealApi = snapdealGenericApi();
+// const snapdealGenericApi = require('./snapdeal/tasks');
+// const snapdealApi = snapdealGenericApi();
 
 const tradetrackerGenericApi = require('./tradetracker/tasks');
 const tradetrackerAEApi = tradetrackerGenericApi('ae');
@@ -266,7 +266,7 @@ function initializeMerchantImporters(tasker) {
   // run each of these every 24 hours
 
   tasker.createGroup('2d +/- 1d', {
-    "Adservice(dk) Merchants": adserviceDenmarkApi.getMerchants,
+    // "Adservice(dk) Merchants": adserviceDenmarkApi.getMerchants,
     "Adservice(se) Merchants": adserviceSweedenkApi.getMerchants,
     "Adservice(fi) Merchants": adserviceFinlandApi.getMerchants,
     "Adservice(no) Merchants": adserviceNorwayApi.getMerchants,
@@ -277,14 +277,14 @@ function initializeMerchantImporters(tasker) {
     "Admitad Merchants": admitadApi.getMerchants,
     "Admitad India Merchants": admitadDubliIndiaApi.getMerchants,
     "Adtraction Merchants": adtractionApi.getMerchants,
-    "Affili.Net (Austria) Merchants": affilinetAustriaApi.getMerchants,
-    "Affili.Net (France) Merchants": affilinetFranceApi.getMerchants,
-    "Affili.Net (Germany) Merchants": affilinetGermanyApi.getMerchants,
-    "Affili.Net (Netherlands) Merchants": affilinetNetherlandsApi.getMerchants,
-    "Affili.Net (Spain) Merchants": affilinetSpainApi.getMerchants,
-    "Affili.Net (Switzerland) Merchants": affilinetSwitzerlandApi.getMerchants,
-    "Affili.Net (UK) Merchants": affilinetUKApi.getMerchants,
-    "Affiliate Gateway (Asia) Merchants": affiliateGatewayAsiaApi.getMerchants,
+    // "Affili.Net (Austria) Merchants": affilinetAustriaApi.getMerchants,
+    // "Affili.Net (France) Merchants": affilinetFranceApi.getMerchants,
+    // "Affili.Net (Germany) Merchants": affilinetGermanyApi.getMerchants,
+    // "Affili.Net (Netherlands) Merchants": affilinetNetherlandsApi.getMerchants,
+    // "Affili.Net (Spain) Merchants": affilinetSpainApi.getMerchants,
+    // "Affili.Net (Switzerland) Merchants": affilinetSwitzerlandApi.getMerchants,
+    // "Affili.Net (UK) Merchants": affilinetUKApi.getMerchants,
+    // "Affiliate Gateway (Asia) Merchants": affiliateGatewayAsiaApi.getMerchants,
 
     "Ali Express Commisions": aliexpressApi.getCommissionDetails,
     //"Affiliate Gateway (Sg) Merchants": affiliateGatewaySgApi.getMerchants, //TODO LM to be implemented
@@ -298,25 +298,25 @@ function initializeMerchantImporters(tasker) {
     "CommissionFactory Merchants": commissionfactoryApi.getMerchants,
     //"Fan Merchants": fanApi.getMerchants,
     "ImpactRadius Merchants": impactRadiusApi.getMerchants,
-    "Jumia Merchants": jumiaApi.getMerchants,
+    // "Jumia Merchants": jumiaApi.getMerchants,
     "Linkprice Merchants": linkpriceApi.getMerchants,
     "LinkShare Merchants": linkShareApi.getMerchants,
     //"Lomadee Merchants": lomadeeApi.getMerchants,
     "OMG (India) Merchants": omgpmIndiaApi.getMerchants,
-    "OMG (UK) Merchants": omgpmUKApi.getMerchants,
+    // "OMG (UK) Merchants": omgpmUKApi.getMerchants,
     "OMG (Asia) Merchants": omgpmAsiaApi.getMerchants,
     "OMG (Brazil) Merchants": omgpmBrazilApi.getMerchants,
-    "OMG (Australia) Merchants": omgpmAustraliaApi.getMerchants,
+    // "OMG (Australia) Merchants": omgpmAustraliaApi.getMerchants,
     "PartnerAds Merchants": partnerAdsApi.getMerchants,
     "PepperJam Merchants": pepperjamApi.getMerchants,
     "PerformanceHorizon Merchants": performanceHorizonApi.getMerchants,
     "PublicIdeas (ES) Merchants": publicideasESApi.getMerchants,
     "PublicIdeas (FR) Merchants": publicideasFRApi.getMerchants,
     "PublicIdeas (IT) Merchants": publicideasITApi.getMerchants,
-    "PublicIdeas (LATAM) Merchants": publicideasLATAMApi.getMerchants,
+    // "PublicIdeas (LATAM) Merchants": publicideasLATAMApi.getMerchants,
     "PublicIdeas (UK) Merchants": publicideasUKApi.getMerchants,
     //"Shoogloo Merchants": shooglooApi.getMerchants,
-    "ShopStylers Merchants": shopstylers.getMerchants,
+    // "ShopStylers Merchants": shopstylers.getMerchants,
     "TradeDoubler (AT) Merchants": tradedoublerAustriaApi.getMerchants,
     "TradeDoubler (BE) Merchants": tradedoublerBelgiumApi.getMerchants,
     "TradeDoubler (DK) Merchants": tradedoublerDenmarkApi.getMerchants,
@@ -384,27 +384,27 @@ function initializeMerchantImporters(tasker) {
 function initializeCommissionsProcessors(tasker) {
   // run each of these every 6 hours
   tasker.createGroup('6h +/- 1h', {
-    "A8 Commissions": a8Api.getCommissionDetails,
+    // "A8 Commissions": a8Api.getCommissionDetails,
     "APD Performance Commissions": apdPerformanceApi.getCommissionDetails,
     "AdCell Commissions": adCellApi.getCommissionDetails,
     "Admitad Commissions": admitadApi.getCommissionDetails,
     "Admitad India Commissions": admitadDubliIndiaApi.getCommissionDetails,
 
-    "Adservice(dk) Commisions": adserviceDenmarkApi.getCommissionDetails,
+    // "Adservice(dk) Commisions": adserviceDenmarkApi.getCommissionDetails,
     "Adservice(se) Commisions": adserviceSweedenkApi.getCommissionDetails,
     "Adservice(fi) Commisions": adserviceFinlandApi.getCommissionDetails,
     "Adservice(no) Commisions": adserviceNorwayApi.getCommissionDetails,
     "Adservice(de) Commisions": adserviceGermanyApi.getCommissionDetails,
 
     "Adtraction Commissions": adtractionApi.getCommissionDetails,
-    "Affili.Net (Austria) Commissions": affilinetAustriaApi.getCommissionDetails,
-    "Affili.Net (France) Commissions": affilinetFranceApi.getCommissionDetails,
-    "Affili.Net (Germany) Commissions": affilinetGermanyApi.getCommissionDetails,
-    "Affili.Net (Netherlands) Commissions": affilinetNetherlandsApi.getCommissionDetails,
-    "Affili.Net (Spain) Commissions": affilinetSpainApi.getCommissionDetails,
-    "Affili.Net (Switzerland) Commissions": affilinetSwitzerlandApi.getCommissionDetails,
-    "Affili.Net (UK) Commissions": affilinetUKApi.getCommissionDetails,
-    "Affiliate Gateway (Asia) Commissions": affiliateGatewayAsiaApi.getCommissionDetails,
+    // "Affili.Net (Austria) Commissions": affilinetAustriaApi.getCommissionDetails,
+    // "Affili.Net (France) Commissions": affilinetFranceApi.getCommissionDetails,
+    // "Affili.Net (Germany) Commissions": affilinetGermanyApi.getCommissionDetails,
+    // "Affili.Net (Netherlands) Commissions": affilinetNetherlandsApi.getCommissionDetails,
+    // "Affili.Net (Spain) Commissions": affilinetSpainApi.getCommissionDetails,
+    // "Affili.Net (Switzerland) Commissions": affilinetSwitzerlandApi.getCommissionDetails,
+    // "Affili.Net (UK) Commissions": affilinetUKApi.getCommissionDetails,
+    // "Affiliate Gateway (Asia) Commissions": affiliateGatewayAsiaApi.getCommissionDetails,
     "Affiliate Gateway (SG) Commissions": affiliateGatewaySgApi.getCommissionDetails,
     "AffiliateWindow Commissions": affiliatewindowApi.getCommissionDetails,
     "Amazon (IN) Commissions": amazonApi.getCommissionDetails, // problems w/ amazon.in
@@ -421,7 +421,7 @@ function initializeCommissionsProcessors(tasker) {
     "Groupon (US) Commissions": grouponUSApi.getCommissionDetails,
     "Groupon (ROW) Commissions": grouponROWApi.getCommissionDetails,
     "ImpactRadius Commissions": impactRadiusApi.getCommissionDetails,
-    "Jumia Commissions": jumiaApi.getCommissionDetails,
+    // "Jumia Commissions": jumiaApi.getCommissionDetails,
     "Jumia Sheet Commission": JumiaSheetApi.getCommissionDetails,
 
     // Stopping lazada until new implementation.
@@ -447,17 +447,17 @@ function initializeCommissionsProcessors(tasker) {
     //"OMG (UK) Commissions": omgpmUKCommissionsApi.getCommissionDetails,
     "OMG (Asia) Commissions": omgpmAsiaApi.getCommissionDetails,
     "OMG (Brazil) Commissions": omgpmBrazilCommissionsApi.getCommissionDetails,
-    "OMG (Australia) Commissions": omgpmAustraliaApi.getCommissionDetails,
+    // "OMG (Australia) Commissions": omgpmAustraliaApi.getCommissionDetails,
     "PartnerAds Commissions": partnerAdsApi.getCommissionDetails,
     "PepperJam Commissions": pepperjamApi.getCommissionDetails,
     "PerformanceHorizon Commissions": performanceHorizonApi.getCommissionDetails,
     "PublicIdeas (ES) Commissions": publicideasESApi.getCommissionDetails,
     "PublicIdeas (FR) Commissions": publicideasFRApi.getCommissionDetails,
     "PublicIdeas (IT) Commissions": publicideasITApi.getCommissionDetails,
-    "PublicIdeas (LATAM) Commissions": publicideasLATAMApi.getCommissionDetails,
+    // "PublicIdeas (LATAM) Commissions": publicideasLATAMApi.getCommissionDetails,
     "PublicIdeas (UK) Commissions": publicideasUKApi.getCommissionDetails,
     //"Shoogloo Commissions": shooglooApi.getCommissionDetails,
-    "ShopStylers Commissions": shopstylers.getCommissionDetails,
+    // "ShopStylers Commissions": shopstylers.getCommissionDetails,
     // "SnapDeal Commissions": snapdealApi.getCommissionDetails, // OM-2252
     "TradeDoubler (AT) Commissions": tradedoublerAustriaApi.getCommissionDetails,
     "TradeDoubler (BE) Commissions": tradedoublerBelgiumApi.getCommissionDetails,
@@ -524,11 +524,11 @@ function initializeCommissionsDubliProcessors(tasker) {
   tasker.createGroup('2d +/- 1d', {
     "AdCell DubLi Commissions": adCellDubliApi.getCommissionDetails,
     "Admitad DubLi Commissions": admitadDubliApi.getCommissionDetails,
-    "Affili.Net DubLi (DE) Commissions": affilinetDubliDEApi.getCommissionDetails,
-    "Affili.Net DubLi (ES) Commissions": affilinetDubliESApi.getCommissionDetails,
-    "Affili.Net DubLi (UK) Commissions": affilinetDubliUKApi.getCommissionDetails,
+    // "Affili.Net DubLi (DE) Commissions": affilinetDubliDEApi.getCommissionDetails,
+    // "Affili.Net DubLi (ES) Commissions": affilinetDubliESApi.getCommissionDetails,
+    // "Affili.Net DubLi (UK) Commissions": affilinetDubliUKApi.getCommissionDetails,
     "Affili.Net DubLi (AT) Commissions": affilinetDubliATApi.getCommissionDetails,
-    "Affili.Net DubLi (CH) Commissions": affilinetDubliCHApi.getCommissionDetails,
+    // "Affili.Net DubLi (CH) Commissions": affilinetDubliCHApi.getCommissionDetails,
     "AffiliateWindow DubLi Commissions": affiliatewindowDubliApi.getCommissionDetails,
     "AvantLink DubLi (CA) Commissions": avantLinkDubliCAApi.getCommissionDetails,
     "AvantLink DubLi (US) Commissions": avantLinkDubliUSApi.getCommissionDetails,
