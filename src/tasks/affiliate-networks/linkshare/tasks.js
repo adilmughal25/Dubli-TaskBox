@@ -208,7 +208,7 @@ const LinkShareGenericApi = function(s_region, s_entity) {
     //var commissions = csvToJson(response);
     */
 
-    let commissions = parseCommissions(yield dataClient.get(url));
+    let commissions = yield getCommissionsFromCSV(yield dataClient.get(url));
     allCommissions = allCommissions.concat(commissions);
     var events = allCommissions.map(prepareCommission).filter(x => !!x);
     return yield sendEvents.sendCommissions(that.eventName, events);
@@ -523,12 +523,23 @@ function parseCommissions(response) {
     commissions = data;
   });
 
-  while(sync) {
-    deasync.sleep(1000);
-    if(commissions.length > 0)
-      sync = false;
-  }
-  return commissions;
+  // while(sync) {
+  //   deasync.sleep(1000);
+  //   if(commissions.length > 0)
+  //     sync = false;
+  // }
+  return getCommissionsFromCSV(response);
+}
+
+function * getCommissionsFromCSV(response) {
+  return new Promise((resolve, reject) => {
+    var csvConverter = new converter({});
+    csvConverter.fromString(response, function(err, data){
+      if(err)
+        reject(err);
+      resolve(data);
+    });
+  });
 }
 
 module.exports = LinkShareGenericApi;
