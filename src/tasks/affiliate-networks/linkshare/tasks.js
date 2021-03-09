@@ -211,7 +211,7 @@ const LinkShareGenericApi = function(s_region, s_entity) {
     let commissions = yield getCommissionsFromCSV(yield dataClient.get(url));
     allCommissions = allCommissions.concat(commissions);
     var events = allCommissions.map(prepareCommission).filter(x => !!x);
-    return sendEvents.sendCommissions(that.eventName, events);
+    return yield sendEvents.sendCommissions(that.eventName, events);
   });
 };
 
