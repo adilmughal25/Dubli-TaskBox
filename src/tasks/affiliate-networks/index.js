@@ -64,7 +64,7 @@ const admitadDubliIndiaApi = admitadGenericApi('', 'in');
 
 const affiliateGatewayGenericApi = require('./affiliate-gateway/tasks');
 // const affiliateGatewayAsiaApi = affiliateGatewayGenericApi('asia');
-const affiliateGatewaySgApi = affiliateGatewayGenericApi('sg');
+// const affiliateGatewaySgApi = affiliateGatewayGenericApi('sg');
 
 const affiliatewindowGenericApi = require('./affiliate-window/tasks');
 const affiliatewindowApi = affiliatewindowGenericApi();
@@ -100,7 +100,7 @@ const commissionfactoryDubliApi = commissionfactoryGenericApi('dubli');
 
 const commissionJunctionGenericApi = require('./commission-junction/tasks');
 const commissionJunctionUSApi = commissionJunctionGenericApi('us');
-const commissionJunctionEUApi = commissionJunctionGenericApi('eu');
+// const commissionJunctionEUApi = commissionJunctionGenericApi('eu');
 const commissionJunctionDubliUSApi = commissionJunctionGenericApi('us', 'dubli');
 const commissionJunctionDubliDEApi = commissionJunctionGenericApi('de', 'dubli');
 const commissionJunctionDubliESApi = commissionJunctionGenericApi('es', 'dubli');
@@ -125,9 +125,9 @@ const dgmDubliAUApi = impactRadiusGenericApi('dgm', 'au', 'dubli');
 
 const hasoffersGenericApi = require('./hasoffers/tasks');
 // const arabyadsApi = hasoffersGenericApi('arabyads');
-const vcommissionApi = hasoffersGenericApi('vcommission');
+// const vcommissionApi = hasoffersGenericApi('vcommission');
 // const shopstylers = hasoffersGenericApi('shopstylers');
-const vcommissionDubliApi = hasoffersGenericApi('vcommission', 'dubli');
+//const vcommissionDubliApi = hasoffersGenericApi('vcommission', 'dubli');
 
 // const lazadaPhApi = hasoffersGenericApi('lazada-ph');
 // const lazadaMyApi = hasoffersGenericApi('lazada-my');
@@ -178,12 +178,12 @@ const performanceHorizonDubliItunesApi = performanceHorizonGenericApi('dubli_itu
 const performanceHorizonDubliBAApi = performanceHorizonGenericApi('dubli_ba');
 const performanceHorizonDubliWWApi = performanceHorizonGenericApi('dubli_ww');
 
-const publicideasGenericApi = require('./publicideas/tasks');
-const publicideasESApi = publicideasGenericApi('es');
-const publicideasFRApi = publicideasGenericApi('fr');
-const publicideasITApi = publicideasGenericApi('it');
+// const publicideasGenericApi = require('./publicideas/tasks');
+// const publicideasESApi = publicideasGenericApi('es');
+// const publicideasFRApi = publicideasGenericApi('fr');
+// const publicideasITApi = publicideasGenericApi('it');
 // const publicideasLATAMApi = publicideasGenericApi('latam');
-const publicideasUKApi = publicideasGenericApi('uk');
+// const publicideasUKApi = publicideasGenericApi('uk');
 
 const shareASaleGenericApi = require('./share-a-sale/tasks');
 const shareASaleApi = shareASaleGenericApi();
@@ -232,15 +232,15 @@ const tradetrackerDubliRUApi = tradetrackerGenericApi('ru', 'dubli');
 const webgainsGenericApi = require('./webgains/tasks');
 const webgainsApi = webgainsGenericApi();
 
-const zanoxGenericApi = require('./zanox/tasks');
-const zanoxApi = zanoxGenericApi();
-const zanoxDubliDEApi = zanoxGenericApi('de', 'dubli');
-const zanoxDubliESApi = zanoxGenericApi('es', 'dubli');
-const zanoxDubliAUApi = zanoxGenericApi('au', 'dubli');
-const zanoxDubliDKApi = zanoxGenericApi('dk', 'dubli');
-const zanoxDubliSEApi = zanoxGenericApi('se', 'dubli');
-const zanoxDubliNOApi = zanoxGenericApi('no', 'dubli');
-const zanoxDubliGlobalApi = zanoxGenericApi('global', 'dubli');
+// const zanoxGenericApi = require('./zanox/tasks');
+// const zanoxApi = zanoxGenericApi();
+// const zanoxDubliDEApi = zanoxGenericApi('de', 'dubli');
+// const zanoxDubliESApi = zanoxGenericApi('es', 'dubli');
+// const zanoxDubliAUApi = zanoxGenericApi('au', 'dubli');
+// const zanoxDubliDKApi = zanoxGenericApi('dk', 'dubli');
+// const zanoxDubliSEApi = zanoxGenericApi('se', 'dubli');
+// const zanoxDubliNOApi = zanoxGenericApi('no', 'dubli');
+// const zanoxDubliGlobalApi = zanoxGenericApi('global', 'dubli');
 //const shooglooGenericApi = require('./shoogloo/tasks');
 //const shooglooApi = shooglooGenericApi('shoogloo');
 const addReferralPropertiesApi = require('./user-referrals/tasks');
@@ -293,7 +293,7 @@ function initializeMerchantImporters(tasker) {
     "AvantLink (CA) Merchants": avantLinkCAApi.getMerchants,
     "AvantLink (US) Merchants": avantLinkUSApi.getMerchants,
     "Belboon Merchants": belboonApi.getMerchants,
-    "CommissionJunction (EU) Merchants": commissionJunctionEUApi.getMerchants,
+    // "CommissionJunction (EU) Merchants": commissionJunctionEUApi.getMerchants,
     "CommissionJunction (US) Merchants": commissionJunctionUSApi.getMerchants,
     "CommissionFactory Merchants": commissionfactoryApi.getMerchants,
     //"Fan Merchants": fanApi.getMerchants,
@@ -311,10 +311,10 @@ function initializeMerchantImporters(tasker) {
     "PepperJam Merchants": pepperjamApi.getMerchants,
     "PerformanceHorizon Merchants": performanceHorizonApi.getMerchants,
     "PublicIdeas (ES) Merchants": publicideasESApi.getMerchants,
-    "PublicIdeas (FR) Merchants": publicideasFRApi.getMerchants,
-    "PublicIdeas (IT) Merchants": publicideasITApi.getMerchants,
+    // "PublicIdeas (FR) Merchants": publicideasFRApi.getMerchants,
+    // "PublicIdeas (IT) Merchants": publicideasITApi.getMerchants,
     // "PublicIdeas (LATAM) Merchants": publicideasLATAMApi.getMerchants,
-    "PublicIdeas (UK) Merchants": publicideasUKApi.getMerchants,
+    // "PublicIdeas (UK) Merchants": publicideasUKApi.getMerchants,
     //"Shoogloo Merchants": shooglooApi.getMerchants,
     // "ShopStylers Merchants": shopstylers.getMerchants,
     "TradeDoubler (AT) Merchants": tradedoublerAustriaApi.getMerchants,
@@ -364,7 +364,7 @@ function initializeMerchantImporters(tasker) {
     "TradeTracker (RU) Merchants": tradetrackerRUApi.getMerchants,
     "TradeTracker (SE) Merchants": tradetrackerSEApi.getMerchants,
     "TradeTracker (BR) Merchants": tradetrackerBRApi.getMerchants,
-    "VCommission Merchants": vcommissionApi.getMerchants,
+    // "VCommission Merchants": vcommissionApi.getMerchants,
     "Webgains Merchants": webgainsApi.getMerchants,
     //"Zanox Merchants": zanoxApi.getMerchants,
     "FlyDubai Merchants": tradedoublerFlyDubaiApi.getMerchants,
@@ -405,14 +405,14 @@ function initializeCommissionsProcessors(tasker) {
     // "Affili.Net (Switzerland) Commissions": affilinetSwitzerlandApi.getCommissionDetails,
     // "Affili.Net (UK) Commissions": affilinetUKApi.getCommissionDetails,
     // "Affiliate Gateway (Asia) Commissions": affiliateGatewayAsiaApi.getCommissionDetails,
-    "Affiliate Gateway (SG) Commissions": affiliateGatewaySgApi.getCommissionDetails,
+    // "Affiliate Gateway (SG) Commissions": affiliateGatewaySgApi.getCommissionDetails,
     "AffiliateWindow Commissions": affiliatewindowApi.getCommissionDetails,
     "Amazon (IN) Commissions": amazonApi.getCommissionDetails, // problems w/ amazon.in
     // "ArabyAds Commissions" : arabyadsApi.getCommissionDetails,
     "AvantLink (CA) Commissions": avantLinkCAApi.getCommissionDetails,
     "AvantLink (US) Commissions": avantLinkUSApi.getCommissionDetails,
     "Belboon Commissions": belboonApi.getCommissionDetails,
-    "CommissionJunction (EU) Commissions": commissionJunctionEUApi.getCommissionDetails,
+    // "CommissionJunction (EU) Commissions": commissionJunctionEUApi.getCommissionDetails,
     "CommissionJunction (US) Commissions": commissionJunctionUSApi.getCommissionDetails,
     // "ClixGalore Commissions": clixGaloreApi.getCommissionDetails,
     "CommissionFactory Commissions": commissionfactoryApi.getCommissionDetails,
@@ -451,11 +451,11 @@ function initializeCommissionsProcessors(tasker) {
     "PartnerAds Commissions": partnerAdsApi.getCommissionDetails,
     "PepperJam Commissions": pepperjamApi.getCommissionDetails,
     "PerformanceHorizon Commissions": performanceHorizonApi.getCommissionDetails,
-    "PublicIdeas (ES) Commissions": publicideasESApi.getCommissionDetails,
-    "PublicIdeas (FR) Commissions": publicideasFRApi.getCommissionDetails,
-    "PublicIdeas (IT) Commissions": publicideasITApi.getCommissionDetails,
+    // "PublicIdeas (ES) Commissions": publicideasESApi.getCommissionDetails,
+    // "PublicIdeas (FR) Commissions": publicideasFRApi.getCommissionDetails,
+    // "PublicIdeas (IT) Commissions": publicideasITApi.getCommissionDetails,
     // "PublicIdeas (LATAM) Commissions": publicideasLATAMApi.getCommissionDetails,
-    "PublicIdeas (UK) Commissions": publicideasUKApi.getCommissionDetails,
+    // "PublicIdeas (UK) Commissions": publicideasUKApi.getCommissionDetails,
     //"Shoogloo Commissions": shooglooApi.getCommissionDetails,
     // "ShopStylers Commissions": shopstylers.getCommissionDetails,
     // "SnapDeal Commissions": snapdealApi.getCommissionDetails, // OM-2252
@@ -506,9 +506,9 @@ function initializeCommissionsProcessors(tasker) {
     "TradeTracker (RU) Commissions": tradetrackerRUApi.getCommissionDetails,
     "TradeTracker (SE) Commissions": tradetrackerSEApi.getCommissionDetails,
     "TradeTracker (BR) Commissions": tradetrackerBRApi.getCommissionDetails,
-    "VCommission Commissions": vcommissionApi.getCommissionDetails,
+    // "VCommission Commissions": vcommissionApi.getCommissionDetails,
     "Webgains Commissions": webgainsApi.getCommissionDetails,
-    "Zanox Commissions": zanoxApi.getCommissionDetails,
+    // "Zanox Commissions": zanoxApi.getCommissionDetails,
     "Priceline Commissions": pricelineApi.getCommissionDetails,
     "FlyDubai Commissions": tradedoublerFlyDubaiApi.getCommissionDetails
   });
@@ -560,14 +560,14 @@ function initializeCommissionsDubliProcessors(tasker) {
     "TradeTracker DubLi (AT) Commissions": tradetrackerDubliATApi.getCommissionDetails,
     "TradeTracker DubLi (RU) Commissions": tradetrackerDubliRUApi.getCommissionDetails,
     "TradeTracker DubLi (BR) Commissions": tradetrackerDubliBRApi.getCommissionDetails,
-    "VCommission DubLi Commissions": vcommissionDubliApi.getCommissionDetails,
-    "Zanox DubLi (DE) Commissions": zanoxDubliDEApi.getCommissionDetails,
-    "Zanox DubLi (ES) Commissions": zanoxDubliESApi.getCommissionDetails,
-    "Zanox DubLi (AU) Commissions": zanoxDubliAUApi.getCommissionDetails,
-    "Zanox DubLi (DK) Commissions": zanoxDubliDKApi.getCommissionDetails,
-    "Zanox DubLi (SE) Commissions": zanoxDubliSEApi.getCommissionDetails,
-    "Zanox DubLi (NO) Commissions": zanoxDubliNOApi.getCommissionDetails,
-    "Zanox DubLi (Global) Commissions": zanoxDubliGlobalApi.getCommissionDetails
+    // "VCommission DubLi Commissions": vcommissionDubliApi.getCommissionDetails,
+    // "Zanox DubLi (DE) Commissions": zanoxDubliDEApi.getCommissionDetails,
+    // "Zanox DubLi (ES) Commissions": zanoxDubliESApi.getCommissionDetails,
+    // "Zanox DubLi (AU) Commissions": zanoxDubliAUApi.getCommissionDetails,
+    // "Zanox DubLi (DK) Commissions": zanoxDubliDKApi.getCommissionDetails,
+    // "Zanox DubLi (SE) Commissions": zanoxDubliSEApi.getCommissionDetails,
+    // "Zanox DubLi (NO) Commissions": zanoxDubliNOApi.getCommissionDetails,
+    // "Zanox DubLi (Global) Commissions": zanoxDubliGlobalApi.getCommissionDetails
   });
 
   tasker.createTask('ShareASale Dubli Commissions', '7d +/- 1d', shareASaleDubliApi.getCommissionDetails);
