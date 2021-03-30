@@ -310,7 +310,7 @@ function initializeMerchantImporters(tasker) {
     "PartnerAds Merchants": partnerAdsApi.getMerchants,
     "PepperJam Merchants": pepperjamApi.getMerchants,
     "PerformanceHorizon Merchants": performanceHorizonApi.getMerchants,
-    "PublicIdeas (ES) Merchants": publicideasESApi.getMerchants,
+    // "PublicIdeas (ES) Merchants": publicideasESApi.getMerchants,
     // "PublicIdeas (FR) Merchants": publicideasFRApi.getMerchants,
     // "PublicIdeas (IT) Merchants": publicideasITApi.getMerchants,
     // "PublicIdeas (LATAM) Merchants": publicideasLATAMApi.getMerchants,
