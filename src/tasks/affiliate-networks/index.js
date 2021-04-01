@@ -6,7 +6,7 @@ const impactRadiusProductFtp = require("./impact-radius/ftp-tasks");
 //const lomadeeApi = require('./lomadee/tasks');
 
 const adserviceGenericApi = require('./adservice/tasks');
-// const adserviceDenmarkApi = adserviceGenericApi('dk');
+const adserviceDenmarkApi = adserviceGenericApi('dk');
 const adserviceSweedenkApi = adserviceGenericApi('se');
 const adserviceFinlandApi = adserviceGenericApi('fi');
 const adserviceNorwayApi = adserviceGenericApi('no');
@@ -266,7 +266,7 @@ function initializeMerchantImporters(tasker) {
   // run each of these every 24 hours
 
   tasker.createGroup('2d +/- 1d', {
-    // "Adservice(dk) Merchants": adserviceDenmarkApi.getMerchants,
+    "Adservice(dk) Merchants": adserviceDenmarkApi.getMerchants,
     "Adservice(se) Merchants": adserviceSweedenkApi.getMerchants,
     "Adservice(fi) Merchants": adserviceFinlandApi.getMerchants,
     "Adservice(no) Merchants": adserviceNorwayApi.getMerchants,
@@ -390,7 +390,7 @@ function initializeCommissionsProcessors(tasker) {
     "Admitad Commissions": admitadApi.getCommissionDetails,
     "Admitad India Commissions": admitadDubliIndiaApi.getCommissionDetails,
 
-    // "Adservice(dk) Commisions": adserviceDenmarkApi.getCommissionDetails,
+    "Adservice(dk) Commisions": adserviceDenmarkApi.getCommissionDetails,
     "Adservice(se) Commisions": adserviceSweedenkApi.getCommissionDetails,
     "Adservice(fi) Commisions": adserviceFinlandApi.getCommissionDetails,
     "Adservice(no) Commisions": adserviceNorwayApi.getCommissionDetails,
