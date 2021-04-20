@@ -58,9 +58,35 @@ const CommissionJunctionGenericApi = function(s_region, s_entity) {
       links: clientL.getLinks()
     };
 
+    const subMerchantResults = yield that.getSubMerchantDetails(results.links);
+    results.merchants = results.merchants.concat(subMerchantResults.merchants);
+    results.links = results.links.concat(subMerchantResults.links);
+
     const merchants = merge(results).map(extractTrackingLinks.bind(null, that.region, apiConfig));
 
     return yield sendEvents.sendMerchants(that.eventName, merchants);
+  });
+
+  this.getSubMerchantDetails = co.wrap(function* (importedLinks) {
+    let merchants = [];
+    let allLinks = [];
+    let subMerchants = yield utilsDataClient.get('/getImportDealsByAffiliate/' + AFFILIATE_NAME + '-' + that.region, true, this);
+
+    for(let i=0; i<subMerchants.body.length; i++) {
+      let subMerchant = subMerchants.body[i];
+      let merchant = yield utilsDataClient.get('/getMerchantByAffiliateID/' + subMerchant.to_affiliate_id + '/' + subMerchant.affiliate_name);
+      if(merchant && merchant.body)
+        merchants.push(prepareMerchant(merchant.body));
+
+      importedLinks.forEach(link => {
+        if(link.description.includes(subMerchant.deal_name)) {
+          link['advertiser-id'] = subMerchant.to_affiliate_id;
+          allLinks.push(link);
+        }
+      });
+    }
+
+    return {merchants: merchants, links: allLinks};
   });
 
   this.getCommissionDetails = co.wrap(function* () {
@@ -114,6 +140,20 @@ const CommissionJunctionGenericApi = function(s_region, s_entity) {
     return allCommissions;
   });
 };
+
+function prepareMerchant(merchant) {
+  if(!merchant) return;
+
+  return {
+    "advertiser-id" : merchant.affiliate_id,
+    "account-status": "Active",
+    "advertiser-name": merchant.name,
+    "program-url": merchant.display_url,
+    "primary-category": {},
+    "actions": {"action": []},
+    "main_tracking_url": merchant.affiliate_tracking_url
+  }
+}
 
 const endsWithUrl = /url$/i;
 const startsWithHttp = /^http/;
