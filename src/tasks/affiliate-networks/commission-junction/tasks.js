@@ -79,7 +79,8 @@ const CommissionJunctionGenericApi = function(s_region, s_entity) {
         merchants.push(prepareMerchant(merchant.body));
 
       importedLinks.forEach(link => {
-        if(link.description.contains(subMerchant.deal_name) && link['advertiser-id'] == subMerchant.from_affiliate_id) {
+        if((link.description.contains(subMerchant.deal_name) || link['link-name'].contains(subMerchant.deal_name))
+          && link['advertiser-id'] == subMerchant.from_affiliate_id) {
           link['advertiser-id'] = subMerchant.to_affiliate_id;
           allLinks.push(link);
         }
