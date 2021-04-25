@@ -108,6 +108,9 @@ const commissionJunctionDubliGBApi = commissionJunctionGenericApi('gb', 'dubli')
 const commissionJunctionDubliDKApi = commissionJunctionGenericApi('dk', 'dubli');
 const commissionJunctionDubliITApi = commissionJunctionGenericApi('it', 'dubli');
 
+const CJImportDealsAPI = require('./cj-import-deals/tasks');
+const cjImportDeals = CJImportDealsAPI();
+
 const flipkartGenericApi = require('./flipkart/tasks');
 const flipkartApi = flipkartGenericApi();
 const flipkartDubliApi = flipkartGenericApi('dubli');
@@ -295,6 +298,7 @@ function initializeMerchantImporters(tasker) {
     "Belboon Merchants": belboonApi.getMerchants,
     // "CommissionJunction (EU) Merchants": commissionJunctionEUApi.getMerchants,
     "CommissionJunction (US) Merchants": commissionJunctionUSApi.getMerchants,
+    "CJ Import Deals": cjImportDeals.getMerchants,
     "CommissionFactory Merchants": commissionfactoryApi.getMerchants,
     //"Fan Merchants": fanApi.getMerchants,
     "ImpactRadius Merchants": impactRadiusApi.getMerchants,
