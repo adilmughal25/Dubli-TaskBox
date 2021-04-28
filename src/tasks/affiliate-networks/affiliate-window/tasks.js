@@ -63,7 +63,7 @@ const AffiliateWindowGenericApi = function(s_entity) {
 
     // Pulling the coupons for each merchant
     for (let i = 0; i < transformedMerchants.length; i++) {
-      merchants.push(yield that.getCoupons(transformedMerchants[i].merchant));
+      merchants.push(yield that.getCoupons(transformedMerchants[i].merchant, 3));
       // Added delay because AWIN API has a limit of 20 calls per minute
       yield delay(3500);
     }
@@ -73,8 +73,21 @@ const AffiliateWindowGenericApi = function(s_entity) {
   });
 
 
-  this.getCoupons = singleRun(function* (merchant) {
-    let commissions = yield tasks.client.getCommissions({ advertiserId : merchant.iId })
+  this.getCoupons = singleRun(function* (merchant, retries) {
+    let commissions = {};
+    let retried = 0;
+    // Poormen's auto retrying mechanism
+    while(retried <= retries) {
+      try {
+        commissions = yield tasks.client.getCommissions({ advertiserId : merchant.iId });
+        break;
+      } catch(err) {
+        retried++;
+        debug(JSON.stringify(err.error.description));
+        debug('--------Retrying---------')
+      }
+    }
+
     if (commissions.commissionGroups) {
       merchant.commissions = commissions.commissionGroups.map(commission => {
         return commissionResultMapper(commission);
