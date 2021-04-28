@@ -84,7 +84,7 @@
   },
   "devDependencies": {
     "chai": "^2.2.0",
-    "deploy-scripts": "git+ssh://git@github.com/dubli/aws-codedeploy-scripts.git#taskbox",
+    "deploy-scripts": "git+ssh://git@github.com/dubli/aws-codedeploy-scripts.git#admin",
     "istanbul-harmony": "*",
     "mocha": "^2.2.4",
     "nock": "^2.0.1",
