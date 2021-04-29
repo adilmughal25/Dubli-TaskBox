@@ -38,7 +38,7 @@ function AWClient(s_entity) {
     client.url = getUrl;
     // https://api.awin.com/publishers/45628/programmes?relationship=joined
     const apiUrl = client.url('merchants', cfg);
-    debug('GET' + apiUrl);
+    debug('GET ' + apiUrl);
 
 
     return client.get(apiUrl)
@@ -49,12 +49,12 @@ function AWClient(s_entity) {
   client.getCommissions = function(advertiserId) {
     client.url = getUrl;
     const apiUrl = client.url('commissions', cfg, advertiserId);
-    debug('GET' + apiUrl);
+    debug('GET ' + apiUrl);
 
 
     return client.get(apiUrl)
         .then(resp => resp.body)
-        .catch(err => console.log(err));
+        // .catch(err => console.log(err));
   };
 
   client.getDeals = function*() {
@@ -90,7 +90,7 @@ function AWClient(s_entity) {
   client.getTransactions = function(transactionsData) {
     client.url = getUrl;
     const apiUrl = client.url('transactions', cfg, transactionsData);
-    debug('GET' + apiUrl);
+    debug('GET ' + apiUrl);
 
     return client.get(apiUrl)
       .then(resp => resp.body && resp.body ? resp.body : [])
