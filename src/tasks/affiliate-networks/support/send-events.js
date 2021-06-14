@@ -9,6 +9,7 @@ const o_configs = require('../../../../configs');
 const denodeify = require('denodeify');
 const gzip = denodeify(require('zlib').gzip);
 const _check = utils.checkApiResponse; // not used
+const _ = require('lodash');
 
 const createEnvelope = utils.createEnvelope; // not used
 const dataService = utils.getDataClient(o_configs.data_api.internalUrl, o_configs.data_api.auth); // not used
@@ -127,6 +128,9 @@ function sendMerchants(s_myName, merchants) {
 }
 
 function sendCommissions(s_myName, commissions) {
+  commissions = _.filter(commissions, function (commission) {
+    return commission.transaction_id !== "" && commission.order_id !== ""
+  });
   var s_streamName = 'transaction';
   var s_streamType = 'transaction:update';
   var s_taskName = 'tasks:' + s_myName + ':commission-processor';
