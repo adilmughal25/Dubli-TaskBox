@@ -226,6 +226,7 @@ const tradetrackerPLApi = tradetrackerGenericApi('pl');
 const tradetrackerRUApi = tradetrackerGenericApi('ru');
 const tradetrackerSEApi = tradetrackerGenericApi('se');
 const tradetrackerBRApi = tradetrackerGenericApi('br');
+const tradetrackerINApi = tradetrackerGenericApi('in');
 const tradetrackerDubliCHApi = tradetrackerGenericApi('ch', 'dubli');
 const tradetrackerDubliDEApi = tradetrackerGenericApi('de', 'dubli');
 const tradetrackerDubliDKApi = tradetrackerGenericApi('dk', 'dubli');
@@ -368,6 +369,7 @@ function initializeMerchantImporters(tasker) {
     "TradeTracker (RU) Merchants": tradetrackerRUApi.getMerchants,
     "TradeTracker (SE) Merchants": tradetrackerSEApi.getMerchants,
     "TradeTracker (BR) Merchants": tradetrackerBRApi.getMerchants,
+    "TradeTracker (IN) Merchants": tradetrackerINApi.getMerchants,
     // "VCommission Merchants": vcommissionApi.getMerchants,
     "Webgains Merchants": webgainsApi.getMerchants,
     //"Zanox Merchants": zanoxApi.getMerchants,
@@ -510,6 +512,7 @@ function initializeCommissionsProcessors(tasker) {
     "TradeTracker (RU) Commissions": tradetrackerRUApi.getCommissionDetails,
     "TradeTracker (SE) Commissions": tradetrackerSEApi.getCommissionDetails,
     "TradeTracker (BR) Commissions": tradetrackerBRApi.getCommissionDetails,
+    "TradeTracker (IN) Commissions": tradetrackerINApi.getCommissionDetails,
     // "VCommission Commissions": vcommissionApi.getCommissionDetails,
     "Webgains Commissions": webgainsApi.getCommissionDetails,
     // "Zanox Commissions": zanoxApi.getCommissionDetails,

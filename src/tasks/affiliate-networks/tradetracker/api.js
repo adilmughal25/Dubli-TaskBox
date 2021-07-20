@@ -124,6 +124,12 @@ const API_CREDENTIALS   = {
       customerId: 120335,
       passphrase: '084a479b26add21009380d3cbd93dcfd297f2ffe',
       locale: 'pt_BR'
+    },
+    in: {
+      siteId: 295380,
+      customerId: 120335,
+      passphrase: '5d996654f55611396593443ae1bc982163c4f3a3',
+      locale: 'pt_IN'
     }
   },
   dubli: {
