@@ -27,7 +27,8 @@ const TRANSACTION_STATUS_MAP = {
   2: 'initiated',
   3: 'initiated',
   4: 'initiated',
-  5: 'cancelled'
+  5: 'cancelled',
+  6: 'paid',
 }
 
 const adtractionGenericApi = function (s_entity) {
@@ -187,7 +188,7 @@ function prepareCommission(o_obj) {
     currency: o_obj.currency.toLowerCase(),
     purchase_amount: o_obj.orderValue,
     commission_amount: o_obj.commission,
-    state: TRANSACTION_STATUS_MAP[o_obj.transactionStatus],
+    state: o_obj.paymentStatus === 4 ? TRANSACTION_STATUS_MAP[6] : TRANSACTION_STATUS_MAP[o_obj.transactionStatus],
     effective_date: new Date(o_obj.transactionDate)
   };
 
