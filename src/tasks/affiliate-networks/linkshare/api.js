@@ -7,6 +7,8 @@ const request = require('request-promise');
 const debug = require('debug')('linkshare:api-client');
 const limiter = require('ominto-utils').promiseRateLimiter;
 
+// request.debug = true;
+
 // API auth - not related to individual LinkShare accounts
 const LS_PREAUTH = {
   Authorization: "Basic YkxnOXFicVRzZWdDQ0VPTE5NN2dieHV0eWFvYTpKRWZTcEVPMldyZWhnRlB0MHJCMXd2MHU1REVh"
