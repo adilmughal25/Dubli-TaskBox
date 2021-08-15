@@ -153,6 +153,63 @@ const LinkShareGenericApi = function(s_region, s_entity) {
     yield sendEvents.sendCommissions(that.eventName, events);
   });
 
+  this.getPayments = co.wrap(function* () {
+    const startDate = moment().subtract(90, 'days').format('YYYYMMDD');
+    const endDate = moment().format('YYYYMMDD');
+    const paidStatuses = new Set();
+    const delay = function(time) {
+      return function(f) {
+        setTimeout(f, time)
+      }
+    }
+
+    const client = yield that.client.getFreshClient();
+    const paymentHistoryurl = '/advancedreports/1.0?' + querystring.stringify({
+      bdate: startDate,
+      edate: endDate,
+      token: '682859cdb1ae6f9eed541ab8e665a36828a376b121f1b5128cd6c2a20d133283',
+      reportid: 1,
+      nid: networksList[s_region] ? networksList[s_region] : networksList['us']
+    });
+
+
+    const paymentHistoryResponse = yield client.get(paymentHistoryurl).then(_check('payment history not found'));
+    const paymentHistory = yield getCommissionsFromCSV(paymentHistoryResponse.body);
+
+    for (let i = 0; i < paymentHistory.length; i++) {
+      yield delay(15000);
+
+      const advertiserPaymentHistoryurl = '/advancedreports/1.0?' + querystring.stringify({
+        bdate: startDate,
+        edate: endDate,
+        token: '682859cdb1ae6f9eed541ab8e665a36828a376b121f1b5128cd6c2a20d133283',
+        reportid: 2,
+        payid: paymentHistory[i]['Payment ID'],
+      });
+
+      const advertiserPaymentHistoryResponse = yield client.get(advertiserPaymentHistoryurl).then(_check('Advertiser payment history not found'));
+      let advertiserPaymentHistory = yield getCommissionsFromCSV(advertiserPaymentHistoryResponse.body);
+
+      for (let j = 0; j < advertiserPaymentHistory.length; j++) {
+        yield delay(15000);
+        const paymentDetailsurl = '/advancedreports/1.0?' + querystring.stringify({
+          token: '682859cdb1ae6f9eed541ab8e665a36828a376b121f1b5128cd6c2a20d133283',
+          reportid: 3,
+          invoiceid: advertiserPaymentHistory[j]['Invoice Number'],
+        });
+
+        const paymentDetailsResponse = yield client.get(paymentDetailsurl).then(_check('Advertiser payment history not found'));
+        let paymentDetails = yield getCommissionsFromCSV(paymentDetailsResponse.body);
+        for (let k = 0; k < paymentDetails.length; k++) {
+          console.log('Paid ' + paymentDetails[k]['Order ID']);
+          paidStatuses.add(paymentDetails[k]['Order ID']);
+        }
+      }
+    }
+
+    return paidStatuses;
+  });
+
   // https://ran-reporting.rakutenmarketing.com/en/reports/signature-orders-report/filters?
   //start_date=2016-11-01&end_date=2016-11-15&include_summary=Y&network=1&tz=GMT&date_type=transaction
   //&token=ZW5jcnlwdGVkYToyOntzOjU6IlRva2VuIjtzOjY0OiI2ODI4NTljZGIxYWU2ZjllZWQ1NDFhYjhlNjY1YTM2ODI4YTM3NmIxMjFmMWI1MTI4Y2Q2YzJhMjBkMTMzMjgzIjtzOjg6IlVzZXJUeXBlIjtzOjk6IlB1Ymxpc2hlciI7fQ%3D%3D
@@ -171,7 +228,8 @@ const LinkShareGenericApi = function(s_region, s_entity) {
       yield utilsDataClient.patch('/inactivateTask/linkshare-' + (s_region || 'us'), true, this);
     }
 
-    var dataClient = request.defaults({});
+    let dataClient = request.defaults({});
+    const payments = yield that.getPayments();
 
     console.log(networksList[s_region] ? networksList[s_region] : networksList['us']);
     const url = reportingURL + querystring.stringify({
@@ -210,7 +268,7 @@ const LinkShareGenericApi = function(s_region, s_entity) {
 
     let commissions = yield getCommissionsFromCSV(yield dataClient.get(url));
     allCommissions = allCommissions.concat(commissions);
-    var events = allCommissions.map(prepareCommission).filter(x => !!x);
+    var events = allCommissions.map((val) => prepareCommission(val, payments)).filter(x => !!x);
     return yield sendEvents.sendCommissions(that.eventName, events);
   });
 };
@@ -287,15 +345,17 @@ function _prepareCommission(o_obj) {
   }
 }
 
-function prepareCommission(o_obj) {
-
+function prepareCommission(o_obj, payments) {
   const commission = {};
 
   // converting the string
   o_obj = JSON.parse(JSON.stringify(o_obj).replace('Member ID (U1)','Sub_ID'));
-  var merchant_name = _.get(o_obj, 'Advertiser Name') ? _.get(o_obj, 'Advertiser Name').replace('\\','') : '';
+  let merchant_name = _.get(o_obj, 'Advertiser Name') ? _.get(o_obj, 'Advertiser Name').replace('\\','') : '';
 
-  var currency = _.get(o_obj, 'Currency').toLowerCase();
+  const currency = _.get(o_obj, 'Currency').toLowerCase();
+  const orderId = _.get(o_obj, 'Order ID');
+  const commisionState = payments.has(orderId) ? 'paid' : 'confirmed'
+
 
   // remove special chars [','] from amount
   // TODO: for eur currency - check the format('.' instead of ',' for digit separation),
@@ -340,7 +400,7 @@ function prepareCommission(o_obj) {
     else
       commission.state = 'confirmed';
     */
-    commission.state = 'confirmed';
+    commission.state = commisionState;
 
     return commission;
   }
