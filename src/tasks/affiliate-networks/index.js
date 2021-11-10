@@ -452,7 +452,7 @@ function initializeCommissionsProcessors(tasker) {
     "OMG (India) Commissions": omgpmIndiaApi.getCommissionDetails,
     //"OMG (UK) Commissions": omgpmUKCommissionsApi.getCommissionDetails,
     "OMG (Asia) Commissions": omgpmAsiaApi.getCommissionDetails,
-    "OMG (Brazil) Commissions": omgpmBrazilCommissionsApi.getCommissionDetails,
+    // "OMG (Brazil) Commissions": omgpmBrazilCommissionsApi.getCommissionDetails,
     // "OMG (Australia) Commissions": omgpmAustraliaApi.getCommissionDetails,
     "PartnerAds Commissions": partnerAdsApi.getCommissionDetails,
     "PepperJam Commissions": pepperjamApi.getCommissionDetails,
