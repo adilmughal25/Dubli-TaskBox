@@ -84,6 +84,7 @@ const CommissionJunctionGenericApi = function(s_region, s_entity) {
       all = all.concat(results);
     }
     allCommissions = allCommissions.concat(all);
+    allCommissions = allCommissions.filter(commission => commission['website-id'] !== '100430624');
     const prep = prepareCommission.bind(null, currency);
     const exists = x => !!x;
     const events = allCommissions.map(prep).filter(exists);
