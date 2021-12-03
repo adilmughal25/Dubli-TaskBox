@@ -87,11 +87,18 @@ function AWClient(s_entity) {
         });
   }
 
-  client.getTransactions = function(transactionsData) {
+  const delay = function (time) {
+    return function (f) {
+      setTimeout(f, time)
+    }
+  };
+
+  client.getTransactions = function*(transactionsData) {
     client.url = getUrl;
     const apiUrl = client.url('transactions', cfg, transactionsData);
     debug('GET ' + apiUrl);
 
+    yield delay(10000);
     return client.get(apiUrl)
       .then(resp => resp.body && resp.body ? resp.body : [])
   };

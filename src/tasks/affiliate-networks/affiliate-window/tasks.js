@@ -216,7 +216,7 @@ function prepareCommission(transaction) {
       merchant_id: transaction.advertiserId,
       transaction_id: transaction.id,
       order_id: transaction.id,
-      outclick_id: transaction.clickRefs.clickRef,
+      outclick_id: (transaction.clickRefs && transaction.clickRefs.clickRef) ? transaction.clickRefs.clickRef : '',
       currency: transaction.commissionAmount.currency,
       purchase_amount: transaction.saleAmount.amount,
       commission_amount: transaction.commissionAmount.amount,
