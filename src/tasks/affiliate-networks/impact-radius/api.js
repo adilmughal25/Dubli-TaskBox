@@ -121,8 +121,30 @@ function impactRadiusClient(s_whitelabel, s_entity, s_region) {
   client.getMerchants   = ()    => paged(url('Campaigns'), 'Campaigns');
   client.getCampaignAds = ()    => paged(url('Ads', {type:'TEXT_LINK,COUPON'}), 'Ads');
   client.getPromoAds    = ()    => paged(url('PromoAds'), 'PromotionalAds');
-  client.getCommissions = (s,e) => paged(url('Actions',{StartDate:date(s),EndDate:date(e)}), 'Actions');
-
+  client.getCommissions = (s,e) => paged(url('Reports/mp_action_listing_sku',{
+    START_DATE:date(s),
+    END_DATE:date(e),
+    SUPERSTATUS_MS: ['APPROVED', 'NA', 'PENDING'],
+    PUB_CAMPAIGN_MS: 0,
+    MP_CATEGORY_LIST2: 0,
+    PAYSTUB_ID: 0,
+    MODIFIED_Y_N: 0,
+    PUB_ACTION_TRACKER: 0,
+    MP_ACTION_TYPE: 0,
+    ADV_PROMOCODE: 0,
+    SUBID1: 0,
+    SUBID2: 0,
+    SUBID3: 0,
+    REFERRAL_TYPE: 0,
+    ACTION_ID: 0,
+    ADV_NOTE: 0,
+    SHOW_BRAND_ID: 1,
+    timeRange: 'CUSTOM',
+    compareEnabled: false,
+    SHOW_CURRENCY_CONV: 1,
+    SHAREDID: '',
+    // SHAREDID:'5d23520019df11ecaef105149aaeaf12a'
+  }), 'Records');
   _clientCache[_tag] = client;
 
   return client;
