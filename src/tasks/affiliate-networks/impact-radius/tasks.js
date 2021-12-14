@@ -118,32 +118,34 @@ function ImpactRadiusGenericApi(s_whitelabel, s_region, s_entity) {
 // Adding the transaction_id as the order_id for now.
 function prepareCommission(affiliate_name, o_irAction) {
 
-  // Using ‘Amount’ instead of ‘IntendedAmount’ for ‘Purchase Amount’ & ‘Payout’
-  // instead of ‘IntendedPayout’ for ‘Commission Amount’ - as confirmed by impact-radius support
-  var o_event = {};
-  o_event.affiliate_name = affiliate_name;
-  o_event.merchant_name = o_irAction.Campaign || '';
-  o_event.merchant_id = o_irAction.brand_id || '';
-  o_event.transaction_id = o_irAction.Action_Id;
-  o_event.order_id = o_irAction.Action_Id;
-  o_event.outclick_id = o_irAction.SubId1;
-  o_event.purchase_amount = o_irAction.Sale_Amount;
-  o_event.commission_amount = o_irAction.Payout;
-  o_event.currency = o_irAction.original_currency.toLowerCase();
+  if(o_irAction.SharedId !== '') return;
 
-  switch(o_irAction.Status.toUpperCase()) {
+  // Using 'Amount' instead of 'IntendedAmount' for 'Purchase Amount' & 'Payout'
+  // instead of 'IntendedPayout' for 'Commission Amount' - as confirmed by impact-radius support
+  var o_event = {};
+  o_event.affiliate_name = affiliate_name,
+    o_event.merchant_name = o_irAction.CampaignName || '',
+    o_event.merchant_id = o_irAction.CampaignId || '',
+    o_event.transaction_id = o_irAction.Id;
+  o_event.order_id = o_irAction.Id;
+  o_event.outclick_id = o_irAction.SubId1;
+  o_event.purchase_amount = o_irAction.Amount;
+  o_event.commission_amount = o_irAction.Payout;
+  o_event.currency = o_irAction.Currency ? o_irAction.Currency.toLowerCase() : '';
+
+  switch(o_irAction.State) {
     case 'PENDING':
       o_event.state = 'initiated';
-      o_event.effective_date = new Date(o_irAction.Action_Date);
+      o_event.effective_date = new Date(o_irAction.CreationDate);
       break;
     case 'APPROVED':
-      if (checkDate(o_irAction.Action_Date)) {
+      if (checkDate(o_irAction.ClearedDate)) {
         o_event.state = 'paid';
-        o_event.effective_date = new Date(o_irAction.Action_Date);
+        o_event.effective_date = new Date(o_irAction.ClearedDate);
       } else {
         // won't be in 'APPROVED' unless it's Locked
         o_event.state = 'confirmed';
-        o_event.effective_date = new Date(o_irAction.Locking_Date);
+        o_event.effective_date = new Date(o_irAction.LockingDate);
       }
       break;
     case 'REVERSED':
@@ -161,7 +163,6 @@ function prepareCommission(affiliate_name, o_irAction) {
   }
 
   return o_event;
-
 }
 
 function checkDate(d) {
