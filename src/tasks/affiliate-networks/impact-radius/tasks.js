@@ -10,6 +10,7 @@ const configs = require('../../../../configs.json');
 const utilsDataClient = utils.restClient(configs.data_api);
 
 const AFFILIATE_NAME = 'impactradius';
+const dealsLimit = 100;
 
 const merge = require('../support/easy-merge')('CampaignId', {
   promoAds: 'CampaignId',
@@ -41,7 +42,17 @@ function ImpactRadiusGenericApi(s_whitelabel, s_region, s_entity) {
       campaignAds: tasks.client.getCampaignAds(),
       promoAds: tasks.client.getPromoAds()
     };
-    const merchants = merge(results);
+    let merchants = merge(results);
+    merchants.forEach(function(merObj) {
+      if(merObj.promoAds.length > dealsLimit) {
+        merchants = merchants.concat(divideMerchants(merObj.merchant, merObj.promoAds, 'promo'));
+        merObj.promoAds = [];
+      }
+      if(merObj.campaignAds.length > dealsLimit) {
+        merchants = merchants.concat(divideMerchants(merObj.merchant, merObj.campaignAds, 'campaign'));
+        merObj.campaignAds = [];
+      }
+    });
 
     return yield sendEvents.sendMerchants(tasks.eventName, merchants);
   });
@@ -171,6 +182,17 @@ function checkDate(d) {
   const then = new Date(d).getTime();
   if (now > then) return true;
   return false;
+}
+
+function divideMerchants(merchant, ads, type) {
+
+  return _.chunk(ads, dealsLimit).map(function (chunk) {
+    return {
+      merchant: merchant,
+      campaignAds: type === 'campaign' ? chunk : [],
+      promoAds: type === 'promo' ? chunk : []
+    }
+  });
 }
 
 module.exports = ImpactRadiusGenericApi;
