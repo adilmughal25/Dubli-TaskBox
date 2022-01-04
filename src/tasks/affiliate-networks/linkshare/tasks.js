@@ -18,6 +18,7 @@ const converter = require("csvtojson").Converter;
 const deasync = require('deasync');
 
 const AFFILIATE_NAME = 'linkshare';
+const dealsLimit = 100;
 
 const reportingURL = 'https://ran-reporting.rakutenmarketing.com/en/reports/individual-item-report-api-final/filters?';
 const reportingToken = 'ZW5jcnlwdGVkYToyOntzOjU6IlRva2VuIjtzOjY0OiI2ODI4NTljZGIxYWU2ZjllZWQ1NDFhYjhlNjY1YTM2ODI4YTM3NmIxMjFmMWI1MTI4Y2Q2YzJhMjBkMTMzMjgzIjtzOjg6IlVzZXJUeXBlIjtzOjk6IlB1Ymxpc2hlciI7fQ%3D%3D';
@@ -55,6 +56,17 @@ const LinkShareGenericApi = function(s_region, s_entity) {
     };
 
     var merchants = mergeResults(results);
+
+    merchants.forEach(function(merObj) {
+      if(merObj.coupons.length > dealsLimit) {
+        merchants = merchants.concat(divideMerchants(merObj.merchant, merObj.coupons, 'coupons'));
+        merObj.coupons = [];
+      }
+      if(merObj.links.length > dealsLimit) {
+        merchants = merchants.concat(divideMerchants(merObj.merchant, merObj.links, 'links'));
+        merObj.links = [];
+      }
+    });
 
     that.client.cleanup();
     return yield sendEvents.sendMerchants(that.eventName, merchants);
@@ -599,6 +611,17 @@ function * getCommissionsFromCSV(response) {
         reject(err);
       resolve(data);
     });
+  });
+}
+
+function divideMerchants(merchant, ads, type) {
+
+  return _.chunk(ads, dealsLimit).map(function (chunk) {
+    return {
+      merchant: merchant,
+      coupons: type === 'coupons' ? chunk : [],
+      links: type === 'links' ? chunk : []
+    }
   });
 }
 
