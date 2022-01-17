@@ -260,6 +260,15 @@ function init(tasker) {
   // initializeCommissionsDubliProcessors(tasker);
   intializeUserReferrals(tasker);
   initializeNotificationProcessor(tasker);
+  initializeCommissionsProcessorsDaily(tasker);
+}
+
+function initializeCommissionsProcessorsDaily(tasker) {
+  // run each of these every 24 hours
+  tasker.createGroup('2d +/- 1d', {
+    "AvantLink (US) Commissions": avantLinkUSApi.getCommissionDetails,
+    "AvantLink DubLi (US) Commissions": avantLinkDubliUSApi.getCommissionDetails
+  });
 }
 
 function initializeNotificationProcessor(tasker) {
@@ -416,7 +425,6 @@ function initializeCommissionsProcessors(tasker) {
     "Amazon (IN) Commissions": amazonApi.getCommissionDetails, // problems w/ amazon.in
     // "ArabyAds Commissions" : arabyadsApi.getCommissionDetails,
     // "AvantLink (CA) Commissions": avantLinkCAApi.getCommissionDetails,
-    "AvantLink (US) Commissions": avantLinkUSApi.getCommissionDetails,
     "Belboon Commissions": belboonApi.getCommissionDetails,
     // "CommissionJunction (EU) Commissions": commissionJunctionEUApi.getCommissionDetails,
     "CommissionJunction (US) Commissions": commissionJunctionUSApi.getCommissionDetails,
@@ -537,8 +545,7 @@ function initializeCommissionsDubliProcessors(tasker) {
     "Affili.Net DubLi (AT) Commissions": affilinetDubliATApi.getCommissionDetails,
     // "Affili.Net DubLi (CH) Commissions": affilinetDubliCHApi.getCommissionDetails,
     "AffiliateWindow DubLi Commissions": affiliatewindowDubliApi.getCommissionDetails,
-    "AvantLink DubLi (CA) Commissions": avantLinkDubliCAApi.getCommissionDetails,
-    "AvantLink DubLi (US) Commissions": avantLinkDubliUSApi.getCommissionDetails,
+    // "AvantLink DubLi (CA) Commissions": avantLinkDubliCAApi.getCommissionDetails,
     "Belboon DubLi Commissions": belboonDubliApi.getCommissionDetails,
     "CommissionFactory DubLi Commissions": commissionfactoryDubliApi.getCommissionDetails,
     "CommissionJunction DubLi (US) Commissions": commissionJunctionDubliUSApi.getCommissionDetails,
