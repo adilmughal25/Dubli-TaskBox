@@ -85,7 +85,7 @@ const affiliatewindowDubliApi = affiliatewindowGenericApi('dubli');
 // const affilinetDubliCHApi = affilinetGenericApi('ch', 'dubli');
 
 const avantLinkGenericApi = require('./avantlink/tasks');
-const avantLinkCAApi = avantLinkGenericApi('ca');
+// const avantLinkCAApi = avantLinkGenericApi('ca');
 const avantLinkUSApi = avantLinkGenericApi('us');
 const avantLinkDubliCAApi = avantLinkGenericApi('ca', 'dubli');
 const avantLinkDubliUSApi = avantLinkGenericApi('us', 'dubli');
@@ -294,7 +294,7 @@ function initializeMerchantImporters(tasker) {
     //"Affiliate Gateway (Sg) Merchants": affiliateGatewaySgApi.getMerchants, //TODO LM to be implemented
     "AffiliateWindow Merchants": affiliatewindowApi.getMerchants,
     // "ArabyAds Merchants" : arabyadsApi.getMerchants,
-    "AvantLink (CA) Merchants": avantLinkCAApi.getMerchants,
+    // "AvantLink (CA) Merchants": avantLinkCAApi.getMerchants,
     "AvantLink (US) Merchants": avantLinkUSApi.getMerchants,
     "Belboon Merchants": belboonApi.getMerchants,
     // "CommissionJunction (EU) Merchants": commissionJunctionEUApi.getMerchants,
@@ -415,7 +415,7 @@ function initializeCommissionsProcessors(tasker) {
     "AffiliateWindow Commissions": affiliatewindowApi.getCommissionDetails,
     "Amazon (IN) Commissions": amazonApi.getCommissionDetails, // problems w/ amazon.in
     // "ArabyAds Commissions" : arabyadsApi.getCommissionDetails,
-    "AvantLink (CA) Commissions": avantLinkCAApi.getCommissionDetails,
+    // "AvantLink (CA) Commissions": avantLinkCAApi.getCommissionDetails,
     "AvantLink (US) Commissions": avantLinkUSApi.getCommissionDetails,
     "Belboon Commissions": belboonApi.getCommissionDetails,
     // "CommissionJunction (EU) Commissions": commissionJunctionEUApi.getCommissionDetails,
