@@ -364,7 +364,7 @@ function prepareCommission(o_obj, payments) {
   o_obj = JSON.parse(JSON.stringify(o_obj).replace('Member ID (U1)','Sub_ID'));
   let merchant_name = _.get(o_obj, 'Advertiser Name') ? _.get(o_obj, 'Advertiser Name').replace('\\','') : '';
 
-  const currency = _.get(o_obj, 'Currency').toLowerCase();
+  const currency = _.get(o_obj, 'Currency') ? _.get(o_obj, 'Currency').toLowerCase() : '';
   const orderId = _.get(o_obj, 'Order ID');
   const commisionState = payments.has(orderId) ? 'paid' : 'confirmed'
 
