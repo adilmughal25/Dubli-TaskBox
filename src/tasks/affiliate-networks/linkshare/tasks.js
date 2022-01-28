@@ -321,7 +321,7 @@ function * getCommissionsByDate(fromCount, toCount, s_region) {
         token: reportingToken
       });
 
-      let commissions = parseCommissions(yield dataClient.get(url));
+      let commissions = yield getCommissionsFromCSV(yield dataClient.get(url));
       allCommissions = allCommissions.concat(commissions);
 
       endCount = (startCount - endCount >= 90) ? endCount - 90 : toCount;

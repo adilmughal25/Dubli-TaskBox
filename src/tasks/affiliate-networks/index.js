@@ -261,6 +261,13 @@ function init(tasker) {
   intializeUserReferrals(tasker);
   initializeNotificationProcessor(tasker);
   initializeCommissionsProcessorsDaily(tasker);
+  initializeAvantlinkMerchantProcessor(tasker);
+}
+
+function initializeAvantlinkMerchantProcessor(tasker) {
+  tasker.createGroup('3d +/- 1d', {
+    "AvantLink (US) Merchants": avantLinkUSApi.getMerchants
+  });
 }
 
 function initializeCommissionsProcessorsDaily(tasker) {
@@ -304,7 +311,6 @@ function initializeMerchantImporters(tasker) {
     "AffiliateWindow Merchants": affiliatewindowApi.getMerchants,
     // "ArabyAds Merchants" : arabyadsApi.getMerchants,
     // "AvantLink (CA) Merchants": avantLinkCAApi.getMerchants,
-    "AvantLink (US) Merchants": avantLinkUSApi.getMerchants,
     "Belboon Merchants": belboonApi.getMerchants,
     // "CommissionJunction (EU) Merchants": commissionJunctionEUApi.getMerchants,
     "CommissionJunction (US) Merchants": commissionJunctionUSApi.getMerchants,
