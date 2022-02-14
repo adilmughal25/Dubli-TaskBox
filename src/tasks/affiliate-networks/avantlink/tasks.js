@@ -47,11 +47,17 @@ function setup(s_region, s_entity) {
     let clientM = clientPool.getClient(entity, s_region, 'merchants');
     let clientP = clientPool.getClient(entity, s_region, 'promos');
 
-    let results = yield {
-      merchants: clientM.getData().then(hasPercentage),
-      promos: clientP.getData().then(preparePromos)
-    };
-    let merchants = merge(results);
+    const res = yield utilsDataClient.get('/hasTaskRanToday/' + AFFILIATE_NAME + s_region, true, this);
+
+    let merchants = [];
+    if(res.body) {
+      let results = yield {
+        merchants: clientM.getData().then(hasPercentage),
+        promos: clientP.getData().then(preparePromos)
+      };
+      merchants = merge(results);
+      yield utilsDataClient.patch('/updateTaskLastRanDate/' + AFFILIATE_NAME + s_region, true, this);
+    }
 
     return yield sendEvents.sendMerchants(eventName, merchants);
   });
