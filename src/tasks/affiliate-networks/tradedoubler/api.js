@@ -11,6 +11,7 @@ const FLYDUBAI_API_KEY = '23772cd706987befac6368959d5958ff';
 const API_CFG = {
   baseUrl: 'https://api.tradedoubler.com/1.0/',
   baseUrlReports: 'https://reports.tradedoubler.com/pan/',
+  baseUrlReportsV2: 'https://connect.tradedoubler.com/',
   reportsToken: '508947a87aaea31b41d3ea73a69d6fb3',
   conversionsToken: 'C40C11CDF28A866D8353EEE9EB4FD246665364B8',
   commissionsToken: 'CC07D8283DF1724B138B2EBC76E20A553B5C07C6',
@@ -106,6 +107,24 @@ const TradeDoublerClient = function(s_region, s_entity) {
       simple: true,
       resolveWithFullResponse: false,
       url: 'aReport3Key.action'
+    }, params);
+    return request.defaults(requestParams);
+  };
+
+  this.getTradedoublerClientV2 = (url, params, headers) => {
+
+    //changing 'organizationId' & 'key' params for flyDubai
+    if(that.region === 'flyDubai'){
+      params.qs.organizationId = FLYDUBAI_ORGANIZATION_ID;
+      params.qs.key = FLYDUBAI_API_KEY;
+    }
+    const requestParams = _.extend({
+      baseUrl: API_CFG.baseUrlReportsV2,
+      json: false,
+      simple: true,
+      resolveWithFullResponse: false,
+      url: url,
+      headers: headers
     }, params);
     return request.defaults(requestParams);
   };

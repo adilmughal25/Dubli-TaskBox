@@ -36,6 +36,8 @@ const API_CFG = {
   conversionsToken: 'C40C11CDF28A866D8353EEE9EB4FD246665364B8',
   commissionsToken: 'CC07D8283DF1724B138B2EBC76E20A553B5C07C6',
   defaultEntity: 'ominto',
+  clientId: '3345cce5-2f0b-3c01-a292-d41b129e66e7',
+  clientSecret: '6ad1b7ca22c1b07d',
   affiliateData: {
     ominto: {
       at: { voucherKey: '94159352368AF9E833C6647A624303E22F93A1D7', affiliateId: '2511389' },
@@ -242,8 +244,97 @@ const TradeDoublerGenericApi = function(s_region, s_entity) {
   this.getCommissionDetails = singleRun(function* () {
 
     debug('running get commissions with %s', that.region);
-    var response = yield that.getCommissionData();
+    var response = yield that.getCommissionDataV2();
     return yield sendEvents.sendCommissions(that.eventName, response);
+  });
+
+  this.getCommissionDataV2 = co.wrap(function* () {
+
+    let allCommissions = [];
+
+    const basic = new Buffer([API_CFG.clientId, API_CFG.clientSecret].join(':')).toString('base64');
+    let headers = {
+      'Authorization': 'Basic ' + basic,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    };
+
+    let requestParams = {};
+
+    let client = this.client.getTradedoublerClientV2('uaa/oauth/token', requestParams, headers);
+
+    let tokens = yield client.post({
+      form: {
+        'grant_type': 'password',
+        'username': 'ominto1',
+        'password': 'Savemate2021'
+      }
+    });
+
+    try {
+      tokens = JSON.parse(tokens);
+    } catch (e) {
+      tokens = {};
+      console.log(e);
+      throw new Error('Tradedoubler Commission Error ' + JSON.stringify(e));
+    }
+
+    headers = {
+      'Authorization': 'Bearer ' + tokens.access_token,
+      'Content-Type': 'application/json'
+    };
+
+    requestParams.qs = {
+      reportCurrencyCode: API_PARAMS_COMMISSIONS.currencyId
+    };
+
+    let startCount = 90;
+    let endCount = startCount - 30;
+
+    while (true) {
+      debug('startCount --> ' + startCount);
+      debug('endCount --> ' + endCount);
+
+      if(startCount <= 0)
+        break;
+
+      requestParams.qs.fromDate = moment().subtract(startCount, 'days').format('YYYYMMDD');
+      requestParams.qs.toDate = moment().subtract(endCount, 'days').format('YYYYMMDD');
+
+      let offset = 0;
+      const limit = 20;
+
+      while (true) {
+
+        requestParams.qs.offset = offset;
+        requestParams.qs.limit = limit;
+
+        client = this.client.getTradedoublerClientV2('publisher/report/transactions', requestParams, headers);
+
+        let commissions = yield client.get();
+        let items = [];
+        try {
+          commissions = JSON.parse(commissions);
+          items = commissions.items;
+        } catch (e) {
+          console.log(e);
+          throw new Error('Tradedoubler Commission Error ' + JSON.stringify(e));
+        }
+
+        if(items.length === 0)
+          break;
+
+        allCommissions = allCommissions.concat(items);
+
+        offset = offset + limit;
+      }
+
+      debug('Dates ---> ' + JSON.stringify(requestParams));
+
+      startCount = startCount - 30;
+      endCount = endCount - 30;
+    }
+
+    return allCommissions.map(prepareCommission);
   });
 
   /**
@@ -368,14 +459,14 @@ function prepareCommission(o_obj) {
     affiliate_name: AFFILIATE_NAME,
     merchant_name: o_obj.programName || '',
     merchant_id: o_obj.programId || '',
-    transaction_id: o_obj.orderNR,
-    order_id: o_obj.orderNR,
-    outclick_id: o_obj.epi1,
+    transaction_id: o_obj.orderNumber,
+    order_id: o_obj.orderNumber,
+    outclick_id: o_obj.epi,
     purchase_amount: o_obj.orderValue,
-    commission_amount: o_obj.affiliateCommission,
+    commission_amount: o_obj.commission,
     currency: API_PARAMS_COMMISSIONS.currencyId.toLowerCase(),
-    state: STATUS_MAP[o_obj.pendingStatus],
-    effective_date: o_obj.timeOfEvent,
+    state: o_obj.paid ? 'paid' : STATUS_MAP[o_obj.status],
+    effective_date: STATUS_MAP[o_obj.status] === 'initiated' ? o_obj.timeOfTransaction : o_obj.timeOfLastModified,
     cashback_id: o_obj.eventId || ''
   };
 
