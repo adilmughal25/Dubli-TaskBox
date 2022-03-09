@@ -47,6 +47,19 @@ const API_TYPES_DEFAULTS = {
       client_id: '{{clientId}}',
     },
   },
+  payments: {
+    path: 'payments/',
+    scope: 'payments',
+    authorization: 'bearer',
+    qs: {
+      // date_start,
+      // date_end,
+      has_statment:0,
+      total: 0,         // Obtain aggregated data for entire request? 1/0 - aggregated data / non-aggregated
+      limit: 250,       // Max is 500
+      offset: 0
+    }
+  },
   statistics: {
     path: 'statistics/actions/',
     scope: 'statistics',
@@ -223,6 +236,35 @@ AdmitadClient.prototype.getStatisticsByAction = co.wrap(function* (params) {
 	response = body || {};
 
 	return response;
+});
+
+// TODO: Refactor to use this.executeRequest
+AdmitadClient.prototype.getPayments = co.wrap(function* (params) {
+  let response, body;
+  const paymentIdQuery = params.paymentId ? params.paymentId + '/statement/' : '';
+  const arg = {
+    url: this.apiTypes.payments.path + paymentIdQuery,
+    auth: {},
+    qs: {
+      limit: this.apiTypes.payments.rows,
+      page: 1,
+    }
+  };
+
+  // make sure we have a valid token for next request
+  yield this.getToken();
+
+  // merge our passed params into the querystring
+  _.extend(arg.qs, params);
+  // set the authentication type and value
+  arg.auth[this.apiTypes.payments.authorization] = this.token;
+
+  debug("Using token '%s' to fetch statistics by commission between %s and %s", this.token, params.date_start || params.status_updated_start, params.date_end || params.status_updated_end);
+
+  body = yield this.client.get(arg);
+  response = body || {};
+
+  return response;
 });
 
 AdmitadClient.prototype.getMerchants = co.wrap(function* (params) {

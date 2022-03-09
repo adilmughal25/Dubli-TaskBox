@@ -165,9 +165,14 @@ const LinkShareGenericApi = function(s_region, s_entity) {
     yield sendEvents.sendCommissions(that.eventName, events);
   });
 
-  this.getPayments = co.wrap(function* () {
-    const startDate = moment().subtract(90, 'days').format('YYYYMMDD');
-    const endDate = moment().format('YYYYMMDD');
+  this.getPayments = co.wrap(function* (startDate, endDate) {
+    if (startDate && endDate) {
+      startDate = moment(startDate).format('YYYYMMDD');
+      endDate = moment(endDate).format('YYYYMMDD');
+    } else {
+      startDate = moment().subtract(90, 'days').format('YYYYMMDD');
+      endDate = moment().format('YYYYMMDD');
+    }
     const paidStatuses = new Set();
     const delay = function(time) {
       return function(f) {
@@ -184,41 +189,48 @@ const LinkShareGenericApi = function(s_region, s_entity) {
       nid: networksList[s_region] ? networksList[s_region] : networksList['us']
     });
 
-
+  try {
     const paymentHistoryResponse = yield client.get(paymentHistoryurl).then(_check('payment history not found'));
     const paymentHistory = yield getCommissionsFromCSV(paymentHistoryResponse.body);
 
     for (let i = 0; i < paymentHistory.length; i++) {
-      yield delay(15000);
-
-      const advertiserPaymentHistoryurl = '/advancedreports/1.0?' + querystring.stringify({
-        bdate: startDate,
-        edate: endDate,
-        token: '682859cdb1ae6f9eed541ab8e665a36828a376b121f1b5128cd6c2a20d133283',
-        reportid: 2,
-        payid: paymentHistory[i]['Payment ID'],
-      });
-
-      const advertiserPaymentHistoryResponse = yield client.get(advertiserPaymentHistoryurl).then(_check('Advertiser payment history not found'));
-      let advertiserPaymentHistory = yield getCommissionsFromCSV(advertiserPaymentHistoryResponse.body);
-
-      for (let j = 0; j < advertiserPaymentHistory.length; j++) {
+    try {
         yield delay(15000);
-        const paymentDetailsurl = '/advancedreports/1.0?' + querystring.stringify({
+
+        const advertiserPaymentHistoryurl = '/advancedreports/1.0?' + querystring.stringify({
+          bdate: startDate,
+          edate: endDate,
           token: '682859cdb1ae6f9eed541ab8e665a36828a376b121f1b5128cd6c2a20d133283',
-          reportid: 3,
-          invoiceid: advertiserPaymentHistory[j]['Invoice Number'],
+          reportid: 2,
+          payid: paymentHistory[i]['Payment ID'],
         });
 
-        const paymentDetailsResponse = yield client.get(paymentDetailsurl).then(_check('Advertiser payment history not found'));
-        let paymentDetails = yield getCommissionsFromCSV(paymentDetailsResponse.body);
-        for (let k = 0; k < paymentDetails.length; k++) {
-          console.log('Paid ' + paymentDetails[k]['Order ID']);
-          paidStatuses.add(paymentDetails[k]['Order ID']);
+        const advertiserPaymentHistoryResponse = yield client.get(advertiserPaymentHistoryurl).then(_check('Advertiser payment history not found'));
+        let advertiserPaymentHistory = yield getCommissionsFromCSV(advertiserPaymentHistoryResponse.body);
+
+        for (let j = 0; j < advertiserPaymentHistory.length; j++) {
+          yield delay(15000);
+          const paymentDetailsurl = '/advancedreports/1.0?' + querystring.stringify({
+            token: '682859cdb1ae6f9eed541ab8e665a36828a376b121f1b5128cd6c2a20d133283',
+            reportid: 3,
+            invoiceid: advertiserPaymentHistory[j]['Invoice Number'],
+          });
+
+          const paymentDetailsResponse = yield client.get(paymentDetailsurl).then(_check('Advertiser payment history not found'));
+          let paymentDetails = yield getCommissionsFromCSV(paymentDetailsResponse.body);
+          for (let k = 0; k < paymentDetails.length; k++) {
+            console.log('Paid ' + paymentDetails[k]['Order ID']);
+            paidStatuses.add(paymentDetails[k]['Order ID']);
+          }
         }
-      }
+    } catch (e) {
+      continue;
+    }
     }
 
+  } catch (e){
+    console.log('Error in calling payment api', e);
+  }
     return paidStatuses;
   });
 
@@ -230,7 +242,7 @@ const LinkShareGenericApi = function(s_region, s_entity) {
     const endDate = moment().format('YYYY-MM-DD');
 
     let allCommissions = [];
-
+    let payments = '';
     let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/linkshare-' + (s_region || 'us'), true, this);
 
     if (taskDate.body && taskDate.body !== "Not Found") {
@@ -238,10 +250,12 @@ const LinkShareGenericApi = function(s_region, s_entity) {
       let endCount = moment().diff(moment(taskDate.body.end_date), "days");
       allCommissions = yield getCommissionsByDate(startCount, endCount, s_region, that);
       yield utilsDataClient.patch('/inactivateTask/linkshare-' + (s_region || 'us'), true, this);
+      payments = yield that.getPayments(taskDate.body.start_date, taskDate.body.end_date);
+    } else {
+      payments = yield that.getPayments();
     }
 
     let dataClient = request.defaults({});
-    const payments = yield that.getPayments();
 
     console.log(networksList[s_region] ? networksList[s_region] : networksList['us']);
     const url = reportingURL + querystring.stringify({
