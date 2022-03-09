@@ -56,9 +56,25 @@ const AdmitadGenericApi = function(s_entity, s_region) {
 
     debug("fetching all transactions between %s and %s", startDate, endDate);
 
+    let payments = yield that.pagedApiCall('getPayments', 'results', {});
+
+    const paidTransactions = new Set();
+    for (let payment of payments) {
+      if (startDate > new Date(payment.datetime)) {
+        break;
+      }
+
+      if (payment.status === 'processed') {
+        let paymentDetails = yield that.pagedApiCall('getPayments', 'results', {paymentId: payment.id, detailed: 1 });
+        for(let paymentDetail of paymentDetails) {
+          paidTransactions.add(paymentDetail.id);
+        }
+      }
+    }
+
     let transactions = yield that.pagedApiCall('getStatisticsByAction', 'results', {status_updated_start: startDate, status_updated_end:endDate});
     allCommissions = allCommissions.concat(transactions);
-    const events = allCommissions.map(prepareCommission).filter(exists);
+    const events = allCommissions.map(commission => prepareCommission(commission, that.region, paidTransactions)).filter(exists);
 
     return yield sendEvents.sendCommissions(that.eventName, events);
   });
@@ -209,7 +225,8 @@ const STATE_MAP = {
   'confirmed, but detained': 'confirmed', // docu says it exists but i doubt the syntax(Not sure about this)
 
   'declined':   'cancelled',
-  'rejected':   'cancelled'
+  'rejected':   'cancelled',
+  'paid': 'paid',
 };
 
 /**
@@ -217,7 +234,7 @@ const STATE_MAP = {
  * @param {Object} o_obj  The individual commission transaction straight from Admitad
  * @returns {Object}
  */
-function prepareCommission(o_obj, region) {
+function prepareCommission(o_obj, region, paidTransactions) {
 
   // https://developers.admitad.com/en/doc/api_en/methods/statistics/statistics-actions/
   // using auto as date when a transactions status is in confirmed (internal state) &
@@ -240,7 +257,7 @@ function prepareCommission(o_obj, region) {
     currency: o_obj.currency.toLowerCase(),
     purchase_amount: o_obj.cart,
     commission_amount: o_obj.payment,
-    state: STATE_MAP[o_obj.status],
+    state: paidTransactions.has(o_obj.action_id) ? STATE_MAP['paid'] : STATE_MAP[o_obj.status],
     //effective_date: 'auto'
     effective_date: _date,
     cashback_id: o_obj.positions[0].rate_id || ''

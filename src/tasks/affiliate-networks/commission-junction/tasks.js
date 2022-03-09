@@ -226,7 +226,7 @@ function prepareCommission(currency, item) {
       break;
     case 'closed':
       event.state = 'paid';
-      event.effective_date = new Date(item['locking-date']); // they don't give us a better paid date than this :(
+      event.effective_date = new Date(); // they don't give us a better paid date than this :(
       break;
     default:
       return; // skip this.
