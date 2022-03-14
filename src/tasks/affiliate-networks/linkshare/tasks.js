@@ -205,7 +205,7 @@ const LinkShareGenericApi = function(s_region, s_entity) {
         let advertiserPaymentHistory = yield getCommissionsFromCSV(advertiserPaymentHistoryResponse.body);
 
         for (let j = 0; j < advertiserPaymentHistory.length; j++) {
-          yield delay(15000);
+          yield delay(70000);
           const paymentDetailsurl = '/advancedreports/1.0?' + querystring.stringify({
             token: '682859cdb1ae6f9eed541ab8e665a36828a376b121f1b5128cd6c2a20d133283',
             reportid: 3,
