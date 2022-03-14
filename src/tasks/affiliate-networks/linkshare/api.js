@@ -28,45 +28,45 @@ const API_AUTH_FORMS = {
     // US/AU is 1 account with DubLi - has different reporting currencies
     us: {
       grant_type: 'password',
-      username: 'mngroup',
+      username: 'Ominto',
       password: 'Savemate2021',
-      scope: 1347525
+      scope: 3239617
     },
     ca: {
       grant_type: 'password',
-      username: 'bsprewards',
+      username: 'Ominto',
       password: 'Savemate2021',
-      scope: 2335836
+      scope: 3239617
     },
     gb: {
       grant_type: 'password',
-      username: 'dubliuk',
+      username: 'Ominto',
       password: 'Savemate2021',
-      scope: 2739901
+      scope: 3239617
     },
     fr: {
-      grant_type: 'NONE', // As we are calling api from linkshare dashboard
-      username: 'NONE',
-      password: 'NONE',
-      scope: 0
+      grant_type: 'password',
+      username: 'Ominto',
+      password: 'Savemate2021',
+      scope: 3239617
     },
     br: {
-      grant_type: 'NONE', // As we are calling api from linkshare dashboard
-      username: 'NONE',
-      password: 'NONE',
-      scope: 0
+      grant_type: 'password',
+      username: 'Ominto',
+      password: 'Savemate2021',
+      scope: 3239617
     },
     de: {
-      grant_type: 'NONE', // As we are calling api from linkshare dashboard
-      username: 'NONE',
-      password: 'NONE',
-      scope: 0
+      grant_type: 'password',
+      username: 'Ominto',
+      password: 'Savemate2021',
+      scope: 3239617
     },
     au: {
-      grant_type: 'NONE', // As we are calling api from linkshare dashboard
-      username: 'NONE',
-      password: 'NONE',
-      scope: 0
+      grant_type: 'password',
+      username: 'Ominto',
+      password: 'Savemate2021',
+      scope: 3239617
     }
   }
 };

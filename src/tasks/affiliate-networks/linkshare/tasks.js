@@ -165,14 +165,10 @@ const LinkShareGenericApi = function(s_region, s_entity) {
     yield sendEvents.sendCommissions(that.eventName, events);
   });
 
-  this.getPayments = co.wrap(function* (startDate, endDate) {
-    if (startDate && endDate) {
-      startDate = moment(startDate).format('YYYYMMDD');
-      endDate = moment(endDate).format('YYYYMMDD');
-    } else {
-      startDate = moment().subtract(90, 'days').format('YYYYMMDD');
-      endDate = moment().format('YYYYMMDD');
-    }
+  this.getPayments = co.wrap(function* () {
+
+    const startDate = moment().subtract(365, 'days').format('YYYYMMDD');
+    const endDate = moment().format('YYYYMMDD');
     const paidStatuses = new Set();
     const delay = function(time) {
       return function(f) {
@@ -242,7 +238,6 @@ const LinkShareGenericApi = function(s_region, s_entity) {
     const endDate = moment().format('YYYY-MM-DD');
 
     let allCommissions = [];
-    let payments = '';
     let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/linkshare-' + (s_region || 'us'), true, this);
 
     if (taskDate.body && taskDate.body !== "Not Found") {
@@ -250,11 +245,9 @@ const LinkShareGenericApi = function(s_region, s_entity) {
       let endCount = moment().diff(moment(taskDate.body.end_date), "days");
       allCommissions = yield getCommissionsByDate(startCount, endCount, s_region, that);
       yield utilsDataClient.patch('/inactivateTask/linkshare-' + (s_region || 'us'), true, this);
-      payments = yield that.getPayments(taskDate.body.start_date, taskDate.body.end_date);
-    } else {
-      payments = yield that.getPayments();
     }
 
+    const payments = yield that.getPayments();
     let dataClient = request.defaults({});
 
     console.log(networksList[s_region] ? networksList[s_region] : networksList['us']);
