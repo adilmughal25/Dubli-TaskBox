@@ -45,7 +45,7 @@ const STATE_MAP = {
   'accepted':   'confirmed',
   'rejected':   'cancelled',
 
-  'paid': 'confirmed' // when "paidOut=true"
+  'paid': 'paid' // when "paidOut=true"
 };
 
 const TradeTrackerGenericApi = function(s_region, s_entity) {
