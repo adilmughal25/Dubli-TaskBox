@@ -334,7 +334,8 @@ const TradeDoublerGenericApi = function(s_region, s_entity) {
       endCount = endCount - 30;
     }
 
-    return allCommissions.map(prepareCommission);
+    const exists = x => !!x;
+    return allCommissions.map(prepareCommissionV2).filter(exists);
   });
 
   /**
@@ -454,6 +455,40 @@ const TradeDoublerGenericApi = function(s_region, s_entity) {
  * @returns {Object} commission event with correct data structure
  */
 function prepareCommission(o_obj) {
+
+  const event = {
+    affiliate_name: AFFILIATE_NAME,
+    merchant_name: o_obj.programName || '',
+    merchant_id: o_obj.programId || '',
+    transaction_id: o_obj.orderNR,
+    order_id: o_obj.orderNR,
+    outclick_id: o_obj.epi1,
+    purchase_amount: o_obj.orderValue,
+    commission_amount: o_obj.affiliateCommission,
+    currency: API_PARAMS_COMMISSIONS.currencyId.toLowerCase(),
+    state: STATUS_MAP[o_obj.pendingStatus],
+    effective_date: o_obj.timeOfEvent,
+    cashback_id: o_obj.eventId || ''
+  };
+
+  return event;
+
+};
+
+function prepareCommissionV2(o_obj) {
+
+  const regionKeys = API_CFG.affiliateData.ominto;
+  let isKeyPresent = false;
+
+  Object.keys(regionKeys).forEach(region => {
+    if(regionKeys[region].affiliateId == o_obj.sourceId) {
+      isKeyPresent = true;
+    }
+  });
+
+  if(!isKeyPresent) {
+    return;
+  }
 
   const event = {
     affiliate_name: AFFILIATE_NAME,
