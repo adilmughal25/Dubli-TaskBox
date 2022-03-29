@@ -227,7 +227,7 @@ function prepareCommission(transaction) {
 
     if (transaction.paidToPublisher === true) {
       event.state = 'paid';
-      event.effective_date = new Date(transaction.validationDate);
+      event.effective_date = new Date();
     } else {
       let dateField = DATE_MAP[transaction.commissionStatus];
       event.state = STATE_MAP[transaction.commissionStatus];
