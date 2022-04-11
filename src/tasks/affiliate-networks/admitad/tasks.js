@@ -12,6 +12,8 @@ const utils = require('ominto-utils');
 const configs = require('../../../../configs.json');
 const utilsDataClient = utils.restClient(configs.data_api);
 
+const transactionsSupport = require('../support/transactions');
+
 const AFFILIATE_NAME = 'admitad';
 
 const exists = x => !!x;
@@ -47,11 +49,15 @@ const AdmitadGenericApi = function(s_entity, s_region) {
 
     let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME, true, this);
 
+    let isCheckUpdates = false;
+
     if (taskDate.body && taskDate.body !== "Not Found") {
       let startCount = moment().diff(moment(taskDate.body.start_date), "days")
       let endCount = moment().diff(moment(taskDate.body.end_date), "days");
       allCommissions = yield that.getCommissionsByDate(startCount, endCount);
       yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME, true, this);
+
+      isCheckUpdates = true;
     }
 
     debug("fetching all transactions between %s and %s", startDate, endDate);
@@ -74,7 +80,10 @@ const AdmitadGenericApi = function(s_entity, s_region) {
 
     let transactions = yield that.pagedApiCall('getStatisticsByAction', 'results', {status_updated_start: startDate, status_updated_end:endDate});
     allCommissions = allCommissions.concat(transactions);
-    const events = allCommissions.map(commission => prepareCommission(commission, that.region, paidTransactions)).filter(exists);
+    let events = allCommissions.map(commission => prepareCommission(commission, that.region, paidTransactions)).filter(exists);
+
+    if(isCheckUpdates)
+      events = yield transactionsSupport.removeAlreadyUpdatedCommissions(events, AFFILIATE_NAME);
 
     return yield sendEvents.sendCommissions(that.eventName, events);
   });

@@ -15,6 +15,8 @@ const moment = require('moment');
 const configs = require('../../../../configs.json');
 const utilsDataClient = utils.restClient(configs.data_api);
 
+const transactionsSupport = require('../support/transactions');
+
 const AFFILIATE_NAME = 'tradetracker';
 
 const merge = require('../support/easy-merge')('ID', {
@@ -105,11 +107,15 @@ const TradeTrackerGenericApi = function(s_region, s_entity) {
 
     let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME + '-' + tasks.region, true, this);
 
+    let isCheckUpdates = false;
+
     if (taskDate.body && taskDate.body !== "Not Found") {
       let startCount = moment().diff(moment(taskDate.body.start_date), "days")
       let endCount = moment().diff(moment(taskDate.body.end_date), "days");
       allCommissions = yield getCommissionsByDate(startCount, endCount);
       yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME + '-' + tasks.region, true, this);
+
+      isCheckUpdates = true;
     }
 
     const startDate = new Date(Date.now() - (90 * 86400 * 1000));
@@ -123,7 +129,10 @@ const TradeTrackerGenericApi = function(s_region, s_entity) {
 
     let transactions = yield tasks.pagedApiCall('getConversionTransactions', 'conversionTransactions.item', args);
     allCommissions = allCommissions.concat(transactions);
-    const events = allCommissions.map(prepareCommission).filter(exists);
+    let events = allCommissions.map(prepareCommission).filter(exists);
+
+    if(isCheckUpdates)
+      events = yield transactionsSupport.removeAlreadyUpdatedCommissions(events, AFFILIATE_NAME + '-' + tasks.region);
 
     return yield sendEvents.sendCommissions(tasks.eventName, events);
   }

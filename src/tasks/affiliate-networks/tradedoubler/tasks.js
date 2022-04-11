@@ -15,6 +15,8 @@ const utilsDataClient = utils.restClient(configs.data_api);
 
 const AFFILIATE_NAME = 'tradedoubler';
 
+const transactionsSupport = require('../support/transactions');
+
 const merge = require('../support/easy-merge')('programId', {
   coupons: 'programId'
 });
@@ -244,11 +246,31 @@ const TradeDoublerGenericApi = function(s_region, s_entity) {
   this.getCommissionDetails = singleRun(function* () {
 
     debug('running get commissions with %s', that.region);
+
+    let allCommissions = [];
+    let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME, true, this);
+
+    let isCheckUpdates = false;
+
+    if (taskDate.body && taskDate.body !== "Not Found") {
+      let startCount = moment().diff(moment(taskDate.body.start_date), "days")
+      let endCount = moment().diff(moment(taskDate.body.end_date), "days");
+      allCommissions = yield that.getCommissionDataV2(startCount, endCount);
+      yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME, true, this);
+
+      isCheckUpdates = true;
+    }
+
     var response = yield that.getCommissionDataV2();
+    response = allCommissions.concat(response);
+
+    if(isCheckUpdates)
+      response = yield transactionsSupport.removeAlreadyUpdatedCommissions(response, AFFILIATE_NAME);
+
     return yield sendEvents.sendCommissions(that.eventName, response);
   });
 
-  this.getCommissionDataV2 = co.wrap(function* () {
+  this.getCommissionDataV2 = co.wrap(function* (startCount, endCount) {
 
     let allCommissions = [];
 
@@ -287,15 +309,18 @@ const TradeDoublerGenericApi = function(s_region, s_entity) {
       reportCurrencyCode: API_PARAMS_COMMISSIONS.currencyId
     };
 
-    let startCount = 90;
-    let endCount = startCount - 30;
+    const stopCount = endCount || 0;
+
+    startCount = startCount || 90;
+    endCount = startCount - 30;
 
     while (true) {
+      if(startCount <= stopCount)
+        break;
+
       debug('startCount --> ' + startCount);
       debug('endCount --> ' + endCount);
-
-      if(startCount <= 0)
-        break;
+      debug('stopCount --> ' + stopCount);
 
       requestParams.qs.fromDate = moment().subtract(startCount, 'days').format('YYYYMMDD');
       requestParams.qs.toDate = moment().subtract(endCount, 'days').format('YYYYMMDD');

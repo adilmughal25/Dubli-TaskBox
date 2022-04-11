@@ -9,6 +9,8 @@ const singleRun = require('../support/single-run');
 const configs = require('../../../../configs.json');
 const utilsDataClient = utils.restClient(configs.data_api);
 
+const transactionsSupport = require('../support/transactions');
+
 const AFFILIATE_NAME = 'impactradius';
 const dealsLimit = 100;
 
@@ -65,20 +67,27 @@ function ImpactRadiusGenericApi(s_whitelabel, s_region, s_entity) {
 
     let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME, true, this);
 
+    let isCheckUpdates = false;
+
     if (taskDate.body && taskDate.body !== "Not Found") {
       let startCount = moment().diff(moment(taskDate.body.start_date), "days")
       let endCount = moment().diff(moment(taskDate.body.end_date), "days");
       allCommissions = yield tasks.getCommissionsByDate(startCount, endCount);
       yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME, true, this);
+
+      isCheckUpdates = true;
     }
 
     debug("fetching all events between %s and %s", startTime, endTime);
 
     const commissions = yield tasks.client.getCommissions(startTime, endTime);
     allCommissions = allCommissions.concat(commissions);
-    const events = allCommissions
+    let events = allCommissions
       .map(prepareCommission.bind(null, s_whitelabel)) // format for kinesis/lambda
       .filter(x => !!x); // so that the prepareCommission can return 'null' to skip one
+
+    if(isCheckUpdates)
+      events = yield transactionsSupport.removeAlreadyUpdatedCommissions(events, AFFILIATE_NAME);
 
     return yield sendEvents.sendCommissions(tasks.eventName, events);
   });

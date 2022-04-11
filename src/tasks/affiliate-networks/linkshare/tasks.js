@@ -17,6 +17,8 @@ const converter = require("csvtojson").Converter;
 // const validator = require('validator');
 const deasync = require('deasync');
 
+const transactions = require('../support/transactions');
+
 const AFFILIATE_NAME = 'linkshare';
 const dealsLimit = 10;
 
@@ -240,11 +242,15 @@ const LinkShareGenericApi = function(s_region, s_entity) {
     let allCommissions = [];
     let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/linkshare-' + (s_region || 'us'), true, this);
 
+    let isCheckUpdates = false;
+
     if (taskDate.body && taskDate.body !== "Not Found") {
       let startCount = moment().diff(moment(taskDate.body.start_date), "days")
       let endCount = moment().diff(moment(taskDate.body.end_date), "days");
       allCommissions = yield getCommissionsByDate(startCount, endCount, s_region, that);
       yield utilsDataClient.patch('/inactivateTask/linkshare-' + (s_region || 'us'), true, this);
+
+      isCheckUpdates = true;
     }
 
     const payments = yield that.getPayments();
@@ -288,6 +294,10 @@ const LinkShareGenericApi = function(s_region, s_entity) {
     let commissions = yield getCommissionsFromCSV(yield dataClient.get(url));
     allCommissions = allCommissions.concat(commissions);
     var events = allCommissions.map((val) => prepareCommission(val, payments)).filter(x => !!x);
+
+    if(isCheckUpdates)
+      events = yield transactions.removeAlreadyUpdatedCommissions(events, AFFILIATE_NAME + '-' + (s_region || 'us'));
+
     return yield sendEvents.sendCommissions(that.eventName, events);
   });
 };

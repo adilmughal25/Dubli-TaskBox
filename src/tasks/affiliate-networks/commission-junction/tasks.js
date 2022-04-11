@@ -18,6 +18,8 @@ const utils = require('ominto-utils');
 const configs = require('../../../../configs.json');
 const utilsDataClient = utils.restClient(configs.data_api);
 
+const transactions = require('../support/transactions');
+
 const AFFILIATE_NAME = 'commissionjunction';
 
 const merge = require('../support/easy-merge')('advertiser-id', {
@@ -73,9 +75,13 @@ const CommissionJunctionGenericApi = function(s_region, s_entity) {
 
     let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME + '-' + that.region, true, this);
 
+    let isCheckUpdates = false;
+
     if (taskDate.body && taskDate.body !== "Not Found") {
       allCommissions = yield that.getCommissionsByDate(taskDate.body.start_date, taskDate.body.end_date);
       yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME + '-' + that.region, true, this);
+
+      isCheckUpdates = true;
     }
 
     for (let i = 0; i < periods.length; i++) {
@@ -87,7 +93,10 @@ const CommissionJunctionGenericApi = function(s_region, s_entity) {
     allCommissions = allCommissions.filter(commission => commission['website-id'] !== '100430624');
     const prep = prepareCommission.bind(null, currency);
     const exists = x => !!x;
-    const events = allCommissions.map(prep).filter(exists);
+    let events = allCommissions.map(prep).filter(exists);
+
+    if(isCheckUpdates)
+      events = yield transactions.removeAlreadyUpdatedCommissions(events, AFFILIATE_NAME + '-' + that.region);
 
     return yield sendEvents.sendCommissions(that.eventName, events);
   });
