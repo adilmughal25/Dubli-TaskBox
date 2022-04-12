@@ -26,6 +26,9 @@ function * getCommissionsToUpdate(commissions, status, affiliateName) {
   if(validTranIds && validTranIds === 'Not Found')
     return stateCommissions;
 
+  if(validTranIds && validTranIds.length === 0)
+    return [];
+
   if(validTranIds && validTranIds.length > 0) {
     return commissions.filter(c => validTranIds.indexOf(c.transaction_id) > -1);
   }
