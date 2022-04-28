@@ -255,13 +255,13 @@ const adtractionApi = adtractionGenericApi();
 
 function init(tasker) {
   initializeMerchantImporters(tasker);
-  /*initializeCommissionsProcessors(tasker);
+  initializeCommissionsProcessors(tasker);
   // disabling dubli commission processors [11/7/2016]
   // initializeCommissionsDubliProcessors(tasker);
   intializeUserReferrals(tasker);
   initializeNotificationProcessor(tasker);
   initializeCommissionsProcessorsDaily(tasker);
-  initializeAvantlinkMerchantProcessor(tasker);*/
+  initializeAvantlinkMerchantProcessor(tasker);
 }
 
 function initializeAvantlinkMerchantProcessor(tasker) {
@@ -287,7 +287,7 @@ function initializeMerchantImporters(tasker) {
 
   tasker.createGroup('2d +/- 1d', {
     "Adservice(dk) Merchants": adserviceDenmarkApi.getMerchants,
-    /*"Adservice(se) Merchants": adserviceSweedenkApi.getMerchants,
+    "Adservice(se) Merchants": adserviceSweedenkApi.getMerchants,
     "Adservice(fi) Merchants": adserviceFinlandApi.getMerchants,
     "Adservice(no) Merchants": adserviceNorwayApi.getMerchants,
     "Adservice(de) Merchants": adserviceGermanyApi.getMerchants,
@@ -296,7 +296,7 @@ function initializeMerchantImporters(tasker) {
     "AdCell Merchants": adCellApi.getMerchants,
     "Admitad Merchants": admitadApi.getMerchants,
     "Admitad India Merchants": admitadDubliIndiaApi.getMerchants,
-    "Adtraction Merchants": adtractionApi.getMerchants,*/
+    "Adtraction Merchants": adtractionApi.getMerchants,
     // "Affili.Net (Austria) Merchants": affilinetAustriaApi.getMerchants,
     // "Affili.Net (France) Merchants": affilinetFranceApi.getMerchants,
     // "Affili.Net (Germany) Merchants": affilinetGermanyApi.getMerchants,
@@ -306,7 +306,7 @@ function initializeMerchantImporters(tasker) {
     // "Affili.Net (UK) Merchants": affilinetUKApi.getMerchants,
     // "Affiliate Gateway (Asia) Merchants": affiliateGatewayAsiaApi.getMerchants,
 
-    /*"Ali Express Commisions": aliexpressApi.getCommissionDetails,
+    "Ali Express Commisions": aliexpressApi.getCommissionDetails,
     //"Affiliate Gateway (Sg) Merchants": affiliateGatewaySgApi.getMerchants, //TODO LM to be implemented
     "AffiliateWindow Merchants": affiliatewindowApi.getMerchants,
     // "ArabyAds Merchants" : arabyadsApi.getMerchants,
@@ -388,7 +388,7 @@ function initializeMerchantImporters(tasker) {
     // "VCommission Merchants": vcommissionApi.getMerchants,
     "Webgains Merchants": webgainsApi.getMerchants,
     //"Zanox Merchants": zanoxApi.getMerchants,
-    "FlyDubai Merchants": tradedoublerFlyDubaiApi.getMerchants,*/
+    "FlyDubai Merchants": tradedoublerFlyDubaiApi.getMerchants,
 
     // Stopping lazada until new implementation
     // "Lazada (Ph) Merchants" : lazadaPhApi.getMerchants,
