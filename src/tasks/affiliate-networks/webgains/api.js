@@ -18,7 +18,7 @@ const request = require('request-promise');
 const debug = require('debug')('webgains:api-client');
 
 const API_CFG = {
-  url: 'http://api.webgains.com/2.0',
+  url: 'https://api.webgains.com/2.0',
   ominto: {
     key: '96069aeda4817545eb3ad17641e68899',
     campaignId: 177143,
