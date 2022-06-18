@@ -7,20 +7,18 @@ const request = require('request-promise');
 const debug = require('debug')('linkshare:api-client');
 const limiter = require('ominto-utils').promiseRateLimiter;
 
-// request.debug = true;
-
-// API auth - not related to individual LinkShare accounts
-const LS_PREAUTH = {
-  Authorization: "Basic YkxnOXFicVRzZWdDQ0VPTE5NN2dieHV0eWFvYTpKRWZTcEVPMldyZWhnRlB0MHJCMXd2MHU1REVh"
-};
+const API_CLIENT = {
+  id: 'ySTxCKw8WQH348zlwqOBSkh9uhi1xG4V',
+  secret: '6YKtFRAb1zze19Z3n2ZNKYQmQr2uXxp7'
+}
 
 //TODO These should probably be moved to a config file
 const API_AUTH_FORMS = {
   ominto: {
     global: {
       grant_type: 'password',
-      username: 'Ominto',
-      password: 'Savemate2021',
+      username: 'merchants@ominto.com',
+      password: 'MADrewards2022#',
       scope: 3239617
     },
   },
@@ -28,44 +26,44 @@ const API_AUTH_FORMS = {
     // US/AU is 1 account with DubLi - has different reporting currencies
     us: {
       grant_type: 'password',
-      username: 'Ominto',
-      password: 'Savemate2021',
+      username: 'merchants@ominto.com',
+      password: 'MADrewards2022#',
       scope: 3239617
     },
     ca: {
       grant_type: 'password',
-      username: 'Ominto',
-      password: 'Savemate2021',
+      username: 'merchants@ominto.com',
+      password: 'MADrewards2022#',
       scope: 3239617
     },
     gb: {
       grant_type: 'password',
-      username: 'Ominto',
-      password: 'Savemate2021',
+      username: 'merchants@ominto.com',
+      password: 'MADrewards2022#',
       scope: 3239617
     },
     fr: {
       grant_type: 'password',
-      username: 'Ominto',
-      password: 'Savemate2021',
+      username: 'merchants@ominto.com',
+      password: 'MADrewards2022#',
       scope: 3239617
     },
     br: {
       grant_type: 'password',
-      username: 'Ominto',
-      password: 'Savemate2021',
+      username: 'merchants@ominto.com',
+      password: 'MADrewards2022#',
       scope: 3239617
     },
     de: {
       grant_type: 'password',
-      username: 'Ominto',
-      password: 'Savemate2021',
+      username: 'merchants@ominto.com',
+      password: 'MADrewards2022#',
       scope: 3239617
     },
     au: {
       grant_type: 'password',
-      username: 'Ominto',
-      password: 'Savemate2021',
+      username: 'merchants@ominto.com',
+      password: 'MADrewards2022#',
       scope: 3239617
     }
   }
@@ -118,6 +116,12 @@ LinkShare.prototype.getFreshClient = co.wrap(function*() {
 LinkShare.prototype._authRequest = co.wrap(function* (form) {
   var self = this;
   var client = getLinkshareClient(); // always auth on a clean client
+
+  const LS_PREAUTH = {
+    Authorization: "Bearer " + Buffer.from(API_CLIENT.id + ":" + API_CLIENT.secret).toString('base64'),
+    'Content-Type': 'application/x-www-form-urlencoded'
+  }
+
   var response = yield client.post({
     uri: "token",
     headers: LS_PREAUTH,
@@ -226,7 +230,7 @@ function makeQueue(s_type) {
 
 function getLinkshareClient(fields) {
   var dataClient = request.defaults(_.extend({
-    baseUrl: "https://api.rakutenmarketing.com",
+    baseUrl: "https://api.linksynergy.com",
     json: true,
     simple: false,
     resolveWithFullResponse: true,
