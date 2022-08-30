@@ -3,6 +3,7 @@
 const utils = require('ominto-utils');
 const configs = require('../../../../configs.json');
 const utilsDataClient = utils.restClient(configs.data_api);
+const _ = require('lodash');
 
 function * removeAlreadyUpdatedCommissions(commissions, affiliateName) {
   let newCommissions = [];
@@ -20,9 +21,15 @@ function * getCommissionsToUpdate(commissions, status, affiliateName) {
   if(transactionIds.length === 0)
     return stateCommissions;
 
-  const result = yield utilsDataClient.get('/checkTransactionUpdates/' + affiliateName + '/' + status,
-    {transactionIds: transactionIds});
-  const validTranIds = result.body;
+  const chunkArr = _.chunk(transactionIds, 20);
+
+  const result = yield chunkArr.map(t => callDataClient(affiliateName, status, t));
+
+  let validTranIds = [];
+  result.map(r => {
+    validTranIds = validTranIds.concat(r.body)
+  });
+
   if(validTranIds && validTranIds === 'Not Found')
     return stateCommissions;
 
@@ -33,6 +40,11 @@ function * getCommissionsToUpdate(commissions, status, affiliateName) {
     return commissions.filter(c => validTranIds.indexOf(c.transaction_id) > -1);
   }
   return stateCommissions;
+}
+
+function * callDataClient(affiliateName, status, t) {
+  return yield utilsDataClient.get('/checkTransactionUpdates/' + affiliateName + '/' + status,
+    {transactionIds: t});
 }
 
 module.exports = {
