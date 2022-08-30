@@ -288,7 +288,7 @@ const TradeDoublerGenericApi = function(s_region, s_entity) {
       form: {
         'grant_type': 'password',
         'username': 'ominto1',
-        'password': 'Savemate2021'
+        'password': 'Td@2022#'
       }
     });
 
