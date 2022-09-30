@@ -64,11 +64,11 @@ const AdmitadGenericApi = function(s_entity, s_region) {
 
     let payments = yield that.pagedApiCall('getPayments', 'results', {});
 
-    const paidTransactions = new Set();
+    let paidTransactions = new Set();
     for (let payment of payments) {
-      if (startDate > new Date(payment.datetime)) {
+      /*if (startDate > new Date(payment.datetime)) {
         break;
-      }
+      }*/
 
       if (payment.status === 'processed') {
         let paymentDetails = yield that.pagedApiCall('getPayments', 'results', {paymentId: payment.id, detailed: 1 });
