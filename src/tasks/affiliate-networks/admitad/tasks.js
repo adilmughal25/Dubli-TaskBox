@@ -65,9 +65,9 @@ const AdmitadGenericApi = function(s_entity, s_region) {
     allCommissions = allCommissions.concat(transactions);
     let events = allCommissions.map(commission => prepareCommission(commission, that.region)).filter(exists);
 
-    if(isCheckUpdates)
+   /* if(isCheckUpdates)
         events = yield transactionsSupport.removeAlreadyUpdatedCommissions(events, AFFILIATE_NAME);
-
+  */
     return yield sendEvents.sendCommissions(that.eventName, events);
   });
 
