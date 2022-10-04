@@ -52,8 +52,8 @@ const AdmitadGenericApi = function(s_entity, s_region) {
     let isCheckUpdates = false;
 
     if (taskDate.body && taskDate.body !== "Not Found") {
-      startDate = moment(taskDate.body.start_date).format('DD.MM.YYYY hh:mm:ss');
-      endDate = moment(taskDate.body.end_date).subtract(1, 'days').format('DD.MM.YYYY hh:mm:ss');
+      startDate = taskDate.body.start_date;
+      endDate = taskDate.body.end_date;
       yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME, true, this);
       isCheckUpdates = true;
     }
@@ -66,7 +66,7 @@ const AdmitadGenericApi = function(s_entity, s_region) {
     let events = allCommissions.map(commission => prepareCommission(commission, that.region)).filter(exists);
 
     if(isCheckUpdates)
-      events = yield transactionsSupport.removeAlreadyUpdatedCommissions(events, AFFILIATE_NAME);
+        events = yield transactionsSupport.removeAlreadyUpdatedCommissions(events, AFFILIATE_NAME);
 
     return yield sendEvents.sendCommissions(that.eventName, events);
   });
