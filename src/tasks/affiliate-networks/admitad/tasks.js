@@ -43,7 +43,7 @@ const AdmitadGenericApi = function(s_entity, s_region) {
    */
   this.getCommissionDetails = singleRun(function* () {
     let startDate = new Date(Date.now() - (90 * 86400 * 1000));
-    let endDate = new Date(Date.now() - (60 * 1000));
+    let endDate = new Date(Date.now() - (1 * 43200 * 1000));
 
     let allCommissions = [];
 
@@ -52,35 +52,18 @@ const AdmitadGenericApi = function(s_entity, s_region) {
     let isCheckUpdates = false;
 
     if (taskDate.body && taskDate.body !== "Not Found") {
-      let startCount = moment().diff(moment(taskDate.body.start_date), "days")
-      let endCount = moment().diff(moment(taskDate.body.end_date), "days");
-      allCommissions = yield that.getCommissionsByDate(startCount, endCount);
+      startDate = moment(taskDate.body.start_date).format('DD.MM.YYYY hh:mm:ss');
+      endDate = moment(taskDate.body.end_date).subtract(1, 'days').format('DD.MM.YYYY hh:mm:ss');
       yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME, true, this);
-
       isCheckUpdates = true;
     }
 
     debug("fetching all transactions between %s and %s", startDate, endDate);
 
-    let payments = yield that.pagedApiCall('getPayments', 'results', {});
-
-    let paidTransactions = new Set();
-    for (let payment of payments) {
-      if (startDate > new Date(payment.datetime)) {
-        break;
-      }
-
-      if (payment.status === 'processed') {
-        let paymentDetails = yield that.pagedApiCall('getPayments', 'results', {paymentId: payment.id, detailed: 1 });
-        for(let paymentDetail of paymentDetails) {
-          paidTransactions.add(paymentDetail.id);
-        }
-      }
-    }
 
     let transactions = yield that.pagedApiCall('getStatisticsByAction', 'results', {status_updated_start: startDate, status_updated_end:endDate});
     allCommissions = allCommissions.concat(transactions);
-    let events = allCommissions.map(commission => prepareCommission(commission, that.region, paidTransactions)).filter(exists);
+    let events = allCommissions.map(commission => prepareCommission(commission, that.region)).filter(exists);
 
     if(isCheckUpdates)
       events = yield transactionsSupport.removeAlreadyUpdatedCommissions(events, AFFILIATE_NAME);
@@ -243,7 +226,7 @@ const STATE_MAP = {
  * @param {Object} o_obj  The individual commission transaction straight from Admitad
  * @returns {Object}
  */
-function prepareCommission(o_obj, region, paidTransactions) {
+function prepareCommission(o_obj, region) {
 
   // https://developers.admitad.com/en/doc/api_en/methods/statistics/statistics-actions/
   // using auto as date when a transactions status is in confirmed (internal state) &
@@ -256,6 +239,12 @@ function prepareCommission(o_obj, region, paidTransactions) {
   else // this is for all other status - approved/declined/approved_but_stalled - on hold/confirmed/declined/confirmed but delayed
     _date = new Date(o_obj.closing_date);
 
+  // Status of payment to the publisher - Yes/No (1/0).
+  if  (o_obj.paid === 1) {
+    o_obj.status = 'paid';
+    _date = new Date();
+  }
+
   let event = {
     affiliate_name: AFFILIATE_NAME + region,
     merchant_name: o_obj.advcampaign_name || '',
@@ -266,7 +255,7 @@ function prepareCommission(o_obj, region, paidTransactions) {
     currency: o_obj.currency.toLowerCase(),
     purchase_amount: o_obj.cart,
     commission_amount: o_obj.payment,
-    state: paidTransactions.has(o_obj.action_id) ? STATE_MAP['paid'] : STATE_MAP[o_obj.status],
+    state: STATE_MAP[o_obj.status],
     //effective_date: 'auto'
     effective_date: _date,
     cashback_id: o_obj.positions[0].rate_id || ''
