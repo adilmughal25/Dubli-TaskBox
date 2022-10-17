@@ -250,7 +250,7 @@ const LinkShareGenericApi = function(s_region, s_entity) {
       allCommissions = yield getCommissionsByDate(startCount, endCount, s_region, that);
       yield utilsDataClient.patch('/inactivateTask/linkshare-' + (s_region || 'us'), true, this);
 
-      isCheckUpdates = true;
+      // isCheckUpdates = true;
     }
 
     const payments = yield that.getPayments();
