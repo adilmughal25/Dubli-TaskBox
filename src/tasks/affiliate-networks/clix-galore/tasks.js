@@ -108,7 +108,7 @@ function prepareBanners(o_obj) {
   }
 
   let o_banner = {
-    mid_base64: new Buffer(o_obj.Merchant_Program).toString('base64'),
+    mid_base64: Buffer.from(o_obj.Merchant_Program).toString('base64'),
     merchant_program: o_obj.Merchant_Program,
     currency: CURRENCY_MAP[o_obj.Currency] || o_obj.Currency,
     rate: Number(o_obj.Rate),
@@ -125,7 +125,7 @@ function prepareLinks(o_obj) {
   }
 
   let o_link = {
-    mid_base64: new Buffer(o_obj.Merchant_Program).toString('base64'),
+    mid_base64: Buffer.from(o_obj.Merchant_Program).toString('base64'),
     merchant_program: o_obj.Merchant_Program,
     currency: CURRENCY_MAP[o_obj.Currency] || o_obj.Currency,
     rate: Number(o_obj.Commission_Rate),
@@ -153,7 +153,7 @@ function prepareCoupons(o_obj) {
   }
 
   let o_link = {
-    mid_base64: new Buffer(o_obj.Merchant).toString('base64'),
+    mid_base64: Buffer.from(o_obj.Merchant).toString('base64'),
     merchant_program: o_obj.Merchant,
     currency: CURRENCY_MAP[a_commission[1]] || a_commission[1],
     rate: Number(a_commission[2]),

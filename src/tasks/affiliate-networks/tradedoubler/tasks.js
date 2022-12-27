@@ -274,7 +274,7 @@ const TradeDoublerGenericApi = function(s_region, s_entity) {
 
     let allCommissions = [];
 
-    const basic = new Buffer([API_CFG.clientId, API_CFG.clientSecret].join(':')).toString('base64');
+    const basic = Buffer.from([API_CFG.clientId, API_CFG.clientSecret].join(':')).toString('base64');
     let headers = {
       'Authorization': 'Basic ' + basic,
       'Content-Type': 'application/x-www-form-urlencoded'

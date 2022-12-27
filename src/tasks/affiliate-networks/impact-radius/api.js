@@ -57,7 +57,7 @@ for (var whitelabel in Auth) {
     for (var region in Auth[whitelabel][entity]) {
       // Auth.impactradius.ominto.us
       let defs = Auth[whitelabel][entity][region];
-      let basic = new Buffer([defs.sid,defs.token].join(':')).toString('base64');
+      let basic = Buffer.from([defs.sid,defs.token].join(':')).toString('base64');
       defs.authHeader = "Basic " + basic;
       defs.urlPathPrefix = "/Mediapartners/" + defs.sid + "/";
       Object.freeze(defs);
