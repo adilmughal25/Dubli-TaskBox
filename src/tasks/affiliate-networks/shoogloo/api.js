@@ -4,7 +4,7 @@ const _ = require('lodash');
 const co = require('co');
 const denodeify = require('denodeify');
 const soap = require('soap');
-const request = require('request-promise');
+const request = require('got');
 const debug = require('debug')('shooglooSoap:api-client');
 //require('tough-cookie'); // for request's benefit
 
@@ -69,7 +69,7 @@ ShooglooSoapClient.prototype.setupReports = co.wrap(function* (entity, serviceTy
 });
 
 function init(jar, entity, serviceType) {
-  const rq = request.defaults({jar:jar});
+  const rq = request.default({jar:jar});
   const WSDL = serviceType === 'offers' ? API_CFG[entity].baseUrl + OFFERS_WSDL : API_CFG[entity].baseUrl + REPORTS_WSDL;
   return new Promise(function(resolve, reject) {
     soap.createClient(WSDL, {request:rq}, function(error, client) {

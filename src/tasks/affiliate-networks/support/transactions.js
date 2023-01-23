@@ -1,8 +1,8 @@
 "use strict";
 
-const utils = require('ominto-utils');
+//const utils = require('ominto-utils');
 const configs = require('../../../../configs.json');
-const utilsDataClient = utils.restClient(configs.data_api);
+//const utilsDataClient = utils.restClient(configs.data_api);
 const _ = require('lodash');
 
 function * removeAlreadyUpdatedCommissions(commissions, affiliateName) {
@@ -43,8 +43,8 @@ function * getCommissionsToUpdate(commissions, status, affiliateName) {
 }
 
 function * callDataClient(affiliateName, status, t) {
-  return yield utilsDataClient.get('/checkTransactionUpdates/' + affiliateName + '/' + status,
-    {transactionIds: t});
+  //return yield utilsDataClient.get('/checkTransactionUpdates/' + affiliateName + '/' + status,
+    //{transactionIds: t});
 }
 
 module.exports = {

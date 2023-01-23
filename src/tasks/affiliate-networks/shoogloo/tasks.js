@@ -6,10 +6,10 @@ const debug = require('debug')('shoogloo:processor');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 const deasync = require('deasync');
-const utils = require('ominto-utils');
+//const utils = require('ominto-utils');
 const configs = require('../../../../configs.json');
-utils.clients.init(configs);
-const dataClient = utils.restClient(configs.data_api);
+//utils.clients.init(configs);
+//const dataClient = utils.restClient(configs.data_api);
 
 var merchantMeta = [];
 const merge = require('../support/easy-merge')('merchant_id', {
@@ -201,20 +201,20 @@ const ShooglooGenericApi = function(s_entity) {
 
   // call to data layer to get merchant info
   this.merchantInfo = co.wrap(function* () {
-    let result = yield dataClient.get('/getMerchantInfoByAffiliate/' + AFFILIATE_NAME, null, this);
-    return result.body || [];
+    //let result = yield dataClient.get('/getMerchantInfoByAffiliate/' + AFFILIATE_NAME, null, this);
+    //return result.body || [];
   });
 
   // call to data layer to get merchant cashback info
   this.cashbackInfo = co.wrap(function* () {
-    let result = yield dataClient.get('/getCashbackInfoByAffiliate/' + AFFILIATE_NAME, null, this);
-    return result.body || [];
+    //let result = yield dataClient.get('/getCashbackInfoByAffiliate/' + AFFILIATE_NAME, null, this);
+    //return result.body || [];
   });
 
   // call to data layer to get merchant region info
   this.regionInfo = co.wrap(function* () {
-    let result = yield dataClient.get('/getRegionInfoByAffiliate/' + AFFILIATE_NAME, null, this);
-    return result.body || [];
+    //let result = yield dataClient.get('/getRegionInfoByAffiliate/' + AFFILIATE_NAME, null, this);
+    //return result.body || [];
   });
 
   // call to data layer to get currencies info
@@ -225,8 +225,8 @@ const ShooglooGenericApi = function(s_entity) {
 
   // call to data layer to get countries info
   this.countryInfo = co.wrap(function* () {
-    let result = yield dataClient.get('/getCountryInfo/', null, this);
-    return result.body || [];
+    //let result = yield dataClient.get('/getCountryInfo/', null, this);
+    //return result.body || [];
   });
 };
 
@@ -388,7 +388,7 @@ function convertPurchaseAmount(amount, to, from, date){
   var response ;
   co(function* () {
     var reqObj = [{ 'amount': amount, 'to': to, 'from': from, 'date': date }];
-    response = yield dataClient.post('/convertCurrencies/', reqObj, this);
+    //response = yield dataClient.post('/convertCurrencies/', reqObj, this);
   });
 
   while(sync) {

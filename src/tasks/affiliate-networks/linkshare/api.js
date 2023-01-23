@@ -3,9 +3,9 @@
 const _ = require('lodash');
 const co = require('co');
 const wait = require('co-waiter');
-const request = require('request-promise');
+let request = import('got');
 const debug = require('debug')('linkshare:api-client');
-const limiter = require('ominto-utils').promiseRateLimiter;
+//const limiter = require('ominto-utils').promiseRateLimiter;
 
 const API_CLIENT = {
   id: 'ySTxCKw8WQH348zlwqOBSkh9uhi1xG4V',
@@ -212,11 +212,11 @@ function makeQueue(s_type) {
     case 'custom-reports':
     case 'advanced-reports':
       // these are all silver level
-      return limiter(5, 180); // changing 5 calls/120 secs to 5 calls/180 secs
+      //return limiter(5, 180); // changing 5 calls/120 secs to 5 calls/180 secs
 
     case 'events':
       // platinum level
-      return limiter(100, 120);
+      //return limiter(100, 120);
 
     case 'product-search':
     case 'advertiser-search':
@@ -229,7 +229,7 @@ function makeQueue(s_type) {
 }
 
 function getLinkshareClient(fields) {
-  var dataClient = request.defaults(_.extend({
+  var dataClient = request.catch(_.extend({
     baseUrl: "https://api.linksynergy.com",
     json: true,
     simple: false,

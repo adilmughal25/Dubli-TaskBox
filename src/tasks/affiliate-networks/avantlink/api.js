@@ -4,9 +4,9 @@ const _ = require('lodash');
 const debug = require('debug')('avantlink:api-client');
 const denodeify = require('denodeify');
 const querystring = require('querystring');
-const request = require('request-promise');
+let request = import('got');
 const jsonify = require('../support/jsonify-xml-body');
-const limiter = require('ominto-utils').promiseRateLimiter;
+//const limiter = require('ominto-utils').promiseRateLimiter;
 const moment = require('moment');
 
 const API_CREDENTIALS = {
@@ -125,7 +125,7 @@ function avantLinkClient(s_entity, s_region, s_type) {
   let cfg = API_TYPES[s_type];
 
   // default request options
-  const client = request.defaults({
+  const client = request.catch({
     uri: creds.baseUrl,
     json: true,
     simple: true,
@@ -169,7 +169,7 @@ function avantLinkClient(s_entity, s_region, s_type) {
   };
 
   if (cfg.limit) {
-    limiter.request(client, cfg.limit[0], cfg.limit[1]).debug(debug, _prefix);
+    //limiter.request(client, cfg.limit[0], cfg.limit[1]).debug(debug, _prefix);
   }
 
   return client;

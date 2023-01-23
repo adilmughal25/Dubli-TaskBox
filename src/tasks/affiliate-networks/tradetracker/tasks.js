@@ -3,7 +3,7 @@
 const _ = require('lodash');
 const co = require('co');
 const debug = require('debug')('tradetracker:processor');
-const utils = require('ominto-utils');
+//const utils = require('ominto-utils');
 const sendEvents = require('../support/send-events');
 const clientPool = require('./api');
 const XmlEntities = require('html-entities').XmlEntities;
@@ -13,7 +13,7 @@ const taskCache = {};
 
 const moment = require('moment');
 const configs = require('../../../../configs.json');
-const utilsDataClient = utils.restClient(configs.data_api);
+//const utilsDataClient = utils.restClient(configs.data_api);
 
 const transactionsSupport = require('../support/transactions');
 
@@ -105,7 +105,7 @@ const TradeTrackerGenericApi = function(s_region, s_entity) {
 
     let allCommissions = [];
 
-    let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME + '-' + tasks.region, true, this);
+    //let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME + '-' + tasks.region, true, this);
 
     let isCheckUpdates = false;
 
@@ -113,7 +113,7 @@ const TradeTrackerGenericApi = function(s_region, s_entity) {
       let startCount = moment().diff(moment(taskDate.body.start_date), "days")
       let endCount = moment().diff(moment(taskDate.body.end_date), "days");
       allCommissions = yield getCommissionsByDate(startCount, endCount);
-      yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME + '-' + tasks.region, true, this);
+      //yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME + '-' + tasks.region, true, this);
 
       isCheckUpdates = true;
     }

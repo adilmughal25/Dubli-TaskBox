@@ -2,9 +2,9 @@
 
 const _ = require('lodash');
 const co = require('co');
-const utils = require('ominto-utils');
+//const utils = require('ominto-utils');
 const configs = require('../../../../configs.json');
-const utilsDataClient = utils.restClient(configs.data_api);
+//const utilsDataClient = utils.restClient(configs.data_api);
 
 const sendEvents = require('../support/send-events');
 
@@ -24,16 +24,16 @@ const CJImportDealsAPI = function() {
   this.getMerchants = co.wrap(function* () {
     let merchants = [];
     let allLinks = [];
-    let subMerchants = yield utilsDataClient.get('/getImportDealsByAffiliate/' + that.eventName, true, this);
+    //let subMerchants = yield utilsDataClient.get('/getImportDealsByAffiliate/' + that.eventName, true, this);
 
     for(let i=0; i<subMerchants.body.length; i++) {
       let subMerchant = subMerchants.body[i];
       debug('subMerchant ----> ', JSON.stringify(subMerchant));
-      let merchant = yield utilsDataClient.get('/getMerchantByAffiliateID/' + subMerchant.to_affiliate_id + '/' + subMerchant.affiliate_name);
+      //let merchant = yield utilsDataClient.get('/getMerchantByAffiliateID/' + subMerchant.to_affiliate_id + '/' + subMerchant.affiliate_name);
       if(merchant && merchant.body)
         merchants.push(prepareMerchant(merchant.body));
 
-      let deals = yield utilsDataClient.get('/getDealsByMerchantIDAndName/' + subMerchant.parent_id + '/' + subMerchant.deal_name, true, this)
+      //let deals = yield utilsDataClient.get('/getDealsByMerchantIDAndName/' + subMerchant.parent_id + '/' + subMerchant.deal_name, true, this)
       deals.body.forEach(deal => {
         allLinks.push(prepareLink(merchant.body.affiliate_id, deal));
       });

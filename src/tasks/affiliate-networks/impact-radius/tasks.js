@@ -3,11 +3,11 @@
 const _ = require('lodash');
 const co = require('co');
 const moment = require('moment');
-const utils = require('ominto-utils');
+//const utils = require('ominto-utils');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 const configs = require('../../../../configs.json');
-const utilsDataClient = utils.restClient(configs.data_api);
+//const utilsDataClient = utils.restClient(configs.data_api);
 
 const transactionsSupport = require('../support/transactions');
 
@@ -65,7 +65,7 @@ function ImpactRadiusGenericApi(s_whitelabel, s_region, s_entity) {
 
     let allCommissions = [];
 
-    let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME, true, this);
+    //let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME, true, this);
 
     let isCheckUpdates = false;
 
@@ -73,7 +73,7 @@ function ImpactRadiusGenericApi(s_whitelabel, s_region, s_entity) {
       let startCount = moment().diff(moment(taskDate.body.start_date), "days")
       let endCount = moment().diff(moment(taskDate.body.end_date), "days");
       allCommissions = yield tasks.getCommissionsByDate(startCount, endCount);
-      yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME, true, this);
+      //yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME, true, this);
 
       isCheckUpdates = true;
     }

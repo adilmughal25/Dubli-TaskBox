@@ -9,7 +9,7 @@
 
 const _ = require('lodash');
 const co = require('co');
-const request = require('request-promise');
+let request = import('got');
 const debug = require('debug')('groupon:api-client');
 const moment = require('moment');
 const querystring = require('querystring');
@@ -72,7 +72,7 @@ const GrouponClient = function(s_entity, s_region) {
   this.debug = require('debug')('groupon:'+s_entity+':'+s_region+':api-client');
 
   // default request options
-  this.client = request.defaults({
+  this.client = request.catch({
     json: true,
     simple: true,
     resolveWithFullResponse: false,

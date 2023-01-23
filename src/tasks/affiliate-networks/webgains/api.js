@@ -14,7 +14,7 @@
  */
 
 const co = require('co');
-const request = require('request-promise');
+const request = import ('got');
 const debug = require('debug')('webgains:api-client');
 
 const API_CFG = {
@@ -34,7 +34,7 @@ function WebgainsClient(s_entity) {
   this.cfg = API_CFG[s_entity];
 
   // default request options
-  this.client = request.defaults({
+  this.client = request.default({
     baseUrl: API_CFG.url,
     qs: {
       key: this.cfg.key

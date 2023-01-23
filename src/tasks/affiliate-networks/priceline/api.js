@@ -1,6 +1,6 @@
 "use strict";
 
-const rp = require('request-promise');
+let request = import('got');
 const _ = require('lodash');
 const moment = require('moment');
 

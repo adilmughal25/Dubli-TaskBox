@@ -1,16 +1,16 @@
 "use strict";
 
 const _ = require('lodash');
-const request = require("request-promise");
+let request = import('got');
 const co = require('co');
 const moment = require('moment');
 const querystring = require('querystring');
 const sendEvents = require('../support/send-events');
-const utils = require('ominto-utils');
+//const utils = require('ominto-utils');
 const XmlEntities = require('html-entities').XmlEntities;
 const entities = new XmlEntities();
 const singleRun = require('../support/single-run');
-const _check = utils.checkApiResponse;
+//const _check = utils.checkApiResponse;
 const jsonify = require('../support/jsonify-xml-body');
 const debug = require('debug')('linkshare:processor');
 const converter = require("csvtojson").Converter;
@@ -25,7 +25,7 @@ const dealsLimit = 10;
 const reportingURL = 'https://ran-reporting.rakutenmarketing.com/en/reports/individual-item-report-api-final/filters?';
 const reportingToken = 'ZW5jcnlwdGVkYToyOntzOjU6IlRva2VuIjtzOjY0OiI2ODI4NTljZGIxYWU2ZjllZWQ1NDFhYjhlNjY1YTM2ODI4YTM3NmIxMjFmMWI1MTI4Y2Q2YzJhMjBkMTMzMjgzIjtzOjg6IlVzZXJUeXBlIjtzOjk6IlB1Ymxpc2hlciI7fQ%3D%3D';
 const configs = require('../../../../configs.json');
-const utilsDataClient = utils.restClient(configs.data_api);
+//const utilsDataClient = utils.restClient(configs.data_api);
 
 const networksList = {
     us: 1,
@@ -76,10 +76,10 @@ const LinkShareGenericApi = function(s_region, s_entity) {
 
   this.doApiMerchants = co.wrap(function*() {
     var url = 'linklocator/1.0/getMerchByAppStatus/approved';
-    var handleError = _check('merchant fetch error');
+    //var handleError = _check('merchant fetch error');
     var merchants = yield that.client
       .apiCall('linklocator', url)
-      .then(handleError)
+      //.then(handleError)
       .then(jsonify)
       .then(decode())
       .then(scrub(/^ns1:/))
@@ -91,7 +91,7 @@ const LinkShareGenericApi = function(s_region, s_entity) {
   this.doApiCoupons = co.wrap(function* () {
     var page = 1;
     var _url = page => 'coupon/1.0?resultsperpage=500&pagenumber=' + page;
-    var handleError = _check('coupon fetch error');
+    //var handleError = _check('coupon fetch error');
     var url = _url(page);
     var results = [];
     var info, coupons, total;
@@ -99,7 +99,7 @@ const LinkShareGenericApi = function(s_region, s_entity) {
     while (url) {
       info = yield that.client
         .apiCall('coupons', url)
-        .then(handleError)
+        //.then(handleError)
         .then(jsonify)
         .then(decode())
         .then(extract('couponfeed'));
@@ -117,14 +117,14 @@ const LinkShareGenericApi = function(s_region, s_entity) {
     var page = 1;
     var date = moment(Date.now() - 86400*3).format('MMDDYYYY');
     var _url = page => 'linklocator/1.0/getTextLinks/-1/-1//' + date + '/-1/' + page;
-    var handleError = _check('text link fetch error');
+    //var handleError = _check('text link fetch error');
     var url = _url(page);
     var results = [];
 
     while (url) {
       var links = yield that.client
         .apiCall('linklocator', url)
-        .then(handleError)
+        //.then(handleError)
         .then(jsonify)
         .then(decode())
         .then(scrub(/^ns1:/))
@@ -155,7 +155,7 @@ const LinkShareGenericApi = function(s_region, s_entity) {
         process_date_start: startTime,
         process_date_end: endTime
       });
-      const response = yield client.get(url).then(_check('commissions fetch error'));
+      //const response = yield client.get(url).then(_check('commissions fetch error'));
       const commissionSet = response.body;
       commissions = commissions.concat(commissionSet);
       if (commissionSet.length < 1000) break;
@@ -188,7 +188,7 @@ const LinkShareGenericApi = function(s_region, s_entity) {
     });
 
   try {
-    const paymentHistoryResponse = yield client.get(paymentHistoryurl).then(_check('payment history not found'));
+    //const paymentHistoryResponse = yield client.get(paymentHistoryurl).then(_check('payment history not found'));
     const paymentHistory = yield getCommissionsFromCSV(paymentHistoryResponse.body);
 
     for (let i = 0; i < paymentHistory.length; i++) {
@@ -203,7 +203,7 @@ const LinkShareGenericApi = function(s_region, s_entity) {
           payid: paymentHistory[i]['Payment ID'],
         });
 
-        const advertiserPaymentHistoryResponse = yield client.get(advertiserPaymentHistoryurl).then(_check('Advertiser payment history not found'));
+        //const advertiserPaymentHistoryResponse = yield client.get(advertiserPaymentHistoryurl).then(_check('Advertiser payment history not found'));
         let advertiserPaymentHistory = yield getCommissionsFromCSV(advertiserPaymentHistoryResponse.body);
 
         for (let j = 0; j < advertiserPaymentHistory.length; j++) {
@@ -214,7 +214,7 @@ const LinkShareGenericApi = function(s_region, s_entity) {
             invoiceid: advertiserPaymentHistory[j]['Invoice Number'],
           });
 
-          const paymentDetailsResponse = yield client.get(paymentDetailsurl).then(_check('Advertiser payment history not found'));
+          //const paymentDetailsResponse = yield client.get(paymentDetailsurl).then(_check('Advertiser payment history not found'));
           let paymentDetails = yield getCommissionsFromCSV(paymentDetailsResponse.body);
           for (let k = 0; k < paymentDetails.length; k++) {
             console.log('Paid ' + paymentDetails[k]['Order ID']);
@@ -240,7 +240,7 @@ const LinkShareGenericApi = function(s_region, s_entity) {
     const endDate = moment().format('YYYY-MM-DD');
 
     let allCommissions = [];
-    let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/linkshare-' + (s_region || 'us'), true, this);
+    //let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/linkshare-' + (s_region || 'us'), true, this);
 
     let isCheckUpdates = false;
 
@@ -248,13 +248,13 @@ const LinkShareGenericApi = function(s_region, s_entity) {
       let startCount = moment().diff(moment(taskDate.body.start_date), "days")
       let endCount = moment().diff(moment(taskDate.body.end_date), "days");
       allCommissions = yield getCommissionsByDate(startCount, endCount, s_region, that);
-      yield utilsDataClient.patch('/inactivateTask/linkshare-' + (s_region || 'us'), true, this);
+      //yield utilsDataClient.patch('/inactivateTask/linkshare-' + (s_region || 'us'), true, this);
 
       // isCheckUpdates = true;
     }
 
     const payments = yield that.getPayments();
-    let dataClient = request.defaults({});
+    let dataClient = request.default({});
 
     console.log(networksList[s_region] ? networksList[s_region] : networksList['us']);
     const url = reportingURL + querystring.stringify({
@@ -324,7 +324,7 @@ function * getCommissionsByDate(fromCount, toCount, s_region) {
       startDate = moment().subtract(startCount, 'days').format('YYYY-MM-DD');
       endDate = moment().subtract(endCount, 'days').format('YYYY-MM-DD');
 
-      var dataClient = request.defaults({});
+      var dataClient = request.catch({});
 
       console.log(networksList[s_region] ? networksList[s_region] : networksList['us']);
       const url = reportingURL + querystring.stringify({

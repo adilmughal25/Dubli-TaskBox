@@ -5,8 +5,8 @@ const co = require('co');
 const debug = require('debug')('snapdeal:api-client');
 const moment = require('moment');
 const querystring = require('querystring');
-const request = require('request-promise');
-const limiter = require('ominto-utils').promiseRateLimiter;
+const request = require('got');
+//const limiter = require('ominto-utils').promiseRateLimiter;
 
 const statuses = 'approved cancelled'.split(' ');
 const checkUrl = url => url.indexOf(API_CFG.url) === 0 ? url.replace(API_CFG.url, '') : url;
@@ -35,7 +35,7 @@ function SnapdealClient(s_entity) {
 
   this.cfg = API_CFG[s_entity];
 
-  this.client = request.defaults({
+  this.client = request.default({
     baseUrl: API_CFG.url,
     simple: true,
     json: true,
@@ -47,7 +47,7 @@ function SnapdealClient(s_entity) {
   });
 
   // Limiter : 20 API requests per second.
-  limiter.request(this.client, 20, 1).debug(debug);
+  //limiter.request(this.client, 20, 1).debug(debug);
 }
 
 /**

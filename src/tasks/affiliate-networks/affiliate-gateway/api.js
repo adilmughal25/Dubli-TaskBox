@@ -19,7 +19,7 @@ const co = require('co');
 const denodeify = require('denodeify');
 const soap = require('soap');
 const debug = require('debug')('affiliategatewaySoap:api-client');
-const request = require('request-promise');
+let request = import('got');
 require('tough-cookie'); // for request's benefit
 const GetSalesData = "GetSalesData";
 
@@ -121,7 +121,7 @@ AffiliateGatewaySoapClient.prototype.setup = co.wrap(function* () {
 });
 
 function init(jar, clientCfg) {
-  var rq = request.defaults({jar:jar});
+  var rq = request.default({jar:jar});
   return new Promise(function(resolve, reject) {
     soap.createClient(clientCfg.endpoint, {request:rq}, function(error, client) {
       if (error) return reject(error);

@@ -1,13 +1,13 @@
 "use strict";
 
 const ftpd = require('ftpd');
-const AWS = require('aws-sdk');
+//const AWS = require('aws-sdk');
 const path = require('path');
 const mkdirp = require('mkdirp');
-const request = require('request-promise');
+const request = require('got');
 const co = require('co');
 const fs = require('fs-promise');
-const s3 = new AWS.S3();
+//const s3 = new AWS.S3();
 
 module.exports = co.wrap(function* (logger, config) {
   if (!config) {
@@ -49,7 +49,7 @@ module.exports = co.wrap(function* (logger, config) {
     }
 
     function doS3put(bucket, path, streamOrData) {
-      return new Promise(function(resolve, reject) {
+      /*return new Promise(function(resolve, reject) {
         s3.putObject({
           Bucket: bucket,
           Key: path,
@@ -59,7 +59,7 @@ module.exports = co.wrap(function* (logger, config) {
           if (err) return reject(err);
           resolve(result);
         });
-      });
+      });*/
     }
 
     function* doUpload(event, data) {
@@ -71,8 +71,8 @@ module.exports = co.wrap(function* (logger, config) {
       try {
         logger.info("New file uploaded by `"+currentUsername+"`: "+localPath);
         const fileStream = fs.createReadStream(localPath);
-        logger.info("Sending "+filename+" to S3 "+s3bucket+":"+s3path);
-        const result = yield doS3put(s3bucket, s3path, fileStream);
+        //logger.info("Sending "+filename+" to S3 "+s3bucket+":"+s3path);
+        //const result = yield doS3put(s3bucket, s3path, fileStream);
         logger.info(result, "successfully uploaded!");
         yield fs.unlink(localPath);
         logger.info("deleted file at "+localPath);

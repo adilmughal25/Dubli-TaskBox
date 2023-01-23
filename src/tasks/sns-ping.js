@@ -4,9 +4,9 @@ const ARN_TOWN_CLOCK = 'arn:aws:sns:us-east-1:352228731405:townclock';
 
 const denodeify = require('denodeify');
 
-const AWS = require('aws-sdk');
-const sns = new AWS.SNS();
-const snsPub = denodeify(sns.publish.bind(sns));
+//const AWS = require('aws-sdk');
+//const sns = new AWS.SNS();
+//const snsPub = denodeify(sns.publish.bind(sns));
 const isDev = process.env.NODE_ENV === 'test';
 
 function* ping() {
@@ -14,9 +14,9 @@ function* ping() {
     Message: message(),
     TargetArn: ARN_TOWN_CLOCK
   };
-  const result = yield (isDev ? devReport(params) : snsPub(params));
-  this.log.info({params: params, result: result}, "Sent Ping to SNS");
-  return result;
+  //const result = yield (isDev ? devReport(params) : snsPub(params));
+  //this.log.info({params: params, result: result}, "Sent Ping to SNS");
+  //return result;
 }
 
 function message() {

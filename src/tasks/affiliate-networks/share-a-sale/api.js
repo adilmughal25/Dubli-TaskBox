@@ -11,9 +11,9 @@ process.env.TZ = 'UTC'; // TODO; how can we ensure node is always running in UTC
 
 const _ = require('lodash');
 const co = require('co');
-const request = require('request-promise');
+let request = import('got');
 const debug = require('debug')('shareasale:api-client');
-const limiter = require('ominto-utils').promiseRateLimiter;
+//const limiter = require('ominto-utils').promiseRateLimiter;
 const crypto = require('crypto');
 const jsonify = require('../support/jsonify-xml-body');
 const moment = require('moment');
@@ -115,7 +115,7 @@ function ShareASaleClient(s_entity) {
   this.cfg = API_CFG[s_entity];
 
 	// default request options
-	this.client = request.defaults({
+	this.client = request.catch({
     uri: API_CFG.url,
     json: false,
     simple: true,
@@ -128,7 +128,7 @@ function ShareASaleClient(s_entity) {
     headers: {}
   });
 
-  limiter.request(this.client, API_CFG.limit.req, API_CFG.limit.sec).debug(debug);
+  //limiter.request(this.client, API_CFG.limit.req, API_CFG.limit.sec).debug(debug);
 
   /**
    * Function to create the custom authentification header for Share A Sale API requests.

@@ -63,137 +63,137 @@ function extractAry(key) {
 }
 
 const BelboonGenericApi = function(s_entity) {
-  if (!(this instanceof BelboonGenericApi)) {
-    debug("instantiating BelboonGenericApi for: %s", s_entity);
-    return new BelboonGenericApi(s_entity);
-  }
+    if (!(this instanceof BelboonGenericApi)) {
+      debug("instantiating BelboonGenericApi for: %s", s_entity);
+      return new BelboonGenericApi(s_entity);
+    }
 
-  var that = this;
+    var that = this;
 
-  this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
-  this.client = require('./api')(this.entity);
-  this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'belboon';
+    this.entity = s_entity ? s_entity.toLowerCase() : 'ominto';
+    this.client = require('./api')(this.entity);
+    this.eventName = (this.entity !== 'ominto' ? this.entity + '-' : '') + 'belboon';
 
-  this.getMerchants = singleRun(function* () {
-    yield that.client.setup();
-    let response = [];
+    this.getMerchants = singleRun(function* () {
+      yield that.client.setup();
+      let response = [];
 
     let programs = yield that.pagedApiCall('getPrograms', 'result.handler.programs.item', _.merge({}, PROGRAMS_ARGS, {adPlatformId: that.client.siteId}));
-    const merchants = programs.map((n) => {
+      const merchants = programs.map((n) => {
       return n.item.reduce( (m,i) => _.extend(m, i), {});
-    });
+      });
 
-    // prepare an array of program ids for requesting further details for each
-    let programIds = merchants.map((m) => {
-      return m.programid;
-    });
+      // prepare an array of program ids for requesting further details for each
+      let programIds = merchants.map((m) => {
+        return m.programid;
+      });
 
-    // get all details for each single program id
-    let programDetails = [];
+      // get all details for each single program id
+      let programDetails = [];
     for( let i=0; i<programIds.length; i++) {
       response = yield that.apiCall('getProgramDetails', 'result.handler', {programId: programIds[i]});
-      response[0].programid = programIds[i];
-      programDetails.push(response[0]);
-    }
+        response[0].programid = programIds[i];
+        programDetails.push(response[0]);
+      }
 
-    // get all vouchers available for our siteId
+      // get all vouchers available for our siteId
     response = yield that.pagedApiCall('getVoucherCodes', 'result.handler.voucherCodes.item', _.merge({}, VOUCHER_ARGS, {adPlatformIds: [that.client.siteId]}));
-    const vouchers = response.map((n) => {
+      const vouchers = response.map((n) => {
       return n.item.reduce( (m,i) => _.extend(m, i), {});
-    });
+      });
 
-    // get all common ads for our siteId
+      // get all common ads for our siteId
     response = yield that.pagedApiCall('searchCommonAds', 'result.handler.commonAds.item', _.merge({}, COMMON_ADS_ARGS, {adPlatformIds: [that.client.siteId]}));
-    const commonads = response.map((n) => {
+      const commonads = response.map((n) => {
       return n.item.reduce( (m,i) => _.extend(m, i), {});
+      });
+
+      const events = merge({
+        merchants: merchants,
+        details: programDetails,
+        vouchers: vouchers,
+        promos: commonads,
+      });
+
+      return yield sendEvents.sendMerchants(that.eventName, events);
     });
 
-    const events = merge({
-      merchants: merchants,
-      details: programDetails,
-      vouchers: vouchers,
-      promos: commonads,
+    this.getCommissionDetails = singleRun(function* () {
+      yield that.client.setup();
+      const startDate = new Date(Date.now() - (270 * 86400 * 1000));
+      const endDate = new Date(Date.now() - (60 * 1000));
+      let response = [];
+      let args = {
+        adPlatformIds: [that.client.siteId],
+        eventChangeDateStart: moment(startDate).format('YYYY-MM-DD'),
+        eventChangeDateEnd: moment(endDate).format('YYYY-MM-DD')
+      };
+
+      response = yield that.pagedApiCall('getEventList', 'result.handler.events.item', args);
+      const events = response.map((n) => {
+      return n.item.reduce( (m,i) => _.extend(m, i), {});
+      }).map(prepareCommission);
+
+      return yield sendEvents.sendCommissions(that.eventName, events);
     });
 
-    return yield sendEvents.sendMerchants(that.eventName, events);
-  });
+    /**
+     * Perform paginated api requests to any specified method of api client.
+     * @param {String} method - The method of the api to call
+     * @param {String} bodyKey - Attribute name/path in response body object to deep select as results
+     * @param {Object} params - The params to pass onto the api method
+     * @returns {Array}
+     */
+    this.pagedApiCall = co.wrap(function* (method, bodyKey, params) {
+      let results = [];
+      let limit = 500;
+      let offset = 0;
+      let total = 0;
+      let start = Date.now();
 
-  this.getCommissionDetails = singleRun(function* () {
-    yield that.client.setup();
-    const startDate = new Date(Date.now() - (270 * 86400 * 1000));
-    const endDate = new Date(Date.now() - (60 * 1000));
-    let response = [];
-    let args = {
-      adPlatformIds: [that.client.siteId],
-      eventChangeDateStart: moment(startDate).format('YYYY-MM-DD'),
-      eventChangeDateEnd: moment(endDate).format('YYYY-MM-DD')
-    };
+      // check that we call a method which actually is provided by the api client
+      if (typeof that.client[method] !== 'function') {
+        throw new Error("Method " + method + " is not available by our api client.");
+      }
 
-    response = yield that.pagedApiCall('getEventList', 'result.handler.events.item', args);
-    const events = response.map((n) => {
-      return n.item.reduce( (m,i) => _.extend(m, i), {});
-    }).map(prepareCommission);
-
-    return yield sendEvents.sendCommissions(that.eventName, events);
-  });
-
-  /**
-   * Perform paginated api requests to any specified method of api client.
-   * @param {String} method - The method of the api to call
-   * @param {String} bodyKey - Attribute name/path in response body object to deep select as results
-   * @param {Object} params - The params to pass onto the api method
-   * @returns {Array}
-   */
-  this.pagedApiCall = co.wrap(function* (method, bodyKey, params) {
-    let results = [];
-    let limit = 500;
-    let offset = 0;
-    let total = 0;
-    let start = Date.now();
-
-    // check that we call a method which actually is provided by the api client
-    if (typeof that.client[method] !== 'function') {
-      throw new Error("Method " + method + " is not available by our api client.");
-    }
-
-    // perform api calls with pagination until we reach total items to fetch
+      // perform api calls with pagination until we reach total items to fetch
     while(true) {
       let arg = _.merge({}, params, {offset:offset, limit:limit});
 
       debug("%s: fetch %d items with offset %d (%s)", method, limit, offset, JSON.stringify({args:arg}));
 
-      let items = yield that.apiCall(method, bodyKey, arg);
-      results = results.concat(items);
+        let items = yield that.apiCall(method, bodyKey, arg);
+        results = results.concat(items);
 
-      // response doesnt provide any totals, so we have to request until 0 items returned
-      if (items.length > 0) {
-        offset += limit;
-      } else {
-        break;
+        // response doesnt provide any totals, so we have to request until 0 items returned
+        if (items.length > 0) {
+          offset += limit;
+        } else {
+          break;
+        }
       }
-    }
 
-    let end = Date.now();
+      let end = Date.now();
     debug("%s finished: %d items over %d requests (%dms)", method, results.length, Math.ceil(offset/limit), end-start);
 
-    return results;
-  });
+      return results;
+    });
 
-  this.numApiCalls = 0;
-  this.apiCall = co.wrap(function* (method, bodyKey, params) {
-    // check that we call a method which actually is provided by the api client
-    if (typeof that.client[method] !== 'function') {
-      throw new Error("Method " + method + " is not available by our api client.");
-    }
+    this.numApiCalls = 0;
+    this.apiCall = co.wrap(function* (method, bodyKey, params) {
+      // check that we call a method which actually is provided by the api client
+      if (typeof that.client[method] !== 'function') {
+        throw new Error("Method " + method + " is not available by our api client.");
+      }
 
     debug("#%d. api call for %s (%s)", ++that.numApiCalls, method, JSON.stringify({params:params}));
 
-    // perform actual api call
-    return yield that.client[method](params)
-      .then(extractAry(bodyKey))
+      // perform actual api call
+      return yield that.client[method](params)
+        .then(extractAry(bodyKey))
       .then(resp => rinse(resp))
     ;
-  });
+    });
 };
 
 const STATUS_MAP = {

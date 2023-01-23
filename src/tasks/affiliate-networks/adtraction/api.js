@@ -2,7 +2,7 @@
 
 const _ = require('lodash');
 const co = require('co');
-const request = require('request-promise');
+let request = import('got');
 const debug = require('debug')('adtraction:api-client');
 const moment = require('moment-timezone');
 
@@ -29,7 +29,7 @@ const formatDate = d => moment(d).format('YYYY-MM-DDT00:00:00.000Z');
 function createClient(s_entity) {
   if (!s_entity) s_entity = 'ominto';
 
-  const client = request.defaults({
+  const client = request.catch({
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',

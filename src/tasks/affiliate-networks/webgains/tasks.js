@@ -8,7 +8,7 @@
 const _ = require('lodash');
 const co = require('co');
 const debug = require('debug')('webgains:processor');
-const utils = require('ominto-utils');
+//const utils = require('ominto-utils');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 

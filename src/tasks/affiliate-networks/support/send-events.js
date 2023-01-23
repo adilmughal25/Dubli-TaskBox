@@ -3,16 +3,16 @@
 const co = require('co');
 const wait = require('co-waiter'); // not used
 const uuid = require('node-uuid'); // not used
-const utils = require('ominto-utils');
+//const utils = require('ominto-utils');
 const prettyMs = require('human-interval');
 const o_configs = require('../../../../configs');
 const denodeify = require('denodeify');
 const gzip = denodeify(require('zlib').gzip);
-const _check = utils.checkApiResponse; // not used
+//const _check = utils.checkApiResponse; // not used
 const _ = require('lodash');
 
-const createEnvelope = utils.createEnvelope; // not used
-const dataService = utils.getDataClient(o_configs.data_api.internalUrl, o_configs.data_api.auth); // not used
+//const createEnvelope = utils.createEnvelope; // not used
+//const dataService = utils.getDataClient(o_configs.data_api.internalUrl, o_configs.data_api.auth); // not used
 
 const storePayloadInRedis = require('./store-payload-in-redis');
 const kinesisPut = require('./direct-kinesis-put');
@@ -96,7 +96,7 @@ var send = co.wrap(function* (s_myName, s_streamName, s_streamType, s_taskName, 
 
 var DEV_SAVE_MERCHANTS = (process.env.NODE_ENV === 'test' && process.env.SAVE_MERCHANTS);
 function devSaveMerchants(s_which, a_items) {
-  if (!DEV_SAVE_MERCHANTS) return;
+  //if (!DEV_SAVE_MERCHANTS) return;
   var debug = _debug(s_which);
   var resolve = require('path').resolve;
   var write = require('fs').writeFileSync;
@@ -108,7 +108,7 @@ function devSaveMerchants(s_which, a_items) {
 
 var DEV_SAVE_COMMISSIONS = (process.env.NODE_ENV === 'test' && process.env.SAVE_COMMISSIONS);
 function devSaveCommissions(s_which, a_items) {
-  if (!DEV_SAVE_COMMISSIONS) return;
+  //if (!DEV_SAVE_COMMISSIONS) return;
   var debug = _debug(s_which);
   var resolve = require('path').resolve;
   var write = require('fs').writeFileSync;

@@ -8,10 +8,10 @@
 
 const _ = require('lodash');
 const co = require('co');
-const request = require('request-promise');
+let request = import('got');
 const debug = require('debug')('admitad:api-client');
 const moment = require('moment');
-const limiter = require('ominto-utils').promiseRateLimiter;
+//const limiter = require('ominto-utils').promiseRateLimiter;
 
 const API_CFG = {
   url: 'https://api.admitad.com/',
@@ -111,7 +111,7 @@ function AdmitadClient(s_entity, s_region) {
 	this.tokenExpires = new Date(); // use token until expired
 
 	// default request options
-  this.client = request.defaults({
+  this.client = request.catch({
     baseUrl: API_CFG.url,
     json: true,
     simple: true,
@@ -129,7 +129,7 @@ function AdmitadClient(s_entity, s_region) {
 
   // no limitations knows/documented
   // DEH: Found some. It dies with a 503 if you try to parallelize it fully
-  limiter.request(this.client, 4, 1).debug(debug);
+  //limiter.request(this.client, 4, 1).debug(debug);
 }
 
 /**

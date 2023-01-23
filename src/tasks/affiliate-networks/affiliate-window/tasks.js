@@ -4,10 +4,10 @@ const _ = require('lodash');
 const moment = require('moment');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
-const utils = require("ominto-utils");
+//const utils = require("ominto-utils");
 const configs = require("../../../../configs.json");
 const debug = require('debug')('affiliatewindow:processor');
-const utilsDataClient = utils.restClient(configs.data_api);
+//const utilsDataClient = utils.restClient(configs.data_api);
 const AFFILIATE_NAME = 'affiliatewindow';
 
 const taskCache = {};
@@ -120,13 +120,13 @@ const AffiliateWindowGenericApi = function(s_entity) {
     let endDate = new Date(Date.now() - (60 * 1000));
     let startDate = moment().subtract(90, 'days').toDate();
 
-    let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME, true, this);
+    /*let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME, true, this);
 
     if (taskDate.body && taskDate.body !== "Not Found") {
       startDate = new Date(taskDate.body.start_date);
       endDate = new Date(taskDate.body.end_date);
       yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME , true, this);
-    }
+    }*/
 
     const transactionRanges = getRanges(startDate, endDate);
     const validationRanges = getRanges(startDate, endDate);
@@ -155,7 +155,7 @@ const AffiliateWindowGenericApi = function(s_entity) {
     // const events = _.uniq(results, false, x => x.iId).map(prepareCommission);
     const events = _.uniq(results, false, x => x.id).map(prepareCommission);
 
-    return yield sendEvents.sendCommissions(tasks.eventName, events);
+    /*return yield sendEvents.sendCommissions(tasks.eventName, events);*/
   });
 
   taskCache[eventName] = tasks;

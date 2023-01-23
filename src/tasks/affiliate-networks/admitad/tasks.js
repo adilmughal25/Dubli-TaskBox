@@ -6,11 +6,11 @@ const debug = require('debug')('admitad:processor');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 const moment = require('moment');
-const limiter = require('ominto-utils').promiseRateLimiter;
+//const limiter = require('ominto-utils').promiseRateLimiter;
 
-const utils = require('ominto-utils');
+//const utils = require('ominto-utils');
 const configs = require('../../../../configs.json');
-const utilsDataClient = utils.restClient(configs.data_api);
+//const utilsDataClient = utils.restClient(configs.data_api);
 
 const transactionsSupport = require('../support/transactions');
 
@@ -47,14 +47,14 @@ const AdmitadGenericApi = function(s_entity, s_region) {
 
     let allCommissions = [];
 
-    let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME, true, this);
+    //let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME, true, this);
 
     let isCheckUpdates = false;
 
     if (taskDate.body && taskDate.body !== "Not Found") {
       startDate = taskDate.body.start_date;
       endDate = taskDate.body.end_date;
-      yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME, true, this);
+      //yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME, true, this);
       isCheckUpdates = true;
     }
 

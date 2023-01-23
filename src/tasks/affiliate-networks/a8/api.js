@@ -3,7 +3,7 @@
 const _ = require('lodash');
 const co = require('co');
 const debug = require('debug')('a8:api-client');
-const request = require('request-promise');
+const request = require('got');
 const qs = require('querystring');
 
 const API_ACCOUNT_NUMBER = 'a16120154459';
@@ -47,7 +47,7 @@ const A8Client = function() {
    * Client Constructor
    * @returns {Object/json}
    */
-  this.client = request.defaults({
+  this.client = request.default({
     baseUrl: API_BASE_URL,
     json: true,
     auth: {

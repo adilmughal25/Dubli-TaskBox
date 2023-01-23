@@ -3,9 +3,9 @@
 const co = require('co');
 const _ = require('lodash');
 const moment = require('moment');
-const request = require('request-promise');
+const request = import('got');
 const debug = require('debug')('aliexpress:api-client');
-const limiter = require('ominto-utils').promiseRateLimiter;
+//const limiter = require('ominto-utils').promiseRateLimiter;
 const jsonify = require('../support/jsonify-xml-body');
 
 //http://click.aliexpress.com/rd/bAYFkQE8?af={publisher_id}&amp;dp={click_id}
@@ -55,12 +55,11 @@ function aliExpressClient(s_entity, s_region, s_type) {
   let cfg = API_CFG[s_entity];
   let c_type = API_TYPES[s_type];
 
-  const client = request.defaults({
-    baseUrl: c_type.url,
+  const client = request.extend({
+    prefixUrl: c_type.url,
     url: c_type.action,
-    json: false,
-    simple: true,
-    resolveWithFullResponse: false
+    responseType: 'json',
+    resolveBodyOnly: true
   });
 
 
@@ -112,7 +111,7 @@ function aliExpressClient(s_entity, s_region, s_type) {
   if (c_type.limit) {
     var num = c_type.limit[0];
     var time = c_type.limit[1];
-    limiter.request(client, num, time).debug(debug);
+    //limiter.request(client, num, time).debug(debug);
   }
 
   activeClients[_tag] = client;
@@ -132,7 +131,7 @@ module.exports = aliExpressClient;
 
 //   const cfg = API_CFG[s_entity];
 
-//   const client = request.defaults({
+//   const client = request.default({
 //     baseUrl: BASE_URL,
 //     resolveWithFullResponse: true,
 //     json: true

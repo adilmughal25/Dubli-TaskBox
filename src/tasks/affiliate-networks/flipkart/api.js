@@ -5,8 +5,8 @@ const co = require('co');
 const debug = require('debug')('flipkart:api-client');
 const moment = require('moment');
 const querystring = require('querystring');
-const request = require('request-promise');
-const limiter = require('ominto-utils').promiseRateLimiter;
+let request = import('got');
+//const limiter = require('ominto-utils').promiseRateLimiter;
 
 const statuses = 'Cancelled Approved Pending Disapproved'.split(' ');
 const fixUrl = u => u.indexOf(API_CFG.url) === 0 ? u.replace(API_CFG.url, '') : u;
@@ -31,7 +31,7 @@ function FlipkartClient(s_entity) {
 
   this.cfg = API_CFG[s_entity];
 
-  this.client = request.defaults({
+  this.client = request.catch({
     baseUrl: API_CFG.url,
     resolveWithFullResponse: false,
     simple: true,
@@ -43,7 +43,7 @@ function FlipkartClient(s_entity) {
   });
 
   // Documentation: http://www.flipkart.com/affiliate/apifaq 5. => limit is 20/sec
-  limiter.request(this.client, 20, 1).debug(debug);
+  //limiter.request(this.client, 20, 1).debug(debug);
 }
 
 // JSON API: https://affiliate-api.flipkart.net/affiliate/report/orders/detail/json?startDate=yyyy-MM-dd&endDate=yyyy-MM-dd&status=<status>&offset=0

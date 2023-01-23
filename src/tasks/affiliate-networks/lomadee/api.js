@@ -9,7 +9,7 @@
 
 const _ = require('lodash');
 const co = require('co');
-const request = require('request-promise');
+const request = require('got');
 const debug = require('debug')('lomadee:api-client');
 
 const API_URL = ' http://sandbox.buscape.com.br/service/'; // sandbox url
@@ -23,7 +23,7 @@ function createClient() {
   let _id = 0;
   let baseQuery =  {format: 'json'}
 
-  let client = request.defaults({
+  let client = request.default({
     baseUrl: API_URL,
     qs: baseQuery,
     json: true

@@ -8,8 +8,8 @@ const _ = require('lodash');
 const co = require('co');
 const debug = require('debug')('impactradius:api-client');
 const qs = require('querystring');
-const limiter = require('ominto-utils').promiseRateLimiter;
-const request = require('request-promise');
+//const limiter = require('ominto-utils').promiseRateLimiter;
+let request = import('got');
 const requestMethods = 'get head post put patch del'.split(' ');
 
 const API_URL = 'https://api.impactradius.com/';
@@ -81,7 +81,7 @@ function impactRadiusClient(s_whitelabel, s_entity, s_region) {
 
   const auth = Auth[s_whitelabel][s_entity][s_region];
 
-  const client = request.defaults({
+  const client = request.catch({
     baseUrl: API_URL,
     json: true,
     simple: true,
@@ -95,18 +95,18 @@ function impactRadiusClient(s_whitelabel, s_entity, s_region) {
 
   client.auth = auth;
 
-  limiter.request(client, 1000, 3600).debug(debug, _tag);
+  //limiter.request(client, 1000, 3600).debug(debug, _tag);
 
   requestMethods.forEach(function(method) {
     // this reformats errors so they don't suck.
     var orig = client[method];
-    client[method] = () => orig.apply(client, arguments).catch(fixError);
+    //client[method] = () => orig(client, arguments).catch(fixError);
   });
 
   client.getPaginated = co.wrap(function* (url, key) {
     var results = [];
     while (url) {
-      var body = yield client.get(url).catch(fixError);
+      var body = yield client.catch(url).catch(fixError);
       results = results.concat(_.get(body, key, []));
       url = body['@nextpageuri'];
     }
@@ -136,11 +136,11 @@ function fixError(error) {
 
   var errString = error.message.replace(/^Error: /, ''); // otherwise we'll get a duplicate in the msg
   var o = error.options || {};
-  var url = o.url || o.uri;
+  var url = o.urI || o.uri;
   var base = o.baseUrl || "";
   var fullUrl = base ? [base.replace(/\/+$/, ''), url.replace(/^\/+/, '')].join('/') : url;
 
-  errString += " (" + o.method + " " + fullUrl + ")";
+  errString += "(" + o.method + " " + fullUrl + ")";
   var newError = new Error(errString);
   _.extend(newError, _.pick(error, 'cause', 'options', 'error'));
   newError.stack = [newError.stack, "---", error.stack].join("\n"); // keep old stack

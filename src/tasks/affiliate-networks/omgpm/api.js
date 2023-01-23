@@ -6,13 +6,13 @@
 
 const _ = require('lodash');
 const debug = require('debug')('omgpm:api-client');
-const request = require('request-promise');
+let request = import('got');
 const moment = require('moment');
 const jsonify = require('../support/jsonify-xml-body');
 const querystring = require('querystring');
-const utils = require('ominto-utils');
-const check = utils.checkApiResponse;
-const normalizeCurrency = utils.currency.getIntegerAmountForCurrency;
+//const utils = require('ominto-utils');
+//const check = utils.checkApiResponse;
+//const normalizeCurrency = utils.currency.getIntegerAmountForCurrency;
 
 const url = require('url');
 
@@ -118,7 +118,7 @@ function OmgPmLegacyApiClient(s_entity, s_region) {
   if (_clientCache[_tag]) return _clientCache[_tag];
 
   const creds = API_CFG[s_entity][s_region];
-  const client = request.defaults({
+  const client = request.catch({
     resolveWithFullResponse: true,
   });
   client.credentials = creds;
@@ -129,7 +129,7 @@ function OmgPmLegacyApiClient(s_entity, s_region) {
     debug('GET '+apiUrl);
 
     return client.get(apiUrl)
-      .then(check('2XX', 'Could not load merchants'))
+      //.then(check('2XX', 'Could not load merchants'))
       .then(jsonify)
       .then(resp => ary(_.get(resp, MERCHANT_KEY)))
       .then(items => items.map(x => x.$).filter(isLive).map(fixFlatRates.bind(null, s_region)));
@@ -140,7 +140,7 @@ function OmgPmLegacyApiClient(s_entity, s_region) {
     debug('GET '+apiUrl);
 
     return client.get(apiUrl)
-      .then(check('2XX', 'Could not load coupons'))
+      //.then(check('2XX', 'Could not load coupons'))
       .then(jsonify)
       .then(resp => ary(_.get(resp, COUPONS_KEY)))
       .then(items => items.map(extractPid));
@@ -155,7 +155,7 @@ function OmgPmLegacyApiClient(s_entity, s_region) {
     debug('GET '+apiUrl);
     console.log(apiUrl)
     return client.get(apiUrl)
-      .then(check('2XX', 'Could not load transactions for '+country+' ('+url+')'))
+      //.then(check('2XX', 'Could not load transactions for '+country+' ('+url+')'))
       .then(jsonify)
       .then(resp => ary(_.get(resp, TRANSACTIONS_KEY)))
       .then(items => items.map(x => x.$));
@@ -267,7 +267,7 @@ function fixFlatRates(region, o_merchant) {
     o_merchant.CommissionFlat = amts.join(', ');
     o_merchant.CommissionCurrency = 'xxx';
   } else {
-    o_merchant.CommissionFlat = amts.map(x => normalizeCurrency(x, properCurrency)).join(', ');
+    //o_merchant.CommissionFlat = amts.map(x => normalizeCurrency(x, properCurrency)).join(', ');
     o_merchant.CommissionCurrency = properCurrency;
   }
 

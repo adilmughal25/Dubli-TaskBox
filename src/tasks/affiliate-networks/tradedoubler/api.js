@@ -1,7 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
-const request = require('request-promise');
+let request = import('got');
 const debug = require('debug')('tradedoubler:api-client');
 const qs = require('querystring');
 
@@ -82,7 +82,7 @@ const TradeDoublerClient = function(s_region, s_entity) {
   /**
    * request client with defaults params
    */
-  this.client = request.defaults({
+  this.client = request.catch({
     baseUrl: API_CFG.baseUrlReports,
     json: false,
     simple: true,
@@ -108,7 +108,7 @@ const TradeDoublerClient = function(s_region, s_entity) {
       resolveWithFullResponse: false,
       url: 'aReport3Key.action'
     }, params);
-    return request.defaults(requestParams);
+    return request.default(requestParams);
   };
 
   this.getTradedoublerClientV2 = (url, params, headers) => {
@@ -126,7 +126,7 @@ const TradeDoublerClient = function(s_region, s_entity) {
       url: url,
       headers: headers
     }, params);
-    return request.defaults(requestParams);
+    return request.default(requestParams);
   };
 
   // expose

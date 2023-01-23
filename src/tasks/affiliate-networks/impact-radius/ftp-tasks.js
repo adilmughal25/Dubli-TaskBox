@@ -1,7 +1,7 @@
 "use strict";
 
 var _ = require('lodash');
-var AWS = require('aws-sdk');
+//var AWS = require('aws-sdk');
 var co = require('co');
 var cofy = require('cofy');
 var debug = require('debug')('impactradius:ftp');
@@ -9,7 +9,7 @@ var FtpClient = require('ftp');
 var path = require('path');
 require('promise.prototype.finally');
 
-AWS.config.region = 'us-east-1';
+//AWS.config.region = 'us-east-1';
 
 cofy.class(FtpClient);
 
@@ -86,7 +86,7 @@ function processFiles(list) {
 }
 
 function sendToS3(entry, dataStream) {
-  return new Promise(function(resolve, reject) {
+  /*return new Promise(function(resolve, reject) {
     debug("streaming %s to s3", entry.path);
     var s3obj = new AWS.S3({
       params: {
@@ -109,7 +109,7 @@ function sendToS3(entry, dataStream) {
         response.bytesSent = sent;
         resolve(response);
       });
-  });
+  });*/
 }
 
 function getFile(filePath) {

@@ -2,9 +2,9 @@
 
 const _ = require('lodash');
 const co = require('co');
-const request = require('request-promise');
+let request = import('got');
 const debug = require('debug')('clixgalore:api-client');
-const limiter = require('ominto-utils').promiseRateLimiter;
+//const limiter = require('ominto-utils').promiseRateLimiter;
 const jsonify = require('../support/jsonify-xml-body');
 const spawn = require('child_process').spawn;
 const querystring = require('querystring');
@@ -85,7 +85,7 @@ function ClixGaloreClient() {
   debug("Create new client");
 
 	// default request options
-	this.client = request.defaults({
+	this.client = request.catch({
     baseUrl: API_URL,
     json: false,
     encoding: 'ucs-2',
@@ -95,7 +95,7 @@ function ClixGaloreClient() {
     }
   });
 
-  limiter.request(this.client, 30, 60).debug(debug);
+  //limiter.request(this.client, 30, 60).debug(debug);
 }
 
 /**

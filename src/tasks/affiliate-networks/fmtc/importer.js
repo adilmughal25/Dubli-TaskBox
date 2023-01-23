@@ -15,7 +15,7 @@ var connection = mysql.createConnection({
 connection.connect();
 
 
-var utils = require('ominto-utils');
+//var utils = require('ominto-utils');
 
 
 var configs = {
@@ -340,7 +340,7 @@ function * checkDealsMerchantTable() {
 
 
 
-                    affiliate_tracking_url = utils.addSubIdToTrackingUrl(DB_affiliate_name1, affiliate_tracking_url) || affiliate_tracking_url;
+                    //affiliate_tracking_url = utils.addSubIdToTrackingUrl(DB_affiliate_name1, affiliate_tracking_url) || affiliate_tracking_url;
                     affiliate_tracking_url = affiliate_tracking_url.replace(/'/g, "\\'");
 
                     if (deal_merchantID == merchant_id) {
@@ -585,7 +585,7 @@ function * checkDealsMerchantTable() {
                             'select count(*) as insert_count from merchant_deal Where merchant_id = :merchant_id and deal_source = "FMTC"   ', {
                                 merchant_id: db_merchantID
                             }, true
-                        );                  //   if (i === 3) { break; }  
+                        );                 //   if (i === 3) { break; }
 
                         var deal_detail_count = yield mysql.query(
                             'select count(*) as insert_count from merchant_deal_detail mdd join merchant_deal md on md.id=mdd.deal_id Where md.merchant_id =  :merchant_id and md.deal_source = "FMTC"  ', {

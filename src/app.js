@@ -31,7 +31,7 @@ function init(id) {
   log.level(configs.logLevel);
 
   // set up ftp server for taskbox
-  ftpToS3(log, configs.aws.ftpToS3);
+  //ftpToS3(log, configs.aws.ftpToS3);
 
   const tasker = tasks(log);
   monitor(tasker);

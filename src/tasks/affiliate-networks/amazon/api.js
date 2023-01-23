@@ -8,7 +8,7 @@ const debug = require('debug')('amazon:api-client');
 const moment = require('moment');
 const neatCsv = require('neat-csv');
 const querystring = require('querystring');
-const request = require('request-promise');
+let request = import('got');
 const url = require('url');
 const zlib = require('zlib');
 const jsonify = require('../support/jsonify-xml-body');
@@ -25,7 +25,7 @@ const ary = x => x ? (_.isArray(x) ? x : [x]) : [];
 module.exports = setup;
 
 function setup() {
-  const client = request.defaults({
+  const client = request.catch({
     baseUrl: API_BASE,
     simple: true,
     auth: {

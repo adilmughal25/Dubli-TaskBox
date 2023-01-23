@@ -15,11 +15,11 @@ const _ = require('lodash');
 const co = require('co');
 const denodeify = require('denodeify');
 const soap = require('soap');
-const request = require('request-promise');
+const request = require('got');
 const debug = require('debug')('webgainsSoap:api-client');
 require('tough-cookie'); // for request's benefit
 
-const API_SERVICE_WSDL = 'http://ws.webgains.com/aws.php?wsdl';
+//const API_SERVICE_WSDL = 'http://ws.webgains.com/aws.php?wsdl';
 const API_CFG = {
   ominto: {
     user: 'merchants@ominto.com',
@@ -56,13 +56,13 @@ WebgainsSoapClient.prototype.setup = co.wrap(function* () {
 });
 
 function init(jar) {
-  var rq = request.defaults({jar:jar});
-  return new Promise(function(resolve, reject) {
+  var rq = request.default({jar:jar});
+  /*return new Promise(function(resolve, reject) {
     soap.createClient(API_SERVICE_WSDL, {request:rq}, function(error, client) {
       if (error) return reject(error);
       resolve(client);
     });
-  });
+  });*/
 }
 
 module.exports = WebgainsSoapClient;

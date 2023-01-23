@@ -3,7 +3,7 @@
 const _ = require('lodash');
 const co = require('co');
 const templates = require('./templates');
-const request = require('request-promise');
+const request = require('got');
 const jsonify = require('../../support/jsonify-xml-body');
 const transformKeys = require('transform-keys');
 const deep = require('deep');
@@ -90,7 +90,7 @@ const AffiliNet = function(s_entity, s_accountId) {
   if (!s_accountId) s_accountId = 'uk';
   if (!CREDENTIALS[s_entity][s_accountId]) throw new Error("Unknown affili.net account `"+s_accountId+"` for entity `"+s_entity+"`! Available accounts: "+Object.keys(CREDENTIALS[s_entity]).join(', '));
 
-  this._client = request.defaults({});
+  this._client = request.default({});
   this._token = undefined;
   this._expires = new Date(0);
   this._credentials = CREDENTIALS[s_entity][s_accountId];

@@ -7,9 +7,9 @@ const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 
 const debug = require('debug')('adservice:processor');
-const utils = require('ominto-utils');
+//const utils = require('ominto-utils');
 const configs = require('../../../../configs.json');
-const utilsDataClient = utils.restClient(configs.data_api);
+//const utilsDataClient = utils.restClient(configs.data_api);
 
 const AFFILIATE_NAME = 'adservice-';
 const STATUS_MAP = {
@@ -50,13 +50,13 @@ const AdserviceGenericApi = function(s_region, s_entity) {
 
     let allCommissions = [];
 
-    let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME + tasks.region, true, this);
-
+    //let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME + tasks.region, true, this);
+    let taskDate;
     if (taskDate.body && taskDate.body !== "Not Found") {
-      let startCount = moment().diff(moment(taskDate.body.start_date), "days")
+      let startCount = moment().diff(moment(taskDate.body.now - 30), "days")
       let endCount = moment().diff(moment(taskDate.body.end_date), "days");
       allCommissions = yield tasks.getCommissionsByDate(startCount, endCount);
-      yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME + tasks.region, true, this);
+      //yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME + tasks.region, true, this);
     }
 
     const commissions = yield tasks.client.getTransactions(startDate, endDate);
@@ -87,12 +87,12 @@ const AdserviceGenericApi = function(s_region, s_entity) {
         debug('end date --> ' + moment().subtract(endCount, 'days').toDate() + ' end count --> ' +endCount);
         startDate = new Date(Date.now() - (startCount * 86400 * 1000));
         endDate = new Date(Date.now() - (endCount * 86400 * 1000));
-
+        
         const commissions = yield tasks.client.getTransactions(startDate, endDate);
         allCommissions = allCommissions.concat(commissions);
 
         endCount = (startCount - endCount >= 90) ? endCount - 90 : toCount;
-        startCount = startCount - 90;
+        startCount = new Date();
       }
 
       debug('finish');

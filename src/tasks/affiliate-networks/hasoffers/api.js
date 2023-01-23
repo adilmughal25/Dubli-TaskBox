@@ -1,9 +1,9 @@
 "use strict";
 
 const _ = require('lodash');
-const request = require('request-promise');
+const request = require('got');
 const qs = require('querystring');
-const limiter = require('ominto-utils').promiseRateLimiter;
+//const limiter = require('ominto-utils').promiseRateLimiter;
 
 const API_CFG = {
   url: 'https://api.hasoffers.com/',
@@ -97,14 +97,14 @@ const HasOfferClient = function(s_entity, s_networkName) {
 
   this._credentials = _.omit(API_CFG[s_entity][s_networkName], 'defaultCurrency');
   this._defaultCurrency = API_CFG[s_entity][s_networkName].defaultCurrency;
-  this.client = request.defaults({
+  this.client = request.default({
     baseUrl: API_CFG.url,
     json: true,
     qs: this._credentials
   });
 
   // API usage exceeded rate limit.  Configured: 50/10s window; Your usage: 51.  See http://support.hasoffers.com/hc/en-us/articles/203306816-Rate-Limit-Error for guidance.
-  limiter.request(this.client, 5, 1).debug(debug);
+  //limiter.request(this.client, 5, 1).debug(debug);
   _.extend(this.client, this._credentials);
 
   this.url = function urlMaker(s_target, s_method, params) {

@@ -17,7 +17,7 @@ function storePayloadInRedis(value) {
   const _uuid = uuid.v4();
   const key = 'kinesis-event-data:' + _uuid;
   const promise = new Promise(function(resolve, reject) {
-    redisClient.setex(key, 86400, value, function(err) {
+    redisClient.connect(key, 86400, value, function(err) {
       if (err) return reject(err);
       debug("["+_uuid+"] stored kinesis payload in redis");
       resolve(_uuid);

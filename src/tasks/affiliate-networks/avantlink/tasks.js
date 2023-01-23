@@ -17,13 +17,13 @@
 const _ = require('lodash');
 const co = require('co');
 const debug = require('debug')('avantlink:processor');
-const utils = require('ominto-utils');
+//const utils = require('ominto-utils');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 const clientPool = require('./api');
 
 const configs = require('../../../../configs.json');
-const utilsDataClient = utils.restClient(configs.data_api);
+//const utilsDataClient = utils.restClient(configs.data_api);
 const moment = require('moment');
 
 const AFFILIATE_NAME = 'avantlink-';
@@ -47,7 +47,7 @@ function setup(s_region, s_entity) {
     let clientM = clientPool.getClient(entity, s_region, 'merchants');
     let clientP = clientPool.getClient(entity, s_region, 'promos');
 
-    const res = yield utilsDataClient.get('/hasTaskRanToday/' + AFFILIATE_NAME + s_region, true, this);
+    //const res = yield utilsDataClient.get('/hasTaskRanToday/' + AFFILIATE_NAME + s_region, true, this);
 
     let merchants = [];
     if(res.body) {
@@ -56,7 +56,7 @@ function setup(s_region, s_entity) {
         promos: clientP.getData().then(preparePromos)
       };
       merchants = merge(results);
-      yield utilsDataClient.patch('/updateTaskLastRanDate/' + AFFILIATE_NAME + s_region, true, this);
+      //yield utilsDataClient.patch('/updateTaskLastRanDate/' + AFFILIATE_NAME + s_region, true, this);
     }
 
     return yield sendEvents.sendMerchants(eventName, merchants);
@@ -73,13 +73,13 @@ function setup(s_region, s_entity) {
 
     let allCommissions = [];
 
-    let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME + s_region, true, this);
+    //let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME + s_region, true, this);
 
     if (taskDate.body && taskDate.body !== "Not Found") {
       let startCount = moment().diff(moment(taskDate.body.start_date), "days")
       let endCount = moment().diff(moment(taskDate.body.end_date), "days");
       allCommissions = yield tasks.getCommissionsByDate(startCount, endCount, clientC);
-      yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME + s_region, true, this);
+      //yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME + s_region, true, this);
     }
 
     debug("fetching all transactions between %s and %s", startDate, endDate);

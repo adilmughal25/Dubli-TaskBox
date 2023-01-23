@@ -2,7 +2,7 @@
 
 const _ = require('lodash');
 const co = require('co');
-const utils = require('ominto-utils');
+//const utils = require('ominto-utils');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 const moment = require('moment');

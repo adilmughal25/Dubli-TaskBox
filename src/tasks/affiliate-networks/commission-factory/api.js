@@ -3,9 +3,9 @@
 /*
  * API Documentation: http://dev.commissionfactory.com/V1/Affiliate/Functions/GetTransactions/
  */
-const request = require('request-promise').defaults({ rejectUnauthorized: false });
+let request = import('got').catch({ rejectUnauthorized: false });
 const debug = require('debug')('commissionfactory:api-client');
-const limiter = require('ominto-utils').promiseRateLimiter;
+//const limiter = require('ominto-utils').promiseRateLimiter;
 
 const API_CFG = {
   url: 'https://api.commissionfactory.com/V1/Affiliate',
@@ -24,7 +24,7 @@ function CommissionFactoryClient(s_entity) {
   debug("Create new client for entity: %s", s_entity);
 
   const cfg = API_CFG[s_entity];
-  const client = request.defaults({
+  const client = request.catch({
     baseUrl: API_CFG.url,
     json: true,
     qs: {
@@ -32,7 +32,7 @@ function CommissionFactoryClient(s_entity) {
     }
   });
 
-  limiter.request(client, 15, 60).debug(debug);
+  //limiter.request(client, 15, 60).debug(debug);
 
   return client;
 }

@@ -1,7 +1,7 @@
 "use strict";
 
 const _ = require('lodash');
-const request = require('request-promise');
+let request = import('got');
 const debug = require('debug')('affiliatewindow:api-client');
 const converter = require("csvtojson").Converter;
 
@@ -24,7 +24,7 @@ function AWClient(s_entity) {
 
   const cfg = API_CFG[s_entity];
 
-  const client = request.defaults({
+  const client = request.catch({
     baseUrl: BASE_URL,
     resolveWithFullResponse: true,
     json: true,
@@ -58,7 +58,7 @@ function AWClient(s_entity) {
   };
 
   client.getDeals = function*() {
-    const apiClient = request.defaults({
+    const apiClient = request.default({
       baseUrl: 'https://ui.awin.com/',
       resolveWithFullResponse: true,
       json: true

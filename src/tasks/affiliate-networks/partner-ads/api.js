@@ -7,7 +7,7 @@
 
 const _ = require('lodash');
 const co = require('co');
-const request = require('request-promise');
+let request = import('got');
 const debug = require('debug')('partnerads:api-client');
 const iconv = require('iconv-lite');
 const jsonify = require('../support/jsonify-xml-body');
@@ -59,7 +59,7 @@ function PartnerAdsClient(s_entity) {
   this.cfg = API_CFG[s_entity];
 
   // default request options
-  this.client = request.defaults({
+  this.client = request.catch({
     baseUrl: API_CFG.url,
     json: false,
     simple: true,

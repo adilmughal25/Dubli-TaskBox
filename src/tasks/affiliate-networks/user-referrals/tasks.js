@@ -4,12 +4,12 @@
 "use strict";
 
 const configs = require('../../../../configs.json');
-const utils = require('ominto-utils');
-utils.clients.init(configs);
+//const utils = require('ominto-utils');
+//utils.clients.init(configs);
 const singleRun = require('../support/single-run');
-const dataClient = utils.restClient(configs.data_api);
+//const dataClient = utils.restClient(configs.data_api);
 
-const request = require('request-promise');
+let request = import('got');
 
 const addReferralPropertiesApi = function() {
 
@@ -19,19 +19,19 @@ const addReferralPropertiesApi = function() {
 
     this.addReferralProperties = singleRun(function*() {
 
-        let newInvitedUsers= yield dataClient.get('/getNewInvitedFriends',false,this);
-        let getNewInvitedSocialFriends= yield dataClient.get('/getNewInvitedSocialFriends',false,this);
-        let getOtherFriends= yield dataClient.get('/getOtherFriends',false,this);
+        //let newInvitedUsers= yield dataClient.get('/getNewInvitedFriends',false,this);
+        //let getNewInvitedSocialFriends= yield dataClient.get('/getNewInvitedSocialFriends',false,this);
+        //let getOtherFriends= yield dataClient.get('/getOtherFriends',false,this);
     });
 
     this.addReferralAmount=singleRun(function* () {
-        let addReferralAmountForAvailableBalance = yield dataClient.get('/addReferralAmountForAvailableBalance',false,this);
+        //let addReferralAmountForAvailableBalance = yield dataClient.get('/addReferralAmountForAvailableBalance',false,this);
         //let VipReferralAmount = yield dataClient.get('/VipReferralAmount',false,this);
     })
 
     this.addVipReferralAmount=singleRun(function* () {
         //let addReferralAmountForAvailableBalance = yield dataClient.get('/addReferralAmountForAvailableBalance',false,this);
-        let VipReferralAmount = yield dataClient.get('/VipReferralAmount',false,this);
+        //let VipReferralAmount = yield dataClient.get('/VipReferralAmount',false,this);
     })
 }
 

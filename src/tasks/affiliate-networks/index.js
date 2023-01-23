@@ -91,8 +91,8 @@ const avantLinkDubliCAApi = avantLinkGenericApi('ca', 'dubli');
 const avantLinkDubliUSApi = avantLinkGenericApi('us', 'dubli');
 
 const belboonGenericApi = require('./belboon/tasks');
-const belboonApi = belboonGenericApi();
-const belboonDubliApi = belboonGenericApi('dubli');
+const belboonApi = new belboonGenericApi();
+const belboonDubliApi = new belboonGenericApi('dubli');
 
 const commissionfactoryGenericApi = require('./commission-factory/tasks');
 const commissionfactoryApi = commissionfactoryGenericApi();

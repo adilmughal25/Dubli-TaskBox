@@ -1,7 +1,7 @@
 "use strict";
 
 const _ = require('lodash');
-const utils = require('ominto-utils');
+//const utils = require('ominto-utils');
 const co = require('co');
 const moment = require('moment');
 const sendEvents = require('../support/send-events');

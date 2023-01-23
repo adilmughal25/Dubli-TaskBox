@@ -6,12 +6,12 @@ const debug = require('debug')('tradedoubler:processor');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 const moment = require('moment');
-const request = require('request-promise');
+let request = import('got');
 const jsonify = require('../support/jsonify-xml-body');
 
-const utils = require('ominto-utils');
+//const utils = require('ominto-utils');
 const configs = require('../../../../configs.json');
-const utilsDataClient = utils.restClient(configs.data_api);
+//const utilsDataClient = utils.restClient(configs.data_api);
 
 const AFFILIATE_NAME = 'tradedoubler';
 
@@ -233,7 +233,7 @@ const TradeDoublerGenericApi = function(s_region, s_entity) {
     requestParams.qs.token = _.get(API_CFG, 'affiliateData.' + that.entity + '.' + that.region + '.voucherKey', '');
     requestParams.url = 'vouchers.json';
 
-    var client = request.defaults(requestParams)
+    var client = request.default(requestParams)
     return client.get()
     .then((response) => {
       return response && response.length > 0 ? response : [];
@@ -248,7 +248,7 @@ const TradeDoublerGenericApi = function(s_region, s_entity) {
     debug('running get commissions with %s', that.region);
 
     let allCommissions = [];
-    let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME, true, this);
+    //let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME, true, this);
 
     let isCheckUpdates = false;
 
@@ -256,7 +256,7 @@ const TradeDoublerGenericApi = function(s_region, s_entity) {
       let startCount = moment().diff(moment(taskDate.body.start_date), "days")
       let endCount = moment().diff(moment(taskDate.body.end_date), "days");
       allCommissions = yield that.getCommissionDataV2(startCount, endCount);
-      yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME, true, this);
+      //yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME, true, this);
 
       isCheckUpdates = true;
     }
@@ -370,13 +370,13 @@ const TradeDoublerGenericApi = function(s_region, s_entity) {
 
     let allCommissions = [];
 
-    let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME + '-' + that.region, true, this);
+    //let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME + '-' + that.region, true, this);
 
     if (taskDate.body && taskDate.body !== "Not Found") {
       let startCount = moment().diff(moment(taskDate.body.start_date), "days");
       let endCount = moment().diff(moment(taskDate.body.end_date), "days");
       allCommissions = yield that.getCommissionsByDate(startCount, endCount);
-      yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME + '-' + that.region, true, this);
+      //yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME + '-' + that.region, true, this);
     }
 
     const affiliateIdFilter = { affiliateId: _.get(API_CFG, 'affiliateData.' + that.entity + '.' + that.region + '.affiliateId') };

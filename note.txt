@@ -1,0 +1,4 @@
+shifted node module request-promise to got
+changed request.defaults to request.extend
+
+    "xls-to-json-lc": "^0.3.4",

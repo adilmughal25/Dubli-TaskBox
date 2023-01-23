@@ -2,9 +2,9 @@
 
 const co = require('co');
 const _ = require('lodash');
-const request = require('request-promise');
+let request = import('got');
 const debug = require('debug')('commission-junction:api-client');
-const limiter = require('ominto-utils').promiseRateLimiter;
+//const limiter = require('ominto-utils').promiseRateLimiter;
 const jsonify = require('../support/jsonify-xml-body');
 
 var runCounter = 0;
@@ -100,7 +100,7 @@ function commissionJunctionClient(s_entity, s_region, s_type) {
   let cfg = API_CFG[s_entity][s_region];
   let c_type = API_TYPES[s_type];
 
-  const client = request.defaults({
+  const client = request.catch({
     baseUrl: c_type.url,
     url: c_type.action,
     json: false,
@@ -170,7 +170,7 @@ function commissionJunctionClient(s_entity, s_region, s_type) {
   if (c_type.limit) {
     var num = c_type.limit[0];
     var time = c_type.limit[1];
-    limiter.request(client, num, time).debug(debug);
+    //limiter.request(client, num, time).debug(debug);
   }
 
   activeClients[_tag] = client;

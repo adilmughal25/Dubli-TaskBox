@@ -14,9 +14,9 @@ const jsonify = require('../support/jsonify-xml-body');
 const cjClient = require('./api');
 const url = require('url');
 
-const utils = require('ominto-utils');
+//const utils = require('ominto-utils');
 const configs = require('../../../../configs.json');
-const utilsDataClient = utils.restClient(configs.data_api);
+//const utilsDataClient = utils.restClient(configs.data_api);
 
 const transactions = require('../support/transactions');
 
@@ -73,13 +73,13 @@ const CommissionJunctionGenericApi = function(s_region, s_entity) {
 
     let allCommissions = [];
 
-    let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME + '-' + that.region, true, this);
+    //let taskDate = yield utilsDataClient.get('/getTaskDateByAffiliate/' + AFFILIATE_NAME + '-' + that.region, true, this);
 
     let isCheckUpdates = false;
 
     if (taskDate.body && taskDate.body !== "Not Found") {
       allCommissions = yield that.getCommissionsByDate(taskDate.body.start_date, taskDate.body.end_date);
-      yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME + '-' + that.region, true, this);
+      //yield utilsDataClient.patch('/inactivateTask/' + AFFILIATE_NAME + '-' + that.region, true, this);
 
       isCheckUpdates = true;
     }

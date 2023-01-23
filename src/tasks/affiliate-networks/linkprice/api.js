@@ -1,7 +1,7 @@
 "use strict";
 
 const _ = require('lodash');
-const request = require('request-promise');
+let request = import('got');
 const debug = require('debug')('linkprice:api-client');
 const moment = require('moment');
 const tough = require('tough-cookie');
@@ -23,7 +23,7 @@ function LinkPrice(s_entity, s_region) {
 
   const cfg = API_CFG[s_entity];
 
-  const client = request.defaults({
+  const client = request.catch({
     baseUrl: BASE_URL,
     resolveWithFullResponse: true,
     json: true

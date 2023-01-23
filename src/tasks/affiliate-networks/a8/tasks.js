@@ -6,7 +6,7 @@ const debug = require('debug')('a8:api-client');
 const moment = require('moment');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
-const utils = require('ominto-utils');
+//const utils = require('ominto-utils');
 const converter = require("csvtojson").Converter;
 
 const AFFILIATE_NAME = 'a8';
