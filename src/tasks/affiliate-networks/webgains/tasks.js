@@ -15,8 +15,8 @@ const singleRun = require('../support/single-run');
 const AFFILIATE_NAME = 'webgains';
 
 const exists = x => !!x;
-const XmlEntities = require('html-entities').XmlEntities;
-const entities = new XmlEntities();
+const entities = require('html-entities').XmlEntities;
+//const entities = new XmlEntities();
 
 const merge = require('../support/easy-merge')('id', {
   links: 'programId',

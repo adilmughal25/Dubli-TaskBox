@@ -62,7 +62,8 @@ function extractAry(key) {
   return resp => ary(_.get(resp, key) || []);
 }
 
-const BelboonGenericApi = function(s_entity) {
+class BelboonGenericApi {
+  constructor(s_entity) {
     if (!(this instanceof BelboonGenericApi)) {
       debug("instantiating BelboonGenericApi for: %s", s_entity);
       return new BelboonGenericApi(s_entity);
@@ -78,9 +79,9 @@ const BelboonGenericApi = function(s_entity) {
       yield that.client.setup();
       let response = [];
 
-    let programs = yield that.pagedApiCall('getPrograms', 'result.handler.programs.item', _.merge({}, PROGRAMS_ARGS, {adPlatformId: that.client.siteId}));
+      let programs = yield that.pagedApiCall('getPrograms', 'result.handler.programs.item', _.merge({}, PROGRAMS_ARGS, { adPlatformId: that.client.siteId }));
       const merchants = programs.map((n) => {
-      return n.item.reduce( (m,i) => _.extend(m, i), {});
+        return n.item.reduce((m, i) => _.extend(m, i), {});
       });
 
       // prepare an array of program ids for requesting further details for each
@@ -90,22 +91,22 @@ const BelboonGenericApi = function(s_entity) {
 
       // get all details for each single program id
       let programDetails = [];
-    for( let i=0; i<programIds.length; i++) {
-      response = yield that.apiCall('getProgramDetails', 'result.handler', {programId: programIds[i]});
+      for (let i = 0; i < programIds.length; i++) {
+        response = yield that.apiCall('getProgramDetails', 'result.handler', { programId: programIds[i] });
         response[0].programid = programIds[i];
         programDetails.push(response[0]);
       }
 
       // get all vouchers available for our siteId
-    response = yield that.pagedApiCall('getVoucherCodes', 'result.handler.voucherCodes.item', _.merge({}, VOUCHER_ARGS, {adPlatformIds: [that.client.siteId]}));
+      response = yield that.pagedApiCall('getVoucherCodes', 'result.handler.voucherCodes.item', _.merge({}, VOUCHER_ARGS, { adPlatformIds: [that.client.siteId] }));
       const vouchers = response.map((n) => {
-      return n.item.reduce( (m,i) => _.extend(m, i), {});
+        return n.item.reduce((m, i) => _.extend(m, i), {});
       });
 
       // get all common ads for our siteId
-    response = yield that.pagedApiCall('searchCommonAds', 'result.handler.commonAds.item', _.merge({}, COMMON_ADS_ARGS, {adPlatformIds: [that.client.siteId]}));
+      response = yield that.pagedApiCall('searchCommonAds', 'result.handler.commonAds.item', _.merge({}, COMMON_ADS_ARGS, { adPlatformIds: [that.client.siteId] }));
       const commonads = response.map((n) => {
-      return n.item.reduce( (m,i) => _.extend(m, i), {});
+        return n.item.reduce((m, i) => _.extend(m, i), {});
       });
 
       const events = merge({
@@ -131,7 +132,7 @@ const BelboonGenericApi = function(s_entity) {
 
       response = yield that.pagedApiCall('getEventList', 'result.handler.events.item', args);
       const events = response.map((n) => {
-      return n.item.reduce( (m,i) => _.extend(m, i), {});
+        return n.item.reduce((m, i) => _.extend(m, i), {});
       }).map(prepareCommission);
 
       return yield sendEvents.sendCommissions(that.eventName, events);
@@ -157,10 +158,10 @@ const BelboonGenericApi = function(s_entity) {
       }
 
       // perform api calls with pagination until we reach total items to fetch
-    while(true) {
-      let arg = _.merge({}, params, {offset:offset, limit:limit});
+      while (true) {
+        let arg = _.merge({}, params, { offset: offset, limit: limit });
 
-      debug("%s: fetch %d items with offset %d (%s)", method, limit, offset, JSON.stringify({args:arg}));
+        debug("%s: fetch %d items with offset %d (%s)", method, limit, offset, JSON.stringify({ args: arg }));
 
         let items = yield that.apiCall(method, bodyKey, arg);
         results = results.concat(items);
@@ -174,7 +175,7 @@ const BelboonGenericApi = function(s_entity) {
       }
 
       let end = Date.now();
-    debug("%s finished: %d items over %d requests (%dms)", method, results.length, Math.ceil(offset/limit), end-start);
+      debug("%s finished: %d items over %d requests (%dms)", method, results.length, Math.ceil(offset / limit), end - start);
 
       return results;
     });
@@ -186,15 +187,15 @@ const BelboonGenericApi = function(s_entity) {
         throw new Error("Method " + method + " is not available by our api client.");
       }
 
-    debug("#%d. api call for %s (%s)", ++that.numApiCalls, method, JSON.stringify({params:params}));
+      debug("#%d. api call for %s (%s)", ++that.numApiCalls, method, JSON.stringify({ params: params }));
 
       // perform actual api call
       return yield that.client[method](params)
         .then(extractAry(bodyKey))
-      .then(resp => rinse(resp))
-    ;
+        .then(resp => rinse(resp));
     });
-};
+  }
+}
 
 const STATUS_MAP = {
   REJECTED: 'cancelled',

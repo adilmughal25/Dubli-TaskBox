@@ -10,7 +10,7 @@ const moment = require('moment');
 const serve = require('koa-static');
 const koa = require('koa');
 const route = require('koa-route');
-const app = koa();
+const app = new koa();
 const notification = require('./tasks/affiliate-networks/notification');
 
 function startMonitor(tasker) {

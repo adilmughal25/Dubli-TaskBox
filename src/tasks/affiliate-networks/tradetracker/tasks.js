@@ -6,8 +6,8 @@ const debug = require('debug')('tradetracker:processor');
 //const utils = require('ominto-utils');
 const sendEvents = require('../support/send-events');
 const clientPool = require('./api');
-const XmlEntities = require('html-entities').XmlEntities;
-const entities = new XmlEntities();
+const entities = require('html-entities').XmlEntities;
+//const entities = new XmlEntities();
 const singleRun = require('../support/single-run');
 const taskCache = {};
 
