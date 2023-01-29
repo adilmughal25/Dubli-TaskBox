@@ -5,7 +5,7 @@ const co = require('co');
 const denodeify = require('denodeify');
 const soap = require('soap');
 const debug = require('debug')('belboon:api-client');
-let request = import ('got');
+const request = require('request');
 require('tough-cookie'); // for request's benefit
 //const limiter = require('ominto-utils').promiseRateLimiter;
 
@@ -29,23 +29,18 @@ const API_CFG = {
   }
 };
 
-class BelboonClient {
-  constructor(s_entity) {
-    if (!(this instanceof BelboonClient))
-      return new BelboonClient(s_entity);
-    if (!s_entity)
-      throw new Error("Missing required argument 's_entity'!");
-    if (!API_CFG[s_entity])
-      throw new Error("Entity '" + s_entity + "' is not defined in API_CFG.");
-    debug("Create new client for entity: %s", s_entity);
+function BelboonClient(s_entity) {
+  if (!(this instanceof BelboonClient)) return new BelboonClient(s_entity);
+  if (!s_entity) throw new Error("Missing required argument 's_entity'!");
+  if (!API_CFG[s_entity]) throw new Error("Entity '"+s_entity+"' is not defined in API_CFG.");
+  debug("Create new client for entity: %s", s_entity);
 
-    this._initialized = false;
+  this._initialized = false;
 
-    this.cfg = API_CFG[s_entity];
-    this.siteId = this.cfg.siteId;
-    this._client = null;
-    this.jar = request.jar();
-  }
+  this.cfg = API_CFG[s_entity];
+  this.siteId = this.cfg.siteId;
+  this._client = null;
+  this.jar = request.jar();
 }
 
 BelboonClient.prototype.setup = co.wrap(function* () {
