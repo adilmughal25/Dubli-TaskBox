@@ -5,7 +5,7 @@ const co = require('co');
 const denodeify = require('denodeify');
 const soap = require('soap');
 const debug = require('debug')('belboon:api-client');
-const request = require('request');
+const request = require('axios');
 require('tough-cookie'); // for request's benefit
 //const limiter = require('ominto-utils').promiseRateLimiter;
 
@@ -40,7 +40,7 @@ function BelboonClient(s_entity) {
   this.cfg = API_CFG[s_entity];
   this.siteId = this.cfg.siteId;
   this._client = null;
-  this.jar = request.jar();
+  this.jar = request.default();
 }
 
 BelboonClient.prototype.setup = co.wrap(function* () {
@@ -60,7 +60,7 @@ BelboonClient.prototype.setup = co.wrap(function* () {
 });
 
 function init(jar) {
-  var rq = request.defaults({jar:jar});
+  var rq = request.default({jar:jar});
   return new Promise( (resolve, reject) => {
     soap.createClient(API_SERVICE_WSDL, {request:rq}, function(error, client) {
       if (error) return reject(error);

@@ -5,7 +5,7 @@ const co = require('co');
 const debug = require('debug')('snapdeal:api-client');
 const moment = require('moment');
 const querystring = require('querystring');
-const request = require('got');
+const request = require('axios');
 //const limiter = require('ominto-utils').promiseRateLimiter;
 
 const statuses = 'approved cancelled'.split(' ');
@@ -35,10 +35,10 @@ function SnapdealClient(s_entity) {
 
   this.cfg = API_CFG[s_entity];
 
-  this.client = request.default({
-    baseUrl: API_CFG.url,
-    simple: true,
-    json: true,
+  this.client = request.extend({
+    prefixUrl: API_CFG.url,
+    throwHttpErrors: true,
+    responseType: 'json',
     headers: {
       'Snapdeal-Affiliate-Id': this.cfg.id,
       'Snapdeal-Token-Id': this.cfg.token,

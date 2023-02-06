@@ -2,7 +2,7 @@
 
 const _ = require('lodash');
 const co = require('co');
-let request = import('got');
+const request = require('axios');
 const debug = require('debug')('pepperjam:api-client');
 
 const API_CFG = {
@@ -26,7 +26,7 @@ function PapperJamClient(s_entity) {
   this.rqCount = 0;
 
   // default request options
-  this.client = request.catch({
+  this.client = request.default({
     baseUrl: API_CFG.url + API_CFG.version,
     json: true,
     simple: true,

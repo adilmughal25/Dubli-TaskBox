@@ -11,7 +11,7 @@ process.env.TZ = 'UTC'; // TODO; how can we ensure node is always running in UTC
 
 const _ = require('lodash');
 const co = require('co');
-let request = import('got');
+const request = require('axios');
 const debug = require('debug')('shareasale:api-client');
 //const limiter = require('ominto-utils').promiseRateLimiter;
 const crypto = require('crypto');
@@ -115,7 +115,7 @@ function ShareASaleClient(s_entity) {
   this.cfg = API_CFG[s_entity];
 
 	// default request options
-	this.client = request.catch({
+	this.client = request.default({
     uri: API_CFG.url,
     json: false,
     simple: true,

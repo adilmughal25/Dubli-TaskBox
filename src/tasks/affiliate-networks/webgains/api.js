@@ -14,7 +14,7 @@
  */
 
 const co = require('co');
-const request = import ('got');
+const request = require ('axios');
 const debug = require('debug')('webgains:api-client');
 
 const API_CFG = {
@@ -34,13 +34,13 @@ function WebgainsClient(s_entity) {
   this.cfg = API_CFG[s_entity];
 
   // default request options
-  this.client = request.default({
-    baseUrl: API_CFG.url,
+  this.client = request.extend({
+    prefixUrl: API_CFG.url,
     qs: {
       key: this.cfg.key
     },
-    json: true,
-    resolveWithFullResponse: false
+    responseType: 'json',
+    resolveBodyOnly: false
   });
 }
 

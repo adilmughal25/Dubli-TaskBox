@@ -1,6 +1,6 @@
 "use strict";
 
-let request = import('got');
+const request = require('axios');
 const querystring = require('querystring');
 const debug = require('debug')('performancehorizon:api-client');
 
@@ -49,7 +49,7 @@ function PerformanceHorizonApiClient(s_entity) {
   let baseUrl = 'https://' + this.cfg.apiKey + ':' + this.cfg.userKey + '@' + this.cfg.hostname + '/';
 
   // default request options
-  this.client = request.catch({
+  this.client = request.default({
     baseUrl: baseUrl,
     json: true,
     simple: true,

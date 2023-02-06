@@ -4,7 +4,7 @@ const _ = require('lodash');
 const co = require('co');
 const denodeify = require('denodeify');
 const soap = require('soap');
-const request = require('got');
+const request = require('axios');
 const debug = require('debug')('fan:api-client');
 //require('tough-cookie'); // for request's benefit
 
@@ -63,7 +63,7 @@ FanClient.prototype.setupReports = co.wrap(function* (entity, serviceType) {
 });
 
 function init(jar, entity, serviceType) {
-  const rq = request.default({jar:jar});
+  const rq = request.extend({jar:jar});
   const WSDL = serviceType === 'offers' ? API_CFG[entity].baseUrl + OFFERS_WSDL : API_CFG[entity].baseUrl + REPORTS_WSDL;
   return new Promise(function(resolve, reject) {
     soap.createClient(WSDL, {request:rq}, function(error, client) {

@@ -1,7 +1,7 @@
 "use strict";
 
 const _ = require('lodash');
-const request = require('got');
+const request = require('axios');
 const qs = require('querystring');
 //const limiter = require('ominto-utils').promiseRateLimiter;
 
@@ -97,9 +97,9 @@ const HasOfferClient = function(s_entity, s_networkName) {
 
   this._credentials = _.omit(API_CFG[s_entity][s_networkName], 'defaultCurrency');
   this._defaultCurrency = API_CFG[s_entity][s_networkName].defaultCurrency;
-  this.client = request.default({
-    baseUrl: API_CFG.url,
-    json: true,
+  this.client = request.extend({
+    prefixUrl: API_CFG.url,
+    responseType: 'json',
     qs: this._credentials
   });
 

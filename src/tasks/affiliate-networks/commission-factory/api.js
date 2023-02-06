@@ -3,7 +3,7 @@
 /*
  * API Documentation: http://dev.commissionfactory.com/V1/Affiliate/Functions/GetTransactions/
  */
-let request = import('got').catch({ rejectUnauthorized: false });
+const request = require('axios').post({ rejectUnauthorized: false });
 const debug = require('debug')('commissionfactory:api-client');
 //const limiter = require('ominto-utils').promiseRateLimiter;
 
@@ -24,9 +24,9 @@ function CommissionFactoryClient(s_entity) {
   debug("Create new client for entity: %s", s_entity);
 
   const cfg = API_CFG[s_entity];
-  const client = request.catch({
-    baseUrl: API_CFG.url,
-    json: true,
+  const client = request.get({
+    baseURL: API_CFG.url,
+    responseType: 'json',
     qs: {
       apiKey: cfg.key
     }

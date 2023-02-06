@@ -9,7 +9,7 @@
 const Agent = require ('https');
 const _ = require('lodash');
 const co = require('co');
-let request = import('got');
+const request = require('axios');
 const moment = require('moment');
 //const limiter = require('ominto-utils').promiseRateLimiter;
 const debug = require('debug')('adcell:api-client');
@@ -60,12 +60,12 @@ function AdCellClient(s_entity) {
   this.tokenExpires = new Date(); // use token until expired
 
   // default request options
-  this.client = request.catch({
+  this.client = request.default({
     baseUrl: API_CFG.url,
     strictSSL : false,
-    json: true,
-    simple: true,
-    resolveWithFullResponse: false,
+    responseType: 'json',
+    validateStatus: true,
+    decompress: false,
     headers: {
       accept: "application/json"
     }
@@ -96,11 +96,11 @@ AdCellClient.prototype.getToken = co.wrap(function* () {
     }
   };
 
-  body =yield this.client.catch(arg);
+  body =yield this.client.get(arg);
   result = _.get(body, 'data', []);
 
   if (body.status != 200) {
-   // throw new Error("Could not get Token for AdCell API requests. Response: [" + body.status + "]" + body.message);
+    throw new Error("Could not get Token for AdCell API requests. Response: [" + body.status + "]" + body.message);
   }
 
   this.token = result.token;  // make the new token available for our class
@@ -137,11 +137,11 @@ AdCellClient.prototype.getAffiliateProgram = co.wrap(function* (params) {
 
   debug("Using token '%s' to request programs...", this.token);
 
-  body = yield this.client.catch(arg);
+  body = yield this.client.get(arg);
   response = _.get(body, 'data', []);
 
   if (body.status != 200) {
-    //throw new Error("Could not get affiliate programs for export. Response: [" + body.status + "]" + body.message);
+    throw new Error("Could not get affiliate programs for export. Response: [" + body.status + "]" + body.message);
   }
 
 	return response;
@@ -175,11 +175,11 @@ AdCellClient.prototype.getCommissions = co.wrap(function* (params) {
 
   debug("Using token '%s' to request commissions for programIds: %s", this.token, JSON.stringify(arg.qs.programIds));
 
-  body = yield this.client.catch(arg);
+  body = yield this.client.get(arg);
   response = _.get(body, 'data', []);
 
   if (body.status != 200) {
-    //throw new Error("Could not get commissions. Response: [" + body.status + "]" + body.message + ". Token:[" + this.token + "]");
+    throw new Error("Could not get commissions. Response: [" + body.status + "]" + body.message + ". Token:[" + this.token + "]");
   }
 
   return response;
@@ -219,11 +219,11 @@ AdCellClient.prototype.getPromotionType = co.wrap(function* (params, promoType) 
 
   debug("Fetch " + promoType + " for %d programId's.", arg.qs.programIds.length);
 
-  body = yield this.client.catch(arg);
+  body = yield this.client.get(arg);
   response = _.get(body, 'data', []);
 
   if (body.status != 200) {
-    //throw new Error("Could not get " + promoType + " for export. Response: [" + body.status + "]" + body.message + ". Token:[" + this.token + "]");
+    throw new Error("Could not get " + promoType + " for export. Response: [" + body.status + "]" + body.message + ". Token:[" + this.token + "]");
   }
 
   return response;
@@ -264,11 +264,11 @@ AdCellClient.prototype.getStatisticsByCommission = co.wrap(function* (params) {
 
   debug("Using token '%s' to fetch statistics by commission between %s and %s for entity %s", this.token, arg.qs.startDate, arg.qs.endDate, this.cfg.user);
 
-  body = yield this.client.catch(arg);
+  body = yield this.client.get(arg);
   response = _.get(body, 'data', []);
 
   if (body.status != 200) {
-    //throw new Error("Could not get transactions. Response: [" + body.status + "]" + body.message + ". Token:[" + this.token + "]");
+    throw new Error("Could not get transactions. Response: [" + body.status + "]" + body.message + ". Token:[" + this.token + "]");
   }
 
   return response;

@@ -1,7 +1,7 @@
 "use strict";
 
 const _ = require('lodash');
-let request = import('got');
+const request = require('axios');
 const debug = require('debug')('affiliatewindow:api-client');
 const converter = require("csvtojson").Converter;
 
@@ -24,7 +24,7 @@ function AWClient(s_entity) {
 
   const cfg = API_CFG[s_entity];
 
-  const client = request.catch({
+  const client = request.default({
     baseUrl: BASE_URL,
     resolveWithFullResponse: true,
     json: true,

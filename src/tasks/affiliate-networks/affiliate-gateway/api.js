@@ -19,7 +19,7 @@ const co = require('co');
 const denodeify = require('denodeify');
 const soap = require('soap');
 const debug = require('debug')('affiliategatewaySoap:api-client');
-let request = import('got');
+const request = require('axios');
 require('tough-cookie'); // for request's benefit
 const GetSalesData = "GetSalesData";
 

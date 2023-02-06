@@ -3,7 +3,7 @@
 const _ = require('lodash');
 const co = require('co');
 const wait = require('co-waiter');
-let request = import('got');
+const request = require('axios');
 const debug = require('debug')('linkshare:api-client');
 //const limiter = require('ominto-utils').promiseRateLimiter;
 
@@ -229,11 +229,11 @@ function makeQueue(s_type) {
 }
 
 function getLinkshareClient(fields) {
-  var dataClient = request.catch(_.extend({
-    baseUrl: "https://api.linksynergy.com",
-    json: true,
-    simple: false,
-    resolveWithFullResponse: true,
+  var dataClient = request.extend(_.extend({
+    prefixUrl: "https://api.linksynergy.com",
+    responseType: 'json',
+    throwHttpErrors : false,
+    resolveBodyOnly: false,
     headers: {
       accept: "application/xml"
     }

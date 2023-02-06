@@ -5,7 +5,7 @@ const co = require('co');
 const denodeify = require('denodeify');
 const soap = require('soap');
 const debug = require('debug')('tradetracker:api-client');
-let request = import('got').catch({ rejectUnauthorized: false });
+const request = require('axios').default({ rejectUnauthorized: false });
 require('tough-cookie'); // for request's benefit
 
 const API_SERVICE_WSDL  = 'https://ws.tradetracker.com/soap/affiliate?wsdl';
@@ -260,7 +260,7 @@ TradeTrackerSoapClient.prototype.setup = co.wrap(function* () {
 });
 
 function init(jar) {
-  var rq = request.catch({jar:jar});
+  var rq = request.default({jar:jar});
   return new Promise(function(resolve, reject) {
     soap.createClient(API_SERVICE_WSDL, {request:rq}, function(error, client) {
       if (error) return reject(error);

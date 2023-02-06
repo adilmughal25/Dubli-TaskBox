@@ -2,7 +2,7 @@
 
 const co = require('co');
 const _ = require('lodash');
-let request = import('got');
+const request = require('axios');
 const debug = require('debug')('commission-junction:api-client');
 //const limiter = require('ominto-utils').promiseRateLimiter;
 const jsonify = require('../support/jsonify-xml-body');
@@ -100,12 +100,12 @@ function commissionJunctionClient(s_entity, s_region, s_type) {
   let cfg = API_CFG[s_entity][s_region];
   let c_type = API_TYPES[s_type];
 
-  const client = request.catch({
-    baseUrl: c_type.url,
+  const client = request.extend({
+    prefixUrl: c_type.url,
     url: c_type.action,
-    json: false,
-    simple: true,
-    resolveWithFullResponse: false,
+    responseType: 'json',
+    throwHttpErrors,
+    resolveBodyOnly: false,
     headers: {
       authorization: cfg.key,
       accept: 'application/xml'

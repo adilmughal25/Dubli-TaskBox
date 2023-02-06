@@ -6,7 +6,7 @@
 
 const _ = require('lodash');
 const debug = require('debug')('omgpm:api-client');
-let request = import('got');
+const request = require('axios');
 const moment = require('moment');
 const jsonify = require('../support/jsonify-xml-body');
 const querystring = require('querystring');
@@ -118,7 +118,7 @@ function OmgPmLegacyApiClient(s_entity, s_region) {
   if (_clientCache[_tag]) return _clientCache[_tag];
 
   const creds = API_CFG[s_entity][s_region];
-  const client = request.catch({
+  const client = request.default({
     resolveWithFullResponse: true,
   });
   client.credentials = creds;

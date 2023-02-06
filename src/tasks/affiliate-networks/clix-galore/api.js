@@ -2,7 +2,7 @@
 
 const _ = require('lodash');
 const co = require('co');
-let request = import('got');
+const request = require('axios');
 const debug = require('debug')('clixgalore:api-client');
 //const limiter = require('ominto-utils').promiseRateLimiter;
 const jsonify = require('../support/jsonify-xml-body');
@@ -85,7 +85,7 @@ function ClixGaloreClient() {
   debug("Create new client");
 
 	// default request options
-	this.client = request.catch({
+	this.client = request.default({
     baseUrl: API_URL,
     json: false,
     encoding: 'ucs-2',

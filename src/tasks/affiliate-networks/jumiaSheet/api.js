@@ -1,7 +1,7 @@
 "use strict";
 
 const csv = require("csvtojson");
-const request=require('request')
+const request = require('axios')
 const baseUrl = 'https://kol.jumia.com/api/feeds/conversions/download/39d93760d9fdc30b894acb5422bec21508368e12ad9ec03870fb2f8e623e6a5b/60';
 
 function JumiaSheet(s_entity) {
@@ -12,7 +12,7 @@ function JumiaSheet(s_entity) {
   client.getTransactions  = function* start() {
   return new Promise((resolve,reject)=> {
     let transactionObj = [];
-    request.get(baseUrl, function (error, response, body) {
+    request.get(prefixUrl, function (error, response, body) {
       if (!error && response.statusCode == 200) {
           csv().fromString(body).on("json",function(json){
             transactionObj.push(json);

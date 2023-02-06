@@ -9,7 +9,7 @@ const configs = require('../../../../configs.json');
 const singleRun = require('../support/single-run');
 //const dataClient = utils.restClient(configs.data_api);
 
-let request = import('got');
+const request = require('axios');
 
 const addReferralPropertiesApi = function() {
 

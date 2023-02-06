@@ -1,7 +1,7 @@
 "use strict";
 
 const _ = require('lodash');
-const request = require('got');
+const request = require('axios');
 const jsonify = require('../support/jsonify-xml-body');
 const querystring = require('querystring');
 const moment = require('moment');
@@ -55,8 +55,8 @@ function createClient(s_region) {
   const apiUser = creds.partnerId;
   const apiKey = creds.key;
 
-  const client = request.default({
-    resolveWithFullResponse: true
+  const client = request.extend({
+    resolveBodyOnly: true
   });
 
   const url = client.url = function url (type, args) {

@@ -15,7 +15,7 @@ const _ = require('lodash');
 const co = require('co');
 const denodeify = require('denodeify');
 const soap = require('soap');
-const request = require('got');
+const request = require('axios');
 const debug = require('debug')('webgainsSoap:api-client');
 require('tough-cookie'); // for request's benefit
 

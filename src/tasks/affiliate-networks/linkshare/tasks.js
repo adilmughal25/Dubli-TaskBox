@@ -1,7 +1,7 @@
 "use strict";
 
 const _ = require('lodash');
-let request = import('got');
+const request = require('axios');
 const co = require('co');
 const moment = require('moment');
 const querystring = require('querystring');
@@ -324,7 +324,7 @@ function * getCommissionsByDate(fromCount, toCount, s_region) {
       startDate = moment().subtract(startCount, 'days').format('YYYY-MM-DD');
       endDate = moment().subtract(endCount, 'days').format('YYYY-MM-DD');
 
-      var dataClient = request.catch({});
+      var dataClient = request.defaults({});
 
       console.log(networksList[s_region] ? networksList[s_region] : networksList['us']);
       const url = reportingURL + querystring.stringify({

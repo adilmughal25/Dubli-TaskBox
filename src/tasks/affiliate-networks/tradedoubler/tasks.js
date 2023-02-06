@@ -6,7 +6,7 @@ const debug = require('debug')('tradedoubler:processor');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
 const moment = require('moment');
-let request = import('got');
+const request = require('axios');
 const jsonify = require('../support/jsonify-xml-body');
 
 //const utils = require('ominto-utils');

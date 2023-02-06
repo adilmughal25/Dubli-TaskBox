@@ -1,7 +1,7 @@
 "use strict";
 
 const _ = require('lodash');
-let request = import('got');
+const request = require('axios');
 const debug = require('debug')('adservice:api-client');
 const moment = require('moment');
 const tough = require('tough-cookie');
@@ -42,10 +42,10 @@ function Adservice(s_entity, s_region) {
  
   const cfg = API_CFG[s_entity][s_region];
   
-  const client = request.catch({
-    baseUrl: BASE_URL,
-    resolveWithFullResponse: true,
-    json: true
+  const client = request.default({
+    prefixUrl: BASE_URL,
+    resolveBodyOnly: true,
+    responseType: 'json'
   });
 
   client.getMerchants = function() {

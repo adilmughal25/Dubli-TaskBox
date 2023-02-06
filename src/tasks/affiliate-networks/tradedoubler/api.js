@@ -1,7 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
-let request = import('got');
+const request = require('axios');
 const debug = require('debug')('tradedoubler:api-client');
 const qs = require('querystring');
 
@@ -82,7 +82,7 @@ const TradeDoublerClient = function(s_region, s_entity) {
   /**
    * request client with defaults params
    */
-  this.client = request.catch({
+  this.client = request.default({
     baseUrl: API_CFG.baseUrlReports,
     json: false,
     simple: true,

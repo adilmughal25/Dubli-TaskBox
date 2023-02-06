@@ -5,7 +5,7 @@ const co = require('co');
 const debug = require('debug')('jumia:processor');
 const sendEvents = require('../support/send-events');
 const singleRun = require('../support/single-run');
-const request = require('got');
+const request = require('axios');
 
 const exists = x => !!x;
 

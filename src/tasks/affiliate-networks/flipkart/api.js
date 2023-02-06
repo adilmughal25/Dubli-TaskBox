@@ -5,7 +5,7 @@ const co = require('co');
 const debug = require('debug')('flipkart:api-client');
 const moment = require('moment');
 const querystring = require('querystring');
-let request = import('got');
+const request = require('axios');
 //const limiter = require('ominto-utils').promiseRateLimiter;
 
 const statuses = 'Cancelled Approved Pending Disapproved'.split(' ');
@@ -31,7 +31,7 @@ function FlipkartClient(s_entity) {
 
   this.cfg = API_CFG[s_entity];
 
-  this.client = request.catch({
+  this.client = request.default({
     baseUrl: API_CFG.url,
     resolveWithFullResponse: false,
     simple: true,

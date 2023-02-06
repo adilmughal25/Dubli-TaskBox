@@ -1,6 +1,6 @@
 "use strict";
 
-let request = import('got');
+const request = require('axios');
 const _ = require('lodash');
 const moment = require('moment');
 

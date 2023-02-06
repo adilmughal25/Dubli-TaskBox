@@ -4,7 +4,7 @@ const _ = require('lodash');
 const debug = require('debug')('avantlink:api-client');
 const denodeify = require('denodeify');
 const querystring = require('querystring');
-let request = import('got');
+const request = require('axios');
 const jsonify = require('../support/jsonify-xml-body');
 //const limiter = require('ominto-utils').promiseRateLimiter;
 const moment = require('moment');
@@ -125,11 +125,11 @@ function avantLinkClient(s_entity, s_region, s_type) {
   let cfg = API_TYPES[s_type];
 
   // default request options
-  const client = request.catch({
-    uri: creds.baseUrl,
-    json: true,
-    simple: true,
-    resolveWithFullResponse: false,
+  const client = request.extend({
+    uri: creds.prefixUrl,
+    responseType: 'json',
+    resolveBodyOnly: true,
+    throwHttpErrors,
     qs: {
       affiliate_id: creds.affiliateId,
       auth_key: creds.authKey,

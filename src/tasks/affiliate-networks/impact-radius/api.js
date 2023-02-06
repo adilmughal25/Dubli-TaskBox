@@ -9,7 +9,7 @@ const co = require('co');
 const debug = require('debug')('impactradius:api-client');
 const qs = require('querystring');
 //const limiter = require('ominto-utils').promiseRateLimiter;
-let request = import('got');
+const request = require('axios');
 const requestMethods = 'get head post put patch del'.split(' ');
 
 const API_URL = 'https://api.impactradius.com/';
@@ -81,7 +81,7 @@ function impactRadiusClient(s_whitelabel, s_entity, s_region) {
 
   const auth = Auth[s_whitelabel][s_entity][s_region];
 
-  const client = request.catch({
+  const client = request.default({
     baseUrl: API_URL,
     json: true,
     simple: true,
@@ -106,7 +106,7 @@ function impactRadiusClient(s_whitelabel, s_entity, s_region) {
   client.getPaginated = co.wrap(function* (url, key) {
     var results = [];
     while (url) {
-      var body = yield client.catch(url).catch(fixError);
+      var body = yield client.get(url).defaults(fixError);
       results = results.concat(_.get(body, key, []));
       url = body['@nextpageuri'];
     }

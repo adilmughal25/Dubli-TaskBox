@@ -4,7 +4,7 @@ const _ = require('lodash');
 const co = require('co');
 const denodeify = require('denodeify');
 const soap = require('soap');
-const request = require('got');
+const request = require('axios');
 const debug = require('debug')('jumia:api-client');
 const parseString = require('xml2js').parseString;
 //require('tough-cookie'); // for request's benefit
@@ -20,9 +20,9 @@ const API_CFG = {
 function Jumia(s_entity) {
   if (!s_entity) throw new Error("Missing required argument \'s_entity'!");
 
-  const client = request.default({
-    baseUrl: API_CFG[s_entity].baseUrl,
-    resolveWithFullResponse: true
+  const client = request.extend({
+    prefixUrl: API_CFG[s_entity].baseUrl,
+    resolveBodyOnly: false
   });
 
   client.getTransactions = function*(s_entity, startDate, endDate) {
